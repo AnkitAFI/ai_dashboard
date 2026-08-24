@@ -64,6 +64,8 @@ SELECT
     up.email,
     ua.email_hash,
     ua.password_hash,
+    ua.google_id,
+    ua.auth_provider,
     ubi.business_name,
     up.location,
     ubi.business_interests,
@@ -121,10 +123,12 @@ DECLARE
     new_user_id   INTEGER;
     new_created_at TIMESTAMPTZ;
 BEGIN
-    INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, mfa_enabled, mfa_secret, mfa_backup_codes, role)
+    INSERT INTO users_auth (email_hash, password_hash, google_id, auth_provider, is_active, is_verified, mfa_enabled, mfa_secret, mfa_backup_codes, role)
     VALUES (
         NEW.email_hash,
         NEW.password_hash,
+        NEW.google_id,
+        COALESCE(NEW.auth_provider, 'email'),
         COALESCE(NEW.is_active,   TRUE),
         COALESCE(NEW.is_verified, FALSE),
         COALESCE(NEW.mfa_enabled, FALSE),
@@ -220,6 +224,8 @@ RETURNS TRIGGER AS $$
 BEGIN
     UPDATE users_auth SET
         password_hash       = NEW.password_hash,
+        google_id           = NEW.google_id,
+        auth_provider       = COALESCE(NEW.auth_provider, 'email'),
         is_active           = NEW.is_active,
         is_verified         = NEW.is_verified,
         mfa_enabled         = NEW.mfa_enabled,
@@ -320,6 +326,19 @@ ADD COLUMN IF NOT EXISTS mfa_secret TEXT,
 ADD COLUMN IF NOT EXISTS mfa_backup_codes TEXT[];
 """
 
+_ADD_GOOGLE_OAUTH_COLUMNS_SQL = """
+ALTER TABLE users_auth
+ADD COLUMN IF NOT EXISTS google_id VARCHAR(255),
+ADD COLUMN IF NOT EXISTS auth_provider VARCHAR(50) DEFAULT 'email';
+ALTER TABLE users_auth ALTER COLUMN password_hash DROP NOT NULL;
+"""
+
+_ADD_MOBILE_HASH_COLUMN_SQL = """
+ALTER TABLE user_profiles
+ADD COLUMN IF NOT EXISTS mobile_number_hash VARCHAR(255);
+CREATE INDEX IF NOT EXISTS ix_user_profiles_mobile_number_hash ON user_profiles (mobile_number_hash);
+"""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
@@ -343,15 +362,17 @@ def run_startup_setup():
 
     # 2. Create view and triggers — each step is independent
     steps = [
-        ("ALTER TABLE: MFA columns", _ADD_MFA_COLUMNS_SQL),
-        ("ALTER TABLE: deleted_at",  _ADD_DELETED_AT_SQL),
-        ("users VIEW",               _USERS_VIEW_SQL),
-        ("INSERT trigger fn",        _INSERT_TRIGGER_FN_SQL),
-        ("INSERT trigger",           _INSERT_TRIGGER_SQL),
-        ("UPDATE trigger fn",        _UPDATE_TRIGGER_FN_SQL),
-        ("UPDATE trigger",           _UPDATE_TRIGGER_SQL),
-        ("DELETE trigger fn",        _DELETE_TRIGGER_FN_SQL),
-        ("DELETE trigger",           _DELETE_TRIGGER_SQL),
+        ("ALTER TABLE: MFA columns",          _ADD_MFA_COLUMNS_SQL),
+        ("ALTER TABLE: Google OAuth columns", _ADD_GOOGLE_OAUTH_COLUMNS_SQL),
+        ("ALTER TABLE: deleted_at",           _ADD_DELETED_AT_SQL),
+        ("ALTER TABLE: mobile_number_hash",   _ADD_MOBILE_HASH_COLUMN_SQL),
+        ("users VIEW",                        _USERS_VIEW_SQL),
+        ("INSERT trigger fn",                 _INSERT_TRIGGER_FN_SQL),
+        ("INSERT trigger",                    _INSERT_TRIGGER_SQL),
+        ("UPDATE trigger fn",                 _UPDATE_TRIGGER_FN_SQL),
+        ("UPDATE trigger",                    _UPDATE_TRIGGER_SQL),
+        ("DELETE trigger fn",                 _DELETE_TRIGGER_FN_SQL),
+        ("DELETE trigger",                    _DELETE_TRIGGER_SQL),
     ]
 
     for name, sql in steps:

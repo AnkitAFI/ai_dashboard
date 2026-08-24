@@ -476,6 +476,7 @@ import { useTheme } from "next-themes";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import ExpertButton from "../components/Expertbutton";
 import VideoButton from "../components/Videobutton";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
 
 interface SignupFormData {
   firstName: string;
@@ -867,9 +868,18 @@ function SignupContent() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
                 Create Account
               </h2>
-              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">
-                Join and get personalised business insights
-              </p>
+              {/* Google SSO Login Button */}
+              <div className="mb-4">
+                <GoogleLoginButton />
+              </div>
+
+              {/* Divider */}
+              <div className="relative flex items-center justify-center my-4">
+                <div className="w-full border-t border-gray-200 dark:border-slate-800" />
+                <span className="absolute bg-white dark:bg-[#0f172a] px-3 text-[11px] text-gray-400 dark:text-slate-500 uppercase font-semibold tracking-wider">
+                  or register with email
+                </span>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name row */}

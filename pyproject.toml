@@ -21,3 +21,10 @@ dependencies = [
     "tensorflow>=2.20.0",
     "scikit-learn",
 ]
+
+[tool.pyright]
+extraPaths = ["server_py"]
+
+[tool.pyrefly]
+search-path = ["server_py"]
+

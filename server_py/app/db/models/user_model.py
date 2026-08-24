@@ -21,7 +21,9 @@ class User(Base):
             self.email_hash = hash_type.process_bind_param(address, None)
         return address
    
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)
+    google_id = Column(String(255), unique=True, nullable=True, index=True)
+    auth_provider = Column(String(50), default="email")
    
     business_name = Column(String(255), nullable=True)
     location = Column(EncryptedString(), nullable=True)

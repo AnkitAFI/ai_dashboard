@@ -25,6 +25,7 @@ reportlab
 # Security & MFA
 pyotp==2.9.0
 slowapi==0.1.9
+google-auth>=2.27.0
 
 # Core Framework
 fastapi==0.104.1

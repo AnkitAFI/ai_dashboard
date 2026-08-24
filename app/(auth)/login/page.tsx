@@ -7,10 +7,15 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import {
   AlertCircle,
   RefreshCw,
@@ -64,10 +69,14 @@ export default function Login() {
     setMounted(true);
   }, []);
 
-  // If already logged in, redirect to dashboard
+  // If already logged in, redirect to verify mobile or dashboard
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace("/dashboard");
+      if (!user.mobileNumber || user.mobileNumber.trim() === "") {
+        router.replace("/verify-mobile");
+      } else {
+        router.replace("/dashboard");
+      }
     }
   }, [user, authLoading, router]);
 
@@ -124,7 +133,10 @@ export default function Login() {
           }
         } else {
           setErrorMessage(
-            sanitizeApiError(errorData.detail, "Login failed. Please try again."),
+            sanitizeApiError(
+              errorData.detail,
+              "Login failed. Please try again.",
+            ),
           );
         }
         return;
@@ -168,18 +180,21 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/mfa/verify-login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${API_BASE_URL}/api/auth/mfa/verify-login`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            temp_token: tempToken,
+            code: mfaCode,
+            remember_me: rememberMe,
+          }),
         },
-        body: JSON.stringify({
-          temp_token: tempToken,
-          code: mfaCode,
-          remember_me: rememberMe,
-        }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -219,7 +234,13 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to send OTP. Please try again."));
+      if (!response.ok)
+        throw new Error(
+          sanitizeApiError(
+            data.detail,
+            "Failed to send OTP. Please try again.",
+          ),
+        );
       toast({
         title: "OTP Sent! 📱",
         description: "Please check your registered mobile number for the 6-digit SMS OTP",
@@ -229,7 +250,10 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: sanitizeApiError(error.message, "Failed to send OTP. Please try again."),
+        description: sanitizeApiError(
+          error.message,
+          "Failed to send OTP. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
@@ -254,7 +278,10 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail, otp }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Invalid OTP. Please try again."));
+      if (!response.ok)
+        throw new Error(
+          sanitizeApiError(data.detail, "Invalid OTP. Please try again."),
+        );
       toast({
         title: "OTP Verified! ✅",
         description: "Now set your new password",
@@ -263,7 +290,10 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Verification Failed",
-        description: sanitizeApiError(error.message, "Invalid OTP. Please try again."),
+        description: sanitizeApiError(
+          error.message,
+          "Invalid OTP. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
@@ -311,7 +341,13 @@ export default function Login() {
         },
       );
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Password reset failed. Please try again."));
+      if (!response.ok)
+        throw new Error(
+          sanitizeApiError(
+            data.detail,
+            "Password reset failed. Please try again.",
+          ),
+        );
       toast({
         title: "Password Reset Successful! 🎉",
         description: "You can now login with your new password",
@@ -325,7 +361,10 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Reset Failed",
-        description: sanitizeApiError(error.message, "Password reset failed. Please try again."),
+        description: sanitizeApiError(
+          error.message,
+          "Password reset failed. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
@@ -342,7 +381,13 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
+      if (!response.ok)
+        throw new Error(
+          sanitizeApiError(
+            data.detail,
+            "Failed to resend OTP. Please try again.",
+          ),
+        );
       toast({
         title: "OTP Resent! 📱",
         description: "A new SMS OTP has been sent to your registered mobile number",
@@ -352,7 +397,10 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: sanitizeApiError(error.message, "Failed to resend OTP. Please try again."),
+        description: sanitizeApiError(
+          error.message,
+          "Failed to resend OTP. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
@@ -407,33 +455,33 @@ export default function Login() {
       </div>
 
       <div className="flex-1 flex flex-col w-full max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8 my-auto py-10 lg:py-16">
+        <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8 my-auto py-4 lg:py-4 xl:py-8">
           {/* ── Left Panel ── */}
           <div className="hidden lg:flex flex-col flex-1 max-w-3xl lg:pr-8">
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 w-fit mb-8 lg:mb-10 group"
+              className="flex items-center gap-3 w-fit mb-4 xl:mb-6 group"
             >
               <img
                 src="/logo.png"
                 alt="Insydz Logo"
-                className="w-12 h-12 object-contain transition-transform group-hover:scale-110"
+                className="w-10 h-10 xl:w-12 xl:h-12 object-contain transition-transform group-hover:scale-110"
               />
-              <span className="text-3xl font-bold text-white tracking-tight">
+              <span className="text-2xl xl:text-3xl font-bold text-white tracking-tight">
                 Insydz
               </span>
             </Link>
 
             {/* Heading */}
-            <h1 className="text-[44px] lg:text-[52px] font-extrabold text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="text-[36px] xl:text-[46px] font-extrabold text-white leading-[1.1] mb-3 xl:mb-5 tracking-tight">
               Sell smarter on Amazon & Flipkart
             </h1>
 
             {/* Subtext */}
-            <p className="text-white/80 dark:text-slate-300 text-lg leading-relaxed mb-8 max-w-2xl">
+            <p className="text-white/80 dark:text-slate-300 text-base xl:text-lg leading-relaxed mb-4 xl:mb-6 max-w-2xl">
               Real-time pricing intelligence, AI market gap analysis, and review
-              insights — so you always know{" "}
+              insights so you always know{" "}
               <strong className="text-white font-semibold">
                 what to sell, where to price
               </strong>
@@ -441,7 +489,7 @@ export default function Login() {
             </p>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-5 mb-8">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4 xl:mb-6">
               {[
                 "Discover untapped niches with AI",
                 "Know if your price is winning",
@@ -452,14 +500,16 @@ export default function Login() {
                   key={i}
                   className="flex items-center gap-3 text-white dark:text-slate-200"
                 >
-                  <CheckCircle2 className="w-5 h-5 text-white/80 dark:text-slate-400 flex-shrink-0" />
-                  <span className="text-sm font-medium">{feature}</span>
+                  <CheckCircle2 className="w-4 h-4 xl:w-5 xl:h-5 text-white/80 dark:text-slate-400 flex-shrink-0" />
+                  <span className="text-xs xl:text-sm font-medium">
+                    {feature}
+                  </span>
                 </div>
               ))}
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-4 xl:mb-6">
               <ExpertButton
                 label="Talk to our experts"
                 email="support@insydz.com"
@@ -478,12 +528,12 @@ export default function Login() {
             </div>
 
             {/* Divider */}
-            <div className="w-full h-px bg-white/20 dark:bg-white/10 mb-6" />
+            <div className="w-full h-px bg-white/20 dark:bg-white/10 mb-4 xl:mb-5" />
 
             {/* Stats */}
             <div className="flex items-center gap-10">
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">
+                <div className="text-2xl xl:text-3xl font-extrabold text-white mb-1">
                   2,400+
                 </div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">
@@ -492,7 +542,7 @@ export default function Login() {
               </div>
               <div className="w-px h-10 bg-white/20 dark:bg-white/10" />
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">
+                <div className="text-2xl xl:text-3xl font-extrabold text-white mb-1">
                   ₹47Cr+
                 </div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">
@@ -501,7 +551,7 @@ export default function Login() {
               </div>
               <div className="w-px h-10 bg-white/20 dark:bg-white/10" />
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">
+                <div className="text-2xl xl:text-3xl font-extrabold text-white mb-1">
                   50+
                 </div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">
@@ -512,7 +562,7 @@ export default function Login() {
           </div>
 
           {/* ── Right Panel: Form ── */}
-          <div className="w-full lg:w-[480px] shrink-0 lg:mt-[88px] flex justify-center">
+          <div className="w-full lg:w-[480px] shrink-0 flex justify-center">
             <div className="w-full max-w-sm">
               {/* Mobile logo */}
               <div className="flex lg:hidden flex-col items-center mb-8">
@@ -527,7 +577,7 @@ export default function Login() {
               </div>
 
               {/* White card */}
-              <div className="rounded-2xl p-8 bg-white dark:bg-[#0f172a] shadow-[0_16px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-slate-800 transition-colors duration-300">
+              <div className="rounded-2xl p-6 xl:p-8 bg-white dark:bg-[#0f172a] shadow-[0_16px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-slate-800 transition-colors duration-300">
                 {/* Eyebrow */}
                 <div className="flex items-center gap-2 mb-1">
                   <span
@@ -541,7 +591,7 @@ export default function Login() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
                   Welcome back
                 </h2>
-                <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">
+                <p className="text-gray-500 dark:text-slate-400 text-sm mb-4">
                   Sign in to your analytics dashboard
                 </p>
 
@@ -562,9 +612,13 @@ export default function Login() {
                         Enter the 6-digit code from your authenticator app
                       </p>
                     </div>
-                    
+
                     <div className="flex justify-center">
-                      <InputOTP maxLength={6} value={mfaCode} onChange={setMfaCode}>
+                      <InputOTP
+                        maxLength={6}
+                        value={mfaCode}
+                        onChange={setMfaCode}
+                      >
                         <InputOTPGroup>
                           <InputOTPSlot index={0} />
                           <InputOTPSlot index={1} />
@@ -590,10 +644,10 @@ export default function Login() {
                         "Verify Code"
                       )}
                     </button>
-                    
+
                     <div className="text-center mt-4">
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={() => setMfaStep(false)}
                         className="text-xs text-gray-500 hover:text-blue-600"
                       >
@@ -602,82 +656,97 @@ export default function Login() {
                     </div>
                   </form>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Email */}
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                        Email Address
-                      </Label>
-                      <Input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={formData.email}
-                        onChange={handleInputChange("email")}
-                        disabled={isLoading}
-                        required
-                        className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                      />
+                  <>
+                    {/* Google SSO Login Button */}
+                    <div className="mb-4">
+                      <GoogleLoginButton rememberMe={rememberMe} />
                     </div>
 
-                    {/* Password */}
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                        Password
-                      </Label>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        value={formData.password}
-                        onChange={handleInputChange("password")}
-                        disabled={isLoading}
-                        required
-                        className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                      />
+                    {/* Divider */}
+                    <div className="relative flex items-center justify-center my-4">
+                      <div className="w-full border-t border-gray-200 dark:border-slate-800" />
+                      <span className="absolute bg-white dark:bg-[#0f172a] px-3 text-[11px] text-gray-400 dark:text-slate-500 uppercase font-semibold tracking-wider">
+                        or continue with email
+                      </span>
                     </div>
 
-                    {/* Remember + Forgot */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="remember"
-                          checked={rememberMe}
-                          onCheckedChange={(c) => setRememberMe(c === true)}
-                          disabled={isLoading}
-                          className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
-                        <Label
-                          htmlFor="remember"
-                          className="text-xs text-gray-600 dark:text-slate-400 font-medium cursor-pointer"
-                        >
-                          Remember me
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      {/* Email */}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
+                          Email Address
                         </Label>
+                        <Input
+                          type="email"
+                          placeholder="your@email.com"
+                          value={formData.email}
+                          onChange={handleInputChange("email")}
+                          disabled={isLoading}
+                          required
+                          className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
+                        />
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleForgotPasswordClick}
-                        disabled={isLoading}
-                        className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
 
-                    {/* Submit */}
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full h-12 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20"
-                    >
-                      {isLoading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Signing in...
-                        </span>
-                      ) : (
-                        "Sign In"
-                      )}
-                    </button>
-                  </form>
+                      {/* Password */}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
+                          Password
+                        </Label>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          value={formData.password}
+                          onChange={handleInputChange("password")}
+                          disabled={isLoading}
+                          required
+                          className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
+                        />
+                      </div>
+
+                      {/* Remember + Forgot */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="remember"
+                            checked={rememberMe}
+                            onCheckedChange={(c) => setRememberMe(c === true)}
+                            disabled={isLoading}
+                            className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          <Label
+                            htmlFor="remember"
+                            className="text-xs text-gray-600 dark:text-slate-400 font-medium cursor-pointer"
+                          >
+                            Remember me
+                          </Label>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleForgotPasswordClick}
+                          disabled={isLoading}
+                          className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer"
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+
+                      {/* Submit */}
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full h-12 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20"
+                      >
+                        {isLoading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Signing in...
+                          </span>
+                        ) : (
+                          "Sign In"
+                        )}
+                      </button>
+                    </form>
+                  </>
                 )}
 
                 {/* Signup link */}
@@ -795,7 +864,9 @@ export default function Login() {
           <div className="space-y-4 py-2">
             {resetStep === "email" && (
               <div className="space-y-1.5">
-                <Label className="text-xs text-slate-500 dark:text-white/50">Email Address</Label>
+                <Label className="text-xs text-slate-500 dark:text-white/50">
+                  Email Address
+                </Label>
                 <Input
                   type="email"
                   placeholder="your@email.com"
@@ -810,7 +881,9 @@ export default function Login() {
             {resetStep === "otp" && (
               <>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-500 dark:text-white/50">OTP Code</Label>
+                  <Label className="text-xs text-slate-500 dark:text-white/50">
+                    OTP Code
+                  </Label>
                   <Input
                     type="text"
                     placeholder="000000"

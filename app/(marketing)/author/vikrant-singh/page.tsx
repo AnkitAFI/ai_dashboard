@@ -49,6 +49,18 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "33",
+    title:
+      "What Amazon & Flipkart Sellers Should Stock Before Rakhi",
+    excerpt:
+      "Raksha Bandhan is 28 August 2026. Gifting, sweets, and fashion categories see a short, sharp demand spike before the festival. Stock the right SKUs now.",
+    category: "Festive Trends",
+    readTime: "9 min read",
+    image: "/Blog_34_banner.png",
+    route: "/resources/expert-blog/raksha-bandhan-2026-seller-guide",
+    popular: true,
+  },
+  {
     id: "32",
     title: "Amazon Great Freedom Festival 2026: Seller Prep Guide",
     excerpt:

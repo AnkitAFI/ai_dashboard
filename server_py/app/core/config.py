@@ -1,6 +1,19 @@
-# server_py/config.py - FIXED
+import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from typing import Optional
+
+# Resolve absolute path to .env (works from any working directory)
+_cur_dir = os.path.dirname(os.path.abspath(__file__))
+_possible_env_paths = [
+    os.path.abspath(os.path.join(_cur_dir, "..", "..", "..", ".env")), # ai_dashboard/.env
+    os.path.abspath(os.path.join(_cur_dir, "..", "..", ".env")),       # server_py/.env fallback
+    os.path.abspath(os.path.join(os.getcwd(), ".env")),                # CWD/.env
+]
+for _env_p in _possible_env_paths:
+    if os.path.exists(_env_p):
+        load_dotenv(dotenv_path=_env_p, override=False)
+        break
 
 class Settings(BaseSettings):
     # Core Settings
@@ -31,9 +44,8 @@ class Settings(BaseSettings):
     TASK_WAIT_TIME: int = 90
 
     class Config:
-        env_file = "../../.env"
         case_sensitive = False
         extra = "ignore"
 
 
-settings = Settings()
+settings = Settings()

@@ -33,8 +33,463 @@ class MFADisableRequest(BaseModel):
     password: str
     code: str
 
+class GoogleLoginRequest(BaseModel):
+    id_token: str
+    remember_me: bool = False
+
+class SendMobileOTPRequest(BaseModel):
+    mobile_number: str
+
+class VerifyMobileOTPRequest(BaseModel):
+    mobile_number: str
+    otp: str
+
+# In-memory OTP cache for mobile verification (user_id/mobile -> {otp, expires_at})
+MOBILE_OTP_CACHE: dict = {}
+
 router = APIRouter(tags=["Auth"])
 user_service = UserService()
+
+@router.post("/mobile/send-otp")
+def send_mobile_otp(
+    req: SendMobileOTPRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    import random, re
+    from datetime import datetime, timedelta
+
+    mobile = req.mobile_number.strip().replace(" ", "").replace("-", "")
+    if mobile.startswith("+91"):
+        mobile = mobile[3:]
+    elif mobile.startswith("91") and len(mobile) == 12:
+        mobile = mobile[2:]
+        
+    if not re.match(r"^[6-9]\d{9}$", mobile):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid Indian mobile number. Please enter a valid 10-digit number starting with 6-9."
+        )
+
+    # Check if mobile number is already in use by another account
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    
+    mobile_hash = HashedString().process_bind_param(mobile, None)
+    existing_mobile = db.query(UserProfile).filter(UserProfile.mobile_number_hash == mobile_hash).first()
+    if existing_mobile:
+        raise HTTPException(
+            status_code=400,
+            detail="This phone number is already registered to another account."
+        )
+
+    # Rate Limiting & Cooldown Protection
+    cache_key = f"user_{current_user.id}"
+    existing_entry = MOBILE_OTP_CACHE.get(cache_key)
+    
+    attempts = 0
+    if existing_entry:
+        time_since_last = (datetime.utcnow() - existing_entry.get("last_sent_at", datetime.utcnow())).total_seconds()
+        
+        # Enforce 60-second cooldown between requests
+        if time_since_last < 60:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Please wait {int(60 - time_since_last)} seconds before requesting a new code."
+            )
+            
+        attempts = existing_entry.get("attempts", 0)
+        # Enforce max 5 attempts per session
+        if attempts >= 5:
+            raise HTTPException(
+                status_code=429,
+                detail="Maximum OTP requests reached. Please try again later."
+            )
+
+    # Generate 6-digit OTP
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    
+    MOBILE_OTP_CACHE[cache_key] = {
+        "mobile": mobile,
+        "otp": otp_code,
+        "expires_at": expires_at,
+        "last_sent_at": datetime.utcnow(),
+        "attempts": attempts + 1
+    }
+    MOBILE_OTP_CACHE[mobile] = MOBILE_OTP_CACHE[cache_key]
+
+    print(f"\n==================================================")
+    print(f"📲 MOBILE OTP FOR USER {current_user.email} ({mobile}): {otp_code}")
+    print(f"==================================================\n")
+
+    # Send SMS via Authkey.io
+    from app.services.sms_service import send_sms_otp
+    send_sms_otp(mobile, otp_code, template_type="signup")
+
+    return {
+        "success": True,
+        "message": f"OTP sent to +91 {mobile}",
+        "mobile_number": mobile
+    }
+
+@router.post("/mobile/verify-otp")
+def verify_mobile_otp(
+    req: VerifyMobileOTPRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    import re
+    from datetime import datetime
+
+    mobile = req.mobile_number.strip().replace(" ", "").replace("-", "")
+    if mobile.startswith("+91"):
+        mobile = mobile[3:]
+    elif mobile.startswith("91") and len(mobile) == 12:
+        mobile = mobile[2:]
+        
+    cache_entry = MOBILE_OTP_CACHE.get(f"user_{current_user.id}") or MOBILE_OTP_CACHE.get(mobile)
+    
+    if not cache_entry:
+        raise HTTPException(status_code=400, detail="OTP expired or not requested. Please request a new OTP.")
+        
+    if datetime.utcnow() > cache_entry["expires_at"]:
+        MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
+        MOBILE_OTP_CACHE.pop(mobile, None)
+        raise HTTPException(status_code=400, detail="OTP has expired. Please request a new code.")
+        
+    if cache_entry["otp"] != req.otp.strip():
+        raise HTTPException(status_code=400, detail="Incorrect OTP code. Please try again.")
+
+    # OTP verified! Save mobile number to database
+    current_user.mobile_number = mobile
+    db.commit()
+    db.refresh(current_user)
+
+    # Enforce uniqueness by saving hash to V2 Profile schema
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    mobile_hash = HashedString().process_bind_param(mobile, None)
+    db.query(UserProfile).filter(UserProfile.user_id == current_user.id).update(
+        {"mobile_number_hash": mobile_hash}, synchronize_session=False
+    )
+    db.commit()
+
+    # Clean up cache
+    MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
+    MOBILE_OTP_CACHE.pop(mobile, None)
+
+    return {
+        "success": True,
+        "message": "Mobile number verified successfully!",
+        "user": {
+            "id": current_user.id,
+            "email": current_user.email,
+            "first_name": current_user.first_name,
+            "last_name": current_user.last_name,
+            "mobile_number": current_user.mobile_number,
+            "onboarding_completed": getattr(current_user, "onboarding_completed", False),
+        }
+    }
+
+
+@router.post("/google")
+@router.post("/users/google-login")
+def google_login(
+    req: GoogleLoginRequest,
+    request: Request,
+    response: Response,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """
+    Authenticate or Register user using Google OAuth ID Token.
+    Returns session cookie and identical user JSON schema as standard login/signup.
+    """
+    from app.services.google_auth_service import verify_google_id_token
+    from app.repositories.user_repository import UserRepository
+    from app.api.v1.routes.legacy_router import (
+        create_session, delete_all_user_sessions,
+        SESSION_EXPIRE_DAYS_NO_REMEMBER, SESSION_EXPIRE_DAYS_REMEMBER, SESSION_COOKIE_SECURE
+    )
+    from app.models.schema_v2 import AuditLog
+    import hashlib
+
+    # 1. Verify Google ID token
+    google_data = verify_google_id_token(req.id_token)
+    google_id = google_data["google_id"]
+    email = google_data["email"]
+
+    user_repo = UserRepository()
+    
+    # 2. Check if user exists by google_id or email
+    user = user_repo.get_by_google_id(db, google_id=google_id)
+    if not user:
+        user = user_repo.get_by_email(db, email=email)
+        if user:
+            # Existing email user: link google_id
+            user.google_id = google_id
+            if not getattr(user, "auth_provider", None):
+                user.auth_provider = "google"
+            db.commit()
+            db.refresh(user)
+
+    # 3. If user still does not exist, do NOT create DB account yet. Cache in Redis.
+    if not user:
+        from app.api.v1.routes.legacy_router import store_abandoned_signup
+        from datetime import datetime, timezone
+        
+        # Cache their Google data securely
+        temp_google_data = {
+            "email": email,
+            "google_id": google_id,
+            "first_name": google_data.get("first_name", ""),
+            "last_name": google_data.get("last_name", ""),
+            "picture": google_data.get("picture", "")
+        }
+        
+        # We use MOBILE_OTP_CACHE (or a dedicated Google cache) to hold their data
+        MOBILE_OTP_CACHE[f"pending_google_{email}"] = temp_google_data
+        
+        # Trigger the abandoned signup email tracker exactly like manual signup
+        store_abandoned_signup(email, {
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "user_data": {**temp_google_data, "source": "google_sso"},
+            "reminders_sent": []
+        })
+        
+        return {
+            "status": "requires_mobile_verification",
+            "email": email,
+            "message": "Please verify your mobile number to complete registration."
+        }
+
+    # 4. Check active status
+    if getattr(user, "is_active", True) is False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is deleted. Please contact support."
+        )
+
+    # 5. Create session
+    ip_address = request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip")
+    if ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    else:
+        ip_address = request.client.host if request.client else "Unknown IP"
+        
+    user_agent = request.headers.get("user-agent")
+
+    delete_all_user_sessions(user.id)
+
+    session_token = create_session(
+        user_id=user.id,
+        remember_me=req.remember_me,
+        ip_address=ip_address,
+        user_agent=user_agent
+    )
+
+    # 6. Audit log
+    audit_log = AuditLog(
+        actor_user_id=user.id,
+        action="user_logged_in_google",
+        resource_type="User",
+        resource_id=str(user.id),
+        ip_hash=ip_address
+    )
+    db.add(audit_log)
+    db.commit()
+
+    max_age = SESSION_EXPIRE_DAYS_REMEMBER * 24 * 60 * 60 if req.remember_me else SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
+
+    # 7. Construct identical user response JSON as regular login/signup
+    content = {
+        "success": True,
+        "message": "Google authentication successful",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "business_name": getattr(user, "business_name", ""),
+            "location": getattr(user, "location", ""),
+            "mobile_number": getattr(user, "mobile_number", ""),
+            "subscription_tier": getattr(user, "subscription_tier", "free"),
+            "ai_chat_used": getattr(user, "ai_chat_used", 0),
+            "ai_chat_month": getattr(user, "ai_chat_month", ""),
+            "onboarding_completed": getattr(user, "onboarding_completed", False),
+            "onboarding_marketplace": getattr(user, "onboarding_marketplace", None),
+            "onboarding_details": getattr(user, "onboarding_details", None),
+            "onboarding_goal": getattr(user, "onboarding_goal", None),
+            "seller_id": getattr(user, "seller_id", None),
+            "created_at": str(user.created_at) if getattr(user, "created_at", None) else None
+        }
+    }
+
+    json_resp = JSONResponse(content=content)
+    json_resp.set_cookie(
+        key="session_id",
+        value=session_token,
+        httponly=True,
+        secure=SESSION_COOKIE_SECURE,
+        samesite="lax",
+        max_age=max_age,
+    )
+    return json_resp
+
+
+class GoogleSendOTPRequest(BaseModel):
+    email: str
+    mobile_number: str
+
+@router.post("/google/send-otp")
+def google_send_otp(req: GoogleSendOTPRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    import random, re
+    from datetime import datetime, timedelta
+    from app.api.v1.routes.legacy_router import send_signup_otp_sms
+    
+    # Verify they are in the pending cache
+    cache_key = f"pending_google_{req.email}"
+    pending_data = MOBILE_OTP_CACHE.get(cache_key)
+    if not pending_data:
+        raise HTTPException(status_code=400, detail="Google session expired. Please sign in with Google again.")
+
+    mobile = req.mobile_number.strip().replace(" ", "").replace("-", "")
+    if mobile.startswith("+91"): mobile = mobile[3:]
+    elif mobile.startswith("91") and len(mobile) == 12: mobile = mobile[2:]
+        
+    if not re.match(r"^[6-9]\d{9}$", mobile):
+        raise HTTPException(status_code=400, detail="Invalid Indian mobile number.")
+
+    # Check uniqueness
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    mobile_hash = HashedString().process_bind_param(mobile, None)
+    if db.query(UserProfile).filter(UserProfile.mobile_number_hash == mobile_hash).first():
+        raise HTTPException(status_code=400, detail="Phone number already registered. Please login manually.")
+
+    # Rate Limiting
+    otp_cache_key = f"google_otp_{req.email}"
+    existing_entry = MOBILE_OTP_CACHE.get(otp_cache_key)
+    attempts = 0
+    if existing_entry:
+        time_since = (datetime.utcnow() - existing_entry.get("last_sent_at", datetime.utcnow())).total_seconds()
+        if time_since < 60:
+            raise HTTPException(status_code=429, detail=f"Wait {int(60 - time_since)}s before resending.")
+        attempts = existing_entry.get("attempts", 0)
+        if attempts >= 5:
+            raise HTTPException(status_code=429, detail="Max attempts reached.")
+
+    # Generate and send
+    otp_code = str(random.randint(100000, 999999))
+    MOBILE_OTP_CACHE[otp_cache_key] = {
+        "mobile": mobile,
+        "otp": otp_code,
+        "expires_at": datetime.utcnow() + timedelta(minutes=10),
+        "last_sent_at": datetime.utcnow(),
+        "attempts": attempts + 1
+    }
+    
+    print(f"📲 GOOGLE SSO OTP FOR {req.email} ({mobile}): {otp_code}")
+    background_tasks.add_task(send_signup_otp_sms, mobile, otp_code)
+    
+    return {"success": True, "message": "OTP sent successfully"}
+
+
+class GoogleVerifyOTPRequest(BaseModel):
+    email: str
+    otp: str
+
+@router.post("/google/verify-otp")
+def google_verify_otp(
+    req: GoogleVerifyOTPRequest, 
+    request: Request,
+    response: Response, 
+    background_tasks: BackgroundTasks, 
+    db: Session = Depends(get_db)
+):
+    from datetime import datetime
+    from app.api.v1.routes.legacy_router import delete_abandoned_signup, create_session, SESSION_EXPIRE_DAYS_REMEMBER, SESSION_COOKIE_SECURE
+    from app.repositories.user_repository import UserRepository
+    from app.core.security import create_access_token
+    from app.models.schema_v2 import UserConsent, AuditLog
+    from sqlalchemy import null
+    import hashlib
+
+    # Verify pending state and OTP
+    pending_data = MOBILE_OTP_CACHE.get(f"pending_google_{req.email}")
+    otp_data = MOBILE_OTP_CACHE.get(f"google_otp_{req.email}")
+    
+    if not pending_data or not otp_data:
+        raise HTTPException(status_code=400, detail="Session expired. Please start over.")
+        
+    if datetime.utcnow() > otp_data["expires_at"]:
+        raise HTTPException(status_code=400, detail="OTP expired. Request a new one.")
+        
+    if otp_data["otp"] != req.otp.strip():
+        raise HTTPException(status_code=400, detail="Incorrect OTP.")
+
+    # All good! Create the account
+    user_repo = UserRepository()
+    ip_hash = "unknown"
+    client_ip = "unknown"
+    if request and request.client and request.client.host:
+        client_ip = request.client.host
+        ip_hash = hashlib.sha256(client_ip.encode("utf-8")).hexdigest()
+        
+    google_profile = {
+        "email": pending_data["email"],
+        "google_id": pending_data["google_id"],
+        "first_name": pending_data["first_name"],
+        "last_name": pending_data["last_name"]
+    }
+    
+    user = user_repo.create_google_user(db, google_profile, ip_hash=ip_hash)
+    
+    # Save the verified mobile number
+    user.mobile_number = otp_data["mobile"]
+    db.commit()
+    db.refresh(user)
+    
+    # Save mobile hash
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    mobile_hash = HashedString().process_bind_param(otp_data["mobile"], None)
+    db.query(UserProfile).filter(UserProfile.user_id == user.id).update(
+        {"mobile_number_hash": mobile_hash}, synchronize_session=False
+    )
+    db.commit()
+    
+    # Clear abandoned signup and cache
+    delete_abandoned_signup(req.email)
+    MOBILE_OTP_CACHE.pop(f"pending_google_{req.email}", None)
+    MOBILE_OTP_CACHE.pop(f"google_otp_{req.email}", None)
+    
+    # Login & return token
+    access_token = create_access_token(data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(days=SESSION_EXPIRE_DAYS_REMEMBER))
+    session_id = create_session(user.id)
+    response.set_cookie(key="session_id", value=session_id, httponly=True, secure=SESSION_COOKIE_SECURE, samesite="lax", max_age=SESSION_EXPIRE_DAYS_REMEMBER * 86400)
+    
+    if background_tasks:
+        try:
+            from app.services.brevo_service import BrevoService
+            background_tasks.add_task(BrevoService.add_contact_to_brevo, user.email, user.mobile_number, user.first_name, user.last_name)
+        except Exception:
+            pass
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "mobile_number": user.mobile_number,
+            "onboarding_completed": getattr(user, "onboarding_completed", False)
+        }
+    }
+
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def signup(user: UserCreate, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -68,7 +523,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if getattr(user, "is_active", True) is False:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Your account has been deleted. Please contact support to restore it."
+            detail="Account is deleted. Please contact support."
         )
         
         

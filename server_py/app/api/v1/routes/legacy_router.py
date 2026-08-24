@@ -5785,71 +5785,14 @@ def send_signup_otp_email(email: str, otp: str) -> bool:
 
 def send_signup_otp_sms(mobile_number: str, otp: str) -> bool:
     """Send SMS OTP via Authkey.io"""
-    try:
-        api_key = getattr(settings, "AUTHKEY_API_KEY", None)
-        if not api_key:
-            print("Authkey API Key not set. Skipping SMS.")
-            return False
-            
-        url = "https://api.authkey.io/request"
-        clean_mobile = str(mobile_number).replace("+", "").replace(" ", "")
-        
-        # Default to India if no country code provided
-        country_code = "91"
-        if len(clean_mobile) > 10:
-            country_code = clean_mobile[:-10]
-            clean_mobile = clean_mobile[-10:]
-            
-        params = {
-            "authkey": api_key,
-            "mobile": clean_mobile,
-            "country_code": country_code,
-            "sms": f"Your Insydz verification code for account signup is {otp}. Please do not share this code with anyone. Insydz is division of AAVAPTI TECHNOLOGIES PRIVATE LIMITED.",
-            "sender": "AAVPTI", # Needs to be approved by DLT in India for production
-            "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
-            "template_id": getattr(settings, "AUTHKEY_SIGNUP_TEMPLATE_ID", "")
-        }
-        
-        response = requests.get(url, params=params, timeout=5)
-        print(f"SMS OTP response for {clean_mobile}: {response.text}")
-        return True
-    except Exception as e:
-        print(f"Error sending SMS OTP: {str(e)}")
-        return False
+    from app.services.sms_service import send_sms_otp
+    return send_sms_otp(mobile_number, otp, template_type="signup")
 
 def send_forgot_password_otp_sms(mobile_number: str, otp: str) -> bool:
     """Send Forgot Password SMS OTP via Authkey.io"""
-    try:
-        api_key = getattr(settings, "AUTHKEY_API_KEY", None)
-        if not api_key:
-            print("Authkey API Key not set. Skipping SMS.")
-            return False
-            
-        url = "https://api.authkey.io/request"
-        clean_mobile = str(mobile_number).replace("+", "").replace(" ", "")
-        
-        # Default to India if no country code provided
-        country_code = "91"
-        if len(clean_mobile) > 10:
-            country_code = clean_mobile[:-10]
-            clean_mobile = clean_mobile[-10:]
-            
-        params = {
-            "authkey": api_key,
-            "mobile": clean_mobile,
-            "country_code": country_code,
-            "sms": f"Your Insydz verification code for password reset is {otp}. Please do not share this code with anyone. Insydz is division of AAVAPTI TECHNOLOGIES PRIVATE LIMITED.",
-            "sender": "AAVPTI", # Needs to be approved by DLT in India for production
-            "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
-            "template_id": getattr(settings, "AUTHKEY_RESET_TEMPLATE_ID", "")
-        }
-        
-        response = requests.get(url, params=params, timeout=5)
-        print(f"SMS OTP response for {clean_mobile}: {response.text}")
-        return True
-    except Exception as e:
-        print(f"Error sending SMS OTP: {str(e)}")
-        return False
+    from app.services.sms_service import send_sms_otp
+    return send_sms_otp(mobile_number, otp, template_type="reset")
+
 
 # ============================================
 # Welcome Email
@@ -6923,7 +6866,7 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
         if getattr(user, "is_active", True) is False:
             raise HTTPException(
                 status_code=403,
-                detail="Your account has been deleted. Please contact support to restore it."
+                detail="Account is deleted. Please contact support."
             )
 
         # ADD IT HERE ↓
@@ -7056,7 +6999,7 @@ def signup_user(
             if getattr(existing_user, "is_active", True) is False:
                 raise HTTPException(
                     status_code=400, 
-                    detail="Your account has been deleted. If you want to recover your account, please contact the support team."
+                    detail="Account is deleted. Please contact support."
                 )
 
             if getattr(existing_user, "is_verified", False) is False:
