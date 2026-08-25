@@ -327,6 +327,9 @@ def google_login(
     }
 
     # Set cookie on the injected response exactly like legacy_router.py does
+    # Use .insydz.com in production so the Next.js frontend middleware can read it
+    cookie_domain = None if IS_LOCAL else ".insydz.com"
+    
     response.set_cookie(
         key="session_id",
         value=session_token,
@@ -334,7 +337,8 @@ def google_login(
         secure=SESSION_COOKIE_SECURE,
         samesite="lax",
         max_age=max_age,
-        path="/"
+        path="/",
+        domain=cookie_domain
     )
     
     return content
