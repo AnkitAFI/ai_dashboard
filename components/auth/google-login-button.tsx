@@ -78,7 +78,7 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
         });
         // Store the pending email for the verify-mobile page
         sessionStorage.setItem("pending_google_email", data.email);
-        router.replace("/verify-mobile?flow=google");
+        window.location.href = "/verify-mobile?flow=google";
         return;
       }
 
@@ -99,9 +99,9 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
       const onboardingCompleted = data.user?.onboarding_completed;
 
       if (!mobileNumber || mobileNumber.trim() === "") {
-        router.replace("/verify-mobile");
+        window.location.href = "/verify-mobile";
       } else {
-        router.replace("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (err: any) {
       console.error("Google login error:", err);
