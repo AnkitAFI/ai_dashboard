@@ -327,6 +327,28 @@ def google_login(
     }
 
     json_resp = JSONResponse(content=content)
+    
+    # Force delete any legacy sub-path cookies that might cause collisions
+    for bad_path in ["/api/auth", "/api/auth/google", "/"]:
+        # Try deleting without domain (targets api.insydz.com)
+        json_resp.delete_cookie(
+            key="session_id",
+            path=bad_path,
+            httponly=True,
+            secure=SESSION_COOKIE_SECURE,
+            samesite="lax"
+        )
+        # Try deleting with domain (targets .insydz.com zombie cookies from old code)
+        json_resp.delete_cookie(
+            key="session_id",
+            path=bad_path,
+            domain=".insydz.com",
+            httponly=True,
+            secure=SESSION_COOKIE_SECURE,
+            samesite="lax"
+        )
+        
+    # Finally, set the real global cookie
     json_resp.set_cookie(
         key="session_id",
         value=session_token,
