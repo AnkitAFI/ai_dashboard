@@ -334,6 +334,7 @@ def google_login(
         secure=SESSION_COOKIE_SECURE,
         samesite="lax",
         max_age=max_age,
+        path="/"
     )
     return json_resp
 
