@@ -71,6 +71,84 @@ def run_rapidapi_collection():
     except Exception as e:
         logger.error(f"[SCHEDULER] ERROR - Error running collection: {e}", exc_info=True)
  
+def run_amazon_ads_sync():
+    """
+    Run the amazon_ads_sync_worker.py script
+    """
+    try:
+        logger.info("=" * 70)
+        logger.info(f"[SCHEDULER] Starting Amazon Ads Sync Worker at {datetime.now()}")
+        logger.info("=" * 70)
+        
+        script_path = os.path.join(os.path.dirname(__file__), 'amazon_ads_sync_worker.py')
+        
+        if not os.path.exists(script_path):
+            logger.error(f"[SCHEDULER] X Script not found: {script_path}")
+            return
+            
+        result = subprocess.run(
+            [sys.executable, script_path],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(__file__),
+            timeout=7200  # 2 hours max since it's batching
+        )
+        
+        if result.stdout:
+            logger.info(f"[OUTPUT]\n{result.stdout}")
+        if result.stderr:
+            logger.error(f"[STDERR]\n{result.stderr}")
+            
+        if result.returncode == 0:
+            logger.info("[SCHEDULER] SUCCESS - Amazon Ads Sync completed successfully")
+        else:
+            logger.error(f"[SCHEDULER] FAILED - Amazon Ads Sync failed with code {result.returncode}")
+            
+    except subprocess.TimeoutExpired:
+        logger.error("[SCHEDULER] TIMEOUT - Amazon Ads Sync timed out after 2 hours")
+    except Exception as e:
+        logger.error(f"[SCHEDULER] ERROR - Error running Amazon Ads Sync: {e}", exc_info=True)
+
+
+def run_amazon_ads_automations():
+    """
+    Run the amazon_ads_automation_worker.py script
+    """
+    try:
+        logger.info("=" * 70)
+        logger.info(f"[SCHEDULER] Starting Amazon Ads Automation Worker at {datetime.now()}")
+        logger.info("=" * 70)
+        
+        script_path = os.path.join(os.path.dirname(__file__), 'amazon_ads_automation_worker.py')
+        
+        if not os.path.exists(script_path):
+            logger.error(f"[SCHEDULER] X Script not found: {script_path}")
+            return
+            
+        result = subprocess.run(
+            [sys.executable, script_path],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(__file__),
+            timeout=1800  # 30 mins max
+        )
+        
+        if result.stdout:
+            logger.info(f"[OUTPUT]\n{result.stdout}")
+        if result.stderr:
+            logger.error(f"[STDERR]\n{result.stderr}")
+            
+        if result.returncode == 0:
+            logger.info("[SCHEDULER] SUCCESS - Amazon Ads Automation completed successfully")
+        else:
+            logger.error(f"[SCHEDULER] FAILED - Amazon Ads Automation failed with code {result.returncode}")
+            
+    except subprocess.TimeoutExpired:
+        logger.error("[SCHEDULER] TIMEOUT - Amazon Ads Automation timed out after 30 minutes")
+    except Exception as e:
+        logger.error(f"[SCHEDULER] ERROR - Error running Amazon Ads Automation: {e}", exc_info=True)
+
+
 def main():
     """
     Main scheduler function
@@ -93,6 +171,22 @@ def main():
         CronTrigger(hour=15, minute=00),
         id='test_collection',
         name='TEST: RapidAPI Collection at 13:00 PM'
+    )
+    
+    # Amazon Ads Sync Worker - Run at 3:00 AM Daily
+    scheduler.add_job(
+        run_amazon_ads_sync,
+        CronTrigger(hour=3, minute=0),
+        id='amazon_ads_sync',
+        name='Amazon Ads Sync Worker at 3:00 AM'
+    )
+
+    # Amazon Ads Automation Worker - Run every hour
+    scheduler.add_job(
+        run_amazon_ads_automations,
+        CronTrigger(minute=0),
+        id='amazon_ads_automations',
+        name='Amazon Ads Automation Worker (Hourly)'
     )
    
     # ============================================================================

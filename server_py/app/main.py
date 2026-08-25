@@ -177,3 +177,19 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
+# Trigger reload
+
+# Trigger reload for EU endpoint
+
+# Trigger reload for NA and profile scope
+
+# Trigger reload for APAC endpoint
+
+# Trigger reload for scope fix
+
+# Trigger reload for redirect fix
+
+# Trigger reload for /status route
+
+# Trigger reload for rate limits

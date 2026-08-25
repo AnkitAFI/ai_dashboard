@@ -131,3 +131,16 @@ def get_optional_user(session_id: str = Cookie(None), db: Session = Depends(get_
         return None
     
     return db.query(User).filter(User.id == session_data["user_id"]).first()
+
+def require_premium_tier(current_user = Depends(get_current_user)):
+    """
+    Enforces that the user has an active premium or enterprise subscription.
+    Checks the live database record on every request, so downgrades take effect instantly.
+    """
+    tier = (getattr(current_user, 'subscription_tier', 'free') or 'free').lower()
+    if tier not in ['premium', 'enterprise']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="This feature requires a Premium or Enterprise subscription."
+        )
+    return current_user

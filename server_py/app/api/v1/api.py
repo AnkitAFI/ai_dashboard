@@ -59,4 +59,10 @@ api_router.include_router(data_router)
 api_router.include_router(listing_agent_router)
 
 from app.api.v1.routes.credentials_router import router as credentials_router
-api_router.include_router(credentials_router)
+api_router.include_router(credentials_router)
+
+from app.api.v1.routes.amazon_ads_router import router as amazon_ads_router
+api_router.include_router(amazon_ads_router)
+
+from app.api.v1.routes.amazon_ads_analytics_router import router as amazon_ads_analytics_router
+api_router.include_router(amazon_ads_analytics_router)

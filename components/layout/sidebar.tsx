@@ -166,6 +166,8 @@ const SELLER_SECTIONS: NavSection[] = [
       // Temporarily hidden until API keys are secured
       { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
       { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
+      { href: "/seller/ads/setup", label: "Ads Integration", icon: LinkIcon, badge: "NEW" },
+      { href: "/seller/ads/analytics", label: "Ads Analytics", icon: Activity, badge: "NEW" },
       { href: "/seller/my-products", label: "My Products", icon: Tag, badge: "NEW" },
       { href: "/seller/listing-audit", label: "Listing Audit", icon: Search, badge: "NEW" },
     ],

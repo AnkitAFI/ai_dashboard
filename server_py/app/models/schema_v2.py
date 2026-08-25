@@ -165,6 +165,185 @@ class DeletedUser(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email_hash = Column(HashedString(255), index=True, nullable=False)
     deleted_at = Column(DateTime(timezone=True), server_default=func.now())
-    deletion_reason = Column(String(100))
+class AmazonAdsAutomationRules(Base):
+    __tablename__ = "amazon_ads_automation_rules"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(100), ForeignKey("amazon_ads_profiles.profile_id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    rule_type = Column(String(50), nullable=False) # e.g. "DAYPARTING" or "BID_ADJUSTMENT"
+    rule_config = Column(JSONB, nullable=False) # Stores the hours, target acos, etc.
+    is_active = Column(Boolean, default=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    profile = relationship("AmazonAdsProfile")
+
+class AmazonAdsCredential(Base):
+    __tablename__ = "amazon_ads_credentials"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+
+    # Encrypted Amazon Ads Tokens
+    profile_id = Column(EncryptedString(), nullable=True) # Usually retrieved after connecting
+    refresh_token = Column(EncryptedString(), nullable=False)
+    access_token = Column(EncryptedString(), nullable=True)
+    access_token_expires_at = Column(DateTime(timezone=True), nullable=True)
+    region = Column(String(10), default="IN")
+    sync_status = Column(String(50), default="COMPLETED") # SYNCING, COMPLETED, FAILED
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_credentials")
 
 
+class AmazonAdsProfile(Base):
+    __tablename__ = "amazon_ads_profiles"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+
+    profile_id = Column(String(50), nullable=False, unique=True, index=True) # Not highly sensitive, used for queries
+    country_code = Column(String(10), nullable=False)
+    currency_code = Column(String(10))
+    timezone = Column(String(50))
+    account_info = Column(String(255)) # E.g., "Seller" or "Vendor"
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_profiles")
+
+
+class AmazonAdsCampaignPerformance(Base):
+    __tablename__ = "amazon_ads_campaign_performance"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True)
+    campaign_id = Column(String(50), index=True)
+
+    date = Column(DateTime(timezone=True), index=True)
+    campaign_name = Column(String(255))
+    campaign_status = Column(String(50))
+
+    impressions = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    spend = Column(Numeric(10, 2), default=0.0)
+    sales = Column(Numeric(10, 2), default=0.0)
+    orders = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_campaign_metrics")
+
+
+class AmazonAdsAuditLog(Base):
+    __tablename__ = "amazon_ads_audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), nullable=False, index=True)
+    action = Column(String(100), nullable=False) # e.g., "MANUAL_STATUS_UPDATE", "AUTOMATION_RULE_UPDATED"
+    details = Column(JSONB, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    auth = relationship("UserAuth", backref="amazon_ads_audit_logs")
+
+
+class AmazonAdsKeywordPerformance(Base):
+    __tablename__ = "amazon_ads_keyword_performance"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True)
+    campaign_id = Column(String(50), index=True)
+    keyword_id = Column(String(50), index=True)
+    
+    date = Column(DateTime(timezone=True), index=True)
+    keyword_text = Column(String(255))
+    match_type = Column(String(50))
+    state = Column(String(50))
+
+    impressions = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    spend = Column(Numeric(10, 2), default=0.0)
+    sales = Column(Numeric(10, 2), default=0.0)
+    orders = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_keyword_metrics")
+
+
+class AmazonAdsSearchTermPerformance(Base):
+    __tablename__ = "amazon_ads_search_term_performance"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True)
+    campaign_id = Column(String(50), index=True)
+    ad_group_id = Column(String(50), index=True)
+    keyword_id = Column(String(50), index=True)
+    
+    date = Column(DateTime(timezone=True), index=True)
+    search_term = Column(String(255), index=True)
+    keyword_text = Column(String(255))
+    match_type = Column(String(50))
+
+    impressions = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    spend = Column(Numeric(10, 2), default=0.0)
+    sales = Column(Numeric(10, 2), default=0.0)
+    orders = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_search_term_metrics")
+
+
+class AmazonAdsPlacementPerformance(Base):
+    __tablename__ = "amazon_ads_placement_performance"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True)
+    campaign_id = Column(String(50), index=True)
+    
+    date = Column(DateTime(timezone=True), index=True)
+    placement = Column(String(100), index=True) # E.g., 'placementTop', 'placementProductPage', 'placementRestOfSearch'
+    
+    impressions = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    spend = Column(Numeric(10, 2), default=0.0)
+    sales = Column(Numeric(10, 2), default=0.0)
+    orders = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_placement_metrics")
+
+
+class UserSavedFilters(Base):
+    __tablename__ = "user_saved_filters"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True) # Now tied directly to a specific profile
+    module = Column(String(100), nullable=False) # e.g. 'amazon_ads_keywords'
+    filter_name = Column(String(100), nullable=False)
+    filter_config = Column(JSONB, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="saved_filters")
