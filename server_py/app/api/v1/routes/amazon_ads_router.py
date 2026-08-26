@@ -80,14 +80,17 @@ async def lwa_callback(code: str, state: str, db: Session = Depends(get_db)):
     import os
     import sys
     
-    worker_script = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "scripts", "amazon_ads_sync_worker.py")
+    # Needs 5 dirnames to get from app/api/v1/routes/amazon_ads_router.py -> server_py
+    server_py_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+    worker_script = os.path.join(server_py_dir, "scripts", "amazon_ads_sync_worker.py")
     if os.path.exists(worker_script):
-        subprocess.Popen([sys.executable, worker_script, "--user_id", str(user_id)])
+        subprocess.Popen([sys.executable, "-m", "scripts.amazon_ads_sync_worker", "--user_id", str(user_id)], cwd=server_py_dir)
+    else:
+        logger.error(f"Worker script not found at {worker_script}")
     
-    # Redirect back to frontend
+    # Redirect back to frontend dynamically
     from fastapi.responses import RedirectResponse
-    # Redirect explicitly to the frontend server on port 3000
-    frontend_url = "http://localhost:3000/seller/ads/setup?success=true"
+    frontend_url = f"{settings.FRONTEND_URL}/seller/ads/setup?success=true"
     return RedirectResponse(url=frontend_url)
 
 @router.get("/status", dependencies=[Depends(RateLimit("default"))])
