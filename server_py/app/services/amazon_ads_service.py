@@ -58,7 +58,7 @@ class AmazonAdsService:
             "Authorization": f"Bearer {self.cred.access_token}",
             "Amazon-Advertising-API-ClientId": self.client_id,
             "Content-Type": "application/json",
-            "Accept": "application/vnd.amazonadvertising.v2+json"
+            "Accept": "application/json"
         }
         if profile_id:
             headers["Amazon-Advertising-API-Scope"] = profile_id
