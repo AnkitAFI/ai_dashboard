@@ -33,6 +33,17 @@ from app.db_setup import run_startup_setup
 # ── INSTEAD OF triggers. Safe to run on every restart (idempotent).
 run_startup_setup()
 
+# Automatically run Alembic migrations on startup
+try:
+    import alembic.config
+    import alembic.command
+    logger.info("Running automatic database migrations...")
+    alembic_cfg = alembic.config.Config("alembic.ini")
+    alembic.command.upgrade(alembic_cfg, "head")
+    logger.info("Database migrations applied successfully.")
+except Exception as e:
+    logger.error(f"Failed to apply database migrations automatically: {e}")
+
 # Initialize FastAPI App
 app = FastAPI(title="AI Dashboard API", version="1.0.0")
 

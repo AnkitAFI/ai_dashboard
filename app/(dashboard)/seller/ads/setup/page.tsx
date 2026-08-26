@@ -37,6 +37,14 @@ export default function AmazonAdsSetupPage() {
   useEffect(() => {
     setMounted(true);
     
+    // Fix: If user clicks "Back" from Amazon login, un-freeze the loading button
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    
     // Check connection status from backend
     const checkStatus = async () => {
       try {
@@ -64,6 +72,11 @@ export default function AmazonAdsSetupPage() {
     } else {
       checkStatus();
     }
+    
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
   }, [searchParams, router, toast]);
 
   const handleConnect = async () => {

@@ -150,7 +150,21 @@ async def run_sync_worker(target_user_id=None):
     db = SessionLocal()
     
     try:
-        query = db.query(AmazonAdsProfile).filter(AmazonAdsProfile.is_active == True)
+        # 1. Sync profiles from Amazon to catch any upgraded limits or new connections
+        if target_user_id:
+            logger.info(f"Syncing Amazon profiles for user {target_user_id} before pulling analytics.")
+            ads_service = AmazonAdsService(db, target_user_id)
+            await ads_service.sync_profiles()
+        else:
+            logger.info("Nightly run detected. Syncing profiles for ALL connected users to catch limit upgrades.")
+            active_creds = db.query(AmazonAdsCredential).filter(AmazonAdsCredential.refresh_token != None).all()
+            for cred in active_creds:
+                ads_service = AmazonAdsService(db, cred.user_id)
+                await ads_service.sync_profiles()
+                await asyncio.sleep(2)  # Tiny pause to protect API limits between users
+            
+        # 2. Pull Analytics for the updated profile list
+        query = db.query(AmazonAdsProfile)
         if target_user_id:
             query = query.filter(AmazonAdsProfile.user_id == target_user_id)
         

@@ -79,6 +79,19 @@ class AmazonAdsService:
                 
             profiles = resp.json()
             
+            # Calculate and enforce hard limits
+            from app.models.schema_v2 import UserSubscription
+            sub = self.db.query(UserSubscription).filter(UserSubscription.user_id == self.user_id).first()
+            tier = sub.subscription_tier if sub else "free"
+            
+            if tier == "enterprise":
+                limit = sub.max_ad_profiles if sub and sub.max_ad_profiles is not None else 3
+            else:
+                limit = 1
+                
+            # Strictly slice the response to prevent DB bloat and protect rate limits
+            profiles = profiles[:limit]
+            
             # Sync to DB
             synced_profiles = []
             for p in profiles:
@@ -103,6 +116,15 @@ class AmazonAdsService:
                     "country_code": p.get("countryCode"),
                     "account_info": p.get("accountInfo", {}).get("type")
                 })
+                
+            # Cleanup: If the user downgraded (e.g. Enterprise to Free), delete any extra profiles in the DB
+            # that are no longer allowed under their new limit. This prevents them from keeping extra profiles for free.
+            allowed_profile_ids = [sp["profile_id"] for sp in synced_profiles]
+            self.db.query(AmazonAdsProfile).filter(
+                AmazonAdsProfile.user_id == self.user_id,
+                AmazonAdsProfile.profile_id.notin_(allowed_profile_ids)
+            ).delete(synchronize_session=False)
+            
             self.db.commit()
             return synced_profiles
 
