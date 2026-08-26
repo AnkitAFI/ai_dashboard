@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     # Amazon SP-API (Sandbox & Production)
     AMAZON_LWA_CLIENT_ID: str = ""
     AMAZON_LWA_CLIENT_SECRET: str = ""
+    AMAZON_LWA_REDIRECT_URI: str = ""
     AMAZON_SP_API_ROLE_ARN: str = ""
     
     # Ollama Settings
