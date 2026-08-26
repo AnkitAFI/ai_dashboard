@@ -365,8 +365,12 @@ def run_startup_setup():
     try:
         _create_all_tables()
     except Exception as e:
-        logger.critical(f"❌ [db_setup] FATAL: Table creation failed: {e}")
-        raise  # This is unrecoverable — crash loudly
+        error_str = str(e)
+        if "DuplicateTable" in error_str or "already exists" in error_str.lower():
+            logger.warning(f"⚠️ [db_setup] Caught race condition during table creation (DuplicateTable). Assuming another worker successfully created it.")
+        else:
+            logger.critical(f"❌ [db_setup] FATAL: Table creation failed: {e}")
+            raise  # This is unrecoverable — crash loudly
 
     # 2. Create view and triggers — each step is independent
     steps = [
