@@ -339,18 +339,9 @@ ADD COLUMN IF NOT EXISTS mobile_number_hash VARCHAR(255);
 CREATE INDEX IF NOT EXISTS ix_user_profiles_mobile_number_hash ON user_profiles (mobile_number_hash);
 """
 
-_ADD_GOOGLE_OAUTH_COLUMNS_SQL = """
-ALTER TABLE users_auth
-ADD COLUMN IF NOT EXISTS google_id VARCHAR(255),
-ADD COLUMN IF NOT EXISTS auth_provider VARCHAR(50) DEFAULT 'email';
-ALTER TABLE users_auth ALTER COLUMN password_hash DROP NOT NULL;
-"""
 
-_ADD_MOBILE_HASH_COLUMN_SQL = """
-ALTER TABLE user_profiles
-ADD COLUMN IF NOT EXISTS mobile_number_hash VARCHAR(255);
-CREATE INDEX IF NOT EXISTS ix_user_profiles_mobile_number_hash ON user_profiles (mobile_number_hash);
-"""
+
+
 
 _ADD_ADS_INDEXES_SQL = """
 CREATE INDEX IF NOT EXISTS idx_placement_perf_lookup ON amazon_ads_placement_performance (profile_id, date, placement);

@@ -4,6 +4,7 @@ from app.db.session import get_db
 from app.models.schema_v2 import AmazonAdsCredential, UserAuth
 from app.api.deps import get_current_user
 from app.core.config import settings
+from app.services.rate_limiter import RateLimit
 import httpx
 import logging
 
@@ -14,11 +15,11 @@ logger = logging.getLogger(__name__)
 # For India/APAC, it is apac.account.amazon.com
 AMAZON_OAUTH_URL = "https://apac.account.amazon.com/ap/oa"
 AMAZON_TOKEN_URL = "https://api.amazon.com/auth/o2/token" # Token endpoint is global
-REDIRECT_URI = "http://localhost:8000/api/amazon-ads/callback"
+REDIRECT_URI = settings.AMAZON_LWA_REDIRECT_URI
 
 from urllib.parse import urlencode
 
-@router.get("/connect")
+@router.get("/connect", dependencies=[Depends(RateLimit("default"))])
 def get_lwa_url(current_user = Depends(get_current_user)):
     """Generate Login with Amazon URL."""
     params = {
@@ -31,7 +32,7 @@ def get_lwa_url(current_user = Depends(get_current_user)):
     url = f"{AMAZON_OAUTH_URL}?{urlencode(params)}"
     return {"url": url}
 
-@router.get("/callback")
+@router.get("/callback", dependencies=[Depends(RateLimit("default"))])
 async def lwa_callback(code: str, state: str, db: Session = Depends(get_db)):
     """Handle Amazon LWA callback."""
     # state contains the user_id from the connect request
@@ -89,8 +90,6 @@ async def lwa_callback(code: str, state: str, db: Session = Depends(get_db)):
     frontend_url = "http://localhost:3000/seller/ads/setup?success=true"
     return RedirectResponse(url=frontend_url)
 
-from app.services.rate_limiter import RateLimit
-
 @router.get("/status", dependencies=[Depends(RateLimit("default"))])
 def get_amazon_ads_status(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     """Check if the user has connected their Amazon Ads account."""
@@ -100,7 +99,7 @@ def get_amazon_ads_status(current_user = Depends(get_current_user), db: Session 
         "sync_status": creds.sync_status if creds else "COMPLETED"
     }
 
-@router.delete("/disconnect")
+@router.delete("/disconnect", dependencies=[Depends(RateLimit("default"))])
 def disconnect_amazon_ads(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     """Disconnect and purge Amazon Ads credentials."""
     creds = db.query(AmazonAdsCredential).filter(AmazonAdsCredential.user_id == current_user.id).first()
