@@ -348,6 +348,11 @@ CREATE INDEX IF NOT EXISTS idx_placement_perf_lookup ON amazon_ads_placement_per
 CREATE INDEX IF NOT EXISTS idx_campaign_perf_lookup ON amazon_ads_campaign_performance (profile_id, date);
 """
 
+_ADD_MAX_PROFILES_SQL = """
+ALTER TABLE user_subscriptions
+ADD COLUMN IF NOT EXISTS max_ad_profiles INTEGER DEFAULT 1;
+"""
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -379,6 +384,7 @@ def run_startup_setup():
         ("ALTER TABLE: deleted_at",           _ADD_DELETED_AT_SQL),
         ("INDEXES: Amazon Ads",      _ADD_ADS_INDEXES_SQL),
         ("ALTER TABLE: mobile_number_hash",   _ADD_MOBILE_HASH_COLUMN_SQL),
+        ("ALTER TABLE: max_ad_profiles",      _ADD_MAX_PROFILES_SQL),
         ("users VIEW",                        _USERS_VIEW_SQL),
         ("INSERT trigger fn",                 _INSERT_TRIGGER_FN_SQL),
         ("INSERT trigger",                    _INSERT_TRIGGER_SQL),
