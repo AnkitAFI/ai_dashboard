@@ -383,6 +383,7 @@ export default function AnalyticsDashboard() {
   });
 
   const [negatingSearchTerm, setNegatingSearchTerm] = useState<string | null>(null);
+  const [recentlyNegated, setRecentlyNegated] = useState<Set<string>>(new Set());
 
   const handleNegateSearchTerm = async (searchTerm: string, campaignId: string, adGroupId: string) => {
     if (!selectedProfile || tier === "free") return;
@@ -406,6 +407,11 @@ export default function AnalyticsDashboard() {
         toast({
           title: "Search Term Negated",
           description: `"${searchTerm}" has been added as a Negative Exact keyword.`,
+        });
+        setRecentlyNegated(prev => {
+          const newSet = new Set(prev);
+          newSet.add(searchTerm);
+          return newSet;
         });
         // We could invalidate queries, but the user might have to wait for the next sync to see it gone.
         // For now, simple toast is fine.
@@ -1195,20 +1201,26 @@ export default function AnalyticsDashboard() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    disabled={negatingSearchTerm === st.search_term}
-                                    onClick={() => handleNegateSearchTerm(st.search_term, st.campaign_id, st.ad_group_id)}
-                                    className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                                  >
-                                    {negatingSearchTerm === st.search_term ? (
-                                      <RefreshCw className="h-3 w-3 animate-spin mr-1" />
-                                    ) : (
-                                      <span className="mr-1">🚫</span>
-                                    )}
-                                    Negate
-                                  </Button>
+                                  {st.is_negated || recentlyNegated.has(st.search_term) ? (
+                                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                                      ✅ Negated
+                                    </Badge>
+                                  ) : (
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      disabled={negatingSearchTerm === st.search_term}
+                                      onClick={() => handleNegateSearchTerm(st.search_term, st.campaign_id, st.ad_group_id)}
+                                      className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                    >
+                                      {negatingSearchTerm === st.search_term ? (
+                                        <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                      ) : (
+                                        <span className="mr-1">🚫</span>
+                                      )}
+                                      Negate
+                                    </Button>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             ))}

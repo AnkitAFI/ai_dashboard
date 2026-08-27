@@ -417,6 +417,18 @@ async def get_search_terms(
         AmazonAdsSearchTermPerformance.date <= end_date
     ).group_by(AmazonAdsSearchTermPerformance.search_term).all()
 
+    # 2. Get all negated terms from the audit log (Fast local query, ZERO Amazon API cost)
+    audit_logs = db.query(AmazonAdsAuditLog).filter(
+        AmazonAdsAuditLog.user_id == current_user.id,
+        AmazonAdsAuditLog.profile_id == profile_id,
+        AmazonAdsAuditLog.action.in_(["AUTOMATED_SEARCH_TERM_NEGATED", "MANUAL_SEARCH_TERM_NEGATED"])
+    ).all()
+    
+    negated_set = set()
+    for log in audit_logs:
+        if log.details and "search_term" in log.details:
+            negated_set.add(log.details["search_term"])
+
     result_list = []
     for st in search_terms:
         spend = float(st.spend or 0)
@@ -433,7 +445,8 @@ async def get_search_terms(
             "sales": sales,
             "impressions": int(st.impressions or 0),
             "clicks": int(st.clicks or 0),
-            "acos": round(acos, 2)
+            "acos": round(acos, 2),
+            "is_negated": st.search_term in negated_set
         })
 
     # Sort by spend descending
