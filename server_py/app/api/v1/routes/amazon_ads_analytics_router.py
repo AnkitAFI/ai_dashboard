@@ -417,6 +417,23 @@ async def get_search_terms(
         AmazonAdsSearchTermPerformance.date <= end_date
     ).group_by(AmazonAdsSearchTermPerformance.search_term).all()
 
+    # 2. Get all negated and promoted terms from the audit log (Fast local query, ZERO Amazon API cost)
+    audit_logs = db.query(AmazonAdsAuditLog).filter(
+        AmazonAdsAuditLog.user_id == current_user.id,
+        AmazonAdsAuditLog.profile_id == profile_id,
+        AmazonAdsAuditLog.action.in_(["AUTOMATED_SEARCH_TERM_NEGATED", "MANUAL_SEARCH_TERM_NEGATED", "MANUAL_SEARCH_TERM_PROMOTED"])
+    ).all()
+    
+    negated_set = set()
+    promoted_set = set()
+    for log in audit_logs:
+        if log.details and "search_term" in log.details:
+            term = log.details["search_term"]
+            if log.action == "MANUAL_SEARCH_TERM_PROMOTED":
+                promoted_set.add(term)
+            else:
+                negated_set.add(term)
+
     result_list = []
     for st in search_terms:
         spend = float(st.spend or 0)
@@ -433,7 +450,9 @@ async def get_search_terms(
             "sales": sales,
             "impressions": int(st.impressions or 0),
             "clicks": int(st.clicks or 0),
-            "acos": round(acos, 2)
+            "acos": round(acos, 2),
+            "is_negated": st.search_term in negated_set,
+            "is_promoted": st.search_term in promoted_set
         })
 
     # Sort by spend descending
@@ -486,6 +505,55 @@ async def negate_search_term(
     db.commit()
 
     return {"message": "Successfully added negative keyword"}
+
+class PromoteSearchTermRequest(BaseModel):
+    profile_id: str
+    campaign_id: str
+    ad_group_id: str
+    search_term: str
+    exact_bid: float
+
+@router.post("/search-terms/promote", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def promote_search_term(
+    request: PromoteSearchTermRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Promote a search term to Exact Match and isolate it."""
+    profile = db.query(AmazonAdsProfile).filter(
+        AmazonAdsProfile.profile_id == request.profile_id,
+        AmazonAdsProfile.user_id == current_user.id
+    ).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found or access denied")
+
+    service = AmazonAdsService(db, current_user.id)
+    success = await service.promote_search_term_to_exact(
+        request.profile_id, 
+        request.campaign_id, 
+        request.ad_group_id, 
+        request.search_term,
+        request.exact_bid
+    )
+    
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to promote keyword on Amazon")
+        
+    # Log the action (DPDP compliant)
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=request.profile_id,
+        action="MANUAL_SEARCH_TERM_PROMOTED",
+        details={
+            "campaign_id": request.campaign_id, 
+            "search_term": request.search_term,
+            "exact_bid": request.exact_bid
+        }
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return {"message": "Successfully promoted keyword to Exact Match and isolated it."}
 
 @router.get("/placement-performance", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def get_placement_performance(

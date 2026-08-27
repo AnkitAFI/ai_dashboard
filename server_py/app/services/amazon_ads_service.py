@@ -743,6 +743,76 @@ class AmazonAdsService:
                     
             return True
 
+    async def promote_search_term_to_exact(self, profile_id: str, campaign_id: str, ad_group_id: str, keyword_text: str, bid: float) -> bool:
+        """Promote a search term to an Exact Match keyword with a custom bid, and negate it in the original ad group."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            # Consume 2 tokens since we make 2 API calls
+            await rate_limiter.wait_for_token("default")
+            await rate_limiter.wait_for_token("default")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, cannot promote keyword")
+            return False
+            
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        try:
+            c_id = int(campaign_id)
+            ag_id = int(ad_group_id)
+        except ValueError:
+            c_id = campaign_id
+            ag_id = ad_group_id
+            
+        kw_url = f"{self._get_api_url()}/v2/sp/keywords"
+        kw_payload = [{
+            "campaignId": c_id,
+            "adGroupId": ag_id,
+            "keywordText": keyword_text,
+            "matchType": "exact",
+            "state": "enabled",
+            "bid": bid
+        }]
+        
+        neg_url = f"{self._get_api_url()}/v2/sp/negativeKeywords"
+        neg_payload = [{
+            "campaignId": c_id,
+            "adGroupId": ag_id,
+            "keywordText": keyword_text,
+            "matchType": "negativeExact",
+            "state": "enabled"
+        }]
+        
+        async with httpx.AsyncClient() as client:
+            kw_resp = await client.post(kw_url, headers=headers, json=kw_payload)
+            
+            if kw_resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return False
+                
+            if kw_resp.status_code not in (200, 207):
+                logger.error(f"Failed to create exact keyword: {kw_resp.text}")
+                return False
+                
+            kw_result = kw_resp.json()
+            if isinstance(kw_result, list) and len(kw_result) > 0:
+                if kw_result[0].get("code") != "SUCCESS":
+                    logger.error(f"Amazon returned error for keyword creation: {kw_result[0]}")
+                    return False
+                    
+            neg_resp = await client.post(neg_url, headers=headers, json=neg_payload)
+            if neg_resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                logger.warning("Rate limit hit during negative keyword creation of harvest.")
+                return True
+                
+            if neg_resp.status_code not in (200, 207):
+                logger.error(f"Failed to isolate harvested keyword (negation failed): {neg_resp.text}")
+            
+            return True
+
     async def update_campaign_bidding_placement(self, profile_id: str, campaign_id: str, placement: str, percentage: int) -> bool:
         """Update a campaign's bidding multiplier for a specific placement (Top of Search or Product Pages)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
