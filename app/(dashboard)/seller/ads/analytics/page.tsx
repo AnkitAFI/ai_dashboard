@@ -164,8 +164,9 @@ export default function AnalyticsDashboard() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -197,8 +198,9 @@ export default function AnalyticsDashboard() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -233,6 +235,7 @@ export default function AnalyticsDashboard() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -267,6 +270,7 @@ export default function AnalyticsDashboard() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -384,6 +388,8 @@ export default function AnalyticsDashboard() {
 
   const [negatingSearchTerm, setNegatingSearchTerm] = useState<string | null>(null);
   const [recentlyNegated, setRecentlyNegated] = useState<Set<string>>(new Set());
+  const [promotingSearchTerm, setPromotingSearchTerm] = useState<string | null>(null);
+  const [recentlyPromoted, setRecentlyPromoted] = useState<Set<string>>(new Set());
 
   const handleNegateSearchTerm = async (searchTerm: string, campaignId: string, adGroupId: string) => {
     if (!selectedProfile || tier === "free") return;
@@ -423,6 +429,46 @@ export default function AnalyticsDashboard() {
       toast({ title: "Error negating search term", variant: "destructive" });
     } finally {
       setNegatingSearchTerm(null);
+    }
+  };
+
+  const handlePromoteSearchTerm = async (searchTerm: string, campaignId: string, adGroupId: string, exactBid: number) => {
+    if (!selectedProfile || tier === "free") return;
+    setPromotingSearchTerm(searchTerm);
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/search-terms/promote`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          campaign_id: campaignId,
+          ad_group_id: adGroupId,
+          search_term: searchTerm,
+          exact_bid: exactBid
+        })
+      });
+      if (res.ok) {
+        toast({
+          title: "Search Term Promoted!",
+          description: `"${searchTerm}" is now an Exact Match keyword.`,
+        });
+        setRecentlyPromoted(prev => {
+          const newSet = new Set(prev);
+          newSet.add(searchTerm);
+          return newSet;
+        });
+      } else {
+        toast({ title: "Failed to promote search term", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error promoting search term", variant: "destructive" });
+    } finally {
+      setPromotingSearchTerm(null);
     }
   };
 
@@ -1201,26 +1247,83 @@ export default function AnalyticsDashboard() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                  {st.is_negated || recentlyNegated.has(st.search_term) ? (
-                                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
-                                      ✅ Negated
-                                    </Badge>
-                                  ) : (
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      disabled={negatingSearchTerm === st.search_term}
-                                      onClick={() => handleNegateSearchTerm(st.search_term, st.campaign_id, st.ad_group_id)}
-                                      className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                                    >
-                                      {negatingSearchTerm === st.search_term ? (
-                                        <RefreshCw className="h-3 w-3 animate-spin mr-1" />
-                                      ) : (
-                                        <span className="mr-1">🚫</span>
-                                      )}
-                                      Negate
-                                    </Button>
-                                  )}
+                                  <div className="flex justify-end items-center gap-2">
+                                    {st.is_promoted || recentlyPromoted.has(st.search_term) ? (
+                                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+                                        🚀 Promoted
+                                      </Badge>
+                                    ) : (
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <Button 
+                                            variant="outline" 
+                                            size="sm"
+                                            disabled={promotingSearchTerm === st.search_term}
+                                            className="h-7 text-xs border-blue-500/20 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:text-blue-400"
+                                          >
+                                            {promotingSearchTerm === st.search_term ? (
+                                              <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                            ) : (
+                                              <span className="mr-1">🚀</span>
+                                            )}
+                                            Promote
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-64" align="end">
+                                          <div className="grid gap-4">
+                                            <div className="space-y-2">
+                                              <h4 className="font-medium leading-none">Promote to Exact Match</h4>
+                                              <p className="text-sm text-muted-foreground">
+                                                This creates a new Exact keyword and negates the current one to prevent self-competition.
+                                              </p>
+                                            </div>
+                                            <div className="grid gap-2">
+                                              <div className="grid grid-cols-3 items-center gap-4">
+                                                <Label htmlFor={`bid-${idx}`}>Exact Bid</Label>
+                                                <Input
+                                                  id={`bid-${idx}`}
+                                                  defaultValue={(st.spend / (st.clicks || 1) * 1.2).toFixed(2)}
+                                                  className="col-span-2 h-8"
+                                                />
+                                              </div>
+                                              <Button 
+                                                size="sm" 
+                                                onClick={() => {
+                                                  const val = (document.getElementById(`bid-${idx}`) as HTMLInputElement)?.value;
+                                                  if (val) {
+                                                    handlePromoteSearchTerm(st.search_term, st.campaign_id, st.ad_group_id, parseFloat(val));
+                                                  }
+                                                }}
+                                              >
+                                                Execute Promotion
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </PopoverContent>
+                                      </Popover>
+                                    )}
+
+                                    {st.is_negated || recentlyNegated.has(st.search_term) ? (
+                                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                                        ✅ Negated
+                                      </Badge>
+                                    ) : (
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        disabled={negatingSearchTerm === st.search_term}
+                                        onClick={() => handleNegateSearchTerm(st.search_term, st.campaign_id, st.ad_group_id)}
+                                        className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                      >
+                                        {negatingSearchTerm === st.search_term ? (
+                                          <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                        ) : (
+                                          <span className="mr-1">🚫</span>
+                                        )}
+                                        Negate
+                                      </Button>
+                                    )}
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -1397,22 +1500,32 @@ export default function AnalyticsDashboard() {
                             </div>
                           </div>
                           
-                          <div className="space-y-4">
-                            <Label>Active Hours (24h format)</Label>
-                            <div className="pt-2">
-                              <Slider 
-                                value={daypartingHours} 
-                                max={24} 
-                                step={1} 
-                                minStepsBetweenThumbs={1}
-                                onValueChange={setDaypartingHours}
-                              />
+                            <div className="space-y-4">
+                              <Label>Active Hours (24h format)</Label>
+                              <div className="pt-2">
+                                <Slider 
+                                  value={daypartingHours} 
+                                  max={24} 
+                                  step={1} 
+                                  minStepsBetweenThumbs={1}
+                                  onValueChange={setDaypartingHours}
+                                />
+                              </div>
+                              <div className="flex justify-between text-xs text-muted-foreground font-medium">
+                                <span>{daypartingHours[0]}:00 AM</span>
+                                <span>{daypartingHours[1]}:00 {daypartingHours[1] >= 12 ? 'PM' : 'AM'}</span>
+                              </div>
+                              <div className="flex gap-4 mt-2 text-[10px] justify-center pt-2">
+                                <div className="flex items-center gap-1.5">
+                                  <div className="w-3 h-3 rounded-sm bg-sky-200 dark:bg-sky-500"></div>
+                                  <span className="text-muted-foreground font-medium">Ads Active</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <div className="w-3 h-3 rounded-sm bg-orange-500"></div>
+                                  <span className="text-muted-foreground font-medium">Ads Paused</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex justify-between text-xs text-muted-foreground font-medium">
-                              <span>{daypartingHours[0]}:00 AM</span>
-                              <span>{daypartingHours[1]}:00 {daypartingHours[1] >= 12 ? 'PM' : 'AM'}</span>
-                            </div>
-                          </div>
                         </div>
                         <DialogFooter>
                           <Button variant="outline" onClick={() => setDaypartingActive(false)}>Disable</Button>
