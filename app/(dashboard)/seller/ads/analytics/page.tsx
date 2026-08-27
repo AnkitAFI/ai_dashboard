@@ -310,7 +310,11 @@ export default function AnalyticsDashboard() {
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const handleDownloadPDF = async () => {
-    if (!selectedProfile || tier !== "enterprise") return;
+    if (!selectedProfile) {
+      toast({ title: "No Profile Selected", description: "Please select an Amazon Ads profile from the dropdown first to generate a report.", variant: "destructive" });
+      return;
+    }
+    if (tier !== "enterprise") return;
     setIsDownloadingPdf(true);
     
     try {
