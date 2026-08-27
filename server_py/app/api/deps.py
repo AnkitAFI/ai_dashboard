@@ -144,3 +144,15 @@ def require_premium_tier(current_user = Depends(get_current_user)):
             detail="This feature requires a Premium or Enterprise subscription."
         )
     return current_user
+
+def require_enterprise_tier(current_user = Depends(get_current_user)):
+    """
+    Enforces that the user has an active enterprise subscription.
+    """
+    tier = (getattr(current_user, 'subscription_tier', 'free') or 'free').lower()
+    if tier != 'enterprise':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="This feature requires an Enterprise subscription."
+        )
+    return current_user

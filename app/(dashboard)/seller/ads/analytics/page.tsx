@@ -18,7 +18,7 @@ import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { BarChart, Activity, DollarSign, TrendingUp, AlertCircle, RefreshCw, Zap, Menu, Lock, Crown, Calendar as CalendarIcon } from "lucide-react";
+import { BarChart, Activity, DollarSign, TrendingUp, AlertCircle, RefreshCw, Zap, Menu, Lock, Crown, Calendar as CalendarIcon, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { API_BASE_URL } from "@/lib/config";
 import { format } from "date-fns";
@@ -306,6 +306,45 @@ export default function AnalyticsDashboard() {
   const [filterName, setFilterName] = useState("");
 
   const tier = (user?.subscriptionTier || "free").toLowerCase();
+  
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (!selectedProfile || tier !== "enterprise") return;
+    setIsDownloadingPdf(true);
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/reports/pdf?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      
+      if (!res.ok) {
+        toast({ title: "Failed to generate report", description: "Only Enterprise users can generate executive PDF reports.", variant: "destructive" });
+        return;
+      }
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Insydz_Performance_Report_${actualDateParam}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      
+      toast({
+        title: "Report Downloaded",
+        description: "Your executive performance report has been successfully generated.",
+      });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error generating report", variant: "destructive" });
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   const handleStatusChange = async (campaignId: string, currentStatus: string) => {
     if (!selectedProfile || tier === "free") return;
@@ -770,6 +809,24 @@ export default function AnalyticsDashboard() {
               </PopoverContent>
             </Popover>
           )}
+
+          <div className="relative group">
+            <Button 
+              variant="outline" 
+              onClick={handleDownloadPDF} 
+              disabled={isDownloadingPdf || tier !== 'enterprise'}
+              className={`hidden md:flex gap-2 font-semibold ${tier === 'enterprise' ? 'bg-fuchsia-50 hover:bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200 dark:bg-fuchsia-900/20 dark:text-fuchsia-400 dark:border-fuchsia-800 dark:hover:bg-fuchsia-900/40' : ''}`}
+            >
+              {isDownloadingPdf ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              Export PDF Report
+              {tier !== 'enterprise' && <Lock className="w-3 h-3 ml-1 text-muted-foreground" />}
+            </Button>
+            {tier !== 'enterprise' && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-slate-800 text-white text-xs rounded shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                Unlock Automated PDF Reporting with Enterprise Tier
+              </div>
+            )}
+          </div>
 
           <Badge 
             variant="outline" 

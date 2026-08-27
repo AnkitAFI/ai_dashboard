@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.api.deps import get_current_user, require_premium_tier
+from app.api.deps import get_current_user, require_premium_tier, require_enterprise_tier
 from app.services.amazon_ads_service import AmazonAdsService
+from app.services.amazon_ads_pdf_service import AmazonAdsPDFService
 from app.services.rate_limiter import RateLimit, redis_client
 from pydantic import BaseModel
 from typing import Dict, Any
@@ -767,3 +769,117 @@ async def save_automation_rule(
     db.commit()
 
     return {"status": "success", "message": f"{request.rule_type} automation saved successfully"}
+
+
+@router.get("/reports/pdf", dependencies=[Depends(RateLimit("default")), Depends(require_enterprise_tier)])
+def generate_pdf_report(
+    profile_id: str,
+    date_range: str = Query("30d"),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Generate an Enterprise PDF Report."""
+    start_date, end_date = parse_date_range(date_range)
+    
+    # 1. Fetch Campaigns Data
+    campaigns = db.query(
+        AmazonAdsCampaignPerformance.campaign_id,
+        func.max(AmazonAdsCampaignPerformance.campaign_name).label("campaign_name"),
+        func.max(AmazonAdsCampaignPerformance.state).label("state"),
+        func.sum(AmazonAdsCampaignPerformance.spend).label("spend"),
+        func.sum(AmazonAdsCampaignPerformance.sales).label("sales")
+    ).filter(
+        AmazonAdsCampaignPerformance.user_id == current_user.id,
+        AmazonAdsCampaignPerformance.profile_id == profile_id,
+        AmazonAdsCampaignPerformance.date >= start_date,
+        AmazonAdsCampaignPerformance.date <= end_date
+    ).group_by(AmazonAdsCampaignPerformance.campaign_id).all()
+    
+    campaigns_data = [{"campaign_name": c.campaign_name, "state": c.state, "spend": float(c.spend or 0), "sales": float(c.sales or 0)} for c in campaigns]
+
+    # 2. Fetch Search Terms Data
+    search_terms = db.query(
+        AmazonAdsSearchTermPerformance.search_term,
+        func.sum(AmazonAdsSearchTermPerformance.spend).label("spend"),
+        func.sum(AmazonAdsSearchTermPerformance.sales).label("sales"),
+        func.sum(AmazonAdsSearchTermPerformance.clicks).label("clicks")
+    ).filter(
+        AmazonAdsSearchTermPerformance.user_id == current_user.id,
+        AmazonAdsSearchTermPerformance.profile_id == profile_id,
+        AmazonAdsSearchTermPerformance.date >= start_date,
+        AmazonAdsSearchTermPerformance.date <= end_date
+    ).group_by(AmazonAdsSearchTermPerformance.search_term).all()
+    
+    search_terms_data = [{"search_term": s.search_term, "spend": float(s.spend or 0), "sales": float(s.sales or 0), "clicks": int(s.clicks or 0)} for s in search_terms]
+
+    # 3. Fetch Placements Data
+    placements = db.query(
+        AmazonAdsPlacementPerformance.placement,
+        func.sum(AmazonAdsPlacementPerformance.spend).label("spend"),
+        func.sum(AmazonAdsPlacementPerformance.sales).label("sales"),
+        func.sum(AmazonAdsPlacementPerformance.clicks).label("clicks")
+    ).filter(
+        AmazonAdsPlacementPerformance.user_id == current_user.id,
+        AmazonAdsPlacementPerformance.profile_id == profile_id,
+        AmazonAdsPlacementPerformance.date >= start_date,
+        AmazonAdsPlacementPerformance.date <= end_date
+    ).group_by(AmazonAdsPlacementPerformance.placement).all()
+    
+    placements_data = [{"placement": p.placement, "spend": float(p.spend or 0), "sales": float(p.sales or 0), "clicks": int(p.clicks or 0)} for p in placements]
+
+    # 4. Fetch Keywords Data
+    keywords = db.query(
+        AmazonAdsKeywordPerformance.keyword_text,
+        func.max(AmazonAdsKeywordPerformance.match_type).label("match_type"),
+        func.sum(AmazonAdsKeywordPerformance.spend).label("spend"),
+        func.sum(AmazonAdsKeywordPerformance.sales).label("sales")
+    ).filter(
+        AmazonAdsKeywordPerformance.user_id == current_user.id,
+        AmazonAdsKeywordPerformance.profile_id == profile_id,
+        AmazonAdsKeywordPerformance.date >= start_date,
+        AmazonAdsKeywordPerformance.date <= end_date
+    ).group_by(AmazonAdsKeywordPerformance.keyword_text).all()
+    
+    keywords_data = [{"keyword_text": k.keyword_text, "match_type": k.match_type, "spend": float(k.spend or 0), "sales": float(k.sales or 0)} for k in keywords]
+
+    # 5. Fetch AI Savings Count (Audit Logs)
+    ai_actions = db.query(func.count(AmazonAdsAuditLog.id)).filter(
+        AmazonAdsAuditLog.user_id == current_user.id,
+        AmazonAdsAuditLog.profile_id == profile_id,
+        AmazonAdsAuditLog.action.in_([
+            "AUTOMATED_SEARCH_TERM_NEGATED", 
+            "PLACEMENT_BID_MODIFIER",
+            "AUTOMATION_RULE_CREATED",
+            "AUTOMATION_RULE_UPDATED"
+        ]),
+        AmazonAdsAuditLog.timestamp >= start_date,
+        AmazonAdsAuditLog.timestamp <= end_date
+    ).scalar()
+
+    # Generate PDF in thread to avoid blocking event loop
+    pdf_bytes = AmazonAdsPDFService.generate_executive_report(
+        user_name=current_user.full_name or "Enterprise User",
+        profile_id=profile_id,
+        date_range_str=f"{start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}",
+        campaigns_data=campaigns_data,
+        search_terms_data=search_terms_data,
+        placements_data=placements_data,
+        keywords_data=keywords_data,
+        ai_savings_count=ai_actions or 0
+    )
+
+    # Log action
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=profile_id,
+        action="PDF_REPORT_GENERATED",
+        details={"date_range": date_range}
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=Insydz_Performance_Report.pdf"}
+    )
