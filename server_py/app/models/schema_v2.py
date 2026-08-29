@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, BigInteger, Numeric, Text, SmallInteger
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, BigInteger, Numeric, Text, SmallInteger, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.session import Base
@@ -230,6 +230,7 @@ class AmazonAdsCampaignPerformance(Base):
     date = Column(DateTime(timezone=True), index=True)
     campaign_name = Column(String(255))
     campaign_status = Column(String(50))
+    daily_budget = Column(Numeric(10, 2), default=0.0)
 
     impressions = Column(Integer, default=0)
     clicks = Column(Integer, default=0)
@@ -270,6 +271,7 @@ class AmazonAdsKeywordPerformance(Base):
     keyword_text = Column(String(255))
     match_type = Column(String(50))
     state = Column(String(50))
+    keyword_bid = Column(Numeric(10, 2), default=0.0)
 
     impressions = Column(Integer, default=0)
     clicks = Column(Integer, default=0)
@@ -347,3 +349,19 @@ class UserSavedFilters(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     auth = relationship("UserAuth", backref="saved_filters")
+
+
+class AmazonAdsManualLocks(Base):
+    __tablename__ = "amazon_ads_manual_locks"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True, nullable=False)
+    entity_type = Column(String(50), nullable=False) # 'CAMPAIGN' or 'KEYWORD'
+    entity_id = Column(String(50), index=True, nullable=False)
+    locked_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Ensure a user can only have one lock per entity
+    __table_args__ = (
+        UniqueConstraint('profile_id', 'entity_type', 'entity_id', name='uix_profile_entity_lock'),
+    )

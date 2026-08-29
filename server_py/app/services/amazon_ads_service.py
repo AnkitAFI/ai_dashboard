@@ -694,6 +694,38 @@ class AmazonAdsService:
                     
             return True
 
+    async def update_keyword_bid(self, profile_id: str, keyword_id: str, bid: float) -> bool:
+        """Manually update a keyword's bid in Amazon Ads (strictly rate limited)."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("default")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, cannot update keyword bid")
+            return False
+            
+        url = f"{self._get_api_url()}/v2/sp/keywords"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        payload = [{
+            "keywordId": int(keyword_id) if keyword_id.isdigit() else keyword_id,
+            "bid": bid
+        }]
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(url, headers=headers, json=payload)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return False
+            
+            if resp.status_code in [200, 202, 207]:
+                logger.info(f"Successfully updated keyword {keyword_id} bid to {bid}")
+                return True
+            
+            logger.error(f"Failed to update keyword bid: {resp.status_code} - {resp.text}")
+            return False
+
     async def add_negative_keyword(self, profile_id: str, campaign_id: str, ad_group_id: str, keyword_text: str) -> bool:
         """Add a negative exact keyword to block a bleeding search term."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException

@@ -18,7 +18,7 @@ import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { BarChart, Activity, DollarSign, TrendingUp, AlertCircle, RefreshCw, Zap, Menu, Lock, Crown, Calendar as CalendarIcon } from "lucide-react";
+import { BarChart, Activity, DollarSign, TrendingUp, AlertCircle, RefreshCw, Zap, Menu, Lock, Crown, Calendar as CalendarIcon, FileText, Pencil, Check, X, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
 import { API_BASE_URL } from "@/lib/config";
 import { format } from "date-fns";
@@ -47,6 +47,20 @@ interface Campaign {
   spend: number;
   sales: number;
   acos: number;
+  daily_budget: number;
+  is_locked: boolean;
+}
+
+interface Keyword {
+  keyword_id: string;
+  keyword_text: string;
+  match_type: string;
+  state: string;
+  spend: number;
+  sales: number;
+  acos: number;
+  keyword_bid: number;
+  is_locked: boolean;
 }
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
@@ -65,6 +79,93 @@ function TierGate({ tier, feature, isDark }: { tier: "premium" | "enterprise"; f
         className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : "bg-gradient-to-r from-blue-500 to-cyan-500"}`}>
         <Crown className="w-3 h-3" /> Upgrade
       </button>
+    </div>
+  );
+}
+
+// ── Editable Cell Component ───────────────────────────────────────────────────
+function EditableCell({
+  value,
+  onSave,
+  isLocked,
+  onUnlock,
+  tier,
+  isDark,
+  type = "currency"
+}: {
+  value: number;
+  onSave: (val: number) => void;
+  isLocked: boolean;
+  onUnlock: () => void;
+  tier: string;
+  isDark: boolean;
+  type?: "currency" | "number";
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [val, setVal] = useState(value.toString());
+
+  const handleSave = () => {
+    const num = parseFloat(val);
+    if (!isNaN(num) && num > 0) {
+      onSave(num);
+      setIsEditing(false);
+    } else {
+      toast({ title: "Invalid Input", description: "Please enter a valid number greater than 0.", variant: "destructive" });
+    }
+  };
+
+  if (isLocked) {
+    return (
+      <div className="flex items-center justify-end gap-2 group">
+        <span>{type === "currency" ? `₹${value.toFixed(2)}` : value}</span>
+        <button 
+          onClick={onUnlock}
+          title="This bid is manually locked and will not be adjusted by AI Automations. Click to unlock and hand control back to AI."
+          className={`p-1.5 rounded-full transition-colors ${isDark ? 'hover:bg-slate-800 text-amber-500' : 'hover:bg-slate-100 text-amber-600'}`}
+        >
+          <ShieldAlert className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center justify-end gap-1">
+        {type === "currency" && <span className="text-xs text-muted-foreground mr-1">₹</span>}
+        <Input 
+          type="number" 
+          value={val} 
+          onChange={(e) => setVal(e.target.value)}
+          className="w-20 h-7 text-right text-xs px-2"
+          autoFocus
+          onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+        />
+        <button onClick={handleSave} className="p-1 rounded text-green-500 hover:bg-green-50 dark:hover:bg-green-950">
+          <Check className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={() => { setIsEditing(false); setVal(value.toString()); }} className="p-1 rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-950">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-end gap-2 group">
+      <span>{type === "currency" ? `₹${value.toFixed(2)}` : value}</span>
+      {tier === "free" || tier === "basic" ? (
+        <div title="Upgrade to Premium to manually edit bids and budgets">
+          <Lock className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
+        </div>
+      ) : (
+        <button 
+          onClick={() => setIsEditing(true)}
+          className={`p-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -306,6 +407,140 @@ export default function AnalyticsDashboard() {
   const [filterName, setFilterName] = useState("");
 
   const tier = (user?.subscriptionTier || "free").toLowerCase();
+  
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (!selectedProfile) {
+      toast({ title: "No Profile Selected", description: "Please select an Amazon Ads profile from the dropdown first to generate a report.", variant: "destructive" });
+      return;
+    }
+    if (tier !== "enterprise") return;
+    setIsDownloadingPdf(true);
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/reports/pdf?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      
+      if (!res.ok) {
+        toast({ title: "Failed to generate report", description: "Only Enterprise users can generate executive PDF reports.", variant: "destructive" });
+        return;
+      }
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Insydz_Performance_Report_${actualDateParam}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      
+      toast({
+        title: "Report Downloaded",
+        description: "Your executive performance report has been successfully generated.",
+      });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error generating report", variant: "destructive" });
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
+  const handleBudgetChange = async (campaignId: string, newBudget: number) => {
+    if (!selectedProfile || tier === "free") return;
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns/${campaignId}/budget`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          budget: newBudget
+        })
+      });
+      
+      if (res.ok) {
+        toast({
+          title: "Budget Update Queued",
+          description: `Campaign budget updated to ₹${newBudget.toFixed(2)}.`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+      } else {
+        toast({ title: "Failed to Update", description: "Something went wrong.", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error", description: "Network error occurred.", variant: "destructive" });
+    }
+  };
+
+  const handleUnlockCampaign = async (campaignId: string) => {
+    if (!selectedProfile || tier === "free") return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns/${campaignId}/lock?profile_id=${selectedProfile}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        toast({ title: "Unlocked", description: "Campaign is now managed by AI Automations again." });
+        queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleBidChange = async (keywordId: string, campaignId: string, newBid: number) => {
+    if (!selectedProfile || tier === "free") return;
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/keywords/${keywordId}/bid`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          campaign_id: campaignId,
+          bid: newBid
+        })
+      });
+      
+      if (res.ok) {
+        toast({
+          title: "Bid Update Queued",
+          description: `Keyword bid updated to ₹${newBid.toFixed(2)}.`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["campaignKeywords"] });
+      } else {
+        toast({ title: "Failed to Update", description: "Something went wrong.", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error", description: "Network error occurred.", variant: "destructive" });
+    }
+  };
+
+  const handleUnlockKeyword = async (keywordId: string, campaignId: string) => {
+    if (!selectedProfile || tier === "free") return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/keywords/${keywordId}/lock?profile_id=${selectedProfile}&campaign_id=${campaignId}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        toast({ title: "Unlocked", description: "Keyword is now managed by AI Automations again." });
+        queryClient.invalidateQueries({ queryKey: ["campaignKeywords"] });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleStatusChange = async (campaignId: string, currentStatus: string) => {
     if (!selectedProfile || tier === "free") return;
@@ -771,6 +1006,24 @@ export default function AnalyticsDashboard() {
             </Popover>
           )}
 
+          <div className="relative group">
+            <Button 
+              variant="outline" 
+              onClick={handleDownloadPDF} 
+              disabled={isDownloadingPdf || tier !== 'enterprise'}
+              className={`hidden md:flex gap-2 font-semibold ${tier === 'enterprise' ? 'bg-fuchsia-50 hover:bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200 dark:bg-fuchsia-900/20 dark:text-fuchsia-400 dark:border-fuchsia-800 dark:hover:bg-fuchsia-900/40' : ''}`}
+            >
+              {isDownloadingPdf ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              Export PDF Report
+              {tier !== 'enterprise' && <Lock className="w-3 h-3 ml-1 text-muted-foreground" />}
+            </Button>
+            {tier !== 'enterprise' && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-slate-800 text-white text-xs rounded shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                Unlock Automated PDF Reporting with Enterprise Tier
+              </div>
+            )}
+          </div>
+
           <Badge 
             variant="outline" 
             className={`hidden md:flex ml-2 capitalize px-3 py-1.5 text-xs shadow-sm font-bold items-center gap-1.5 ${
@@ -905,6 +1158,7 @@ export default function AnalyticsDashboard() {
                         <TableRow>
                           <TableHead>Campaign</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead className="text-right pr-6">Daily Budget</TableHead>
                           <TableHead className="text-right">Spend</TableHead>
                           <TableHead className="text-right">Sales</TableHead>
                           <TableHead className="text-right">ACOS</TableHead>
@@ -929,6 +1183,16 @@ export default function AnalyticsDashboard() {
                                   )}
                                 </span>
                               </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <EditableCell
+                                value={c.daily_budget}
+                                onSave={(val) => handleBudgetChange(c.campaign_id, val)}
+                                isLocked={c.is_locked}
+                                onUnlock={() => handleUnlockCampaign(c.campaign_id)}
+                                tier={tier as string}
+                                isDark={isDark}
+                              />
                             </TableCell>
                             <TableCell className="text-right">₹{c.spend.toLocaleString()}</TableCell>
                             <TableCell className="text-right">₹{c.sales.toLocaleString()}</TableCell>
@@ -1145,6 +1409,7 @@ export default function AnalyticsDashboard() {
                             <TableHead>Keyword</TableHead>
                             <TableHead>Match</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead className="text-right pr-6">Bid</TableHead>
                             <TableHead className="text-right">Spend</TableHead>
                             <TableHead className="text-right">Sales</TableHead>
                             <TableHead className="text-right">ACOS</TableHead>
@@ -1180,6 +1445,16 @@ export default function AnalyticsDashboard() {
                                     onCheckedChange={() => handleKeywordStatusChange(k.keyword_id, k.state)}
                                   />
                                 </div>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <EditableCell
+                                  value={k.keyword_bid}
+                                  onSave={(val) => handleBidChange(k.keyword_id, selectedCampaignForKeywords, val)}
+                                  isLocked={k.is_locked}
+                                  onUnlock={() => handleUnlockKeyword(k.keyword_id, selectedCampaignForKeywords)}
+                                  tier={tier as string}
+                                  isDark={isDark}
+                                />
                               </TableCell>
                               <TableCell className="text-right">₹{k.spend.toLocaleString()}</TableCell>
                               <TableCell className="text-right">₹{k.sales.toLocaleString()}</TableCell>

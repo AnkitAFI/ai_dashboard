@@ -1,15 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.api.deps import get_current_user, require_premium_tier
+from app.db.session import get_db, SessionLocal
+from app.api.deps import get_current_user, require_premium_tier, require_enterprise_tier
 from app.services.amazon_ads_service import AmazonAdsService
-from app.services.rate_limiter import RateLimit, redis_client
+from app.services.amazon_ads_pdf_service import AmazonAdsPDFService
+from app.services.rate_limiter import RateLimit, redis_client, AmazonAdsRateLimiter
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsSearchTermPerformance, AmazonAdsPlacementPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters
+from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsSearchTermPerformance, AmazonAdsPlacementPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters, AmazonAdsManualLocks
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import logging
+import json
+import asyncio
 import json
 
 router = APIRouter(prefix="/amazon-ads/analytics", tags=["Amazon Ads Analytics"])
@@ -162,7 +166,8 @@ async def get_campaigns(
         func.sum(AmazonAdsCampaignPerformance.spend).label("spend"),
         func.sum(AmazonAdsCampaignPerformance.sales).label("sales"),
         func.sum(AmazonAdsCampaignPerformance.impressions).label("impressions"),
-        func.sum(AmazonAdsCampaignPerformance.clicks).label("clicks")
+        func.sum(AmazonAdsCampaignPerformance.clicks).label("clicks"),
+        func.max(AmazonAdsCampaignPerformance.daily_budget).label("daily_budget")
     ).filter(
         AmazonAdsCampaignPerformance.user_id == current_user.id,
         AmazonAdsCampaignPerformance.profile_id == profile_id,
@@ -174,6 +179,12 @@ async def get_campaigns(
         AmazonAdsCampaignPerformance.campaign_status
     ).all()
     
+    locked_campaigns = db.query(AmazonAdsManualLocks.entity_id).filter(
+        AmazonAdsManualLocks.profile_id == profile_id,
+        AmazonAdsManualLocks.entity_type == "CAMPAIGN"
+    ).all()
+    locked_campaign_ids = {row.entity_id for row in locked_campaigns}
+    
     result_list = []
     for c in campaigns:
         spend = float(c.spend or 0)
@@ -182,6 +193,8 @@ async def get_campaigns(
             "campaign_id": c.campaign_id,
             "campaign_name": c.campaign_name,
             "status": c.campaign_status,
+            "daily_budget": float(c.daily_budget or 0),
+            "is_locked": c.campaign_id in locked_campaign_ids,
             "spend": spend,
             "sales": sales,
             "impressions": int(c.impressions or 0),
@@ -202,6 +215,144 @@ async def get_campaigns(
 class CampaignStatusUpdate(BaseModel):
     profile_id: str
     status: str
+
+async def async_update_campaign_budget(profile_id: str, campaign_id: str, new_budget: float, old_budget: float, user_id: int):
+    db = SessionLocal()
+    try:
+        ads_service = AmazonAdsService(db, user_id)
+        max_retries = 5
+        
+        for attempt in range(max_retries):
+            success = await ads_service.update_campaign_budget(profile_id, campaign_id, new_budget)
+            if success:
+                logger.info(f"Successfully updated campaign {campaign_id} budget to {new_budget}")
+                return
+            
+            wait_time = 10 * (attempt + 1)
+            logger.warning(f"Failed to update campaign budget on attempt {attempt + 1}. Retrying in {wait_time}s...")
+            await asyncio.sleep(wait_time)
+            
+        logger.error(f"Async update completely failed for campaign {campaign_id}. Rolling back local DB.")
+        if old_budget is not None:
+            campaigns = db.query(AmazonAdsCampaignPerformance).filter(
+                AmazonAdsCampaignPerformance.campaign_id == campaign_id,
+                AmazonAdsCampaignPerformance.profile_id == profile_id
+            ).all()
+            for camp in campaigns:
+                camp.daily_budget = old_budget
+            db.commit()
+            
+            # Clear cache on rollback so the UI reflects the reverted state
+            cache_key_pattern = f"amazon_ads_campaigns:{user_id}:{profile_id}:*"
+            try:
+                keys = await redis_client.keys(cache_key_pattern)
+                if keys:
+                    await redis_client.delete(*keys)
+            except Exception:
+                pass
+            
+    except Exception as e:
+        logger.error(f"Error in async budget update: {e}")
+    finally:
+        db.close()
+
+class UpdateBudgetRequest(BaseModel):
+    profile_id: str
+    budget: float
+
+@router.put("/campaigns/{campaign_id}/budget", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def update_campaign_budget_route(
+    campaign_id: str,
+    request: UpdateBudgetRequest,
+    background_tasks: BackgroundTasks,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # 1. Update local DB instantly
+    campaigns = db.query(AmazonAdsCampaignPerformance).filter(
+        AmazonAdsCampaignPerformance.campaign_id == campaign_id,
+        AmazonAdsCampaignPerformance.profile_id == request.profile_id
+    ).all()
+    
+    old_budget = campaigns[0].daily_budget if campaigns else None
+    
+    for camp in campaigns:
+        camp.daily_budget = request.budget
+        
+    # 2. Add Permanent Lock
+    existing_lock = db.query(AmazonAdsManualLocks).filter(
+        AmazonAdsManualLocks.profile_id == request.profile_id,
+        AmazonAdsManualLocks.entity_id == campaign_id,
+        AmazonAdsManualLocks.entity_type == "CAMPAIGN"
+    ).first()
+    
+    if not existing_lock:
+        lock = AmazonAdsManualLocks(
+            user_id=current_user.id,
+            profile_id=request.profile_id,
+            entity_type="CAMPAIGN",
+            entity_id=campaign_id
+        )
+        db.add(lock)
+        
+    # 3. Audit Log
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=request.profile_id,
+        action="MANUAL_BUDGET_UPDATE",
+        details={"campaign_id": campaign_id, "new_budget": request.budget}
+    )
+    db.add(audit_log)
+    db.commit()
+
+    # Clear cache
+    cache_key_pattern = f"amazon_ads_campaigns:{current_user.id}:{request.profile_id}:*"
+    try:
+        keys = await redis_client.keys(cache_key_pattern)
+        if keys:
+            await redis_client.delete(*keys)
+    except Exception:
+        pass
+
+    # 4. Queue Async Task
+    background_tasks.add_task(async_update_campaign_budget, request.profile_id, campaign_id, request.budget, old_budget, current_user.id)
+    
+    return {"status": "success", "message": "Budget update queued"}
+
+@router.delete("/campaigns/{campaign_id}/lock", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def remove_campaign_lock(
+    campaign_id: str,
+    profile_id: str = Query(...),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    lock = db.query(AmazonAdsManualLocks).filter(
+        AmazonAdsManualLocks.profile_id == profile_id,
+        AmazonAdsManualLocks.entity_id == campaign_id,
+        AmazonAdsManualLocks.entity_type == "CAMPAIGN",
+        AmazonAdsManualLocks.user_id == current_user.id
+    ).first()
+    
+    if lock:
+        db.delete(lock)
+        audit_log = AmazonAdsAuditLog(
+            user_id=current_user.id,
+            profile_id=profile_id,
+            action="MANUAL_LOCK_REMOVED",
+            details={"campaign_id": campaign_id}
+        )
+        db.add(audit_log)
+        db.commit()
+        
+    cache_key_pattern = f"amazon_ads_campaigns:{current_user.id}:{profile_id}:*"
+    try:
+        keys = await redis_client.keys(cache_key_pattern)
+        if keys:
+            await redis_client.delete(*keys)
+    except Exception:
+        pass
+
+    return {"status": "success", "message": "Lock removed"}
 
 @router.put("/campaigns/{campaign_id}/status", dependencies=[Depends(RateLimit("default"))])
 async def update_campaign_status(
@@ -310,6 +461,146 @@ async def update_keyword_status(
     return {"message": "Keyword status updated successfully", "status": data.status.upper()}
 
 
+async def async_update_keyword_bid(profile_id: str, keyword_id: str, new_bid: float, old_bid: float, user_id: int):
+    db = SessionLocal()
+    try:
+        ads_service = AmazonAdsService(db, user_id)
+        max_retries = 5
+        
+        for attempt in range(max_retries):
+            success = await ads_service.update_keyword_bid(profile_id, keyword_id, new_bid)
+            if success:
+                logger.info(f"Successfully updated keyword {keyword_id} bid to {new_bid}")
+                return
+                
+            wait_time = 10 * (attempt + 1)
+            logger.warning(f"Failed to update keyword bid on attempt {attempt + 1}. Retrying in {wait_time}s...")
+            await asyncio.sleep(wait_time)
+            
+        logger.error(f"Async update completely failed for keyword {keyword_id}. Rolling back local DB.")
+        if old_bid is not None:
+            keywords = db.query(AmazonAdsKeywordPerformance).filter(
+                AmazonAdsKeywordPerformance.keyword_id == keyword_id,
+                AmazonAdsKeywordPerformance.profile_id == profile_id
+            ).all()
+            for kw in keywords:
+                kw.keyword_bid = old_bid
+            db.commit()
+            
+            # Clear cache on rollback
+            cache_key_pattern = f"amazon_ads_keywords:{user_id}:{profile_id}:*"
+            try:
+                keys = await redis_client.keys(cache_key_pattern)
+                if keys:
+                    await redis_client.delete(*keys)
+            except Exception:
+                pass
+            
+    except Exception as e:
+        logger.error(f"Error in async bid update: {e}")
+    finally:
+        db.close()
+
+class UpdateBidRequest(BaseModel):
+    profile_id: str
+    campaign_id: str
+    bid: float
+
+@router.put("/keywords/{keyword_id}/bid", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def update_keyword_bid_route(
+    keyword_id: str,
+    request: UpdateBidRequest,
+    background_tasks: BackgroundTasks,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # 1. Update local DB instantly
+    keywords = db.query(AmazonAdsKeywordPerformance).filter(
+        AmazonAdsKeywordPerformance.keyword_id == keyword_id,
+        AmazonAdsKeywordPerformance.profile_id == request.profile_id
+    ).all()
+    
+    old_bid = keywords[0].keyword_bid if keywords else None
+    
+    for kw in keywords:
+        kw.keyword_bid = request.bid
+        
+    # 2. Add Permanent Lock
+    existing_lock = db.query(AmazonAdsManualLocks).filter(
+        AmazonAdsManualLocks.profile_id == request.profile_id,
+        AmazonAdsManualLocks.entity_id == keyword_id,
+        AmazonAdsManualLocks.entity_type == "KEYWORD"
+    ).first()
+    
+    if not existing_lock:
+        lock = AmazonAdsManualLocks(
+            user_id=current_user.id,
+            profile_id=request.profile_id,
+            entity_type="KEYWORD",
+            entity_id=keyword_id
+        )
+        db.add(lock)
+        
+    # 3. Audit Log
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=request.profile_id,
+        action="MANUAL_BID_UPDATE",
+        details={"keyword_id": keyword_id, "new_bid": request.bid}
+    )
+    db.add(audit_log)
+    db.commit()
+
+    # Clear cache
+    cache_key_pattern = f"amazon_ads_keywords:{current_user.id}:{request.profile_id}:{request.campaign_id}:*"
+    try:
+        keys = await redis_client.keys(cache_key_pattern)
+        if keys:
+            await redis_client.delete(*keys)
+    except Exception:
+        pass
+
+    # 4. Queue Async Task
+    background_tasks.add_task(async_update_keyword_bid, request.profile_id, keyword_id, request.bid, old_bid, current_user.id)
+    
+    return {"status": "success", "message": "Bid update queued"}
+
+@router.delete("/keywords/{keyword_id}/lock", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def remove_keyword_lock(
+    keyword_id: str,
+    profile_id: str = Query(...),
+    campaign_id: str = Query(...),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    lock = db.query(AmazonAdsManualLocks).filter(
+        AmazonAdsManualLocks.profile_id == profile_id,
+        AmazonAdsManualLocks.entity_id == keyword_id,
+        AmazonAdsManualLocks.entity_type == "KEYWORD",
+        AmazonAdsManualLocks.user_id == current_user.id
+    ).first()
+    
+    if lock:
+        db.delete(lock)
+        audit_log = AmazonAdsAuditLog(
+            user_id=current_user.id,
+            profile_id=profile_id,
+            action="MANUAL_LOCK_REMOVED",
+            details={"keyword_id": keyword_id}
+        )
+        db.add(audit_log)
+        db.commit()
+        
+    cache_key_pattern = f"amazon_ads_keywords:{current_user.id}:{profile_id}:{campaign_id}:*"
+    try:
+        keys = await redis_client.keys(cache_key_pattern)
+        if keys:
+            await redis_client.delete(*keys)
+    except Exception:
+        pass
+
+    return {"status": "success", "message": "Lock removed"}
+
 @router.get("/campaigns/{campaign_id}/keywords", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def get_campaign_keywords(
     campaign_id: str,
@@ -356,6 +647,7 @@ async def get_campaign_keywords(
         func.sum(AmazonAdsKeywordPerformance.sales).label("sales"),
         func.sum(AmazonAdsKeywordPerformance.impressions).label("impressions"),
         func.sum(AmazonAdsKeywordPerformance.clicks).label("clicks"),
+        func.max(AmazonAdsKeywordPerformance.keyword_bid).label("keyword_bid"),
     ).filter(
         AmazonAdsKeywordPerformance.user_id == current_user.id,
         AmazonAdsKeywordPerformance.profile_id == profile_id,
@@ -363,6 +655,12 @@ async def get_campaign_keywords(
         AmazonAdsKeywordPerformance.date >= start_date,
         AmazonAdsKeywordPerformance.date <= end_date
     ).group_by(AmazonAdsKeywordPerformance.keyword_id).all()
+
+    locked_keywords = db.query(AmazonAdsManualLocks.entity_id).filter(
+        AmazonAdsManualLocks.profile_id == profile_id,
+        AmazonAdsManualLocks.entity_type == "KEYWORD"
+    ).all()
+    locked_keyword_ids = {row.entity_id for row in locked_keywords}
 
     result = []
     for k in keywords:
@@ -375,6 +673,8 @@ async def get_campaign_keywords(
             "keyword_text": k.keyword_text,
             "match_type": k.match_type,
             "state": k.state,
+            "keyword_bid": float(k.keyword_bid or 0),
+            "is_locked": k.keyword_id in locked_keyword_ids,
             "spend": spend,
             "sales": sales,
             "impressions": int(k.impressions or 0),
@@ -767,3 +1067,117 @@ async def save_automation_rule(
     db.commit()
 
     return {"status": "success", "message": f"{request.rule_type} automation saved successfully"}
+
+
+@router.get("/reports/pdf", dependencies=[Depends(RateLimit("default")), Depends(require_enterprise_tier)])
+def generate_pdf_report(
+    profile_id: str,
+    date_range: str = Query("30d"),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Generate an Enterprise PDF Report."""
+    start_date, end_date = parse_date_range(date_range)
+    
+    # 1. Fetch Campaigns Data
+    campaigns = db.query(
+        AmazonAdsCampaignPerformance.campaign_id,
+        func.max(AmazonAdsCampaignPerformance.campaign_name).label("campaign_name"),
+        func.max(AmazonAdsCampaignPerformance.state).label("state"),
+        func.sum(AmazonAdsCampaignPerformance.spend).label("spend"),
+        func.sum(AmazonAdsCampaignPerformance.sales).label("sales")
+    ).filter(
+        AmazonAdsCampaignPerformance.user_id == current_user.id,
+        AmazonAdsCampaignPerformance.profile_id == profile_id,
+        AmazonAdsCampaignPerformance.date >= start_date,
+        AmazonAdsCampaignPerformance.date <= end_date
+    ).group_by(AmazonAdsCampaignPerformance.campaign_id).all()
+    
+    campaigns_data = [{"campaign_name": c.campaign_name, "state": c.state, "spend": float(c.spend or 0), "sales": float(c.sales or 0)} for c in campaigns]
+
+    # 2. Fetch Search Terms Data
+    search_terms = db.query(
+        AmazonAdsSearchTermPerformance.search_term,
+        func.sum(AmazonAdsSearchTermPerformance.spend).label("spend"),
+        func.sum(AmazonAdsSearchTermPerformance.sales).label("sales"),
+        func.sum(AmazonAdsSearchTermPerformance.clicks).label("clicks")
+    ).filter(
+        AmazonAdsSearchTermPerformance.user_id == current_user.id,
+        AmazonAdsSearchTermPerformance.profile_id == profile_id,
+        AmazonAdsSearchTermPerformance.date >= start_date,
+        AmazonAdsSearchTermPerformance.date <= end_date
+    ).group_by(AmazonAdsSearchTermPerformance.search_term).all()
+    
+    search_terms_data = [{"search_term": s.search_term, "spend": float(s.spend or 0), "sales": float(s.sales or 0), "clicks": int(s.clicks or 0)} for s in search_terms]
+
+    # 3. Fetch Placements Data
+    placements = db.query(
+        AmazonAdsPlacementPerformance.placement,
+        func.sum(AmazonAdsPlacementPerformance.spend).label("spend"),
+        func.sum(AmazonAdsPlacementPerformance.sales).label("sales"),
+        func.sum(AmazonAdsPlacementPerformance.clicks).label("clicks")
+    ).filter(
+        AmazonAdsPlacementPerformance.user_id == current_user.id,
+        AmazonAdsPlacementPerformance.profile_id == profile_id,
+        AmazonAdsPlacementPerformance.date >= start_date,
+        AmazonAdsPlacementPerformance.date <= end_date
+    ).group_by(AmazonAdsPlacementPerformance.placement).all()
+    
+    placements_data = [{"placement": p.placement, "spend": float(p.spend or 0), "sales": float(p.sales or 0), "clicks": int(p.clicks or 0)} for p in placements]
+
+    # 4. Fetch Keywords Data
+    keywords = db.query(
+        AmazonAdsKeywordPerformance.keyword_text,
+        func.max(AmazonAdsKeywordPerformance.match_type).label("match_type"),
+        func.sum(AmazonAdsKeywordPerformance.spend).label("spend"),
+        func.sum(AmazonAdsKeywordPerformance.sales).label("sales")
+    ).filter(
+        AmazonAdsKeywordPerformance.user_id == current_user.id,
+        AmazonAdsKeywordPerformance.profile_id == profile_id,
+        AmazonAdsKeywordPerformance.date >= start_date,
+        AmazonAdsKeywordPerformance.date <= end_date
+    ).group_by(AmazonAdsKeywordPerformance.keyword_text).all()
+    
+    keywords_data = [{"keyword_text": k.keyword_text, "match_type": k.match_type, "spend": float(k.spend or 0), "sales": float(k.sales or 0)} for k in keywords]
+
+    # 5. Fetch AI Savings Count (Audit Logs)
+    ai_actions = db.query(func.count(AmazonAdsAuditLog.id)).filter(
+        AmazonAdsAuditLog.user_id == current_user.id,
+        AmazonAdsAuditLog.profile_id == profile_id,
+        AmazonAdsAuditLog.action.in_([
+            "AUTOMATED_SEARCH_TERM_NEGATED", 
+            "PLACEMENT_BID_MODIFIER",
+            "AUTOMATION_RULE_CREATED",
+            "AUTOMATION_RULE_UPDATED"
+        ]),
+        AmazonAdsAuditLog.timestamp >= start_date,
+        AmazonAdsAuditLog.timestamp <= end_date
+    ).scalar()
+
+    # Generate PDF in thread to avoid blocking event loop
+    pdf_bytes = AmazonAdsPDFService.generate_executive_report(
+        user_name=current_user.full_name or "Enterprise User",
+        profile_id=profile_id,
+        date_range_str=f"{start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}",
+        campaigns_data=campaigns_data,
+        search_terms_data=search_terms_data,
+        placements_data=placements_data,
+        keywords_data=keywords_data,
+        ai_savings_count=ai_actions or 0
+    )
+
+    # Log action
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=profile_id,
+        action="PDF_REPORT_GENERATED",
+        details={"date_range": date_range}
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=Insydz_Performance_Report.pdf"}
+    )

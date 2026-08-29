@@ -7574,6 +7574,11 @@ def get_admin_stats(
     
     amount_map = {row.user_id: (row.total_amount or 0) for row in payment_sums}
 
+    # Track Amazon Ads connected users
+    from app.models.schema_v2 import AmazonAdsCredential
+    ads_connected_count = db.query(AmazonAdsCredential.user_id).distinct().count()
+    connected_user_ids = {row[0] for row in db.query(AmazonAdsCredential.user_id).distinct().all()}
+
     # all users with details
     users = db.query(models.User).order_by(models.User.created_at.desc()).all()
     user_list = [
@@ -7586,6 +7591,7 @@ def get_admin_stats(
         "subscription_tier": u.subscription_tier or "free",
         "is_verified": u.is_verified,
         "is_active": u.is_active,
+        "ads_connected": u.id in connected_user_ids,
 
         "ai_chat_used": u.ai_chat_used or 0,
         "ai_chat_month": u.ai_chat_month,
@@ -7664,6 +7670,7 @@ def get_admin_stats(
             "verified_users": verified_users,
             "unverified_users": unverified_users,
             "recent_signups_7days": recent_signups,
+            "ads_connected_users": ads_connected_count,
             "by_tier": {
                 "free": free_users,
                 "basic": basic_users,

@@ -790,6 +790,7 @@ interface Stats {
   verified_users: number;
   unverified_users: number;
   recent_signups_7days: number;
+  ads_connected_users: number;
   by_tier: { free: number; basic: number; premium: number };
 }
 
@@ -821,6 +822,7 @@ interface UserRow {
   subscription_tier: "free" | "basic" | "premium";
   is_verified: boolean;
   is_active: boolean;
+  ads_connected: boolean;
   ai_chat_used: number;
   ai_chat_month: string;
   analysis_used: number;
@@ -1400,6 +1402,7 @@ export default function AdminDashboard() {
               <PanelHead title="Quick Stats" sub="Key metrics at a glance" />
               {[
                 { label: "Verification Rate", value: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}%`, color: "#10b981" },
+                { label: "Ads Connected", value: stats?.ads_connected_users ?? 0, color: "#10b981" },
                 { label: "Paid Users", value: paidUsers, color: "#6366f1" },
                 { label: "Free Users", value: freeCount, color: "#94a3b8" },
                 { label: "Weekly Growth", value: `+${stats?.recent_signups_7days ?? 0}`, color: "#f59e0b" },
@@ -1503,7 +1506,14 @@ export default function AdminDashboard() {
                                 {u.first_name?.[0]}{u.last_name?.[0]}
                               </div>
                               <div>
-                                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#1e293b" }}>{u.first_name} {u.last_name}</p>
+                                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#1e293b", display: "flex", alignItems: "center", gap: 6 }}>
+                                  {u.first_name} {u.last_name}
+                                  {u.ads_connected && (
+                                    <span style={{ padding: "2px 5px", fontSize: 9, fontWeight: 700, borderRadius: 4, background: "#dcfce7", color: "#16a34a", border: "1px solid #bbf7d0", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
+                                      Ads Connected 🟢
+                                    </span>
+                                  )}
+                                </p>
                                 <p style={{ margin: 0, fontSize: 10, color: "#94a3b8" }}>#{u.id}</p>
                               </div>
                               <span style={{ marginLeft: 2, color: "#94a3b8" }}>{isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}</span>
