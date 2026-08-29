@@ -26,7 +26,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-async def execute_dayparting(db, rule, ads_service, current_hour, current_day):
+async def execute_dayparting(db, rule, ads_service, current_hour, current_day, locked_campaign_ids=None):
     """Executes dayparting logic: pauses/enables campaigns based on configured hours."""
     config = rule.rule_config
     active_days = config.get("days", {})
@@ -60,7 +60,7 @@ async def execute_dayparting(db, rule, ads_service, current_hour, current_day):
     except Exception as e:
         logger.error(f"Error executing dayparting rule {rule.id}: {e}")
 
-async def execute_bid_adjustment(db, rule, ads_service):
+async def execute_bid_adjustment(db, rule, ads_service, locked_keyword_ids=None):
     """Executes bid adjustment logic based on Target ACOS."""
     config = rule.rule_config
     target_acos = float(config.get("target_acos", 25))
@@ -84,7 +84,7 @@ async def execute_bid_adjustment(db, rule, ads_service):
     except Exception as e:
         logger.error(f"Error executing bid adjustment rule {rule.id}: {e}")
 
-async def execute_budget_scaling(db, rule, ads_service):
+async def execute_budget_scaling(db, rule, ads_service, locked_campaign_ids=None):
     """Executes budget scaling logic by querying local DB to save Amazon API rate limits."""
     from app.models.schema_v2 import AmazonAdsCampaignPerformance, AmazonAdsAuditLog
     from sqlalchemy import func
@@ -122,6 +122,9 @@ async def execute_budget_scaling(db, rule, ads_service):
                 roas = sales / spend
                 
                 if acos < target_acos and roas > target_roas:
+                    if locked_campaign_ids and metric.campaign_id in locked_campaign_ids:
+                        logger.info(f"Skipping budget scaling for locked campaign {metric.campaign_id}")
+                        continue
                     campaigns_to_scale.append(metric.campaign_id)
         
         if not campaigns_to_scale:
@@ -379,12 +382,19 @@ async def process_automations():
             logger.info(f"Processing rule {rule.id} of type {rule.rule_type} for profile {rule.profile_id}")
             ads_service = AmazonAdsService(db, rule.user_id)
             
+            from app.models.schema_v2 import AmazonAdsManualLocks
+            locks = db.query(AmazonAdsManualLocks).filter(
+                AmazonAdsManualLocks.profile_id == rule.profile_id
+            ).all()
+            locked_campaign_ids = {lock.entity_id for lock in locks if lock.entity_type == "CAMPAIGN"}
+            locked_keyword_ids = {lock.entity_id for lock in locks if lock.entity_type == "KEYWORD"}
+            
             if rule.rule_type == "DAYPARTING":
-                await execute_dayparting(db, rule, ads_service, current_hour, current_day)
+                await execute_dayparting(db, rule, ads_service, current_hour, current_day, locked_campaign_ids)
             elif rule.rule_type == "BID_ADJUSTMENT":
-                await execute_bid_adjustment(db, rule, ads_service)
+                await execute_bid_adjustment(db, rule, ads_service, locked_keyword_ids)
             elif rule.rule_type == "BUDGET_SCALING":
-                await execute_budget_scaling(db, rule, ads_service)
+                await execute_budget_scaling(db, rule, ads_service, locked_campaign_ids)
             elif rule.rule_type == "SEARCH_TERM_NEGATION":
                 await execute_search_term_negation(db, rule, ads_service)
             elif rule.rule_type == "PLACEMENT_BID_MODIFIER":
