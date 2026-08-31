@@ -9589,14 +9589,17 @@ async def analyze_product_opportunity(
     if request_body.user_email:
         user = db.query(models.User).filter(models.User.email_hash == HashedString().process_bind_param(request_body.user_email, None)).first()
         if user:
-            current_month = datetime.now().strftime("%Y-%m")
-            if user.analysis_month != current_month:
-                user.analysis_used = 0; user.analysis_month = current_month
-                db.commit(); db.refresh(user)
             tier  = user.subscription_tier or "free"
+            if tier.lower() in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+                current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+            else:
+                current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            if user.analysis_month != current_cycle:
+                user.analysis_used = 0; user.analysis_month = current_cycle
+                db.commit(); db.refresh(user)
             limit = get_analysis_limit(tier)
             if limit != float("inf") and (user.analysis_used or 0) >= int(limit):
-                raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} used this month.")
+                raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} used this billing cycle.")
  
     # ── Product search ───────────────────────────────────────────────────────
     with timer.step("product_search"):
@@ -9764,14 +9767,17 @@ def _persist_analysis(
  
         if user:
             db.refresh(user)
-            current_month = datetime.now().strftime("%Y-%m")
-            if user.analysis_month != current_month:
-                user.analysis_used = 0; user.analysis_month = current_month
             tier  = user.subscription_tier or "free"
+            if tier.lower() in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+                current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+            else:
+                current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            if user.analysis_month != current_cycle:
+                user.analysis_used = 0; user.analysis_month = current_cycle
             limit = get_analysis_limit(tier)
             if limit == float("inf") or (user.analysis_used or 0) < int(limit):
                 user.analysis_used  = (user.analysis_used or 0) + 1
-                user.analysis_month = current_month
+                user.analysis_month = current_cycle
                 user.updated_at     = datetime.now()
                 db.commit()
     except Exception:
@@ -9795,11 +9801,17 @@ def get_analysis_usage(
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    current_month = month or datetime.now().strftime("%Y-%m")
-    if user.analysis_month != current_month:
-        user.analysis_used = 0; user.analysis_month = current_month
-        db.commit(); db.refresh(user)
     tier      = user.subscription_tier or "free"
+    
+    if tier.lower() in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+        current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+    else:
+        current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+        
+    if user.analysis_month != current_cycle:
+        user.analysis_used = 0; user.analysis_month = current_cycle
+        db.commit(); db.refresh(user)
+        
     limit     = get_analysis_limit(tier)
     used      = user.analysis_used or 0
     limit_out = _infinity_to_sentinel(limit)
@@ -9808,7 +9820,7 @@ def get_analysis_usage(
         success=True,
         request_id=getattr(raw_request.state, "request_id", ""),
         latency_ms=0, source_type="internal",
-        data={"count": used, "limit": limit_out, "month": user.analysis_month or current_month, "subscription_tier": tier, "remaining": remaining},
+        data={"count": used, "limit": limit_out, "month": current_cycle, "subscription_tier": tier, "remaining": remaining},
     )
  
  
@@ -9822,15 +9834,21 @@ def track_analysis_usage(
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    current_month = datetime.now().strftime("%Y-%m")
-    if user.analysis_month != current_month:
-        user.analysis_used = 0; user.analysis_month = current_month
     tier  = user.subscription_tier or "free"
+    
+    if tier.lower() in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+        current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+    else:
+        current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+        
+    if user.analysis_month != current_cycle:
+        user.analysis_used = 0; user.analysis_month = current_cycle
+        
     limit = get_analysis_limit(tier)
     if limit != float("inf") and (user.analysis_used or 0) >= int(limit):
-        raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} this month.")
+        raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} this billing cycle.")
     user.analysis_used  = (user.analysis_used or 0) + request_body.increment
-    user.analysis_month = current_month
+    user.analysis_month = current_cycle
     user.updated_at     = datetime.now()
     db.commit(); db.refresh(user)
     limit_out = _infinity_to_sentinel(limit)
@@ -9849,10 +9867,15 @@ def check_analysis_limit(
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    current_month = datetime.now().strftime("%Y-%m")
-    if user.analysis_month != current_month:
-        user.analysis_used = 0; user.analysis_month = current_month; db.commit()
     tier      = user.subscription_tier or "free"
+    if tier.lower() in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+        current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+    else:
+        current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+        
+    if user.analysis_month != current_cycle:
+        user.analysis_used = 0; user.analysis_month = current_cycle; db.commit()
+        
     limit     = get_analysis_limit(tier)
     used      = user.analysis_used or 0
     can       = limit == float("inf") or used < int(limit)
@@ -11481,18 +11504,24 @@ def _check_and_increment_sov(user_id: Optional[int], db: Session) -> None:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return
-    tier          = (user.subscription_tier or "free").lower()
-    limit         = SOV_TIER_LIMITS.get(tier, 3)
-    current_month = datetime.now().strftime("%Y-%m")
-    if user.sov_month != current_month:
+    tier  = (user.subscription_tier or "free").lower()
+    limit = SOV_TIER_LIMITS.get(tier, 3)
+    
+    if tier in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+        current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+    else:
+        current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+        
+    if user.sov_month != current_cycle:
         user.sov_used  = 0
-        user.sov_month = current_month
+        user.sov_month = current_cycle
+        
     if limit != -1 and (user.sov_used or 0) >= limit:
         raise HTTPException(
             status_code=403,
             detail=(
                 f"You've reached your {tier.upper()} tier limit of {limit} SOV analyses "
-                f"this month. Upgrade for more!"
+                f"this billing cycle. Upgrade for more!"
             ),
         )
     user.sov_used = (user.sov_used or 0) + 1
@@ -12562,19 +12591,25 @@ async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        tier          = (user.subscription_tier or "free").lower()
-        limit         = SOV_TIER_LIMITS.get(tier, 3)
-        current_month = datetime.now().strftime("%Y-%m")
-        if user.sov_month != current_month:
+        tier  = (user.subscription_tier or "free").lower()
+        limit = SOV_TIER_LIMITS.get(tier, 3)
+        
+        if tier in ('basic', 'premium', 'enterprise') and user.subscription_expires_at:
+            current_cycle = f"P{user.subscription_expires_at.strftime('%y%m%d')}"
+        else:
+            current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            
+        if user.sov_month != current_cycle:
             user.sov_used  = 0
-            user.sov_month = current_month
+            user.sov_month = current_cycle
             db.commit()
             db.refresh(user)
+            
         count     = user.sov_used or 0
         remaining = (limit - count) if limit != -1 else -1
         return {
             "count": count, "limit": limit, "remaining": remaining,
-            "subscription_tier": tier, "month": current_month,
+            "subscription_tier": tier, "month": current_cycle,
         }
     except HTTPException:
         raise
