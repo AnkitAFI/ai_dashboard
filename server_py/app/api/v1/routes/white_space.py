@@ -899,15 +899,26 @@ def _inr(n: int) -> str:
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
-def _count_scans_this_month(user_id: int, db: Session) -> int:
+def _count_scans_this_month(user_id: int, current_tier: str, db: Session) -> int:
     try:
-        row = db.execute(
-            text("""
-                SELECT COUNT(*) FROM white_space_scans 
-                WHERE user_id=:uid AND created_at > NOW() - INTERVAL '30 days'
-            """),
-            {"uid": user_id}
-        ).scalar()
+        # If they are on a paid tier, ONLY count scans made on that exact tier (so upgrading Basic -> Premium resets to 0)
+        # If they are on the free tier, count ALL scans (to enforce the cooldown if they downgraded).
+        tier_filter = f"AND tier = '{current_tier}'" if current_tier in ('basic', 'premium', 'enterprise') else ""
+
+        query = f"""
+            SELECT COUNT(*) FROM white_space_scans 
+            WHERE user_id=:uid 
+            {tier_filter}
+            AND created_at >= COALESCE(
+                (SELECT subscription_expires_at - INTERVAL '30 days' 
+                 FROM users 
+                 WHERE id = :uid 
+                 AND subscription_tier IN ('basic', 'premium', 'enterprise') 
+                 AND subscription_expires_at > NOW()),
+                NOW() - INTERVAL '30 days'
+            )
+        """
+        row = db.execute(text(query), {"uid": user_id}).scalar()
         return int(row or 0)
     except Exception as e:
         logger.error(f"Error counting scans: {e}")
@@ -925,7 +936,7 @@ def get_usage(
     
     tier = get_user_tier(user_id, db)
     config = _get_tier_config(tier)
-    used = _count_scans_this_month(user_id, db)
+    used = _count_scans_this_month(user_id, tier, db)
     
     limit = config["scans_limit"]
     remaining = (limit - used) if limit != 9_999_999 else float("inf")
@@ -1393,16 +1404,9 @@ def scan_white_spaces(
             tier = get_user_tier(user_id, db)
         except Exception:
             tier = "free"
+            
         try:
-            row = db.execute(
-                text("""
-                    SELECT COUNT(*) FROM white_space_scans
-                    WHERE user_id = :uid
-                    AND created_at > NOW() - INTERVAL '30 days'
-                """),
-                {"uid": user_id},
-            ).scalar()
-            scans_used = int(row or 0)
+            scans_used = _count_scans_this_month(int(user_id), tier, db)
         except Exception:
             scans_used = 0
 

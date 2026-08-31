@@ -1772,7 +1772,9 @@ function WhiteSpaceFinderContent() {
 
                 <Crown className="w-12 h-12 text-violet-500 mb-4" />
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
-                  You've reached your free scan limit
+                  {tier === "free"
+                    ? "You've reached your free scan limit"
+                    : "You've reached your monthly scan limit"}
                 </h3>
                 <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-6 leading-relaxed">
                   Upgrade to unlock unlimited opportunity scans, competitor
