@@ -901,24 +901,21 @@ def _inr(n: int) -> str:
 
 def _count_scans_this_month(user_id: int, current_tier: str, db: Session) -> int:
     try:
-        # If they are on a paid tier, ONLY count scans made on that exact tier (so upgrading Basic -> Premium resets to 0)
-        # If they are on the free tier, count ALL scans (to enforce the cooldown if they downgraded).
-        tier_filter = f"AND tier = '{current_tier}'" if current_tier in ('basic', 'premium', 'enterprise') else ""
-
+        # Always filter by current_tier so any tier change (upgrade OR downgrade) instantly gives a fresh start
         query = f"""
             SELECT COUNT(*) FROM white_space_scans 
             WHERE user_id=:uid 
-            {tier_filter}
+            AND tier = :current_tier
             AND created_at >= COALESCE(
                 (SELECT subscription_expires_at - INTERVAL '30 days' 
                  FROM users 
                  WHERE id = :uid 
                  AND subscription_tier IN ('basic', 'premium', 'enterprise') 
                  AND subscription_expires_at > NOW()),
-                NOW() - INTERVAL '30 days'
+                date_trunc('month', NOW()) -- Free users reset on the 1st of the calendar month, matching other features
             )
         """
-        row = db.execute(text(query), {"uid": user_id}).scalar()
+        row = db.execute(text(query), {"uid": user_id, "current_tier": current_tier}).scalar()
         return int(row or 0)
     except Exception as e:
         logger.error(f"Error counting scans: {e}")

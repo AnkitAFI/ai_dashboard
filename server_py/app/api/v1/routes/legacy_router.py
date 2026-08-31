@@ -10759,9 +10759,20 @@ def update_user_subscription(
                 detail=f"Invalid subscription tier. Must be one of: {', '.join(valid_tiers)}"
             )
         
+        # Check if tier is actually changing
+        old_tier = current_user.subscription_tier or "free"
+        
         # Update subscription tier
         current_user.subscription_tier = data.subscription_tier
         current_user.updated_at = datetime.now()
+        
+        # If tier changed, wipe all usage so they get a fresh start on their new tier
+        if old_tier != data.subscription_tier:
+            current_user.ai_chat_used = 0
+            current_user.analysis_used = 0
+            current_user.sov_used = 0
+            current_user.keyword_tracker_used = 0
+            current_user.ki_searches_used = 0
         
         db.commit()
         db.refresh(current_user)
@@ -10817,21 +10828,26 @@ def track_ai_usage(
                 detail="Not authorized to update this user's AI usage"
             )
         
-        current_month = data.month
-        stored_month = current_user.ai_chat_month
+        tier = current_user.subscription_tier or "free"
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            current_cycle = f"P{current_user.subscription_expires_at.strftime('%y%m%d')}"
+        else:
+            current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            
+        stored_cycle = current_user.ai_chat_month
         current_usage = current_user.ai_chat_used or 0
         
-        # Reset counter if new month
-        if stored_month != current_month:
+        # Reset counter if new cycle
+        if stored_cycle != current_cycle:
             new_usage = data.increment
-            print(f"🔄 Resetting AI usage for user {user_id} (new month: {current_month})")
+            print(f"🔄 Resetting AI usage for user {user_id} (new cycle: {current_cycle})")
         else:
             new_usage = current_usage + data.increment
             print(f"📊 Incrementing AI usage for user {user_id}: {current_usage} -> {new_usage}")
         
         # Update database
         current_user.ai_chat_used = new_usage
-        current_user.ai_chat_month = current_month
+        current_user.ai_chat_month = current_cycle
         current_user.updated_at = datetime.now()
         
         db.commit()
@@ -10876,19 +10892,24 @@ def get_ai_usage(
                 detail="Not authorized to view this user's AI usage"
             )
         
-        current_month = datetime.now().strftime("%Y-%m")
-        stored_month = current_user.ai_chat_month
+        tier = current_user.subscription_tier or "free"
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            current_cycle = f"P{current_user.subscription_expires_at.strftime('%y%m%d')}"
+        else:
+            current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            
+        stored_cycle = current_user.ai_chat_month
         
-        # Reset if new month
-        if stored_month != current_month:
+        # Reset if new cycle
+        if stored_cycle != current_cycle:
             usage = 0
         else:
             usage = current_user.ai_chat_used or 0
         
         return {
             "ai_chat_used": usage,
-            "ai_chat_month": stored_month or current_month,
-            "subscription_tier": current_user.subscription_tier or 'free'
+            "ai_chat_month": current_cycle,
+            "subscription_tier": tier
         }
     
     except HTTPException:
@@ -11003,11 +11024,16 @@ def get_subscription_status(
             }
         }
         
-        current_month = datetime.now().strftime("%Y-%m")
-        stored_month = current_user.ai_chat_month
+        tier = current_user.subscription_tier or "free"
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            current_cycle = f"P{current_user.subscription_expires_at.strftime('%y%m%d')}"
+        else:
+            current_cycle = f"F{datetime.now().strftime('%y%m')}00"
+            
+        stored_cycle = current_user.ai_chat_month
         
-        # Reset if new month
-        if stored_month != current_month:
+        # Reset if new cycle
+        if stored_cycle != current_cycle:
             ai_used = 0
         else:
             ai_used = current_user.ai_chat_used or 0
@@ -11027,7 +11053,7 @@ def get_subscription_status(
             "limits": serializable_limits,
             "usage": {
                 "ai_chat_used": ai_used,
-                "ai_chat_month": stored_month or current_month
+                "ai_chat_month": current_cycle
             }
         }
     
@@ -11062,10 +11088,14 @@ def reset_ai_usage(
                 detail="Not authorized to reset this user's AI usage"
             )
         
-        current_month = datetime.now().strftime("%Y-%m")
+        tier = current_user.subscription_tier or "free"
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            current_cycle = f"P{current_user.subscription_expires_at.strftime('%y%m%d')}"
+        else:
+            current_cycle = f"F{datetime.now().strftime('%y%m')}00"
         
         current_user.ai_chat_used = 0
-        current_user.ai_chat_month = current_month
+        current_user.ai_chat_month = current_cycle
         current_user.updated_at = datetime.now()
         
         db.commit()
@@ -11110,28 +11140,30 @@ def track_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
+        tier = current_user.subscription_tier or "free"
         now = datetime.now(timezone.utc).replace(tzinfo=None)
-        cycle_start = current_user.ki_cycle_start
-        if cycle_start and cycle_start.tzinfo:
-            cycle_start = cycle_start.replace(tzinfo=None)
+        
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            expiry = current_user.subscription_expires_at.replace(tzinfo=None)
+            expected_cycle_start = expiry - timedelta(days=30)
+        else:
+            expected_cycle_start = current_user.ki_cycle_start
+            if not expected_cycle_start:
+                expected_cycle_start = now
+            elif (now - expected_cycle_start).days >= 30:
+                cycles_elapsed = (now - expected_cycle_start).days // 30
+                expected_cycle_start = expected_cycle_start + timedelta(days=30 * cycles_elapsed)
+                
+        saved_cycle_start = current_user.ki_cycle_start
+        if saved_cycle_start and saved_cycle_start.tzinfo:
+            saved_cycle_start = saved_cycle_start.replace(tzinfo=None)
+            
+        if not saved_cycle_start or saved_cycle_start.date() != expected_cycle_start.date():
+            current_user.ki_searches_used = 0
+            current_user.ki_cycle_start = expected_cycle_start
             
         current_used = current_user.ki_searches_used or 0
-
-        # Determine if we are past the 30-day billing cycle
-        if cycle_start and (now - cycle_start).days >= 30:
-            # New cycle: reset counter and move cycle_start forward by 30-day increments
-            cycles_elapsed = (now - cycle_start).days // 30
-            new_cycle_start = cycle_start + timedelta(days=30 * cycles_elapsed)
-            new_used = data.increment
-            current_user.ki_cycle_start = new_cycle_start
-            print(f"🔄 KI usage reset for user {user_id}: new cycle from {new_cycle_start.date()}")
-        else:
-            new_used = current_used + data.increment
-            # If no cycle_start set yet (e.g. user just subscribed), set it now
-            if not cycle_start:
-                current_user.ki_cycle_start = now
-            print(f"📊 KI usage incremented for user {user_id}: {current_used} → {new_used}")
-
+        new_used = current_used + data.increment
         current_user.ki_searches_used = new_used
         current_user.updated_at = now
         db.commit()
@@ -11165,18 +11197,32 @@ def get_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
+        tier = current_user.subscription_tier or "free"
         now = datetime.now(timezone.utc).replace(tzinfo=None)
-        cycle_start = current_user.ki_cycle_start
-        if cycle_start and cycle_start.tzinfo:
-            cycle_start = cycle_start.replace(tzinfo=None)
-            
-        current_used = current_user.ki_searches_used or 0
-
-        # Auto-reset if billing cycle has rolled over (read-only: just return 0, don't write)
-        if cycle_start and (now - cycle_start).days >= 30:
-            used = 0
+        
+        if tier.lower() in ('basic', 'premium', 'enterprise') and current_user.subscription_expires_at:
+            expiry = current_user.subscription_expires_at.replace(tzinfo=None)
+            expected_cycle_start = expiry - timedelta(days=30)
         else:
-            used = current_used
+            expected_cycle_start = current_user.ki_cycle_start
+            if not expected_cycle_start:
+                expected_cycle_start = now
+            elif (now - expected_cycle_start).days >= 30:
+                cycles_elapsed = (now - expected_cycle_start).days // 30
+                expected_cycle_start = expected_cycle_start + timedelta(days=30 * cycles_elapsed)
+                
+        saved_cycle_start = current_user.ki_cycle_start
+        if saved_cycle_start and saved_cycle_start.tzinfo:
+            saved_cycle_start = saved_cycle_start.replace(tzinfo=None)
+            
+        if not saved_cycle_start or saved_cycle_start.date() != expected_cycle_start.date():
+            current_user.ki_searches_used = 0
+            current_user.ki_cycle_start = expected_cycle_start
+            db.commit()
+            db.refresh(current_user)
+            
+        used = current_user.ki_searches_used or 0
+        cycle_start = current_user.ki_cycle_start
 
         return {
             "ki_searches_used": used,
@@ -11219,8 +11265,16 @@ def admin_update_subscription(
                 detail=f"Invalid subscription tier. Must be one of: {', '.join(valid_tiers)}"
             )
         
+        old_tier = user.subscription_tier or "free"
         user.subscription_tier = data.subscription_tier
         user.updated_at = datetime.now()
+        
+        if old_tier != data.subscription_tier:
+            user.ai_chat_used = 0
+            user.analysis_used = 0
+            user.sov_used = 0
+            user.keyword_tracker_used = 0
+            user.ki_searches_used = 0
         
         db.commit()
         db.refresh(user)
