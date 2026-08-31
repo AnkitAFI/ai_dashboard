@@ -69,6 +69,15 @@ export default function AmazonAdsSetupPage() {
       });
       // Clean up URL
       router.replace("/seller/ads/setup");
+    } else if (searchParams?.get("error") === "access_denied") {
+      toast({
+        title: "Connection Cancelled",
+        description: "You cancelled the Amazon Ads connection process.",
+        variant: "destructive"
+      });
+      // Clean up URL
+      router.replace("/seller/ads/setup");
+      checkStatus();
     } else {
       checkStatus();
     }
