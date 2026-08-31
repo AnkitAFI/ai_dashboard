@@ -32,14 +32,28 @@ def get_lwa_url(current_user = Depends(get_current_user)):
     url = f"{AMAZON_OAUTH_URL}?{urlencode(params)}"
     return {"url": url}
 
+from typing import Optional
+from fastapi.responses import RedirectResponse
+
 @router.get("/callback", dependencies=[Depends(RateLimit("default"))])
-async def lwa_callback(code: str, state: str, db: Session = Depends(get_db)):
+async def lwa_callback(
+    state: str,
+    code: Optional[str] = None, 
+    error: Optional[str] = None,
+    error_description: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     """Handle Amazon LWA callback."""
     # state contains the user_id from the connect request
     try:
         user_id = int(state)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid state parameter")
+        
+    if error or not code:
+        logger.warning(f"Amazon LWA Auth Cancelled or Failed: {error} - {error_description}")
+        frontend_url = f"{settings.FRONTEND_URL}/seller/ads/setup?error=access_denied"
+        return RedirectResponse(url=frontend_url)
 
     # Exchange code for token
     async with httpx.AsyncClient() as client:
