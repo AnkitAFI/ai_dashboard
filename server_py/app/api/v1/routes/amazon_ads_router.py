@@ -103,7 +103,6 @@ async def lwa_callback(
         logger.error(f"Worker script not found at {worker_script}")
     
     # Redirect back to frontend dynamically
-    from fastapi.responses import RedirectResponse
     frontend_url = f"{settings.FRONTEND_URL}/seller/ads/setup?success=true"
     return RedirectResponse(url=frontend_url)
 
