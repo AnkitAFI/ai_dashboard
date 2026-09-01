@@ -51,6 +51,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Top 5 products filter",
       "5 notifications",
       "Weekly reports",
+      { title: "Basic Ads Analytics (30 Days)", detail: "Track your overall Campaign-level performance including Spend, Sales, ACoS, ROAS, and CPC for the last 30 days." },
     ],
     limitations: [
       "AI Chart Summaries",
@@ -58,6 +59,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Real-time data",
       "Premium AI features",
       "Priority support",
+      "AI Ad Automations",
     ],
   },
   {
@@ -75,13 +77,12 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "20 AI chat messages/month",
       "15 notifications",
       "AI Chart Summaries",
-      // Temporarily hidden until API keys are secured
-      // { title: "One-Click Cataloger", detail: "Generate & publish up to 20 SKUs (Top-ups available at ₹75/SKU)" },
       "Daily reports",
       "Basic competitor alerts",
       "Email support",
+      { title: "Basic Ads Analytics (30 Days)", detail: "Track your overall Campaign-level performance including Spend, Sales, ACoS, ROAS, and CPC for the last 30 days." },
     ],
-    limitations: ["Real-time alerts", "Priority support"],
+    limitations: ["Real-time alerts", "Priority support", "AI Ad Automations"],
   },
   {
     id: "premium",
@@ -93,15 +94,17 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       "All Basic features",
       "Unlimited product tracking",
-      "Top 100 products filter",
       "Unlimited AI chat",
       "Unlimited notifications",
       "Advanced AI chatbot",
-      // Temporarily hidden until API keys are secured
-      // { title: "One-Click Cataloger", detail: "Generate & publish up to 3,000 SKUs (Top-ups available at ₹50/SKU)" },
       "Real-time data & alerts",
       "Priority support",
-      "Advanced analytics",
+      { title: "Full 60-Day Ads Sync (Live)", detail: "Your data is always fresh. We sync with Amazon every 15 minutes so you can monitor live performance and react instantly." },
+      { title: "Deep Dive Keyword & Placement Analytics", detail: "Stop guessing. See exactly which keywords and placements (Top of Search vs Product Pages) are driving sales or bleeding money." },
+      { title: "AI Dayparting (Save Wasted Spend)", detail: "Ads often bleed money at night. Our AI automatically pauses your campaigns during your lowest converting hours and turns them back on when buyers are active." },
+      { title: "Rule-Based Auto-Bidding", detail: "Set your target ACoS or ROAS. Our AI robot will automatically increase bids on winning keywords and decrease bids on losers every single day." },
+      { title: "1-Click Search Term Harvesting", detail: "See exactly what customers typed. Instantly promote profitable search terms into exact match keywords, or negate money-wasting terms with a single click." },
+      { title: "Total Control (Manual Bid Locks)", detail: "Want to take the wheel? Manually update budgets and bids right from our dashboard, or 'Lock' specific keywords so the AI never touches them." },
     ],
     limitations: [],
   },
@@ -114,6 +117,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "All Premium features",
       "White-label options",
       "Premium support",
+      { title: "1-Click PDF Ads Reports", detail: "Generate professional, presentation-ready PDF reports of your ad performance for meetings or clients." },
+      { title: "Multiple Ad Profile Support", detail: "Manage multiple Amazon Advertising profiles from a single unified dashboard. Perfect for agencies and large sellers." },
     ],
     limitations: [],
   },
@@ -364,8 +369,8 @@ export default function Subscription() {
               className={cn(
                 "relative flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
                 styles.ring,
-                isCurrentPlan 
-                  ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850" 
+                isCurrentPlan
+                  ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850"
                   : "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
               )}>
 
@@ -441,7 +446,7 @@ export default function Subscription() {
                     const isObj = typeof feature === 'object';
                     const title = isObj ? feature.title : feature as string;
                     const detail = isObj ? feature.detail : null;
-                    
+
                     return (
                       <div key={index} className="flex items-start gap-2 w-full">
                         <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">

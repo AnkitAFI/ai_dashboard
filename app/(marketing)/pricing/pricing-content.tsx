@@ -15,7 +15,7 @@ import {
   Menu, X as XIcon, Sun, Moon, ChevronDown, ShoppingBag, Store,
   Briefcase, Users, Target, Package, BarChart3, MessageCircle,
   Bell, Search, TrendingDown, TrendingUp, Code, Globe, Trophy,
-  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid,  Facebook, Instagram, Linkedin, Twitter
+  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid, Facebook, Instagram, Linkedin, Twitter
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -35,7 +35,7 @@ interface SubscriptionPlan {
   oldPrice?: number;
   description: string;
   bestFor: string;
-  features: string[];
+  features: (string | { title: string; detail: string })[];
   limitations: string[];
   icon: React.ReactNode;
   isPopular?: boolean;
@@ -57,6 +57,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Top 5 products filter",
       "5 notifications",
       "Weekly reports",
+      { title: "Basic Ads Analytics (30 Days)", detail: "Track your overall Campaign-level performance including Spend, Sales, ACoS, ROAS, and CPC for the last 30 days." },
     ],
     limitations: [
       "AI Chart Summaries",
@@ -64,6 +65,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Real-time data",
       "Premium AI features",
       "Priority support",
+      "AI Ad Automations",
     ],
   },
   {
@@ -85,10 +87,12 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Daily reports",
       "Basic competitor alerts",
       "Email support",
+      { title: "Basic Ads Analytics (30 Days)", detail: "Track your overall Campaign-level performance including Spend, Sales, ACoS, ROAS, and CPC for the last 30 days." },
     ],
     limitations: [
       "Real-time alerts",
       "Priority support",
+      "AI Ad Automations",
     ],
   },
   {
@@ -102,13 +106,17 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       "All Basic features",
       "Unlimited product tracking",
-      "Top 100 products filter",
       "Unlimited AI chat",
       "Unlimited notifications",
       "Advanced AI chatbot",
       "Real-time data & alerts",
       "Priority support",
-      "Advanced analytics",
+      { title: "Full 60-Day Ads Sync (Live)", detail: "Your data is always fresh. We sync with Amazon every 15 minutes so you can monitor live performance and react instantly." },
+      { title: "Deep Dive Keyword & Placement Analytics", detail: "Stop guessing. See exactly which keywords and placements (Top of Search vs Product Pages) are driving sales or bleeding money." },
+      { title: "AI Dayparting (Save Wasted Spend)", detail: "Ads often bleed money at night. Our AI automatically pauses your campaigns during your lowest converting hours and turns them back on when buyers are active." },
+      { title: "Rule-Based Auto-Bidding", detail: "Set your target ACoS or ROAS. Our AI robot will automatically increase bids on winning keywords and decrease bids on losers every single day." },
+      { title: "1-Click Search Term Harvesting", detail: "See exactly what customers typed. Instantly promote profitable search terms into exact match keywords, or negate money-wasting terms with a single click." },
+      { title: "Total Control (Manual Bid Locks)", detail: "Want to take the wheel? Manually update budgets and bids right from our dashboard, or 'Lock' specific keywords so the AI never touches them." },
     ],
     limitations: [],
   },
@@ -122,7 +130,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "All Premium features",
       "White-label options",
       "Premium support",
-      "Custom integrations",
+      { title: "1-Click PDF Ads Reports", detail: "Generate professional, presentation-ready PDF reports of your ad performance for meetings or clients." },
+      { title: "Multiple Ad Profile Support", detail: "Manage multiple Amazon Advertising profiles from a single unified dashboard. Perfect for agencies and large sellers." },
     ],
     limitations: [],
   },
@@ -193,18 +202,16 @@ export default function PricingContent() {
       <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {SUBSCRIPTION_PLANS.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${
-                plan.isPopular 
-                  ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10' 
+            <Card
+              key={plan.id}
+              className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
+                  ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10'
                   : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
-              }`}
+                }`}
             >
               <CardHeader className="text-center pb-2">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${
-                  plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
+                  }`}>
                   {plan.icon}
                 </div>
                 <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
@@ -235,12 +242,29 @@ export default function PricingContent() {
 
                 <div className="space-y-4 mb-8">
                   <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">What's Included</div>
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{feature}</span>
-                    </div>
-                  ))}
+                  {plan.features.map((feature, i) => {
+                    const isObj = typeof feature === 'object';
+                    const title = isObj ? feature.title : feature as string;
+                    const detail = isObj ? feature.detail : null;
+
+                    return (
+                      <div key={i} className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+                        {detail ? (
+                          <details className="group cursor-pointer flex-1">
+                            <summary className="list-none outline-none text-sm text-slate-600 dark:text-slate-400 border-b border-dashed border-slate-300 dark:border-slate-600 pb-0.5 w-fit">
+                              {title}
+                            </summary>
+                            <div className="pt-1.5 pb-1 text-xs text-slate-500 dark:text-slate-500 leading-relaxed pr-2">
+                              {detail}
+                            </div>
+                          </details>
+                        ) : (
+                          <span className="text-sm text-slate-600 dark:text-slate-400">{title}</span>
+                        )}
+                      </div>
+                    );
+                  })}
                   {plan.limitations.map((limitation, i) => (
                     <div key={i} className="flex items-start opacity-40">
                       <X className="h-5 w-5 text-slate-400 mr-3 flex-shrink-0" />
@@ -250,12 +274,11 @@ export default function PricingContent() {
                 </div>
 
                 <div className="mt-auto">
-                  <Button 
-                    className={`w-full h-12 rounded-xl font-bold text-base transition-all ${
-                      plan.isPopular 
-                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20' 
+                  <Button
+                    className={`w-full h-12 rounded-xl font-bold text-base transition-all ${plan.isPopular
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20'
                         : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
-                    }`}
+                      }`}
                     onClick={() => router.push("/login")}
                   >
                     {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
@@ -367,16 +390,16 @@ export default function PricingContent() {
             No credit card required to start.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 font-bold px-10 py-6 rounded-2xl text-lg shadow-2xl"
               onClick={() => router.push("/login")}
             >
               Start Free Trial
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="w-full sm:w-auto border-2 border-white/30 bg-white/10 hover:bg-white/20 text-white font-bold px-10 py-6 rounded-2xl text-lg"
               onClick={() => router.push("/about/contact-us")}
             >
