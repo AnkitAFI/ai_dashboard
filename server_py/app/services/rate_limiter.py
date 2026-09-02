@@ -154,3 +154,95 @@ class RateLimit:
         if not await rate_limiter.acquire(self.endpoint_type, self.tokens, user_id=current_user.id, fail_open=True):
             raise HTTPException(status_code=429, detail="Too many requests to Amazon Ads integration. Please slow down.")
         return True
+
+class AmazonSPAPICircuitBreakerException(Exception):
+    pass
+
+class AmazonSPAPIRateLimiter:
+    """
+    Multi-Layered Token Bucket rate limiter specifically tuned for Amazon SP-API limits.
+    SP-API generally has stricter limits (e.g. 1-5 requests per second) depending on the operation.
+    """
+    
+    LIMITS = {
+        "auth": {"rate": 1, "capacity": 2}, # OAuth endpoints (Token exchange) very strict
+        "orders": {"rate": 1, "capacity": 5}, # Orders V0
+        "catalog": {"rate": 2, "capacity": 2}, # Catalog items
+        "default": {"rate": 1, "capacity": 5}
+    }
+
+    @staticmethod
+    def _local_fallback_acquire(bucket_key: str, rate: int, capacity: int, tokens: int, now: float) -> bool:
+        if bucket_key not in _local_buckets:
+            _local_buckets[bucket_key] = {"tokens": capacity, "last_update": now}
+            
+        bucket = _local_buckets[bucket_key]
+        elapsed = max(0, now - bucket["last_update"])
+        current_tokens = min(capacity, bucket["tokens"] + (elapsed * rate))
+        
+        if current_tokens >= tokens:
+            _local_buckets[bucket_key] = {"tokens": current_tokens - tokens, "last_update": now}
+            return True
+            
+        _local_buckets[bucket_key] = {"tokens": current_tokens, "last_update": now}
+        return False
+
+    @staticmethod
+    async def acquire(endpoint_type: str = "default", tokens: int = 1, user_id: Optional[int] = None, fail_open: bool = False) -> bool:
+        limit_config = AmazonSPAPIRateLimiter.LIMITS.get(endpoint_type, AmazonSPAPIRateLimiter.LIMITS["default"])
+        rate = limit_config["rate"]
+        capacity = limit_config["capacity"]
+        
+        bucket_key = f"amazon_sp_api_rate_limit:{endpoint_type}"
+        if user_id:
+            bucket_key += f":{user_id}"
+            
+        now = time.time()
+        
+        lua_script = """
+        local bucket_key = KEYS[1]
+        local rate = tonumber(ARGV[1])
+        local capacity = tonumber(ARGV[2])
+        local now = tonumber(ARGV[3])
+        local tokens_requested = tonumber(ARGV[4])
+
+        local bucket = redis.call('HMGET', bucket_key, 'tokens', 'last_update')
+        local current_tokens = tonumber(bucket[1])
+        local last_update = tonumber(bucket[2])
+
+        if not current_tokens then
+            current_tokens = capacity
+            last_update = now
+        end
+
+        local elapsed = math.max(0, now - last_update)
+        current_tokens = math.min(capacity, current_tokens + (elapsed * rate))
+
+        if current_tokens >= tokens_requested then
+            current_tokens = current_tokens - tokens_requested
+            redis.call('HMSET', bucket_key, 'tokens', current_tokens, 'last_update', now)
+            redis.call('EXPIRE', bucket_key, math.ceil(capacity / rate))
+            return 1
+        else
+            redis.call('HMSET', bucket_key, 'tokens', current_tokens, 'last_update', now)
+            redis.call('EXPIRE', bucket_key, math.ceil(capacity / rate))
+            return 0
+        end
+        """
+        
+        try:
+            result = await redis_client.eval(lua_script, 1, bucket_key, rate, capacity, now, tokens)
+            return bool(result)
+        except Exception as e:
+            logger.error(f"Rate limiter Redis error: {e}. Falling back to In-Memory Token Bucket.")
+            return AmazonSPAPIRateLimiter._local_fallback_acquire(bucket_key, rate, capacity, tokens, now)
+
+class SPAPIRateLimit:
+    def __init__(self, endpoint_type: str = "default", tokens: int = 1):
+        self.endpoint_type = endpoint_type
+        self.tokens = tokens
+
+    async def __call__(self, request: Request, current_user = Depends(get_current_user)):
+        if not await AmazonSPAPIRateLimiter.acquire(self.endpoint_type, self.tokens, user_id=current_user.id, fail_open=True):
+            raise HTTPException(status_code=429, detail="Too many requests to Amazon SP-API integration. Please slow down.")
+        return True

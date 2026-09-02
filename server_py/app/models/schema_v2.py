@@ -102,6 +102,9 @@ class UserSubscription(Base):
     ai_listings_month = Column(String(7))
     ai_credits_balance = Column(Integer, default=0)
 
+    # SP-API Constraints
+    max_sp_api_accounts = Column(Integer, default=1)
+
     auth = relationship("UserAuth", back_populates="subscriptions")
 
 
@@ -180,6 +183,111 @@ class AmazonAdsAutomationRules(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     profile = relationship("AmazonAdsProfile")
+
+class AmazonSPAPICredential(Base):
+    __tablename__ = "amazon_sp_api_credentials"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # DPDP / GDPR Compliance - all sensitive data encrypted
+    selling_partner_id = Column(EncryptedString(), nullable=True) # Seller ID
+    refresh_token = Column(EncryptedString(), nullable=False)
+    region = Column(String(10), default="IN") # Strict India focus as requested
+    sync_status = Column(String(50), default="PENDING") # PENDING, SYNCING, COMPLETED, FAILED
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_sp_api_credentials")
+
+class AmazonSPAPISettings(Base):
+    __tablename__ = "amazon_sp_api_settings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    global_target_margin = Column(Numeric(5, 2), default=5.0) # E.g. 5.0 for 5%
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'selling_partner_id', name='uix_user_sp_settings'),
+    )
+
+class AmazonSPAPIProductCosts(Base):
+    __tablename__ = "amazon_sp_api_product_costs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    cogs = Column(Numeric(10, 2), default=0.0) # Not encrypted for performance
+    inbound_shipping = Column(Numeric(10, 2), default=0.0)
+    target_margin_override = Column(Numeric(5, 2), nullable=True) # Optional override
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_partner_asin_cost'),
+    )
+
+class AmazonSPAPIAuditLog(Base):
+    __tablename__ = "amazon_sp_api_audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    action = Column(String(255), nullable=False) # e.g., "UPDATE_COGS", "UPDATE_GLOBAL_MARGIN"
+    asin = Column(String(50), nullable=True)
+    old_value = Column(String(255), nullable=True)
+    new_value = Column(String(255), nullable=True)
+    ip_address = Column(String(50), nullable=True)
+    
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class AmazonSPAPIOrder(Base):
+    __tablename__ = "amazon_sp_api_orders"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(100), nullable=False, index=True)
+    purchase_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    order_status = Column(String(50), nullable=False)
+    asin = Column(String(50), nullable=False, index=True)
+    quantity = Column(Integer, default=1)
+    item_price = Column(Numeric(10, 2), default=0.0)
+    currency = Column(String(10), default="INR")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('amazon_order_id', 'asin', name='uix_sp_order_asin'),
+    )
+
+class AmazonSPAPIFinancialEvent(Base):
+    __tablename__ = "amazon_sp_api_financial_events"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(100), nullable=True, index=True)
+    transaction_type = Column(String(100), nullable=False) # e.g., ShipmentEvent, RefundEvent
+    fee_type = Column(String(100), nullable=False) # e.g., FBAPerUnitFulfillmentFee
+    amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(10), default="INR")
+    posted_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class AmazonAdsCredential(Base):
     __tablename__ = "amazon_ads_credentials"
