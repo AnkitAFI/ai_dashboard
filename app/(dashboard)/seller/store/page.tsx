@@ -181,7 +181,7 @@ export default function AmazonStoreSetupPage() {
               Amazon Store Setup
             </h1>
             <p className="page-subtitle">
-              Connect your Amazon Seller account to track inventory, orders, and profitability.
+              Connect your Amazon Seller account to sync orders and track profitability.
             </p>
           </div>
         </div>

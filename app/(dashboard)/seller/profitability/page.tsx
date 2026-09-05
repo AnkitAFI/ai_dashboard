@@ -154,7 +154,7 @@ export default function ProfitabilityDashboard() {
             </div>
             <h2 className="text-2xl font-bold mb-2">Store Not Connected</h2>
             <p className="text-muted-foreground max-w-md mb-8">
-              Connect your Amazon Seller account to track inventory, orders, and calculate your true net profitability down to the rupee.
+              Connect your Amazon Seller account to sync your orders and calculate your true net profitability down to the rupee.
             </p>
             <Button onClick={() => window.location.href = '/seller/store'} size="lg" className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold rounded-full">
               Connect Seller Account
