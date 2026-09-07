@@ -365,3 +365,14 @@ class AmazonAdsManualLocks(Base):
     __table_args__ = (
         UniqueConstraint('profile_id', 'entity_type', 'entity_id', name='uix_profile_entity_lock'),
     )
+
+class CompetitorTrackingList(Base):
+    __tablename__ = "competitor_tracking_lists"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users_auth.id', ondelete="CASCADE"), nullable=False)
+    list_name = Column(String(100), default="Default List")
+    asin_data = Column(JSONB, nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+

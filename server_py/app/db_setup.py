@@ -29,6 +29,7 @@ def _create_all_tables():
     from app.models import schema_v2      # noqa: F401 — registers schema_v2 Base tables
     from app.models import listing_models # noqa: F401 — registers listing_models Base tables
     from app.db.models import user_model  # noqa: F401 — registers user_model Base tables
+    from app.db.models import live_competitor_result_model  # noqa: F401 — registers live_competitor_results table
 
     from app.models.legacy_models import Base as LegacyBase
     from app.db.session import Base as SessionBase

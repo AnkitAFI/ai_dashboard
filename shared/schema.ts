@@ -182,6 +182,16 @@ export const deletedUsers = pgTable("deleted_users", {
   deletionReason: varchar("deletion_reason", { length: 100 }),
 });
 
+// 13. Competitor Tracking Lists (Enterprise)
+export const competitorTrackingLists = pgTable("competitor_tracking_lists", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => usersAuth.id, { onDelete: "cascade" }).notNull(),
+  listName: varchar("list_name", { length: 100 }).default("Default List"),
+  asinData: jsonb("asin_data").notNull(), // Stores array of { ownAsin: string, competitorAsins: string[] }
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
 // --- Existing Non-User Tables (Unaffected) ---
 
 export const products = pgTable("products", {
@@ -228,6 +238,7 @@ export const insertUserProfileSchema = createInsertSchema(userProfiles);
 export const insertProductSchema = createInsertSchema(products);
 export const insertAnalyticsSchema = createInsertSchema(analytics);
 export const insertChatMessageSchema = createInsertSchema(chatMessages);
+export const insertCompetitorTrackingListSchema = createInsertSchema(competitorTrackingLists);
 
 // Types
 export type UserAuth = typeof usersAuth.$inferSelect;
@@ -235,3 +246,4 @@ export type UserProfile = typeof userProfiles.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
+export type CompetitorTrackingList = typeof competitorTrackingLists.$inferSelect;
