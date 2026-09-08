@@ -251,6 +251,31 @@ class AmazonSPAPIAuditLog(Base):
     
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
+class AmazonSPAPIRefundReconciliation(Base):
+    __tablename__ = "amazon_sp_api_refund_reconciliations"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(255), nullable=False, index=True)
+    asin = Column(String(50), nullable=False, index=True)
+    
+    refunded_amount = Column(Numeric(10, 2), nullable=False)
+    refund_date = Column(DateTime(timezone=True), nullable=False)
+    
+    is_returned_to_fba = Column(Boolean, default=False)
+    status = Column(String(50), default="PENDING") # PENDING, CLAIM_FILED, REIMBURSED, IGNORED
+    reimbursed_amount = Column(Numeric(10, 2), default=0.0)
+    
+    last_checked_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'amazon_order_id', 'asin', name='uix_sp_reimbursement_reconcil'),
+    )
+
 class AmazonSPAPIOrder(Base):
     __tablename__ = "amazon_sp_api_orders"
 
