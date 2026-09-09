@@ -89,6 +89,8 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
 
       if (!mobileNumber || mobileNumber.trim() === "") {
         router.replace("/verify-mobile");
+      } else if (!onboardingCompleted) {
+        router.replace("/thank-you");
       } else {
         router.replace("/dashboard");
       }

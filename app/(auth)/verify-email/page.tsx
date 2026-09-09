@@ -298,7 +298,7 @@ export default function VerifyEmail() {
       deleteCookie("verify_email");
       await refreshUser();
       toast({ title: "Account verified!", description: "Welcome to Insydz!" });
-      router.push("/dashboard");
+      router.push("/thank-you");
     } catch (err: any) {
       toast({ title: "Verification failed", description: sanitizeApiError(err.message, "Invalid or expired OTP."), variant: "destructive" });
     } finally {

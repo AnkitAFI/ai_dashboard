@@ -153,7 +153,7 @@ export default function VerifyMobilePage() {
       // Refresh user state in AuthContext
       await refreshUser();
 
-      router.replace("/dashboard");
+      router.replace("/thank-you");
     } catch (err: any) {
       setErrorMessage(sanitizeApiError(err.message, "Verification failed. Please check the code."));
     } finally {

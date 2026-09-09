@@ -155,7 +155,12 @@ export default function OnboardingModal({
       setFormData((prev) => ({ ...prev, seller_id: sellerId }));
     } catch (err: any) {
       setConnectionError(
-        err.message ? sanitizeApiError(err.message, "Something went wrong. Please try again.") : "Something went wrong. Please try again.",
+        err.message
+          ? sanitizeApiError(
+              err.message,
+              "Something went wrong. Please try again.",
+            )
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setIsConnecting(false);
