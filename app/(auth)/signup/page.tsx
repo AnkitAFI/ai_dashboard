@@ -720,7 +720,7 @@ function SignupContent() {
         console.warn("Refresh user after signup failed (non-critical)", err);
       });
 
-      router.push("/dashboard");
+      router.push("/thank-you");
     } catch (err: any) {
       console.error(err);
       toast({
