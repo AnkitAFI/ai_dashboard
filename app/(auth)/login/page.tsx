@@ -69,11 +69,13 @@ export default function Login() {
     setMounted(true);
   }, []);
 
-  // If already logged in, redirect to verify mobile or dashboard
+  // If already logged in, redirect to verify mobile, thank-you, or dashboard
   useEffect(() => {
     if (!authLoading && user) {
       if (!user.mobileNumber || user.mobileNumber.trim() === "") {
         router.replace("/verify-mobile");
+      } else if (!user.onboardingCompleted && typeof window !== "undefined" && !sessionStorage.getItem("thank_you_seen")) {
+        router.replace("/thank-you");
       } else {
         router.replace("/dashboard");
       }
@@ -163,7 +165,11 @@ export default function Login() {
       });
 
       // Redirect immediately using window.location to bypass Next.js client cache
-      window.location.href = "/dashboard";
+      if (!user?.onboardingCompleted && typeof window !== "undefined" && !sessionStorage.getItem("thank_you_seen")) {
+        window.location.href = "/thank-you";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (error: any) {
       console.error("Login error:", error);
       setErrorMessage(

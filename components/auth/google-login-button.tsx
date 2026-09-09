@@ -99,7 +99,9 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
       const onboardingCompleted = data.user?.onboarding_completed;
 
       if (!mobileNumber || mobileNumber.trim() === "") {
-        window.location.href = "/verify-mobile";
+        router.replace("/verify-mobile");
+      } else if (!onboardingCompleted) {
+        router.replace("/thank-you");
       } else {
         window.location.href = "/dashboard";
       }
