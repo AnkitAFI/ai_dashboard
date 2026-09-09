@@ -16,6 +16,8 @@ from pydantic import BaseModel
 from jose import jwt, JWTError
 from app.core.config import settings
 from app.core.cryptography import EncryptedString
+from app.api.deps import r
+import json
 
 class MFASetupResponse(BaseModel):
     provisioning_uri: str
@@ -45,7 +47,27 @@ class VerifyMobileOTPRequest(BaseModel):
     otp: str
 
 # In-memory OTP cache for mobile verification (user_id/mobile -> {otp, expires_at})
-MOBILE_OTP_CACHE: dict = {}
+
+def get_cache(key):
+    val = r.get(key)
+    if val:
+        try:
+            return json.loads(val)
+        except:
+            pass
+    return None
+
+def set_cache(key, val, expire=600):
+    # Ensure datetimes are serialized
+    if isinstance(val, dict):
+        for k, v in val.items():
+            if hasattr(v, 'isoformat'):
+                val[k] = v.isoformat()
+    r.setex(key, expire, json.dumps(val))
+    
+def del_cache(key):
+    r.delete(key)
+
 
 router = APIRouter(tags=["Auth"])
 user_service = UserService()
@@ -85,11 +107,11 @@ def send_mobile_otp(
 
     # Rate Limiting & Cooldown Protection
     cache_key = f"user_{current_user.id}"
-    existing_entry = MOBILE_OTP_CACHE.get(cache_key)
+    existing_entry = get_cache(cache_key)
     
     attempts = 0
     if existing_entry:
-        time_since_last = (datetime.utcnow() - existing_entry.get("last_sent_at", datetime.utcnow())).total_seconds()
+        time_since_last = (datetime.utcnow() - (datetime.fromisoformat(existing_entry.get("last_sent_at", datetime.utcnow().isoformat())) if isinstance(existing_entry.get("last_sent_at"), str) else existing_entry.get("last_sent_at", datetime.utcnow()))).total_seconds()
         
         # Enforce 60-second cooldown between requests
         if time_since_last < 60:
@@ -110,14 +132,15 @@ def send_mobile_otp(
     otp_code = str(random.randint(100000, 999999))
     expires_at = datetime.utcnow() + timedelta(minutes=10)
     
-    MOBILE_OTP_CACHE[cache_key] = {
+    cache_val = {
         "mobile": mobile,
         "otp": otp_code,
         "expires_at": expires_at,
         "last_sent_at": datetime.utcnow(),
         "attempts": attempts + 1
     }
-    MOBILE_OTP_CACHE[mobile] = MOBILE_OTP_CACHE[cache_key]
+    set_cache(cache_key, cache_val, 600)
+    set_cache(mobile, cache_val, 600)
 
     print(f"\n==================================================")
     print(f"📲 MOBILE OTP FOR USER {current_user.email} ({mobile}): {otp_code}")
@@ -148,14 +171,15 @@ def verify_mobile_otp(
     elif mobile.startswith("91") and len(mobile) == 12:
         mobile = mobile[2:]
         
-    cache_entry = MOBILE_OTP_CACHE.get(f"user_{current_user.id}") or MOBILE_OTP_CACHE.get(mobile)
+    cache_entry = get_cache(f"user_{current_user.id}") or get_cache(mobile)
     
     if not cache_entry:
         raise HTTPException(status_code=400, detail="OTP expired or not requested. Please request a new OTP.")
         
-    if datetime.utcnow() > cache_entry["expires_at"]:
-        MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
-        MOBILE_OTP_CACHE.pop(mobile, None)
+    expires_at_dt = datetime.fromisoformat(cache_entry["expires_at"]) if isinstance(cache_entry["expires_at"], str) else cache_entry["expires_at"]
+    if datetime.utcnow() > expires_at_dt:
+        del_cache(f"user_{current_user.id}")
+        del_cache(mobile)
         raise HTTPException(status_code=400, detail="OTP has expired. Please request a new code.")
         
     if cache_entry["otp"] != req.otp.strip():
@@ -176,8 +200,8 @@ def verify_mobile_otp(
     db.commit()
 
     # Clean up cache
-    MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
-    MOBILE_OTP_CACHE.pop(mobile, None)
+    del_cache(f"user_{current_user.id}")
+    del_cache(mobile)
 
     return {
         "success": True,
@@ -249,7 +273,7 @@ def google_login(
         }
         
         # We use MOBILE_OTP_CACHE (or a dedicated Google cache) to hold their data
-        MOBILE_OTP_CACHE[f"pending_google_{email}"] = temp_google_data
+        set_cache(f"pending_google_{email}", temp_google_data, 1800)
         
         # Trigger the abandoned signup email tracker exactly like manual signup
         store_abandoned_signup(email, {
@@ -354,7 +378,7 @@ def google_send_otp(req: GoogleSendOTPRequest, background_tasks: BackgroundTasks
     
     # Verify they are in the pending cache
     cache_key = f"pending_google_{req.email}"
-    pending_data = MOBILE_OTP_CACHE.get(cache_key)
+    pending_data = get_cache(cache_key)
     if not pending_data:
         raise HTTPException(status_code=400, detail="Google session expired. Please sign in with Google again.")
 
@@ -374,10 +398,10 @@ def google_send_otp(req: GoogleSendOTPRequest, background_tasks: BackgroundTasks
 
     # Rate Limiting
     otp_cache_key = f"google_otp_{req.email}"
-    existing_entry = MOBILE_OTP_CACHE.get(otp_cache_key)
+    existing_entry = get_cache(otp_cache_key)
     attempts = 0
     if existing_entry:
-        time_since = (datetime.utcnow() - existing_entry.get("last_sent_at", datetime.utcnow())).total_seconds()
+        time_since = (datetime.utcnow() - (datetime.fromisoformat(existing_entry.get("last_sent_at", datetime.utcnow().isoformat())) if isinstance(existing_entry.get("last_sent_at"), str) else existing_entry.get("last_sent_at", datetime.utcnow()))).total_seconds()
         if time_since < 60:
             raise HTTPException(status_code=429, detail=f"Wait {int(60 - time_since)}s before resending.")
         attempts = existing_entry.get("attempts", 0)
@@ -386,13 +410,13 @@ def google_send_otp(req: GoogleSendOTPRequest, background_tasks: BackgroundTasks
 
     # Generate and send
     otp_code = str(random.randint(100000, 999999))
-    MOBILE_OTP_CACHE[otp_cache_key] = {
+    set_cache(otp_cache_key, {
         "mobile": mobile,
         "otp": otp_code,
         "expires_at": datetime.utcnow() + timedelta(minutes=10),
         "last_sent_at": datetime.utcnow(),
         "attempts": attempts + 1
-    }
+    }, 600)
     
     print(f"📲 GOOGLE SSO OTP FOR {req.email} ({mobile}): {otp_code}")
     background_tasks.add_task(send_signup_otp_sms, mobile, otp_code)
@@ -421,13 +445,14 @@ def google_verify_otp(
     import hashlib
 
     # Verify pending state and OTP
-    pending_data = MOBILE_OTP_CACHE.get(f"pending_google_{req.email}")
-    otp_data = MOBILE_OTP_CACHE.get(f"google_otp_{req.email}")
+    pending_data = get_cache(f"pending_google_{req.email}")
+    otp_data = get_cache(f"google_otp_{req.email}")
     
     if not pending_data or not otp_data:
         raise HTTPException(status_code=400, detail="Session expired. Please start over.")
         
-    if datetime.utcnow() > otp_data["expires_at"]:
+    expires_at_dt = datetime.fromisoformat(otp_data["expires_at"]) if isinstance(otp_data["expires_at"], str) else otp_data["expires_at"]
+    if datetime.utcnow() > expires_at_dt:
         raise HTTPException(status_code=400, detail="OTP expired. Request a new one.")
         
     if otp_data["otp"] != req.otp.strip():
@@ -466,8 +491,8 @@ def google_verify_otp(
     
     # Clear abandoned signup and cache
     delete_abandoned_signup(req.email)
-    MOBILE_OTP_CACHE.pop(f"pending_google_{req.email}", None)
-    MOBILE_OTP_CACHE.pop(f"google_otp_{req.email}", None)
+    del_cache(f"pending_google_{req.email}")
+    del_cache(f"google_otp_{req.email}")
     
     # Login & return token
     access_token = create_access_token(data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(days=SESSION_EXPIRE_DAYS_REMEMBER))

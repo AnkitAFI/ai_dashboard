@@ -1006,6 +1006,7 @@ export default function AnalyticsDashboard() {
             </Popover>
           )}
 
+          {/* Export PDF feature is currently disabled 
           <div className="relative group">
             <Button 
               variant="outline" 
@@ -1023,6 +1024,7 @@ export default function AnalyticsDashboard() {
               </div>
             )}
           </div>
+          */}
 
           <Badge 
             variant="outline" 
