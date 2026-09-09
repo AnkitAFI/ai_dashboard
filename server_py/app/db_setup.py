@@ -353,6 +353,52 @@ ALTER TABLE user_subscriptions
 ADD COLUMN IF NOT EXISTS max_ad_profiles INTEGER DEFAULT 1;
 """
 
+# SP-API constraint migrations — idempotent, safe to run on every startup.
+# Fixes unique constraints to include user_id for strict per-user data isolation.
+_FIX_ORDERS_CONSTRAINT_SQL = """
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'uix_sp_order_asin'
+        AND table_name = 'amazon_sp_api_orders'
+    ) THEN
+        ALTER TABLE amazon_sp_api_orders DROP CONSTRAINT uix_sp_order_asin;
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'uix_sp_order_user_asin'
+        AND table_name = 'amazon_sp_api_orders'
+    ) THEN
+        ALTER TABLE amazon_sp_api_orders
+            ADD CONSTRAINT uix_sp_order_user_asin UNIQUE (user_id, amazon_order_id, asin);
+    END IF;
+END
+$$;
+"""
+
+_FIX_PRODUCT_COSTS_CONSTRAINT_SQL = """
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'uix_sp_partner_asin_cost'
+        AND table_name = 'amazon_sp_api_product_costs'
+    ) THEN
+        ALTER TABLE amazon_sp_api_product_costs DROP CONSTRAINT uix_sp_partner_asin_cost;
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'uix_user_sp_partner_asin_cost'
+        AND table_name = 'amazon_sp_api_product_costs'
+    ) THEN
+        ALTER TABLE amazon_sp_api_product_costs
+            ADD CONSTRAINT uix_user_sp_partner_asin_cost UNIQUE (user_id, selling_partner_id, asin);
+    END IF;
+END
+$$;
+"""
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -392,6 +438,9 @@ def run_startup_setup():
         ("UPDATE trigger",                    _UPDATE_TRIGGER_SQL),
         ("DELETE trigger fn",                 _DELETE_TRIGGER_FN_SQL),
         ("DELETE trigger",                    _DELETE_TRIGGER_SQL),
+        # SP-API data isolation constraint fixes
+        ("CONSTRAINT: sp_orders user_id scope",       _FIX_ORDERS_CONSTRAINT_SQL),
+        ("CONSTRAINT: product_costs user_id scope",   _FIX_PRODUCT_COSTS_CONSTRAINT_SQL),
     ]
 
     for name, sql in steps:

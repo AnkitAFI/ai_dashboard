@@ -20,8 +20,19 @@ from app.models.schema_v2 import (
 logger = logging.getLogger("SPAPIReimbursementWorker")
 logger.setLevel(logging.INFO)
 
-RATE_LIMIT_DELAY = 1.0 
-MAX_RETRIES = 3
+# ── Amazon SP-API Strict Rate Limits (Reports 2021-06-30) ───────────────────────
+# Source: https://developer-docs.amazon.com/sp-api/docs/reports-2021-06-30
+# Violating these results in 429 → repeated violations = key suspension.
+#
+#  createReport       : 0.0167 req/s (1 per 60s), burst 15
+#  getReport          : 2.0 req/s,                 burst 15   (poll-safe at 60s intervals)
+#  getReportDocument  : 0.0167 req/s (1 per 60s), burst 15
+#
+REPORT_CREATE_DELAY          = 65.0  # seconds between createReport calls (1/min + 5s buffer)
+REPORT_POLL_INTERVAL         = 60.0  # seconds between getReport polling calls
+REPORT_DOCUMENT_DELAY        = 65.0  # seconds before getReportDocument (1/min + buffer)
+REIMBURSEMENT_SYNC_INTERVAL_DAYS = 7 # Only re-sync per account once per 7 days
+MAX_RETRIES                  = 3
 
 async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredential):
     """Pulls Refunds, Returns, and Reimbursements to find missing inventory."""
@@ -50,6 +61,7 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
         # but relying on amounts and negative signs serves as a solid proxy for POCs.
         
         refunds = db.query(AmazonSPAPIFinancialEvent).filter(
+            AmazonSPAPIFinancialEvent.user_id == cred.user_id,           # strict tenant isolation
             AmazonSPAPIFinancialEvent.selling_partner_id == cred.selling_partner_id,
             AmazonSPAPIFinancialEvent.posted_date >= start_time,
             AmazonSPAPIFinancialEvent.amount < 0
@@ -73,9 +85,8 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
             return # Nothing to reconcile
         
         # Step 2: Request the FBA Customer Returns Data Report
-        time.sleep(RATE_LIMIT_DELAY)
-        # Note: This is an asynchronous report in SP-API. We'd create it, wait for it to process, then download.
-        # For this worker script, we implement the synchronous waiting pattern for simplicity.
+        # createReport rate: 0.0167 req/s (1 per 60s) — always wait before calling
+        await asyncio.sleep(REPORT_CREATE_DELAY)
         returns_report_res = reports_api.create_report(
             reportType="GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
             dataStartTime=start_time.isoformat() + "Z",
@@ -84,9 +95,10 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
         report_id = returns_report_res.payload.get("reportId")
         
         # Polling for completion
+        # getReport rate: 2.0 req/s — polling every 60s is very safe
         report_document_id = None
         for _ in range(15): # Max 15 mins wait
-            time.sleep(60)
+            await asyncio.sleep(REPORT_POLL_INTERVAL)
             status_res = reports_api.get_report(report_id)
             if status_res.payload.get("processingStatus") == "DONE":
                 report_document_id = status_res.payload.get("reportDocumentId")
@@ -110,7 +122,8 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
                     returned_orders.add(order_id)
                     
         # Step 3: Request the FBA Reimbursements Data Report
-        time.sleep(RATE_LIMIT_DELAY)
+        # createReport rate: 0.0167 req/s (1 per 60s) — must wait full interval before second call
+        await asyncio.sleep(REPORT_CREATE_DELAY)
         reimburse_report_res = reports_api.create_report(
             reportType="GET_FBA_REIMBURSEMENTS_DATA",
             dataStartTime=start_time.isoformat() + "Z",
@@ -120,7 +133,7 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
         
         reimburse_document_id = None
         for _ in range(15):
-            time.sleep(60)
+            await asyncio.sleep(REPORT_POLL_INTERVAL)
             status_res = reports_api.get_report(reimburse_report_id)
             if status_res.payload.get("processingStatus") == "DONE":
                 reimburse_document_id = status_res.payload.get("reportDocumentId")
@@ -195,20 +208,41 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
 
 
 async def run_reimbursement_cycle():
-    """Main worker loop."""
+    """Main worker loop. Only runs per account if it hasn't been synced in the last
+    REIMBURSEMENT_SYNC_INTERVAL_DAYS days, protecting against over-calling Reports API."""
     logger.info("Starting SP-API Reimbursement Sync Cycle...")
     db = SessionLocal()
     
     try:
         credentials = db.query(AmazonSPAPICredential).all()
         for cred in credentials:
-            # Check tier constraint
+            # Tier gate — only Premium & Enterprise
             sub = db.query(UserSubscription).filter(UserSubscription.user_id == cred.user_id).first()
             tier = sub.subscription_tier if sub else "free"
             
             if tier not in ["premium", "enterprise"]:
-                continue # Only process for high-tier users
-                
+                logger.debug(f"Skipping {cred.selling_partner_id} — tier '{tier}' not eligible.")
+                continue
+
+            # Frequency gate — check last reimbursement sync timestamp from reconciliation table
+            # This prevents hammering createReport (1/min limit) and Amazon Reports infrastructure.
+            from sqlalchemy import func
+            latest_check = db.query(
+                func.max(AmazonSPAPIRefundReconciliation.last_checked_at)
+            ).filter(
+                AmazonSPAPIRefundReconciliation.selling_partner_id == cred.selling_partner_id
+            ).scalar()
+            
+            if latest_check:
+                days_since_sync = (datetime.utcnow() - latest_check).days
+                if days_since_sync < REIMBURSEMENT_SYNC_INTERVAL_DAYS:
+                    logger.info(
+                        f"Skipping {cred.selling_partner_id} — last reimbursement sync "
+                        f"{days_since_sync}d ago (interval: {REIMBURSEMENT_SYNC_INTERVAL_DAYS}d)."
+                    )
+                    continue
+                    
+            logger.info(f"Running reimbursement sync for {cred.selling_partner_id} (tier: {tier}).")
             await sync_reimbursements_for_account(db, cred)
             
     finally:

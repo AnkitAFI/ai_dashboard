@@ -12,6 +12,7 @@ from app.models.schema_v2 import (
 )
 from app.api.deps import get_current_user
 from app.services.rate_limiter import SPAPIRateLimit
+from app.services.profitability_service import get_user_tier, TIER_ORDER
 from pydantic import BaseModel
 from typing import Optional, List
 import logging
@@ -29,9 +30,26 @@ class UpdateCOGSRequest(BaseModel):
     inbound_shipping: float
     target_margin_override: Optional[float] = None
 
-# --- Dependency for Tenant Isolation ---
+# --- Dependencies for Tenant Isolation ---
 def verify_tenant_access(selling_partner_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Double-Lock Verification: Ensure user owns this selling_partner_id."""
+    """Tier-open: Only checks that the user owns this selling_partner_id. Used for KPI summary (all tiers)."""
+    creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id,
+        AmazonSPAPICredential.selling_partner_id == selling_partner_id
+    ).first()
+    if not creds:
+        raise HTTPException(status_code=403, detail="Forbidden: Account access denied or not connected.")
+    return selling_partner_id
+
+def verify_tenant_access_premium(selling_partner_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Premium gate: Requires Premium or Enterprise tier + ownership of selling_partner_id.
+    Used for ASIN breakdown, COGS editing, and settings — hidden from Free/Basic."""
+    tier = get_user_tier(current_user.id, db)
+    if TIER_ORDER.get(tier, 0) < TIER_ORDER.get("premium", 0):
+        raise HTTPException(
+            status_code=403,
+            detail="upgrade_required:premium"
+        )
     creds = db.query(AmazonSPAPICredential).filter(
         AmazonSPAPICredential.user_id == current_user.id,
         AmazonSPAPICredential.selling_partner_id == selling_partner_id
@@ -103,7 +121,7 @@ def get_profitability_summary(
 
 @router.get("/{selling_partner_id}/asins", dependencies=[Depends(SPAPIRateLimit("default", tokens=2))])
 def get_asin_breakdown(
-    selling_partner_id: str = Depends(verify_tenant_access),
+    selling_partner_id: str = Depends(verify_tenant_access_premium),
     current_user = Depends(get_current_user), 
     db: Session = Depends(get_db),
     days: int = 30
@@ -183,7 +201,7 @@ def update_cogs(
     asin: str,
     payload: UpdateCOGSRequest,
     request: Request,
-    selling_partner_id: str = Depends(verify_tenant_access),
+    selling_partner_id: str = Depends(verify_tenant_access_premium),
     current_user = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):
@@ -229,7 +247,7 @@ def update_cogs(
 def update_settings(
     payload: UpdateSettingsRequest,
     request: Request,
-    selling_partner_id: str = Depends(verify_tenant_access),
+    selling_partner_id: str = Depends(verify_tenant_access_premium),
     current_user = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):

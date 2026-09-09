@@ -18,9 +18,17 @@ from app.models.schema_v2 import (
 logger = logging.getLogger("SPAPISyncWorker")
 logger.setLevel(logging.INFO)
 
-# Strict 1 request per second to protect Amazon keys
-RATE_LIMIT_DELAY = 1.0 
-MAX_RETRIES = 3
+# ── Amazon SP-API Strict Rate Limits ─────────────────────────────────────────
+# Source: https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits
+# Violating these results in 429 TooManyRequests → repeated violations = key suspension.
+#
+#  Orders v0   getOrders              : 0.0167 req/s (1/min), burst 20
+#  Orders v0   getOrderItems          : 0.5 req/s,            burst 30  → min 2.0s between calls
+#  Finances v0 listFinancialEventsForOrder : 0.5 req/s,       burst 30  → min 2.0s between calls
+#
+ORDER_ITEMS_DELAY  = 2.0   # seconds — getOrderItems       (0.5 req/sec = 1 per 2s)
+FINANCES_DELAY     = 2.5   # seconds — listFinancialEvents (0.5 req/sec; 2.5s gives safe buffer)
+MAX_RETRIES        = 3
 
 async def fetch_with_backoff(client: httpx.AsyncClient, url: str, headers: dict, params: dict):
     """Executes a request with exponential backoff on 429 Too Many Requests."""
@@ -85,7 +93,8 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
             currency = order_total.get('CurrencyCode', 'INR')
             
             # Fetch Order Items for ASIN and Qty
-            time.sleep(1.0) # Protect Orders API limits
+            # getOrderItems rate: 0.5 req/sec → must wait 2.0s between calls
+            await asyncio.sleep(ORDER_ITEMS_DELAY)
             items_res = orders_api.get_order_items(amazon_order_id)
             items = items_res.payload.get('OrderItems', [])
             
@@ -93,11 +102,12 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
                 asin = item.get('ASIN')
                 qty = item.get('QuantityOrdered', 1)
                 
-                # UPSERT Order Data
+                # UPSERT Order Data — ON CONFLICT uses (user_id, amazon_order_id, asin)
+                # to match the uix_sp_order_user_asin unique constraint (user-scoped).
                 upsert_order = text("""
                     INSERT INTO amazon_sp_api_orders (user_id, selling_partner_id, amazon_order_id, purchase_date, order_status, asin, quantity, item_price, currency)
                     VALUES (:user_id, :sp_id, :order_id, :p_date, :status, :asin, :qty, :price, :currency)
-                    ON CONFLICT (amazon_order_id, asin) 
+                    ON CONFLICT (user_id, amazon_order_id, asin) 
                     DO UPDATE SET 
                         order_status = EXCLUDED.order_status,
                         updated_at = NOW();
@@ -109,7 +119,8 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
                 })
             
             # 2. Fetch Financial Events (Fees)
-            time.sleep(2.5) # Protect Finances API (0.5 req/sec limit)
+            # listFinancialEventsForOrder rate: 0.5 req/sec → must wait 2.0s between calls (using 2.5 for buffer)
+            await asyncio.sleep(FINANCES_DELAY)
             fin_res = finances_api.list_financial_events_for_order(amazon_order_id)
             fin_events = fin_res.payload.get('FinancialEvents', {})
             

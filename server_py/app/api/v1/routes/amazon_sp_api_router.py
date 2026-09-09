@@ -20,9 +20,9 @@ AMAZON_OAUTH_URL = "https://eu.account.amazon.com/ap/oa"
 AMAZON_TOKEN_URL = "https://api.amazon.com/auth/o2/token"
 REDIRECT_URI = settings.AMAZON_SP_API_LWA_REDIRECT_URI
 
-@router.get("/connect", dependencies=[Depends(SPAPIRateLimit("auth", tokens=1))])
+@router.get("/connect")
 def get_sp_api_url(current_user = Depends(get_current_user)):
-    """Generate Login with Amazon URL for SP-API."""
+    """Generate Login with Amazon URL for SP-API. Pure URL builder — no Amazon API call."""
     params = {
         "client_id": settings.AMAZON_SP_API_LWA_CLIENT_ID.strip(),
         "response_type": "code",
@@ -108,9 +108,13 @@ async def sp_api_callback(
     frontend_url = f"{settings.FRONTEND_URL}/seller/store"
     return RedirectResponse(url=frontend_url)
 
-@router.get("/status", dependencies=[Depends(SPAPIRateLimit("default", tokens=1))])
+@router.get("/status")
 def get_sp_api_status(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Check if the user has connected their Amazon SP-API account(s)."""
+    """Check if the user has connected their Amazon SP-API account(s).
+    Pure PostgreSQL read — no Amazon API call. No SPAPIRateLimit needed.
+    Called on every page load by Financial Command Center, Store Integration,
+    and Lost Money Recovery — must not be throttled aggressively.
+    """
     creds = db.query(AmazonSPAPICredential).filter(AmazonSPAPICredential.user_id == current_user.id).all()
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
     max_accounts = sub.max_sp_api_accounts if sub else 1
@@ -133,9 +137,9 @@ def get_sp_api_status(current_user = Depends(get_current_user), db: Session = De
         "can_add_more": len(accounts) < max_accounts
     }
 
-@router.delete("/disconnect/{selling_partner_id}", dependencies=[Depends(SPAPIRateLimit("default", tokens=1))])
+@router.delete("/disconnect/{selling_partner_id}")
 def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Disconnect and purge Amazon SP-API credentials."""
+    """Disconnect and purge Amazon SP-API credentials. Pure DB write — no Amazon API call."""
     creds = db.query(AmazonSPAPICredential).filter(
         AmazonSPAPICredential.user_id == current_user.id,
         AmazonSPAPICredential.selling_partner_id == selling_partner_id
