@@ -25,6 +25,13 @@ export default function ThankYouPage() {
 
   useEffect(() => {
     setMounted(true);
+
+    // Google Ads Conversion Event - Signup
+    if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+      (window as any).gtag("event", "conversion_event_signup_2", {
+        // event_parameters can be added here if needed
+      });
+    }
   }, []);
 
   const userName =
