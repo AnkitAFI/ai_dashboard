@@ -559,9 +559,64 @@ class AmazonSPAPIInventorySummary(Base):
     # Track days we had 0 inventory to adjust average velocity math
     days_out_of_stock_30d = Column(Integer, default=0)
     
-    last_updated_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     __table_args__ = (
         UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_inv_summary_asin'),
     )
 
+
+class AmazonSPAPIReviewRules(Base):
+    """
+    Stores automation settings for Review Solicitations.
+    asin='GLOBAL' represents the account-level default rule.
+    """
+    __tablename__ = "amazon_sp_api_review_rules"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    
+    delay_days_after_shipment = Column(Integer, default=7)
+    exclude_refunded = Column(Boolean, default=True) # The Safety Shield
+    
+    # Only applies to the 'GLOBAL' asin record. Individual ASIN overrides don't use this.
+    is_active = Column(Boolean, default=False)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_review_rules_asin'),
+    )
+
+
+class AmazonSPAPIOrderReviewLog(Base):
+    """
+    Tracks eligible orders and their solicitation status to prevent double-sending.
+    """
+    __tablename__ = "amazon_sp_api_order_review_log"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(255), nullable=False, index=True)
+    asin = Column(String(50), nullable=False)
+    
+    shipment_date = Column(DateTime(timezone=True), nullable=False)
+    is_refunded = Column(Boolean, default=False)
+    
+    # Statuses: PENDING, SOLICITED, EXCLUDED_REFUND, EXCLUDED_OPT_OUT, FAILED_RETRY
+    status = Column(String(50), default="PENDING")
+    
+    review_requested_at = Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'amazon_order_id', name='uix_sp_review_log_order'),
+    )

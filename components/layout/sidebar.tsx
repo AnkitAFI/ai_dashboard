@@ -170,6 +170,7 @@ const SELLER_SECTIONS: NavSection[] = [
       { href: "/seller/store", label: "Store Integration", icon: Store, badge: "NEW" },
       { href: "/seller/profitability", label: "Profitability", icon: Calculator, badge: "NEW" },
       { href: "/seller/restock", label: "Restock Forecaster", icon: Package, badge: "NEW" },
+      { href: "/seller/reviews", label: "Review Automator", icon: Star, badge: "NEW" },
       { href: "/seller/reimbursements", label: "Lost Money Reconciler", icon: ShieldCheck, badge: "NEW" },
       { href: "/seller/ads/setup", label: "Ads Integration", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/ads/analytics", label: "Ads Analytics", icon: Activity, badge: "NEW" },
