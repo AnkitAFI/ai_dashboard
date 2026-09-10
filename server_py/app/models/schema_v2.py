@@ -498,3 +498,70 @@ class AmazonAdsManualLocks(Base):
     __table_args__ = (
         UniqueConstraint('profile_id', 'entity_type', 'entity_id', name='uix_profile_entity_lock'),
     )
+
+
+class AmazonSPAPIReportQueue(Base):
+    __tablename__ = "amazon_sp_api_report_queue"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    report_type = Column(String(100), nullable=False) # e.g. GET_FBA_MYI_UNSUPPRESSED_INVENTORY_DATA
+    report_id = Column(String(255), nullable=False, unique=True, index=True)
+    status = Column(String(50), default="PROCESSING") # PROCESSING, DONE, FATAL
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonSPAPIInventorySettings(Base):
+    __tablename__ = "amazon_sp_api_inventory_settings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    
+    supplier_lead_time_days = Column(Integer, default=30)
+    transit_time_days = Column(Integer, default=5)
+    safety_stock_days = Column(Integer, default=14)
+    
+    # Enum: '7D', '30D', 'MANUAL'
+    velocity_calculation_method = Column(String(20), default="30D")
+    manual_daily_velocity = Column(Numeric(10, 2), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_inv_settings_asin'),
+    )
+
+
+class AmazonSPAPIInventorySummary(Base):
+    __tablename__ = "amazon_sp_api_inventory_summary"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    product_title = Column(String(500), nullable=True)
+    
+    sellable_quantity = Column(Integer, default=0)
+    inbound_quantity = Column(Integer, default=0)
+    
+    units_sold_7d = Column(Integer, default=0)
+    units_sold_30d = Column(Integer, default=0)
+    
+    # Track days we had 0 inventory to adjust average velocity math
+    days_out_of_stock_30d = Column(Integer, default=0)
+    
+    last_updated_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_inv_summary_asin'),
+    )
+

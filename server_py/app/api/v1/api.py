@@ -77,3 +77,6 @@ api_router.include_router(amazon_sp_api_profitability_router)
 
 from app.api.v1.routes.amazon_sp_api_reimbursement_router import router as amazon_sp_api_reimbursement_router
 api_router.include_router(amazon_sp_api_reimbursement_router)
+
+from app.api.v1.routes.amazon_sp_api_inventory import router as amazon_sp_api_inventory_router
+api_router.include_router(amazon_sp_api_inventory_router)
