@@ -82,6 +82,7 @@ def get_review_rules(
 def update_global_rule(
     sp_id: str,
     payload: GlobalRuleUpdate,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: UserAuth = Depends(get_current_user),
 ) -> Any:
@@ -96,6 +97,7 @@ def update_global_rule(
         AmazonSPAPIReviewRules.asin == "GLOBAL"
     ).first()
     
+    old_val = {}
     if not rule:
         rule = AmazonSPAPIReviewRules(
             user_id=current_user.id,
@@ -103,6 +105,12 @@ def update_global_rule(
             asin="GLOBAL"
         )
         db.add(rule)
+    else:
+        old_val = {
+            "delay_days_after_shipment": rule.delay_days_after_shipment,
+            "exclude_refunded": rule.exclude_refunded,
+            "is_active": rule.is_active
+        }
         
     rule.delay_days_after_shipment = payload.delay_days_after_shipment
     rule.exclude_refunded = payload.exclude_refunded
