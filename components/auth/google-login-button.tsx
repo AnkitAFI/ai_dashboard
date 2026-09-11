@@ -88,20 +88,23 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
       });
 
       // Refresh authentication context state
-      await refreshUser();
+      const refreshedUser = await refreshUser().catch(() => null);
 
       if (onSuccess) {
         onSuccess();
       }
 
-      // Check mobile number verification & onboarding status
-      const mobileNumber = data.user?.mobile_number;
-      const onboardingCompleted = data.user?.onboarding_completed;
+      // Check mobile number verification
+      const userMobile =
+        refreshedUser?.mobileNumber ||
+        data.user?.mobile_number ||
+        data.user?.mobileNumber ||
+        "";
 
-      if (!mobileNumber || mobileNumber.trim() === "") {
+      const hasMobile = Boolean(userMobile && userMobile.trim() !== "");
+
+      if (!hasMobile) {
         router.replace("/verify-mobile");
-      } else if (!onboardingCompleted) {
-        router.replace("/thank-you");
       } else {
         window.location.href = "/dashboard";
       }

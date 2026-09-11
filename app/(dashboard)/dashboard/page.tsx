@@ -65,13 +65,9 @@ function DashboardContent() {
   // Open onboarding if not completed
   useEffect(() => {
     if (user && !user.onboardingCompleted) {
-      if (typeof window !== "undefined" && !sessionStorage.getItem("thank_you_seen")) {
-        router.replace("/thank-you");
-        return;
-      }
       setIsOnboardingOpen(true);
     }
-  }, [user, router]);
+  }, [user]);
 
   // Sync sidebar mode from localStorage
   useEffect(() => {
