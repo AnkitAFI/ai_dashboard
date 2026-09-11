@@ -194,7 +194,7 @@ export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
   logout: () => Promise<void>;
 }
 
@@ -236,10 +236,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hasFetched = useRef(false);
 
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = async (): Promise<User | null> => {
     if (typeof window === "undefined") {
       setIsLoading(false);
-      return;
+      return null;
     }
 
     try {
@@ -252,7 +252,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.ok) {
         const data = await res.json();
-        setUser({
+        const userData: User = {
           id: data.id,
           email: data.email,
           name: `${data.first_name} ${data.last_name}`,
@@ -281,15 +281,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           explorerTourCompleted: !!data.explorer_tour_completed,
           sellerTourCompleted: !!data.seller_tour_completed,
           welcomeCardDismissed: !!data.welcome_card_dismissed,
-        });
+        };
+        setUser(userData);
         if (typeof window !== "undefined") {
           localStorage.setItem("was_logged_in", "true");
         }
+        return userData;
       } else {
         setUser(null);
         if (typeof window !== "undefined") {
           localStorage.removeItem("was_logged_in");
         }
+        return null;
       }
     } catch (err) {
       console.error("Error fetching user session:", err);
@@ -297,6 +300,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("was_logged_in");
       }
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -328,9 +332,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, isLoading, pathname, router]);
 
-  const refreshUser = async () => {
+  const refreshUser = async (): Promise<User | null> => {
     hasFetched.current = true;
-    await fetchCurrentUser();
+    return await fetchCurrentUser();
   };
 
   const logout = async () => {
