@@ -69,13 +69,11 @@ export default function Login() {
     setMounted(true);
   }, []);
 
-  // If already logged in, redirect to verify mobile, thank-you, or dashboard
+  // If already logged in, redirect to verify mobile or dashboard
   useEffect(() => {
     if (!authLoading && user) {
       if (!user.mobileNumber || user.mobileNumber.trim() === "") {
         router.replace("/verify-mobile");
-      } else if (!user.onboardingCompleted && typeof window !== "undefined" && !sessionStorage.getItem("thank_you_seen")) {
-        router.replace("/thank-you");
       } else {
         router.replace("/dashboard");
       }
@@ -159,14 +157,23 @@ export default function Login() {
         description: "Successfully logged in.",
       });
 
-      // Wait for user context to populate before redirecting
-      await refreshUser().catch((err) => {
+      // Fetch fresh user state from session
+      const refreshedUser = await refreshUser().catch((err) => {
         console.warn("Refresh user after login failed (non-critical)", err);
+        return null;
       });
 
+      const userMobile =
+        refreshedUser?.mobileNumber ||
+        data.user?.mobile_number ||
+        data.user?.mobileNumber ||
+        "";
+
+      const hasMobile = Boolean(userMobile && userMobile.trim() !== "");
+
       // Redirect immediately using window.location to bypass Next.js client cache
-      if (!user?.onboardingCompleted && typeof window !== "undefined" && !sessionStorage.getItem("thank_you_seen")) {
-        window.location.href = "/thank-you";
+      if (!hasMobile) {
+        window.location.href = "/verify-mobile";
       } else {
         window.location.href = "/dashboard";
       }
