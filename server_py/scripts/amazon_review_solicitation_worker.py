@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.db.session import SessionLocal
 from app.models.schema_v2 import UserSubscription, AmazonSPAPICredential, AmazonSPAPIReviewRules, AmazonSPAPIOrderReviewLog
 from app.core.config import settings
+from sqlalchemy import func
 
 logging.basicConfig(
     level=logging.INFO,
@@ -56,8 +57,9 @@ async def send_review_request(access_token: str, amazon_order_id: str) -> int:
 async def process_account(db, cred: AmazonSPAPICredential):
     logger.info(f"Checking Review Solicitations for SP_ID: {cred.selling_partner_id}")
     
-    # 1. Get GLOBAL rule
+    # 1. Get GLOBAL rule — filter by user_id for strict tenant isolation
     global_rule = db.query(AmazonSPAPIReviewRules).filter(
+        AmazonSPAPIReviewRules.user_id == cred.user_id,
         AmazonSPAPIReviewRules.selling_partner_id == cred.selling_partner_id,
         AmazonSPAPIReviewRules.asin == "GLOBAL"
     ).first()
@@ -66,15 +68,17 @@ async def process_account(db, cred: AmazonSPAPICredential):
         logger.info(f"Automation is OFF for SP_ID: {cred.selling_partner_id}. Skipping.")
         return
         
-    # Pre-fetch all custom rules for fast lookup
+    # Pre-fetch all custom rules for fast lookup — filter by user_id for strict tenant isolation
     custom_rules = db.query(AmazonSPAPIReviewRules).filter(
+        AmazonSPAPIReviewRules.user_id == cred.user_id,
         AmazonSPAPIReviewRules.selling_partner_id == cred.selling_partner_id,
         AmazonSPAPIReviewRules.asin != "GLOBAL"
     ).all()
     rule_map = {r.asin: r.delay_days_after_shipment for r in custom_rules}
     
-    # 2. Find eligible PENDING orders
+    # 2. Find eligible PENDING orders — filter by user_id for strict tenant isolation
     pending_orders = db.query(AmazonSPAPIOrderReviewLog).filter(
+        AmazonSPAPIOrderReviewLog.user_id == cred.user_id,
         AmazonSPAPIOrderReviewLog.selling_partner_id == cred.selling_partner_id,
         AmazonSPAPIOrderReviewLog.status == "PENDING",
         AmazonSPAPIOrderReviewLog.is_refunded == False
@@ -113,7 +117,7 @@ async def process_account(db, cred: AmazonSPAPICredential):
                 
                 if status_code == 201:
                     order.status = "SOLICITED"
-                    order.review_requested_at = func.now()
+                    order.review_requested_at = datetime.now(timezone.utc)  # use Python datetime, not SQLAlchemy func.now()
                 elif status_code == 403:
                     order.status = "EXCLUDED_OPT_OUT"
                 elif status_code in [400, 404]:
