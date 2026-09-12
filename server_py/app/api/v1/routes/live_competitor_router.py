@@ -74,6 +74,12 @@ class FetchResultItem(BaseModel):
 class SaveRunRequest(BaseModel):
     results: List[FetchResultItem]
 
+class QueueFetchRequest(BaseModel):
+    asin_data: List[CompetitorInputItem]
+
+class GetResultsRequest(BaseModel):
+    asins: List[str]
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # POST /live-competitor/fetch-asin
@@ -327,3 +333,107 @@ def save_fetch_run(
         db.rollback()
         logger.error(f"Failed to save run for user {current_user.id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to save fetch results")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /live-competitor/queue
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.post("/queue")
+def queue_fetch_run(
+    payload: QueueFetchRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_enterprise_tier),
+):
+    """
+    Queue ASINs for background processing by setting fetch_status = 'pending'.
+    This is used by the cron worker scripts.live_competitor_worker.
+    """
+    try:
+        # Extract all unique ASINs from the payload
+        all_items = []
+        for item in payload.asin_data:
+            all_items.append({"own_asin": item.ownAsin, "asin": item.ownAsin, "asin_role": "own"})
+            for comp in item.competitorAsins:
+                all_items.append({"own_asin": item.ownAsin, "asin": comp, "asin_role": "competitor"})
+                
+        asins = [item["asin"] for item in all_items]
+        
+        # Get existing records
+        existing_records = db.query(LiveCompetitorResult).filter(
+            LiveCompetitorResult.user_id == current_user.id,
+            LiveCompetitorResult.asin.in_(asins)
+        ).all()
+        
+        existing_map = {r.asin: r for r in existing_records}
+        
+        for item in all_items:
+            if item["asin"] in existing_map:
+                # Update existing to pending (leave price/etc as is until fetched)
+                record = existing_map[item["asin"]]
+                record.fetch_status = "pending"
+                record.error_msg = None
+            else:
+                # Create new pending record
+                new_record = LiveCompetitorResult(
+                    user_id=current_user.id,
+                    own_asin=item["own_asin"],
+                    asin=item["asin"],
+                    asin_role=item["asin_role"],
+                    fetch_status="pending",
+                    error_msg=None
+                )
+                db.add(new_record)
+                
+        db.commit()
+        return {"status": "success", "message": "ASINs queued successfully"}
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to queue ASINs for user {current_user.id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to queue ASINs")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /live-competitor/results
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.post("/results")
+def get_fetch_results(
+    payload: GetResultsRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_enterprise_tier),
+):
+    """
+    Fetch the latest results from the database for a list of ASINs.
+    Used by the frontend to poll for background worker progress.
+    """
+    try:
+        if not payload.asins:
+            return {"results": []}
+            
+        records = db.query(LiveCompetitorResult).filter(
+            LiveCompetitorResult.user_id == current_user.id,
+            LiveCompetitorResult.asin.in_(payload.asins)
+        ).all()
+        
+        return {
+            "results": [
+                {
+                    "asin": r.asin,
+                    "mrp": r.mrp,
+                    "price": r.price,
+                    "buyBoxWinner": r.buy_box_winner,
+                    "sellerName": r.seller_name,
+                    "isFba": r.is_fba,
+                    "delivery110011": r.delivery_110011,
+                    "coupons": r.coupons,
+                    "bankOffers": r.bank_offers,
+                    "status": r.fetch_status,
+                    "errorMsg": r.error_msg,
+                    "own_asin": r.own_asin,
+                    "asin_role": r.asin_role
+                } for r in records
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Failed to fetch results for user {current_user.id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch results")

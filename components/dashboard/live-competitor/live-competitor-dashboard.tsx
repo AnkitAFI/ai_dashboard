@@ -3,51 +3,50 @@
 import React, { useState, useEffect } from "react";
 import { ComparisonRow, CompetitorInput, ProductData } from "@/app/(dashboard)/live-competitor/types";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, AlertCircle, Tag, CreditCard, Store, Truck, Package, XCircle } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle, Tag, CreditCard, Store, Truck, Package, XCircle, Save } from "lucide-react";
 import { API_BASE_URL } from "@/lib/config";
 
 const BASE_URL = API_BASE_URL;
 
 interface LiveCompetitorDashboardProps {
   initialInputs: CompetitorInput[];
+  onSaveList?: () => void;
+  isSaving?: boolean;
 }
 
-export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboardProps) {
+export function LiveCompetitorDashboard({ initialInputs, onSaveList, isSaving }: LiveCompetitorDashboardProps) {
   const [rows, setRows] = useState<ComparisonRow[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [fetchProgress, setFetchProgress] = useState({ current: 0, total: 0 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   // Initialize empty rows based on input
   useEffect(() => {
-    if (initialInputs.length > 0 && rows.length === 0) {
-      const initialRows: ComparisonRow[] = initialInputs.map((input) => ({
-        ownProduct: createEmptyProduct(input.ownAsin),
-        competitors: input.competitorAsins.map((asin) => createEmptyProduct(asin)),
-      }));
-      setRows(initialRows);
-    }
+    // Map initial inputs to comparison rows
+    const initialRows: ComparisonRow[] = initialInputs.map(input => {
+      return {
+        ownProduct: { asin: input.ownAsin, mrp: null, price: null, buyBoxWinner: null, sellerName: null, isFba: null, delivery110011: null, coupons: null, bankOffers: null, status: 'idle' },
+        competitors: input.competitorAsins.map(asin => ({ asin, mrp: null, price: null, buyBoxWinner: null, sellerName: null, isFba: null, delivery110011: null, coupons: null, bankOffers: null, status: 'idle' }))
+      };
+    });
+    setRows(initialRows);
   }, [initialInputs]);
-
-  const createEmptyProduct = (asin: string): ProductData => ({
-    asin,
-    mrp: null,
-    price: null,
-    buyBoxWinner: null,
-    sellerName: null,
-    isFba: null,
-    delivery110011: null,
-    coupons: null,
-    bankOffers: null,
-    status: "pending",
-  });
 
   const processBatch = async () => {
     if (rows.length === 0) return;
     setIsProcessing(true);
 
-    // Deep copy and set all pending to loading
+    // Immediately set all rows to pending visually
+    setRows(prevRows => prevRows.map(row => ({
+      ownProduct: { ...row.ownProduct, status: 'pending' },
+      competitors: row.competitors.map(comp => ({ ...comp, status: 'pending' }))
+    })));
+
+    // Deep copy and set all pending/idle to loading
     let updatedRows = rows.map(row => ({
-      ownProduct: { ...row.ownProduct, status: row.ownProduct.status === 'pending' ? 'loading' : row.ownProduct.status } as ProductData,
-      competitors: row.competitors.map(c => ({ ...c, status: c.status === 'pending' ? 'loading' : c.status } as ProductData))
+      ownProduct: { ...row.ownProduct, status: row.ownProduct.status === 'idle' || row.ownProduct.status === 'pending' ? 'loading' : row.ownProduct.status } as ProductData,
+      competitors: row.competitors.map(c => ({ ...c, status: c.status === 'idle' || c.status === 'pending' ? 'loading' : c.status } as ProductData))
     }));
     setRows(updatedRows);
 
@@ -60,97 +59,108 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
       });
     });
 
-    const finalResults: any[] = [];
+    // Collect unique ASINs to poll
+    const uniqueAsins = Array.from(new Set(allAsins.map(a => a.asin).filter(a => a.trim() !== '')));
+    
+    // Set initial progress immediately so it doesn't show 0/0
+    setFetchProgress({ current: 0, total: uniqueAsins.length });
 
-    // Process sequentially (1 at a time) to prevent Rainforest API Free Tier concurrency limits (402 errors)
-    const BATCH_SIZE = 1;
-    for (let i = 0; i < allAsins.length; i += BATCH_SIZE) {
-      const batch = allAsins.slice(i, i + BATCH_SIZE);
+    try {
+      // 1. Queue all ASINs
+      const res = await fetch(`${BASE_URL}/api/live-competitor/queue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ asin_data: initialInputs })
+      });
+      if (!res.ok) throw new Error('Failed to queue');
 
-      const promises = batch.map(async (item) => {
-        // Skip if ASIN is empty (can happen with sparse competitor columns)
-        if (!item.asin || !item.asin.trim()) return;
+      // 2. Poll for results
+      const pollInterval = setInterval(async () => {
         try {
-          const res = await fetch(`${BASE_URL}/api/live-competitor/fetch-asin`, {
+          const pollRes = await fetch(`${BASE_URL}/api/live-competitor/results`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ asin: item.asin })
+            body: JSON.stringify({ asins: uniqueAsins })
           });
-
-          if (!res.ok) throw new Error('API Error');
-          const data: ProductData = await res.json();
-
-          finalResults.push({
-            ...data,
-            own_asin: item.ownAsin,
-            asin_role: item.isOwn ? 'own' : 'competitor'
-          });
-
+          
+          if (!pollRes.ok) return;
+          const pollData = await pollRes.json();
+          const results: any[] = pollData.results || [];
+          
+          let pendingCount = 0;
+          let completedCount = 0;
+          
           setRows(prevRows => {
-            const newRows = prevRows.map(r => ({ ...r, competitors: [...r.competitors] }));
-            if (item.isOwn) {
-              newRows[item.rowIdx] = { ...newRows[item.rowIdx], ownProduct: { ...data, status: 'success' } };
-            } else {
-              newRows[item.rowIdx].competitors[item.compIdx!] = { ...data, status: 'success' };
-            }
-            return newRows;
-          });
-
-        } catch (error) {
-          setRows(prevRows => {
-            const newRows = prevRows.map(r => ({ ...r, competitors: [...r.competitors] }));
-            const errorData: ProductData = {
-              asin: item.asin,
-              mrp: null, price: null, buyBoxWinner: null, sellerName: null, isFba: null,
-              delivery110011: null, coupons: null, bankOffers: null,
-              status: 'error', errorMsg: 'Failed to fetch'
-            };
-
-            finalResults.push({
-              ...errorData,
-              own_asin: item.ownAsin,
-              asin_role: item.isOwn ? 'own' : 'competitor'
+            const newRows = [...prevRows];
+            
+            // Re-map results to our rows structure
+            results.forEach(record => {
+              if (record.status === 'pending') {
+                pendingCount++;
+              } else {
+                completedCount++;
+              }
+              
+              // Find where this ASIN belongs
+              allAsins.forEach(item => {
+                if (item.asin === record.asin && item.ownAsin === record.own_asin) {
+                  const updatedProduct = {
+                    asin: record.asin,
+                    mrp: record.mrp,
+                    price: record.price,
+                    buyBoxWinner: record.buyBoxWinner,
+                    sellerName: record.sellerName,
+                    isFba: record.isFba,
+                    delivery110011: record.delivery110011,
+                    coupons: record.coupons,
+                    bankOffers: record.bankOffers,
+                    status: record.status,
+                    errorMsg: record.errorMsg
+                  };
+                  
+                  if (item.isOwn) {
+                    newRows[item.rowIdx] = { ...newRows[item.rowIdx], ownProduct: updatedProduct };
+                  } else {
+                    newRows[item.rowIdx] = { ...newRows[item.rowIdx], competitors: [...newRows[item.rowIdx].competitors] };
+                    newRows[item.rowIdx].competitors[item.compIdx!] = updatedProduct;
+                  }
+                }
+              });
             });
-            if (item.isOwn) {
-              newRows[item.rowIdx] = { ...newRows[item.rowIdx], ownProduct: errorData };
-            } else {
-              newRows[item.rowIdx].competitors[item.compIdx!] = errorData;
-            }
+            
             return newRows;
           });
+          
+          setFetchProgress({ current: completedCount, total: uniqueAsins.length });
+          
+          // Stop polling when done
+          if (pendingCount === 0 && results.length > 0) {
+            clearInterval(pollInterval);
+            setIsProcessing(false);
+          }
+          
+        } catch (e) {
+          console.error("Polling error", e);
         }
-      });
-
-      await Promise.all(promises);
+      }, 5000);
       
-      // Add a small 1-second delay between requests to be extra safe with the free tier limits
-      if (i + BATCH_SIZE < allAsins.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+    } catch (e) {
+      console.error("Queue error", e);
+      setIsProcessing(false);
     }
-
-    // Save to DB silently
-    if (finalResults.length > 0) {
-      try {
-        await fetch(`${BASE_URL}/api/live-competitor/save-run`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ results: finalResults })
-        });
-      } catch (e) {
-        console.error("Failed to save run to DB", e);
-      }
-    }
-
-    setIsProcessing(false);
   };
 
   const renderProductCell = (product: ProductData, isOwn: boolean) => {
-    if (product.status === "pending") return <div className="text-slate-400 text-sm italic p-4">Waiting...</div>;
-    if (product.status === "loading") return <div className="flex items-center gap-2 text-slate-500 p-4"><Loader2 className="w-4 h-4 animate-spin" /> Fetching...</div>;
-    if (product.status === "error") return <div className="flex items-center gap-2 text-red-500 text-sm p-4"><AlertCircle className="w-4 h-4 shrink-0" /> <span className="truncate">{product.errorMsg}</span></div>;
+    if (product.status === "idle") return <div className="text-slate-400 text-sm italic p-4">- Ready to scan -</div>;
+    if (product.status === "pending") return <div className="text-slate-400 text-sm italic p-4">In Queue...</div>;
+    if (product.status === "loading") return <div className="flex items-center gap-2 text-slate-500 p-4"><Loader2 className="w-4 h-4 animate-spin" /> Scanning...</div>;
+    if (product.status === "error") return (
+      <div className="text-red-500 p-4 text-xs flex items-center gap-1">
+        <AlertCircle className="w-4 h-4" /> Data unavailable
+      </div>
+    );
 
     // No buy box winner — product is unavailable / suppressed at this pincode
     if (!product.price) {
@@ -210,7 +220,7 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
             </div>
           </div>
 
-          {isOwn && product.sellerName && (
+          {product.sellerName && (
             <div className="pt-3 border-t border-slate-200/80 dark:border-slate-700/80">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
                 <Store className="w-3.5 h-3.5" /> Seller
@@ -219,7 +229,7 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
             </div>
           )}
 
-          {isOwn && product.delivery110011 && (
+          {product.delivery110011 && (
             <div className="pt-3 border-t border-slate-200/80 dark:border-slate-700/80">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
                 <Truck className="w-3.5 h-3.5" /> Delivery (110011)
@@ -253,27 +263,58 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
   if (initialInputs.length === 0) {
     return (
       <div className="w-full h-64 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center text-slate-400">
-        <p>No ASINs loaded.</p>
-        <p className="text-sm">Please import your Excel sheet to begin.</p>
+        <p className="mb-2">No market data uploaded yet.</p>
+        <p className="text-sm">Please upload your product list to begin the analysis.</p>
       </div>
     );
   }
 
   const maxCompetitors = Math.max(...rows.map((r) => r.competitors.length), 0);
   const competitorCols = Array.from({ length: Math.max(1, maxCompetitors) }, (_, i) => i);
+  
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const currentTableRows = rows.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="space-y-6">
+      {/* Progress Bar */}
+      {isProcessing && (
+        <div className="bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/50 p-4 rounded-xl shadow-sm">
+          <div className="flex justify-between text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+            <span>Analyzing Market Data...</span>
+            <span className="text-indigo-600 dark:text-indigo-400">{Math.round((fetchProgress.current / fetchProgress.total) * 100) || 0}% ({fetchProgress.current} / {fetchProgress.total} Products)</span>
+          </div>
+          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+            <div 
+              className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+              style={{ width: `${Math.max(5, (fetchProgress.current / fetchProgress.total) * 100)}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Live Competitor Grid</h2>
-        <button
-          onClick={processBatch}
-          disabled={isProcessing}
-          className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-        >
-          {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          {isProcessing ? 'Processing...' : 'Fetch Live Data'}
-        </button>
+        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Market Intelligence Grid</h2>
+        <div className="flex items-center gap-3">
+          {onSaveList && (
+            <button 
+              onClick={onSaveList} 
+              disabled={isSaving || isProcessing}
+              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Tracking List"}
+            </button>
+          )}
+          
+          <button
+            onClick={processBatch}
+            disabled={isProcessing}
+            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:shadow-none whitespace-nowrap"
+          >
+            {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            {isProcessing ? `Scanning (${fetchProgress.current}/${fetchProgress.total})...` : 'Analyze Market Data'}
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
@@ -281,7 +322,7 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
               <th className="p-4 font-semibold text-sm text-slate-700 dark:text-slate-300 min-w-[220px]">
-                Our Product
+                Your Product
               </th>
               {competitorCols.map((idx) => (
                 <th key={idx} className="p-4 font-semibold text-sm text-slate-700 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 min-w-[200px]">
@@ -291,7 +332,7 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, idx) => (
+            {currentTableRows.map((row, idx) => (
               <tr key={idx} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                 <td className="p-4 align-top">
                   <div className="flex items-center gap-2 mb-1">
@@ -320,6 +361,34 @@ export function LiveCompetitorDashboard({ initialInputs }: LiveCompetitorDashboa
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
+            Showing <span className="font-semibold text-slate-700 dark:text-slate-200">{(currentPage - 1) * PAGE_SIZE + 1}</span> to <span className="font-semibold text-slate-700 dark:text-slate-200">{Math.min(currentPage * PAGE_SIZE, rows.length)}</span> of <span className="font-semibold text-slate-700 dark:text-slate-200">{rows.length}</span> Products
+          </span>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 transition-colors"
+            >
+              Previous
+            </button>
+            <div className="text-sm font-bold text-slate-700 dark:text-slate-300 px-2">
+              Page {currentPage} of {totalPages}
+            </div>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

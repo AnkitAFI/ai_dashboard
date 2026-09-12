@@ -13,7 +13,7 @@ export interface ProductData {
   delivery110011: string | null;
   coupons: string | null;
   bankOffers: string[] | null;
-  status: 'pending' | 'loading' | 'success' | 'error';
+  status: 'idle' | 'pending' | 'loading' | 'success' | 'error';
   errorMsg?: string;
 }
 
