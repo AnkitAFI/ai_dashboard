@@ -51,7 +51,8 @@ async def sp_api_callback(
         
     if error or not spapi_oauth_code:
         logger.warning(f"Amazon SP-API Auth Cancelled or Failed: {error} - {error_description}")
-        frontend_url = f"{settings.FRONTEND_URL}/seller/store/setup?error=access_denied"
+        # Redirect to store page (not /seller/store/setup which doesn't exist)
+        frontend_url = f"{settings.FRONTEND_URL}/seller/store?error=access_denied"
         return RedirectResponse(url=frontend_url)
 
     # Exchange code for token
@@ -104,8 +105,8 @@ async def sp_api_callback(
     
     db.commit()
     
-    # Redirect back to the frontend dashboard
-    frontend_url = f"{settings.FRONTEND_URL}/seller/store"
+    # Redirect to Amazon Store Setup page so user sees their connected store
+    frontend_url = f"{settings.FRONTEND_URL}/seller/store?connected=true"
     return RedirectResponse(url=frontend_url)
 
 @router.get("/status")

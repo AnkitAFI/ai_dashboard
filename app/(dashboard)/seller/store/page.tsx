@@ -66,12 +66,16 @@ export default function AmazonStoreSetupPage() {
       }
     };
 
-    // If we just returned from OAuth callback
-    if (searchParams?.get("success") === "true") {
+    // If we just returned from OAuth callback (legacy ?success=true or new ?connected=true)
+    if (searchParams?.get("success") === "true" || searchParams?.get("connected") === "true") {
+      const fromOnboarding = searchParams?.get("connected") === "true";
       setIsConnected(true);
       toast({
-        title: "Success",
-        description: "Successfully connected your Amazon Seller Store!",
+        title: "✅ Amazon Store Connected!",
+        description: fromOnboarding
+          ? "Welcome! Your store is live. Data syncs within 2 hours — explore your dashboard in the meantime."
+          : "Successfully connected your Amazon Seller Store!",
+        duration: 6000,
       });
       // Clean up URL
       router.replace("/seller/store");

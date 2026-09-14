@@ -64,19 +64,6 @@ async function fetchCategories(marketplace: string): Promise<string[]> {
   return data.categories ?? [];
 }
 
-async function connectSellerAccount(
-  sellerId: string,
-  country: string,
-): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ seller_id: sellerId, country }),
-  });
-  if (!response.ok) throw new Error("Failed to connect seller account");
-}
-
 // Marketplaces where existing seller is NOT yet supported
 const COMING_SOON_SELLER_MARKETPLACES = ["flipkart", "both"];
 
@@ -98,11 +85,9 @@ export default function OnboardingModal({
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [categoryError, setCategoryError] = useState(false);
 
-  // Seller connection state
-  const [sellerCountry, setSellerCountry] = useState("IN");
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  // Seller OAuth connection state
+  const [isRedirectingToAmazon, setIsRedirectingToAmazon] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(null);
 
   // Fetch categories when marketplace chosen and goal is new_seller
   useEffect(() => {
@@ -125,12 +110,35 @@ export default function OnboardingModal({
       .finally(() => setLoadingCategories(false));
   }, [formData.onboarding_marketplace, formData.onboarding_goal]);
 
-  // Reset seller state when marketplace changes
+  // Reset seller oauth state when marketplace changes
   useEffect(() => {
-    setIsConnected(false);
-    setConnectionError(null);
+    setOauthError(null);
     setFormData((prev) => ({ ...prev, onboarding_details: "", seller_id: "" }));
   }, [formData.onboarding_marketplace]);
+
+  // Fix: If user clicks browser Back from Amazon login page, un-freeze the "Redirecting..." button.
+  // The page is restored from bfcache with the old state (isRedirectingToAmazon=true).
+  // pageshow fires with event.persisted=true in that case.
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        setIsRedirectingToAmazon(false);
+        setOauthError(null);
+      }
+    };
+    // visibilitychange as fallback for browsers that skip pageshow on bfcache restore
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        setIsRedirectingToAmazon(false);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -139,26 +147,22 @@ export default function OnboardingModal({
     formData.onboarding_goal === "existing_seller" &&
     COMING_SOON_SELLER_MARKETPLACES.includes(formData.onboarding_marketplace);
 
-  const handleConnectSeller = async () => {
-    const sellerId = formData.onboarding_details.trim();
-    if (!sellerId) {
-      setConnectionError("Please enter a valid Seller ID");
-      return;
-    }
-
-    setIsConnecting(true);
-    setConnectionError(null);
-
+  // Initiate Amazon SP-API OAuth — redirects user to Amazon login page
+  const handleAmazonOAuth = async () => {
+    setIsRedirectingToAmazon(true);
+    setOauthError(null);
     try {
-      await connectSellerAccount(sellerId, sellerCountry);
-      setIsConnected(true);
-      setFormData((prev) => ({ ...prev, seller_id: sellerId }));
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/connect`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Could not generate Amazon auth URL");
+      const data = await res.json();
+      // Redirect to Amazon's OAuth page — user authenticates there
+      // Amazon calls our /callback → saves refresh_token → redirects to /seller/store?connected=true
+      window.location.href = data.url;
     } catch (err: any) {
-      setConnectionError(
-        err.message ? sanitizeApiError(err.message, "Something went wrong. Please try again.") : "Something went wrong. Please try again.",
-      );
-    } finally {
-      setIsConnecting(false);
+      setOauthError("Could not connect to Amazon. Please try again.");
+      setIsRedirectingToAmazon(false);
     }
   };
 
@@ -187,9 +191,10 @@ export default function OnboardingModal({
     if (currentStep === 1) return !!formData.onboarding_goal;
     if (currentStep === 2) return !!formData.onboarding_marketplace;
     if (currentStep === 3) {
-      if (isComingSoon) return true; // can proceed past coming soon
-      if (formData.onboarding_goal === "existing_seller") return isConnected;
-      return !!formData.onboarding_details;
+      if (isComingSoon) return true;
+      // existing_seller+amazon: always valid — they can connect via OAuth or skip
+      if (formData.onboarding_goal === "existing_seller") return true;
+      return !!formData.onboarding_details; // new_seller: needs category
     }
     return false;
   };
@@ -488,149 +493,76 @@ export default function OnboardingModal({
                       </motion.div>
                     )}
 
-                  {/* EXISTING SELLER — Amazon seller ID connection */}
+                  {/* EXISTING SELLER — Amazon SP-API OAuth connect */}
                   {formData.onboarding_goal === "existing_seller" &&
                     !isComingSoon && (
-                      <div className="space-y-2">
-                        {/* Connected success state */}
-                        {isConnected ? (
-                          <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="flex flex-col items-center justify-center py-4 gap-4"
-                          >
-                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
-                              <CheckCircle2 className="w-8 h-8 text-green-500" />
-                            </div>
-                            <div className="text-center">
-                              <p className="font-bold text-slate-800 text-lg">
-                                Store Connected!
-                              </p>
-                              <p className="text-sm text-slate-500 mt-1">
-                                Seller ID{" "}
-                                <span className="font-mono font-semibold text-slate-700">
-                                  {formData.onboarding_details}
-                                </span>{" "}
-                                is linked.
-                              </p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setIsConnected(false);
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  onboarding_details: "",
-                                  seller_id: "",
-                                }));
-                              }}
-                              className="text-xs text-slate-400 hover:text-slate-600 hover:underline"
-                            >
-                              Use a different ID
-                            </button>
-                          </motion.div>
-                        ) : (
-                          <>
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                                <ShoppingBag className="w-5 h-5 text-amber-600" />
-                              </div>
-                              <div>
-                                <label className="text-base font-bold text-slate-800 block">
-                                  Connect your store
-                                </label>
-                                <p className="text-xs text-slate-400">
-                                  Enter your Amazon Merchant ID
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <label className="text-sm font-semibold text-slate-700">
-                                Seller / Merchant ID
-                              </label>
-                              <Input
-                                placeholder="e.g. A2P3M1XXXXXXX"
-                                className="h-12 rounded-xl border-slate-200 focus:ring-2 focus:ring-[#0f2a43]"
-                                value={formData.onboarding_details}
-                                onChange={(e) => {
-                                  setConnectionError(null);
-                                  setFormData({
-                                    ...formData,
-                                    onboarding_details: e.target.value,
-                                  });
-                                }}
-                                disabled={isConnecting}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <label className="text-sm font-semibold text-slate-700">
-                                Marketplace Region
-                              </label>
-                              <Select
-                                value={sellerCountry}
-                                onValueChange={setSellerCountry}
-                                disabled={isConnecting}
-                              >
-                                <SelectTrigger className="h-12 rounded-xl border-slate-200">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="IN">India 🇮🇳</SelectItem>
-                                  <SelectItem value="US">
-                                    United States 🇺🇸
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <p className="text-[10px] text-slate-400 font-medium">
-                                Data will be fetched specifically for this
-                                region.
-                              </p>
-                            </div>
-
-                            {connectionError && (
-                              <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm">
-                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                                <span>{connectionError}</span>
-                              </div>
-                            )}
-
-                            <Button
-                              onClick={handleConnectSeller}
-                              disabled={
-                                isConnecting ||
-                                !formData.onboarding_details.trim()
-                              }
-                              className="w-full h-12 rounded-xl bg-[#0f2a43] hover:bg-[#1a3d5c] text-white font-bold transition-all"
-                            >
-                              {isConnecting ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                  Connecting your store…
-                                </>
-                              ) : (
-                                <>
-                                  <ShoppingBag className="w-4 h-4 mr-2" />
-                                  Connect Store
-                                </>
-                              )}
-                            </Button>
-
-                            <p className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
-                              🔒 Secure Read-Only Access
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                            <ShoppingBag className="w-5 h-5 text-amber-600" />
+                          </div>
+                          <div>
+                            <label className="text-base font-bold text-slate-800 block">
+                              Connect your Amazon store
+                            </label>
+                            <p className="text-xs text-slate-400">
+                              Securely authorize via Amazon — we never see your password
                             </p>
+                          </div>
+                        </div>
 
-                            <button
-                              type="button"
-                              onClick={handleSkipSellerId}
-                              className="text-sm text-sky-600 font-medium hover:underline mt-2 block mx-auto"
-                              data-track-id="onboarding-skip-seller-id"
-                            >
-                              Skip for now — I'll add it later
-                            </button>
-                          </>
+                        {/* What you unlock */}
+                        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-2">
+                          {[
+                            "Financial Command Center — Revenue, profit & ASIN breakdown",
+                            "Restock Forecaster — Never run out of stock",
+                            "Review Automator — Auto request reviews",
+                            "Lost Money Recovery — Find Amazon owed reimbursements",
+                          ].map((feature) => (
+                            <div key={feature} className="flex items-start gap-2 text-sm text-slate-600">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {oauthError && (
+                          <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            <span>{oauthError}</span>
+                          </div>
                         )}
+
+                        <Button
+                          onClick={handleAmazonOAuth}
+                          disabled={isRedirectingToAmazon}
+                          className="w-full h-12 rounded-xl bg-[#0f2a43] hover:bg-[#1a3d5c] text-white font-bold transition-all"
+                        >
+                          {isRedirectingToAmazon ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Redirecting to Amazon…
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag className="w-4 h-4 mr-2" />
+                              Connect with Amazon
+                            </>
+                          )}
+                        </Button>
+
+                        <p className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
+                          🔒 Official Amazon OAuth — Read-Only Access
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={handleSkipSellerId}
+                          className="text-sm text-sky-600 font-medium hover:underline block mx-auto"
+                          data-track-id="onboarding-skip-seller-id"
+                        >
+                          Skip for now — I'll connect my store later
+                        </button>
                       </div>
                     )}
                 </div>
