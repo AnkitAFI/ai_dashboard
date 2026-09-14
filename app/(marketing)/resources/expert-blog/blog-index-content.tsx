@@ -57,6 +57,18 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "34",
+    title: "What Are the Best Amazon Seller Tools for Indian Sellers in 2026?",
+    excerpt:
+      "Five tool categories every Amazon India and Flipkart seller should cover, where global names like Helium 10 and Jungle Scout hold up, and where they fall short for INR pricing and Flipkart.",
+    category: "Seller Tools & Strategy",
+    readTime: "5 min read",
+    image: "/best-amazon-seller-tools-india.png",
+    featuredImage: "/image.png",
+    route: "/resources/expert-blog/best-amazon-seller-tools-india-2026",
+    popular: true,
+  },
+  {
     id: "33",
     title: "What Amazon & Flipkart Sellers Should Stock Before Rakhi",
     excerpt:
@@ -64,7 +76,6 @@ const articles: Article[] = [
     category: "Festive Trends",
     readTime: "12 min read",
     image: "/Blog_34_banner.png",
-    featuredImage: "/image.png",
     route: "/resources/expert-blog/raksha-bandhan-2026-seller-guide",
     popular: true,
   },
