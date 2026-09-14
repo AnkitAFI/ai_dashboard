@@ -7,7 +7,6 @@ import ChartsGrid from "@/components/dashboard/charts-grid";
 import ProductRankings from "@/components/dashboard/product-rankings";
 import AIRecommendations from "@/components/dashboard/ai-recommendations";
 import SellerDashboardView from "@/components/dashboard/seller-dashboard-view";
-import SellerIdInput from "@/components/dashboard/seller-id-input";
 import {
   TrendingDown,
   TrendingUp,
@@ -51,7 +50,6 @@ function DashboardContent() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
   const [sidebarMode, setSidebarMode] = useState<string>("explorer");
-  const [localSellerId, setLocalSellerId] = useState<string | null>(null);
 
   const { limits, canAccessFeature, currentTier } = useSubscriptionLimits();
   const { updateSubscriptionInDB } = useSubscriptionSync();
@@ -238,17 +236,8 @@ function DashboardContent() {
         </div>
       </div>
 
-      {sidebarMode === "seller" ? (
-        user?.sellerId || localSellerId ? (
-          <SellerDashboardView />
-        ) : (
-          <SellerIdInput
-            onSaved={(id) => {
-              setLocalSellerId(id);
-              window.location.reload();
-            }}
-          />
-        )
+      {sidebarMode === "seller" && user?.seller_id ? (
+        <SellerDashboardView />
       ) : (
         <>
           <MetricsCards selectedSource={selectedSource} />

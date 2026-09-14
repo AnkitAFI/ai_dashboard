@@ -118,15 +118,18 @@ export default function SellerDashboardView() {
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (user?.seller_id) {
-      fetchStats();
-      interval = setInterval(() => {
-        if (!stats || stats.status === "SYNCING" || stats?.metrics?.total_products === 0) {
-          fetchStats();
-        }
-      }, 2000);
+    // No legacy seller_id — stop spinner immediately, nothing to fetch
+    if (!user?.seller_id) {
+      setLoading(false);
+      return;
     }
+    let interval: NodeJS.Timeout;
+    fetchStats();
+    interval = setInterval(() => {
+      if (!stats || stats.status === "SYNCING" || stats?.metrics?.total_products === 0) {
+        fetchStats();
+      }
+    }, 2000);
     return () => { if (interval) clearInterval(interval); };
   }, [user?.seller_id, stats?.status, stats?.metrics?.total_products]);
 
