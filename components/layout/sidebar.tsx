@@ -160,7 +160,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
 
 const SELLER_SECTIONS: NavSection[] = [
   {
-    label: "MY STORE",
+    label: "AMAZON SELLER",
     icon: Store,
     items: [
       { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
@@ -169,6 +169,12 @@ const SELLER_SECTIONS: NavSection[] = [
       { href: "/seller/restock", label: "Restock Forecaster", icon: Package, badge: "NEW" },
       { href: "/seller/reviews", label: "Review Automator", icon: Star, badge: "NEW" },
       { href: "/seller/reimbursements", label: "Lost Money Recovery", icon: ShieldCheck, badge: "NEW" },
+    ],
+  },
+  {
+    label: "AMAZON ADS",
+    icon: LinkIcon,
+    items: [
       { href: "/seller/ads/setup", label: "Ads Integration", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/ads/analytics", label: "Ads Analytics", icon: Activity, badge: "NEW" },
     ],
@@ -465,7 +471,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 <div className="space-y-1">
                   {section.items.map((item) => {
                     if (
-                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") && 
+                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") &&
                       user?.subscriptionTier !== "enterprise"
                     ) {
                       return null;

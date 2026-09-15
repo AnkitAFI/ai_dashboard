@@ -47,15 +47,19 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Zap className="h-6 w-6" />,
     features: [
       "Basic dashboard access",
+      { title: "Store Connections", detail: "Connect your Amazon Seller Central & Ads account securely" },
+      { title: "Basic Financials", detail: "View Gross Revenue, Amazon Fees & Net Profit" },
+      { title: "Read-only Ads Analytics", detail: "View your active campaigns performance" },
       "25 product tracking",
       "Top 5 products filter",
       "5 notifications",
-      "Weekly reports",
     ],
     limitations: [
       "AI Chart Summaries",
       "Advanced analytics",
+      "Premium Seller Tools (Reviews, Restock, Recovery)",
       "Real-time data",
+      "Advanced Ads Automations",
       "Premium AI features",
       "Priority support",
     ],
@@ -77,11 +81,15 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "AI Chart Summaries",
       // Temporarily hidden until API keys are secured
       // { title: "One-Click Cataloger", detail: "Generate & publish up to 20 SKUs (Top-ups available at ₹75/SKU)" },
-      "Daily reports",
       "Basic competitor alerts",
       "Email support",
     ],
-    limitations: ["Real-time alerts", "Priority support"],
+    limitations: [
+      "Real-time alerts",
+      "Premium Seller Tools (Reviews, Restock, Recovery)",
+      "Advanced Ads Automations",
+      "Priority support"
+    ],
   },
   {
     id: "premium",
@@ -92,6 +100,11 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Crown className="h-6 w-6 text-yellow-500" />,
     features: [
       "All Basic features",
+      { title: "Financial Command Center", detail: "ASIN-level profitability & Amazon fee breakdown" },
+      { title: "Restock Forecaster", detail: "Predict stockouts & track restock recommendations" },
+      { title: "Review Automator", detail: "Automate review requests & generate AI reply drafts" },
+      { title: "Lost Money Recovery", detail: "Scan for missing inventory to help file claims" },
+      { title: "Ads Automations", detail: "Target ACOS rules, Dayparting schedules & Keyword management" },
       "Unlimited product tracking",
       "Top 100 products filter",
       "Unlimited AI chat",
@@ -114,6 +127,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "All Premium features",
       "White-label options",
       "Premium support",
+      "Custom integrations"
     ],
     limitations: [],
   },
@@ -209,7 +223,7 @@ export default function Subscription() {
 
   const cancelSubscription = async () => {
     if (!confirm("Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle.")) return;
-    
+
     setCancelling(true);
     setError(null);
     setSuccess(null);
@@ -220,7 +234,7 @@ export default function Subscription() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
-      
+
       setSuccess("Subscription cancelled successfully. It will not auto-renew.");
       await refreshUser();
     } catch (err: any) {
@@ -389,8 +403,8 @@ export default function Subscription() {
               className={cn(
                 "relative flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
                 styles.ring,
-                isCurrentPlan 
-                  ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850" 
+                isCurrentPlan
+                  ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850"
                   : "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
               )}>
 
@@ -466,7 +480,7 @@ export default function Subscription() {
                     const isObj = typeof feature === 'object';
                     const title = isObj ? feature.title : feature as string;
                     const detail = isObj ? feature.detail : null;
-                    
+
                     return (
                       <div key={index} className="flex items-start gap-2 w-full">
                         <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -508,9 +522,9 @@ export default function Subscription() {
                         <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
                       </Button>
                       {plan.id !== "free" && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={cancelSubscription}
                           disabled={cancelling}
                           className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
