@@ -85,6 +85,8 @@ class UserSubscription(Base):
     subscription_tier = Column(String(20), default="free")
     subscription_expires_at = Column(DateTime(timezone=True))
     scheduled_downgrade_to = Column(String(50))
+    razorpay_subscription_id = Column(String(50), unique=True, index=True)
+    razorpay_plan_id = Column(String(50))
     ki_cycle_start = Column(DateTime(timezone=True))
     
     ai_chat_used = Column(Integer, default=0)

@@ -60,8 +60,8 @@ declare global {
   }
 }
 interface RazorpayOptions {
-  key: string; amount: number; currency: string; name: string;
-  description: string; order_id: string;
+  key: string; amount?: number; currency?: string; name: string;
+  description: string; order_id?: string; subscription_id?: string;
   prefill: { name: string; email: string; contact: string };
   notes: Record<string, string>; theme: { color: string };
   handler: (response: RazorpayResponse) => void;
@@ -69,7 +69,8 @@ interface RazorpayOptions {
 }
 interface RazorpayResponse {
   razorpay_payment_id: string;
-  razorpay_order_id: string;
+  razorpay_order_id?: string;
+  razorpay_subscription_id?: string;
   razorpay_signature: string;
 }
 interface RazorpayInstance { open: () => void; }
@@ -340,8 +341,10 @@ function PaymentModalInner({
     try {
       const verifyEndpoint = isCreditMode 
         ? `${API_BASE}/api/payments/verify-credit-order`
-        : `${API_BASE}/api/payments/verify`;
-        
+        : r.razorpay_subscription_id 
+          ? `${API_BASE}/api/payments/verify-subscription`
+          : `${API_BASE}/api/payments/verify`;
+          
       const verifyBody = isCreditMode
         ? {
             razorpay_payment_id: r.razorpay_payment_id,
@@ -351,14 +354,22 @@ function PaymentModalInner({
             user_id: userId, 
             credits: parseInt(plan.id.replace("ai_credits_", ""))
           }
-        : {
-            razorpay_payment_id: r.razorpay_payment_id,
-            razorpay_order_id: r.razorpay_order_id,
-            razorpay_signature: r.razorpay_signature,
-            order_db_id: dbId, 
-            user_id: userId, 
-            plan_id: plan.id,
-          };
+        : r.razorpay_subscription_id
+          ? {
+              razorpay_payment_id: r.razorpay_payment_id,
+              razorpay_subscription_id: r.razorpay_subscription_id,
+              razorpay_signature: r.razorpay_signature,
+              user_id: userId,
+              plan_id: plan.id,
+            }
+          : {
+              razorpay_payment_id: r.razorpay_payment_id,
+              razorpay_order_id: r.razorpay_order_id,
+              razorpay_signature: r.razorpay_signature,
+              order_db_id: dbId, 
+              user_id: userId, 
+              plan_id: plan.id,
+            };
 
       const res = await fetch(verifyEndpoint, {
         method: "POST",
@@ -388,9 +399,12 @@ function PaymentModalInner({
       const sdkLoaded = await loadRazorpay();
       if (!sdkLoaded) throw new Error("Failed to load Razorpay. Check your internet connection.");
 
-      const createEndpoint = isCreditMode 
-        ? `${API_BASE}/api/payments/create-credit-order`
-        : `${API_BASE}/api/payments/create-order`;
+      let createEndpoint = `${API_BASE}/api/payments/create-order`;
+      if (isCreditMode) {
+        createEndpoint = `${API_BASE}/api/payments/create-credit-order`;
+      } else if (plan.id === "basic" || plan.id === "premium") {
+        createEndpoint = `${API_BASE}/api/payments/create-subscription`;
+      }
         
       const billingDetails = {
         full_name: form.fullName,
@@ -443,13 +457,10 @@ function PaymentModalInner({
       setStep(2);
       paymentHandledRef.current = false;
 
-      const rzp = new window.Razorpay({
+      const options: any = {
         key: data.razorpay_key_id,
-        amount: data.amount,
-        currency: data.currency,
         name: "Insydz Analytics",
         description: `${plan.name} Plan – Monthly`,
-        order_id: data.razorpay_order_id,
         prefill: { name: form.fullName, email: form.email, contact: `+91${form.mobile}` },
         notes: {
           plan_id: plan.id,
@@ -457,7 +468,7 @@ function PaymentModalInner({
           gst_number: form.hasGst ? form.gstNumber.toUpperCase() : "",
         },
         theme: { color: "#0284c7" },
-        handler: async (response) => {
+        handler: async (response: RazorpayResponse) => {
           paymentHandledRef.current = true;
           await verify(response, data.order_db_id);
         },
@@ -470,7 +481,17 @@ function PaymentModalInner({
             }
           },
         },
-      });
+      };
+
+      if (data.razorpay_subscription_id) {
+        options.subscription_id = data.razorpay_subscription_id;
+      } else {
+        options.order_id = data.razorpay_order_id;
+        options.amount = data.amount;
+        options.currency = data.currency;
+      }
+      
+      const rzp = new window.Razorpay(options as RazorpayOptions);
 
       rzp.open();
 

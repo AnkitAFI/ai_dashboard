@@ -205,6 +205,31 @@ export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<string>(currentTier);
   const [loading, setLoading] = useState(false);
   const [previewLoadingPlan, setPreviewLoadingPlan] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+
+  const cancelSubscription = async () => {
+    if (!confirm("Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle.")) return;
+    
+    setCancelling(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/payments/cancel-subscription`, {
+        method: "POST",
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
+      
+      setSuccess("Subscription cancelled successfully. It will not auto-renew.");
+      await refreshUser();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0, month: "" });
@@ -473,14 +498,28 @@ export default function Subscription() {
                 </div>
 
                 {/* CTA button */}
-                <div className="pt-2">
+                <div className="pt-2 flex flex-col gap-2">
                   {isCurrentPlan ? (
-                    <Button disabled
-                      className="w-full h-11 rounded-xl bg-green-50 border-2
-                                       border-green-200 text-green-700 font-bold
-                                       text-sm cursor-not-allowed opacity-100">
-                      <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
-                    </Button>
+                    <>
+                      <Button disabled
+                        className="w-full h-11 rounded-xl bg-green-50 border-2
+                                         border-green-200 text-green-700 font-bold
+                                         text-sm cursor-not-allowed opacity-100">
+                        <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
+                      </Button>
+                      {plan.id !== "free" && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={cancelSubscription}
+                          disabled={cancelling}
+                          className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
+                        >
+                          {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                          Cancel Subscription
+                        </Button>
+                      )}
+                    </>
                   ) : plan.id === "enterprise" ? (
                     <Button variant="outline"
                       className="w-full h-11 rounded-xl border-2 border-indigo-200
