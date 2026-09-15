@@ -15,8 +15,8 @@ router = APIRouter(prefix="/amazon-sp-api", tags=["Amazon SP-API"])
 logger = logging.getLogger(__name__)
 
 # SP-API endpoints for India (EU region endpoints handle IN)
-# Developer initiated authorization for IN requires the EU endpoint
-AMAZON_OAUTH_URL = "https://eu.account.amazon.com/ap/oa"
+# Developer initiated authorization for IN requires the EU endpoint for token, but Seller Central IN for consent
+AMAZON_OAUTH_URL = "https://sellercentral.amazon.in/apps/authorize/consent"
 AMAZON_TOKEN_URL = "https://api.amazon.com/auth/o2/token"
 REDIRECT_URI = settings.AMAZON_SP_API_LWA_REDIRECT_URI
 
@@ -24,9 +24,7 @@ REDIRECT_URI = settings.AMAZON_SP_API_LWA_REDIRECT_URI
 def get_sp_api_url(current_user = Depends(get_current_user)):
     """Generate Login with Amazon URL for SP-API. Pure URL builder — no Amazon API call."""
     params = {
-        "client_id": settings.AMAZON_SP_API_LWA_CLIENT_ID.strip(),
-        "response_type": "code",
-        "redirect_uri": REDIRECT_URI,
+        "application_id": settings.AMAZON_SP_API_APP_ID.strip(),
         "state": str(current_user.id),
         "version": "beta"
     }

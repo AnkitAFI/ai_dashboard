@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     AMAZON_LWA_REDIRECT_URI: str = ""
 
     # Amazon SP-API (Production)
+    AMAZON_SP_API_APP_ID: str = ""
     AMAZON_SP_API_LWA_CLIENT_ID: str = ""
     AMAZON_SP_API_LWA_CLIENT_SECRET: str = ""
     AMAZON_SP_API_LWA_REDIRECT_URI: str = ""
