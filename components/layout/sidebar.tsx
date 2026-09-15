@@ -163,7 +163,6 @@ const SELLER_SECTIONS: NavSection[] = [
     label: "AMAZON SELLER",
     icon: Store,
     items: [
-      { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/store", label: "Amazon Store Setup", icon: Store, badge: "NEW" },
       { href: "/seller/profitability", label: "Financial Command Center", icon: Calculator, badge: "NEW" },
       { href: "/seller/restock", label: "Restock Forecaster", icon: Package, badge: "NEW" },
