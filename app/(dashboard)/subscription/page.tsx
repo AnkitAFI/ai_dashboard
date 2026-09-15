@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infinity as InfinityIcon, Shield, } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -222,8 +223,6 @@ export default function Subscription() {
   const [cancelling, setCancelling] = useState(false);
 
   const cancelSubscription = async () => {
-    if (!confirm("Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle.")) return;
-
     setCancelling(true);
     setError(null);
     setSuccess(null);
@@ -522,16 +521,33 @@ export default function Subscription() {
                         <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
                       </Button>
                       {plan.id !== "free" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={cancelSubscription}
-                          disabled={cancelling}
-                          className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
-                        >
-                          {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                          Cancel Subscription
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={cancelling}
+                              className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
+                            >
+                              {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                              Cancel Subscription
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle. No refund will be issued.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                              <AlertDialogAction onClick={cancelSubscription} className="bg-rose-600 hover:bg-rose-700 text-white">
+                                Yes, Cancel
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       )}
                     </>
                   ) : plan.id === "enterprise" ? (
