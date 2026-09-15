@@ -35,6 +35,7 @@ from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails
 from app.core.security import verify_password, get_password_hash
 from app.core.config import settings
 from app.services.inbound_service import SellerInboundService
+from app.services.subscription_service import sync_and_check_subscription_status
 # app = FastAPI(title="API", version="1.0.0")
 import os
 # IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
@@ -6465,6 +6466,7 @@ def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_d
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     
+    user = sync_and_check_subscription_status(user, db)
     return user
 
 def check_and_downgrade(user, db):
@@ -10774,18 +10776,6 @@ def track_ai_usage(
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
     db: Session = Depends(get_db)
 ):
-    """
-    Track and increment AI chat usage for the current month (requires authentication)
-    Auto-resets counter if it's a new month
-    
-    Args:
-        user_id: User ID
-        data: AIUsageUpdate with increment and month
-        current_user: Authenticated user from session
-    
-    Returns:
-        Updated AI usage data
-    """
     try:
         # ✅ SECURITY: Verify user can only track their own usage
         if current_user.id != user_id:
@@ -10794,17 +10784,11 @@ def track_ai_usage(
                 detail="Not authorized to update this user's AI usage"
             )
         
-        current_month = data.month
-        stored_month = current_user.ai_chat_month
-        current_usage = current_user.ai_chat_used or 0
+        current_user = sync_and_check_subscription_status(current_user, db)
         
-        # Reset counter if new month
-        if stored_month != current_month:
-            new_usage = data.increment
-            print(f"🔄 Resetting AI usage for user {user_id} (new month: {current_month})")
-        else:
-            new_usage = current_usage + data.increment
-            print(f"📊 Incrementing AI usage for user {user_id}: {current_usage} -> {new_usage}")
+        current_month = data.month
+        current_usage = current_user.ai_chat_used or 0
+        new_usage = current_usage + data.increment
         
         # Update database
         current_user.ai_chat_used = new_usage
@@ -10834,17 +10818,6 @@ def get_ai_usage(
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
     db: Session = Depends(get_db)
 ):
-    """
-    Get current AI chat usage for the month (requires authentication)
-    Auto-resets if viewing in a new month
-    
-    Args:
-        user_id: User ID
-        current_user: Authenticated user from session
-    
-    Returns:
-        Current AI usage data
-    """
     try:
         # ✅ SECURITY: Verify user can only view their own usage
         if current_user.id != user_id:
@@ -10853,18 +10826,12 @@ def get_ai_usage(
                 detail="Not authorized to view this user's AI usage"
             )
         
+        current_user = sync_and_check_subscription_status(current_user, db)
         current_month = datetime.now().strftime("%Y-%m")
-        stored_month = current_user.ai_chat_month
-        
-        # Reset if new month
-        if stored_month != current_month:
-            usage = 0
-        else:
-            usage = current_user.ai_chat_used or 0
         
         return {
-            "ai_chat_used": usage,
-            "ai_chat_month": stored_month or current_month,
+            "ai_chat_used": current_user.ai_chat_used or 0,
+            "ai_chat_month": current_user.ai_chat_month or current_month,
             "subscription_tier": current_user.subscription_tier or 'free'
         }
     
@@ -12562,19 +12529,15 @@ async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        user = sync_and_check_subscription_status(user, db)
         tier          = (user.subscription_tier or "free").lower()
         limit         = SOV_TIER_LIMITS.get(tier, 3)
         current_month = datetime.now().strftime("%Y-%m")
-        if user.sov_month != current_month:
-            user.sov_used  = 0
-            user.sov_month = current_month
-            db.commit()
-            db.refresh(user)
         count     = user.sov_used or 0
         remaining = (limit - count) if limit != -1 else -1
         return {
             "count": count, "limit": limit, "remaining": remaining,
-            "subscription_tier": tier, "month": current_month,
+            "subscription_tier": tier, "month": user.sov_month or current_month,
         }
     except HTTPException:
         raise
