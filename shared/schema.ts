@@ -56,6 +56,8 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   subscriptionTier: varchar("subscription_tier", { length: 20 }).default("free"),
   subscriptionExpiresAt: timestamp("subscription_expires_at", { withTimezone: true }),
   scheduledDowngradeTo: varchar("scheduled_downgrade_to", { length: 50 }),
+  razorpaySubscriptionId: varchar("razorpay_subscription_id", { length: 50 }).unique(),
+  razorpayPlanId: varchar("razorpay_plan_id", { length: 50 }),
   kiCycleStart: timestamp("ki_cycle_start", { withTimezone: true }),
   aiChatUsed: integer("ai_chat_used").default(0),
   aiChatMonth: varchar("ai_chat_month", { length: 7 }),

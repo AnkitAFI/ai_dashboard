@@ -85,6 +85,8 @@ class UserSubscription(Base):
     subscription_tier = Column(String(20), default="free")
     subscription_expires_at = Column(DateTime(timezone=True))
     scheduled_downgrade_to = Column(String(50))
+    razorpay_subscription_id = Column(String(50), unique=True, index=True)
+    razorpay_plan_id = Column(String(50))
     ki_cycle_start = Column(DateTime(timezone=True))
     
     ai_chat_used = Column(Integer, default=0)
@@ -101,6 +103,9 @@ class UserSubscription(Base):
     ai_listings_generated = Column(Integer, default=0)
     ai_listings_month = Column(String(7))
     ai_credits_balance = Column(Integer, default=0)
+
+    # SP-API Constraints
+    max_sp_api_accounts = Column(Integer, default=1)
 
     auth = relationship("UserAuth", back_populates="subscriptions")
 
@@ -180,6 +185,136 @@ class AmazonAdsAutomationRules(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     profile = relationship("AmazonAdsProfile")
+
+class AmazonSPAPICredential(Base):
+    __tablename__ = "amazon_sp_api_credentials"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # DPDP / GDPR Compliance - all sensitive data encrypted
+    selling_partner_id = Column(EncryptedString(), nullable=True) # Seller ID
+    refresh_token = Column(EncryptedString(), nullable=False)
+    region = Column(String(10), default="IN") # Strict India focus as requested
+    sync_status = Column(String(50), default="PENDING") # PENDING, SYNCING, COMPLETED, FAILED
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_sp_api_credentials")
+
+class AmazonSPAPISettings(Base):
+    __tablename__ = "amazon_sp_api_settings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    global_target_margin = Column(Numeric(5, 2), default=5.0) # E.g. 5.0 for 5%
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'selling_partner_id', name='uix_user_sp_settings'),
+    )
+
+class AmazonSPAPIProductCosts(Base):
+    __tablename__ = "amazon_sp_api_product_costs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    cogs = Column(Numeric(10, 2), default=0.0) # Not encrypted for performance
+    inbound_shipping = Column(Numeric(10, 2), default=0.0)
+    target_margin_override = Column(Numeric(5, 2), nullable=True) # Optional override
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_partner_asin_cost'),
+    )
+
+class AmazonSPAPIAuditLog(Base):
+    __tablename__ = "amazon_sp_api_audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    action = Column(String(255), nullable=False) # e.g., "UPDATE_COGS", "UPDATE_GLOBAL_MARGIN"
+    asin = Column(String(50), nullable=True)
+    old_value = Column(String(255), nullable=True)
+    new_value = Column(String(255), nullable=True)
+    ip_address = Column(String(50), nullable=True)
+    
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class AmazonSPAPIRefundReconciliation(Base):
+    __tablename__ = "amazon_sp_api_refund_reconciliations"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(255), nullable=False, index=True)
+    asin = Column(String(50), nullable=False, index=True)
+    
+    refunded_amount = Column(Numeric(10, 2), nullable=False)
+    refund_date = Column(DateTime(timezone=True), nullable=False)
+    
+    is_returned_to_fba = Column(Boolean, default=False)
+    status = Column(String(50), default="PENDING") # PENDING, CLAIM_FILED, REIMBURSED, IGNORED
+    reimbursed_amount = Column(Numeric(10, 2), default=0.0)
+    
+    last_checked_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'amazon_order_id', 'asin', name='uix_sp_reimbursement_reconcil'),
+    )
+
+class AmazonSPAPIOrder(Base):
+    __tablename__ = "amazon_sp_api_orders"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(100), nullable=False, index=True)
+    purchase_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    order_status = Column(String(50), nullable=False)
+    asin = Column(String(50), nullable=False, index=True)
+    quantity = Column(Integer, default=1)
+    item_price = Column(Numeric(10, 2), default=0.0)
+    currency = Column(String(10), default="INR")
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('amazon_order_id', 'asin', name='uix_sp_order_asin'),
+    )
+
+class AmazonSPAPIFinancialEvent(Base):
+    __tablename__ = "amazon_sp_api_financial_events"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(100), nullable=True, index=True)
+    transaction_type = Column(String(100), nullable=False) # e.g., ShipmentEvent, RefundEvent
+    fee_type = Column(String(100), nullable=False) # e.g., FBAPerUnitFulfillmentFee
+    amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(10), default="INR")
+    posted_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class AmazonAdsCredential(Base):
     __tablename__ = "amazon_ads_credentials"
@@ -364,4 +499,126 @@ class AmazonAdsManualLocks(Base):
     # Ensure a user can only have one lock per entity
     __table_args__ = (
         UniqueConstraint('profile_id', 'entity_type', 'entity_id', name='uix_profile_entity_lock'),
+    )
+
+
+class AmazonSPAPIReportQueue(Base):
+    __tablename__ = "amazon_sp_api_report_queue"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    report_type = Column(String(100), nullable=False) # e.g. GET_FBA_MYI_UNSUPPRESSED_INVENTORY_DATA
+    report_id = Column(String(255), nullable=False, unique=True, index=True)
+    status = Column(String(50), default="PROCESSING") # PROCESSING, DONE, FATAL
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonSPAPIInventorySettings(Base):
+    __tablename__ = "amazon_sp_api_inventory_settings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    
+    supplier_lead_time_days = Column(Integer, default=30)
+    transit_time_days = Column(Integer, default=5)
+    safety_stock_days = Column(Integer, default=14)
+    
+    # Enum: '7D', '30D', 'MANUAL'
+    velocity_calculation_method = Column(String(20), default="30D")
+    manual_daily_velocity = Column(Numeric(10, 2), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_inv_settings_asin'),
+    )
+
+
+class AmazonSPAPIInventorySummary(Base):
+    __tablename__ = "amazon_sp_api_inventory_summary"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    product_title = Column(String(500), nullable=True)
+    
+    sellable_quantity = Column(Integer, default=0)
+    inbound_quantity = Column(Integer, default=0)
+    
+    units_sold_7d = Column(Integer, default=0)
+    units_sold_30d = Column(Integer, default=0)
+    
+    # Track days we had 0 inventory to adjust average velocity math
+    days_out_of_stock_30d = Column(Integer, default=0)
+    
+    last_updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_inv_summary_asin'),
+    )
+
+
+class AmazonSPAPIReviewRules(Base):
+    """
+    Stores automation settings for Review Solicitations.
+    asin='GLOBAL' represents the account-level default rule.
+    """
+    __tablename__ = "amazon_sp_api_review_rules"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    
+    delay_days_after_shipment = Column(Integer, default=7)
+    exclude_refunded = Column(Boolean, default=True) # The Safety Shield
+    
+    # Only applies to the 'GLOBAL' asin record. Individual ASIN overrides don't use this.
+    is_active = Column(Boolean, default=False)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'asin', name='uix_sp_review_rules_asin'),
+    )
+
+
+class AmazonSPAPIOrderReviewLog(Base):
+    """
+    Tracks eligible orders and their solicitation status to prevent double-sending.
+    """
+    __tablename__ = "amazon_sp_api_order_review_log"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    amazon_order_id = Column(String(255), nullable=False, index=True)
+    asin = Column(String(50), nullable=False)
+    
+    shipment_date = Column(DateTime(timezone=True), nullable=False)
+    is_refunded = Column(Boolean, default=False)
+    
+    # Statuses: PENDING, SOLICITED, EXCLUDED_REFUND, EXCLUDED_OPT_OUT, FAILED_RETRY
+    status = Column(String(50), default="PENDING")
+    
+    review_requested_at = Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'amazon_order_id', name='uix_sp_review_log_order'),
     )

@@ -31,11 +31,18 @@ class Settings(BaseSettings):
     DATAFORSEO_LOGIN: str = ""
     DATAFORSEO_PASSWORD: str = ""
     
-    # Amazon SP-API (Sandbox & Production)
+    # Amazon Ads (LWA)
     AMAZON_LWA_CLIENT_ID: str = ""
     AMAZON_LWA_CLIENT_SECRET: str = ""
     AMAZON_LWA_REDIRECT_URI: str = ""
+
+    # Amazon SP-API (Production)
+    AMAZON_SP_API_LWA_CLIENT_ID: str = ""
+    AMAZON_SP_API_LWA_CLIENT_SECRET: str = ""
+    AMAZON_SP_API_LWA_REDIRECT_URI: str = ""
     AMAZON_SP_API_ROLE_ARN: str = ""
+    AMAZON_SP_API_AWS_ACCESS_KEY: str = ""
+    AMAZON_SP_API_AWS_SECRET_KEY: str = ""
     
     # Ollama Settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
@@ -50,4 +57,4 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 
-settings = Settings()
+settings = Settings()

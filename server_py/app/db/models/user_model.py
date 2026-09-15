@@ -49,6 +49,11 @@ class User(Base):
     ki_cycle_start = Column(DateTime, nullable=True)
     ki_searches_used = Column(Integer, default=0)
 
+    # AI Listing Studio Tracking
+    ai_listings_generated = Column(Integer, default=0)
+    ai_listings_month = Column(String(7), nullable=True)
+    ai_credits_balance = Column(Integer, default=0)
+
     subscription_expires_at = Column(DateTime, nullable=True)
     payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)

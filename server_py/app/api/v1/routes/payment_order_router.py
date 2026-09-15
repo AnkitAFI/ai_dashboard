@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 def get_ist_now():
     return datetime.utcnow() + timedelta(hours=5, minutes=30)
-from typing import Optional
+from typing import Optional, Any
 
 import razorpay
 import sib_api_v3_sdk
@@ -40,6 +40,9 @@ BREVO_SENDER_NAME       = os.getenv("BREVO_SENDER_NAME",  "Insydz")
 
 APP_NAME                = os.getenv("APP_NAME", "Insydz")
 APP_URL                 = os.getenv("APP_URL",  "https://insydz.com")
+
+RAZORPAY_PLAN_BASIC     = os.getenv("RAZORPAY_PLAN_BASIC")
+RAZORPAY_PLAN_PREMIUM   = os.getenv("RAZORPAY_PLAN_PREMIUM")
 
 # ─── Razorpay client ──────────────────────────────────────────────────────────
 rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
@@ -84,6 +87,13 @@ class VerifyPaymentRequest(BaseModel):
     razorpay_order_id:   str
     razorpay_signature:  str
     order_db_id:         int
+    user_id:             int
+    plan_id:             str
+
+class VerifySubscriptionRequest(BaseModel):
+    razorpay_payment_id: str
+    razorpay_subscription_id: str
+    razorpay_signature:  str
     user_id:             int
     plan_id:             str
 
@@ -133,14 +143,19 @@ def _active_order(user_id: int, db: Session) -> Optional["PaymentOrder"]:
     )
 
 
-def _sync_user(user: "User", order: "PaymentOrder", db: Session) -> None:
+def _sync_user(user: Any, order: Any, db: Session) -> None:
     """Single place that writes tier + expiry to users table."""
     user.subscription_tier       = order.plan_id
     user.subscription_expires_at = order.expires_at
-    # Anchor KI billing cycle to the exact subscription date
+    # Anchor billing cycle and reset usage counters on subscription purchase/renewal/upgrade
     if order.paid_at:
         user.ki_cycle_start  = order.paid_at
         user.ki_searches_used = 0   # reset counter on new subscription
+        user.ai_chat_used = 0
+        user.analysis_used = 0
+        user.sov_used = 0
+        user.keyword_tracker_used = 0
+        user.ai_listings_generated = 0
     user.updated_at              = get_ist_now()
     db.commit()
     db.refresh(user)
@@ -483,6 +498,119 @@ def billing_preview(
     }
 
 
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 2.5 — CREATE SUBSCRIPTION  (POST)
+# ═════════════════════════════════════════════════════════════════════════════
+
+@router.post("/create-subscription")
+def create_subscription(
+    data:         CreateOrderRequest,
+    current_user: User = Depends(get_current_user),
+    db:           Session     = Depends(get_db),
+):
+    if current_user.id != data.user_id:
+        raise HTTPException(403, "Not authorised")
+    if data.plan_id not in PLAN_PRICES:
+        raise HTTPException(400, f"Unknown plan: {data.plan_id}")
+        
+    rzp_plan_id = RAZORPAY_PLAN_BASIC if data.plan_id == "basic" else RAZORPAY_PLAN_PREMIUM if data.plan_id == "premium" else None
+    if not rzp_plan_id:
+        raise HTTPException(400, f"Recurring subscription not available for {data.plan_id}")
+
+    now    = get_ist_now()
+    active = _active_order(current_user.id, db)
+
+    # Same plan already active — self-heal if needed
+    if active and active.plan_id == data.plan_id:
+        if (current_user.subscription_tier       != active.plan_id or
+            current_user.subscription_expires_at != active.expires_at):
+            try:
+                _sync_user(current_user, active, db)
+            except Exception as e:
+                print(f"⚠️ self-heal: {e}")
+        return {
+            "already_active":  True,
+            "message":         f"{PLAN_LABELS[data.plan_id]} plan is already active.",
+            "expires_at":      str(active.expires_at),
+            "latest_order_id": active.id,
+        }
+
+    charge = PLAN_PRICES[data.plan_id]
+    upfront_amount = None
+    start_at = None
+
+    if active and _rank(active.plan_id or "free") < _rank(data.plan_id):
+        # We are upgrading. Calculate the prorated charge
+        charge, _ = _prorated_upgrade_price(active, data.plan_id)
+
+    # ─── PROMO CODE LOGIC ───
+    promo_code_id = None
+    if data.promo_code:
+        promo = db.query(PromoCode).filter(PromoCode.code == data.promo_code).first()
+        if not promo or not promo.is_active:
+            raise HTTPException(400, "Invalid or inactive promo code.")
+        if promo.valid_from and promo.valid_from > now:
+            raise HTTPException(400, "Promo code not active yet.")
+        if promo.expires_at and promo.expires_at < now:
+            raise HTTPException(400, "Promo code has expired.")
+        schedules = db.query(PromoCodeSchedule).filter(PromoCodeSchedule.promo_code_id == promo.id).all()
+        if schedules and not any(s.start_date <= now <= s.end_date for s in schedules):
+            raise HTTPException(400, "Promo code is not valid during this period.")
+        redemptions = db.query(PromoCodeRedemption).filter(
+            PromoCodeRedemption.promo_code_id == promo.id,
+            PromoCodeRedemption.user_id == current_user.id
+        ).count()
+        if redemptions >= promo.max_uses_per_user:
+            raise HTTPException(400, "You have already used this promo code.")
+            
+        discount_amount = (charge * float(promo.discount_percentage)) / 100.0
+        charge = max(0, charge - int(discount_amount))
+        promo_code_id = promo.id
+
+    # If the charge was reduced (due to upgrade OR promo code)
+    if charge < PLAN_PRICES[data.plan_id]:
+        upfront_amount = charge * 100 # Razorpay takes paise
+        
+        # Start the recurring cycle exactly 30 days from now, so they only pay the upfront difference today.
+        new_cycle_start = now + timedelta(days=30)
+        start_at = int(new_cycle_start.timestamp())
+
+    try:
+        sub_payload = {
+            "plan_id": rzp_plan_id,
+            "total_count": 120, # 10 years
+            "customer_notify": 1,
+            "notes": {
+                "plan_id": data.plan_id,
+                "user_id": str(current_user.id),
+                "gst_number": data.billing.gst_number or "",
+                "promo_code_id": str(promo_code_id) if promo_code_id else ""
+            }
+        }
+        
+        if start_at and upfront_amount is not None:
+            sub_payload["start_at"] = start_at
+            # Razorpay requires upfront_amount to be > 0. If it's a legit upgrade, it will be.
+            if upfront_amount >= 100:
+                sub_payload["upfront_amount"] = upfront_amount
+            else:
+                # Fallback if prorated charge is somehow 0
+                sub_payload.pop("start_at", None)
+                
+        rzp_sub = rzp_client.subscription.create(sub_payload)
+    except Exception as e:
+        raise HTTPException(502, f"Razorpay error: {e}")
+    
+    return {
+        "razorpay_subscription_id": rzp_sub["id"],
+        "razorpay_key_id":   RAZORPAY_KEY_ID,
+        # If upfront_amount was set, we tell frontend the actual charge today is the upfront amount.
+        "amount":            upfront_amount if upfront_amount is not None and upfront_amount >= 100 else (PLAN_PRICES[data.plan_id] * 100), 
+        "currency":          "INR",
+    }
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # ENDPOINT 2 — CREATE ORDER  (POST)
 # ═════════════════════════════════════════════════════════════════════════════
@@ -615,6 +743,132 @@ def create_payment_order(
         "currency":          "INR",
         "order_db_id":       db_order.id,
         "prorated_charge":   charge,
+    }
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 3.5 — VERIFY SUBSCRIPTION  (POST)
+# ═════════════════════════════════════════════════════════════════════════════
+
+@router.post("/verify-subscription")
+def verify_subscription(
+    data:         VerifySubscriptionRequest,
+    current_user: User = Depends(get_current_user),
+    db:           Session     = Depends(get_db),
+):
+    if current_user.id != data.user_id:
+        raise HTTPException(403, "Not authorised")
+
+    msg = f"{data.razorpay_payment_id}|{data.razorpay_subscription_id}"
+    expected = hmac.new(RAZORPAY_KEY_SECRET.encode(), msg.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, data.razorpay_signature):
+        raise HTTPException(400, "Invalid payment signature")
+        
+    from app.models.schema_v2 import UserSubscription
+    
+    # ─── PREVENT WEBHOOK DELAY LOOPHOLE ───
+    # Instantly process the subscription here so the user doesn't have to wait for the webhook.
+    
+    # Check idempotency first
+    existing_order = db.query(PaymentOrder).filter(PaymentOrder.razorpay_payment_id == data.razorpay_payment_id).first()
+    if existing_order:
+        return {"success": True, "message": "Subscription verified."}
+        
+    try:
+        sub_entity = rzp_client.subscription.fetch(data.razorpay_subscription_id)
+        pay_entity = rzp_client.payment.fetch(data.razorpay_payment_id)
+        
+        user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
+        if not user_sub:
+            user_sub = UserSubscription(user_id=current_user.id)
+            db.add(user_sub)
+            
+        # Cancel old subscription if upgrading
+        if user_sub.razorpay_subscription_id and user_sub.razorpay_subscription_id != data.razorpay_subscription_id:
+            try:
+                print(f"🔄 Verify: Upgrading... Cancelling old subscription: {user_sub.razorpay_subscription_id}")
+                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 0})
+            except Exception as e:
+                print(f"⚠️ Failed to cancel old sub: {e}")
+                
+        # Unlock account
+        user_sub.razorpay_subscription_id = data.razorpay_subscription_id
+        user_sub.razorpay_plan_id = sub_entity.get("plan_id")
+        user_sub.subscription_tier = data.plan_id
+        expiry = _expiry()
+        user_sub.subscription_expires_at = expiry
+        user_sub.ki_cycle_start = get_ist_now()
+        
+        # Reset quotas
+        user_sub.ki_searches_used = 0
+        user_sub.ai_chat_used = 0
+        user_sub.analysis_used = 0
+        user_sub.sov_used = 0
+        user_sub.keyword_tracker_used = 0
+        user_sub.ai_listings_generated = 0
+        
+        # Create Invoice for Order History
+        amount_inr = pay_entity.get("amount", 0) // 100
+        notes = sub_entity.get("notes", {})
+        gst_number = notes.get("gst_number")
+        
+        if gst_number:
+            base = round(amount_inr / 1.18)
+            gst = amount_inr - base
+        else:
+            base = amount_inr
+            gst = 0
+            
+        promo_code_id_str = notes.get("promo_code_id")
+        promo_code_id = int(promo_code_id_str) if promo_code_id_str else None
+
+        db_order = PaymentOrder(
+            user_id           = current_user.id,
+            plan_id           = data.plan_id,
+            razorpay_order_id = pay_entity.get("order_id") or "sub_charge",
+            razorpay_payment_id = data.razorpay_payment_id,
+            razorpay_signature = data.razorpay_signature,
+            amount            = amount_inr,
+            base_amount       = base,
+            gst_amount        = gst,
+            gst_number        = gst_number,
+            currency          = "INR",
+            status            = "paid",
+            invoice_number    = _generate_invoice_number(),
+            expires_at        = expiry,
+            created_at        = get_ist_now(),
+            paid_at           = get_ist_now(),
+            promo_code_id     = promo_code_id,
+        )
+        db.add(db_order)
+        db.flush()
+        
+        if promo_code_id:
+            redemption = PromoCodeRedemption(
+                promo_code_id=promo_code_id,
+                user_id=current_user.id,
+                source="checkout"
+            )
+            # Use merge or try/except to handle UniqueConstraint if webhook already wrote it
+            try:
+                db.add(redemption)
+                db.flush()
+            except Exception as e:
+                db.rollback()
+                # Ignore duplicate redemption error if already redeemed
+                
+        db.commit()
+        
+        _sync_user(current_user, db_order, db)
+    except Exception as e:
+        db.rollback()
+        print(f"⚠️ Verify endpoint DB error: {e}")
+        # We don't fail the request if this fails, because the webhook will eventually retry.
+
+    return {
+        "success": True,
+        "message": "Subscription verified and instantly unlocked."
     }
 
 
@@ -948,6 +1202,134 @@ async def razorpay_webhook(
         raise HTTPException(400, "Invalid JSON")
 
     event   = payload.get("event", "")
+    
+    # ─── SUBSCRIPTION EVENTS ────────────────────────────────────────────────
+    if event == "subscription.charged":
+        sub_entity = payload.get("payload", {}).get("subscription", {}).get("entity", {})
+        pay_entity = payload.get("payload", {}).get("payment", {}).get("entity", {})
+        
+        rzp_sub_id = sub_entity.get("id")
+        rzp_pay_id = pay_entity.get("id")
+        rzp_order_id = pay_entity.get("order_id") # Razorpay creates a hidden order for each subscription charge
+        
+        notes = sub_entity.get("notes", {})
+        user_id_str = notes.get("user_id")
+        plan_id = notes.get("plan_id", "free")
+        gst_number = notes.get("gst_number")
+        
+        if not user_id_str:
+            return {"status": "missing_user_id"}
+        
+        user_id = int(user_id_str)
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return {"status": "user_not_found"}
+            
+        # Check if we already processed this payment
+        existing_order = db.query(PaymentOrder).filter(PaymentOrder.razorpay_payment_id == rzp_pay_id).first()
+        if existing_order:
+            return {"status": "already_processed"}
+            
+        # 1. Update/Create UserSubscription in DB
+        user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
+        if not user_sub:
+            user_sub = UserSubscription(user_id=user_id)
+            db.add(user_sub)
+            
+        # ─── CANCEL OLD SUBSCRIPTION IF UPGRADING ───
+        if user_sub.razorpay_subscription_id and user_sub.razorpay_subscription_id != rzp_sub_id:
+            try:
+                print(f"🔄 Webhook: Upgrading... Cancelling old subscription: {user_sub.razorpay_subscription_id}")
+                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 0})
+            except Exception as e:
+                print(f"⚠️ Failed to cancel old sub: {e}")
+                
+        user_sub.razorpay_subscription_id = rzp_sub_id
+        user_sub.razorpay_plan_id = sub_entity.get("plan_id")
+        user_sub.subscription_tier = plan_id
+        expiry = _expiry()
+        user_sub.subscription_expires_at = expiry
+        user_sub.ki_cycle_start = get_ist_now()
+        
+        # Reset quotas for the new month!
+        user_sub.ki_searches_used = 0
+        user_sub.ai_chat_used = 0
+        user_sub.analysis_used = 0
+        user_sub.sov_used = 0
+        user_sub.keyword_tracker_used = 0
+        user_sub.ai_listings_generated = 0
+        
+        db.flush()
+
+        # 2. Create PaymentOrder record for Order History
+        amount_inr = pay_entity.get("amount", 0) // 100
+        
+        # Reverse calculate GST (roughly, assuming 18%)
+        if gst_number:
+            base = round(amount_inr / 1.18)
+            gst = amount_inr - base
+        else:
+            base = amount_inr
+            gst = 0
+
+        new_order = PaymentOrder(
+            user_id           = user_id,
+            plan_id           = plan_id,
+            razorpay_order_id = rzp_order_id or f"sub_{rzp_sub_id}_{int(get_ist_now().timestamp())}",
+            razorpay_payment_id = rzp_pay_id,
+            amount            = amount_inr,
+            base_amount       = base,
+            gst_amount        = gst,
+            gst_number        = gst_number,
+            currency          = "INR",
+            status            = "paid",
+            created_at        = get_ist_now(),
+            paid_at           = get_ist_now(),
+            expires_at        = expiry,
+            razorpay_signature = f"webhook:{x_razorpay_signature}",
+        )
+        db.add(new_order)
+        db.flush()
+        
+        new_order.invoice_number = _invoice_number(new_order.id)
+        
+        # 3. Sync User model (since frontend pulls from here via /me)
+        _sync_user(user, new_order, db)
+        
+        db.commit()
+        
+        # Email receipt
+        _email_payment_confirmed(
+            email=getattr(user, "email", "noreply@insydz.com"),
+            name=getattr(user, "first_name", "") or "",
+            plan_name=PLAN_LABELS.get(plan_id, plan_id.capitalize()),
+            amount=amount_inr,
+            base_amount=base,
+            gst_amount=gst,
+            gst_number=gst_number,
+            invoice_number=new_order.invoice_number,
+            order_id=new_order.id,
+            expires_at=expiry,
+        )
+        
+        print(f"✅ Webhook: Subscription {rzp_sub_id} charged. User {user_id} renewed.")
+        return {"status": "ok"}
+        
+    elif event in ["subscription.halted", "subscription.cancelled"]:
+        sub_entity = payload.get("payload", {}).get("subscription", {}).get("entity", {})
+        rzp_sub_id = sub_entity.get("id")
+        
+        user_sub = db.query(UserSubscription).filter(UserSubscription.razorpay_subscription_id == rzp_sub_id).first()
+        if user_sub:
+            # We don't revoke access immediately, they paid for the month.
+            # We just clear the ID so the system knows it won't auto-renew.
+            # Next month, the cron job will downgrade them naturally.
+            user_sub.razorpay_subscription_id = None
+            db.commit()
+            print(f"⚠️ Webhook: Subscription {rzp_sub_id} cancelled/halted. Will not auto-renew.")
+        return {"status": "ok"}
+
+    # ─── EXISTING ONE-TIME ORDER EVENTS ─────────────────────────────────────
     entity  = payload.get("payload", {}).get("payment", {}).get("entity", {})
     rzp_oid = entity.get("order_id")
     if not rzp_oid:
@@ -962,8 +1344,6 @@ async def razorpay_webhook(
         expiry                    = _expiry()
         order.status              = "paid"
         order.razorpay_payment_id = entity.get("id")
-        # Store webhook HMAC so razorpay_signature is never NULL
-        # Prefixed with "webhook:" to distinguish from client signature
         order.razorpay_signature  = f"webhook:{x_razorpay_signature}"
         order.paid_at             = get_ist_now()
         order.expires_at          = expiry
@@ -983,7 +1363,7 @@ async def razorpay_webhook(
             _sync_user(user, order, db)
         else:
             db.commit()
-        print(f"✅ Webhook: order {order.id} activated")
+        print(f"✅ Webhook: one-time order {order.id} activated")
 
     elif event == "payment.failed" and order.status != "paid":
         order.status = "failed"
@@ -991,6 +1371,32 @@ async def razorpay_webhook(
 
     return {"status": "ok"}
 
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 7.5 — CANCEL SUBSCRIPTION (POST)
+# ═════════════════════════════════════════════════════════════════════════════
+
+@router.post("/cancel-subscription")
+def cancel_subscription(
+    current_user: User = Depends(get_current_user),
+    db:           Session     = Depends(get_db),
+):
+    user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
+    if not user_sub or not user_sub.razorpay_subscription_id:
+        raise HTTPException(400, "No active subscription found")
+        
+    try:
+        rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 1})
+    except Exception as e:
+        print(f"Razorpay Cancel Error: {e}")
+        # Even if Razorpay fails (maybe already cancelled), we detach it locally.
+        
+    user_sub.razorpay_subscription_id = None
+    db.commit()
+    
+    return {"success": True, "message": "Subscription cancelled successfully. You will not be charged again."}
 
 
 # ═════════════════════════════════════════════════════════════════════════════

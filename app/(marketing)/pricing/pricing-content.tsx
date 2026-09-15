@@ -15,7 +15,7 @@ import {
   Menu, X as XIcon, Sun, Moon, ChevronDown, ShoppingBag, Store,
   Briefcase, Users, Target, Package, BarChart3, MessageCircle,
   Bell, Search, TrendingDown, TrendingUp, Code, Globe, Trophy,
-  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid,  Facebook, Instagram, Linkedin, Twitter
+  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid, Facebook, Instagram, Linkedin, Twitter
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -53,16 +53,19 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Zap className="h-6 w-6" />,
     features: [
       "Basic dashboard access",
+      "Amazon Store & Ads Connection",
+      "Basic Financial Dashboard",
+      "Read-only Ads Analytics",
       "25 product tracking",
       "Top 5 products filter",
       "5 notifications",
-      "Weekly reports",
     ],
     limitations: [
       "AI Chart Summaries",
-      "Advanced analytics",
+      "Advanced Ads Automations",
+      "Premium Tools (Reviews, Restock, Recovery)",
       "Real-time data",
-      "Premium AI features",
+      "Advanced analytics",
       "Priority support",
     ],
   },
@@ -82,12 +85,13 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "20 AI chat messages/month",
       "15 notifications",
       "AI Chart Summaries",
-      "Daily reports",
       "Basic competitor alerts",
       "Email support",
     ],
     limitations: [
       "Real-time alerts",
+      "Premium Tools (Reviews, Restock, Recovery)",
+      "Advanced Ads Automations",
       "Priority support",
     ],
   },
@@ -101,6 +105,11 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Crown className="h-6 w-6 text-yellow-500" />,
     features: [
       "All Basic features",
+      "Financial Command Center (ASIN Level)",
+      "Restock Forecaster (Stockout Alerts)",
+      "Review Automator (Request & Reply)",
+      "Lost Money Recovery (Reimbursement claims)",
+      "Ads Automations (Bidding & Dayparting)",
       "Unlimited product tracking",
       "Top 100 products filter",
       "Unlimited AI chat",
@@ -193,18 +202,16 @@ export default function PricingContent() {
       <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {SUBSCRIPTION_PLANS.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${
-                plan.isPopular 
-                  ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10' 
-                  : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
-              }`}
+            <Card
+              key={plan.id}
+              className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
+                ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10'
+                : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
+                }`}
             >
               <CardHeader className="text-center pb-2">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${
-                  plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
+                  }`}>
                   {plan.icon}
                 </div>
                 <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
@@ -250,12 +257,11 @@ export default function PricingContent() {
                 </div>
 
                 <div className="mt-auto">
-                  <Button 
-                    className={`w-full h-12 rounded-xl font-bold text-base transition-all ${
-                      plan.isPopular 
-                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20' 
-                        : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
-                    }`}
+                  <Button
+                    className={`w-full h-12 rounded-xl font-bold text-base transition-all ${plan.isPopular
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20'
+                      : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
+                      }`}
                     onClick={() => router.push("/login")}
                   >
                     {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
@@ -297,32 +303,46 @@ export default function PricingContent() {
                   <td className="p-6 text-center text-sm">Custom</td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">AI Chat Support</td>
-                  <td className="p-6 text-center text-sm">5/mo</td>
-                  <td className="p-6 text-center text-sm">20/mo</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Unlimited</td>
-                  <td className="p-6 text-center text-sm">Unlimited</td>
+                  <td className="p-6 text-sm font-medium">Financial Command Center</td>
+                  <td className="p-6 text-center text-sm">Store Level</td>
+                  <td className="p-6 text-center text-sm">Store Level</td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">Marketplace Data</td>
-                  <td className="p-6 text-center text-sm text-slate-400 italic">Delayed</td>
-                  <td className="p-6 text-center text-sm">Daily</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Real-time</td>
-                  <td className="p-6 text-center text-sm">Real-time</td>
+                  <td className="p-6 text-sm font-medium">Restock Forecaster</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">Email Alerts</td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
+                  <td className="p-6 text-sm font-medium">Review Automator</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">WhatsApp Alerts</td>
-                  <td className="p-6 text-center"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
-                  <td className="p-6 text-center"><Check className="h-5 w-5 text-green-500 mx-auto" /></td>
+                  <td className="p-6 text-sm font-medium">Lost Money Recovery</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
+                </tr>
+                <tr>
+                  <td className="p-6 text-sm font-medium">Ads Automations</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
+                </tr>
+                <tr>
+                  <td className="p-6 text-sm font-medium">Executive PDF Reports</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                 </tr>
               </tbody>
             </table>
@@ -367,16 +387,16 @@ export default function PricingContent() {
             No credit card required to start.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 font-bold px-10 py-6 rounded-2xl text-lg shadow-2xl"
               onClick={() => router.push("/login")}
             >
               Start Free Trial
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="w-full sm:w-auto border-2 border-white/30 bg-white/10 hover:bg-white/20 text-white font-bold px-10 py-6 rounded-2xl text-lg"
               onClick={() => router.push("/about/contact-us")}
             >

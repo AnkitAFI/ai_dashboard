@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "next-themes";
 import {
   Home,
+  Package,
   MessageSquare,
   Crown,
   Info,
@@ -159,74 +160,25 @@ const EXPLORER_SECTIONS: NavSection[] = [
 
 const SELLER_SECTIONS: NavSection[] = [
   {
-    label: "MY STORE",
+    label: "AMAZON SELLER",
     icon: Store,
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: Home },
-      // Temporarily hidden until API keys are secured
-      { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
-      { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
+      { href: "/seller/store", label: "Amazon Store Setup", icon: Store, badge: "NEW" },
+      { href: "/seller/profitability", label: "Financial Command Center", icon: Calculator, badge: "NEW" },
+      { href: "/seller/restock", label: "Restock Forecaster", icon: Package, badge: "NEW" },
+      { href: "/seller/reviews", label: "Review Automator", icon: Star, badge: "NEW" },
+      { href: "/seller/reimbursements", label: "Lost Money Recovery", icon: ShieldCheck, badge: "NEW" },
+    ],
+  },
+  {
+    label: "AMAZON ADS",
+    icon: LinkIcon,
+    items: [
       { href: "/seller/ads/setup", label: "Ads Integration", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/ads/analytics", label: "Ads Analytics", icon: Activity, badge: "NEW" },
-      { href: "/seller/my-products", label: "My Products", icon: Tag, badge: "NEW" },
-      { href: "/seller/listing-audit", label: "Listing Audit", icon: Search, badge: "NEW" },
     ],
   },
-  {
-    label: "COMPETITORS",
-    icon: Users,
-    items: [
-      { href: "/categories", label: "Browse Categories", icon: PieChart },
-      {
-        href: "/seller/price-comparison",
-        label: "Price Comparison",
-        icon: DollarSign,
-        badge: "NEW",
-      },
-      {
-        href: "/seller/review-comparison",
-        label: "Review Comparison",
-        icon: Star,
-        badge: "NEW",
-      },
-      {
-        href: "/seller/keyword-gap",
-        label: "Keyword Gap Analysis",
-        icon: History,
-        badge: "NEW",
-      },
-      { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
-      {
-        href: "/seller/competitor-analysis",
-        label: "Competitor Analysis",
-        icon: Shield,
-        badge: "NEW",
-      },
-    ],
-  },
-  {
-    label: "OPTIMIZE",
-    icon: Zap,
-    items: [
-      {
-        href: "/seller/price-optimizer",
-        label: "Price Optimizer",
-        icon: TrendingUp,
-      },
-      {
-        href: "/seller/rank-tracker",
-        label: "Rank Tracker",
-        icon: Target,
-        badge: "NEW",
-      },
-      {
-        href: "/seller/ai-advisor",
-        label: "AI Advisor",
-        icon: Sparkles,
-        badge: "AI",
-      },
-    ],
-  },
+  // COMPETITORS and OPTIMIZE sections removed — those features are disabled (404).
   {
     label: "TRACK & GROW",
     icon: Activity,
@@ -480,7 +432,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               <button
                 onClick={() => {
                   setMode("seller");
-                  router.push("/dashboard");
+                  router.push("/seller/store");
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
@@ -518,7 +470,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 <div className="space-y-1">
                   {section.items.map((item) => {
                     if (
-                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") && 
+                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") &&
                       user?.subscriptionTier !== "enterprise"
                     ) {
                       return null;
