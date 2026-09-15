@@ -37,6 +37,7 @@ def validate_session(session_token: str) -> dict:
 # In a full flow we'd import the repository or model.
 def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_db)):
     from app.db.models.user_model import User
+    from app.services.subscription_service import sync_and_check_subscription_status
     
     if not session_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -49,6 +50,7 @@ def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_d
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     
+    user = sync_and_check_subscription_status(user, db)
     return user
 
 def get_admin_user(current_user = Depends(get_current_user)):

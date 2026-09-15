@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 def get_ist_now():
     return datetime.utcnow() + timedelta(hours=5, minutes=30)
-from typing import Optional
+from typing import Optional, Any
 
 import razorpay
 import sib_api_v3_sdk
@@ -143,14 +143,19 @@ def _active_order(user_id: int, db: Session) -> Optional["PaymentOrder"]:
     )
 
 
-def _sync_user(user: "User", order: "PaymentOrder", db: Session) -> None:
+def _sync_user(user: Any, order: Any, db: Session) -> None:
     """Single place that writes tier + expiry to users table."""
     user.subscription_tier       = order.plan_id
     user.subscription_expires_at = order.expires_at
-    # Anchor KI billing cycle to the exact subscription date
+    # Anchor billing cycle and reset usage counters on subscription purchase/renewal/upgrade
     if order.paid_at:
         user.ki_cycle_start  = order.paid_at
         user.ki_searches_used = 0   # reset counter on new subscription
+        user.ai_chat_used = 0
+        user.analysis_used = 0
+        user.sov_used = 0
+        user.keyword_tracker_used = 0
+        user.ai_listings_generated = 0
     user.updated_at              = get_ist_now()
     db.commit()
     db.refresh(user)
