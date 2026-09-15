@@ -9,17 +9,115 @@ import InfoBanner from "../components/InfoBanner";
 import FAQ from "../components/FAQ";
 import FinalCTA from "../components/FinalCTA";
 import HeroSection from "../components/HeroSection";
+import SectionQA from "../components/SectionQA";
 import DataTable, { TableColumn, TableRow } from "../components/DataTable";
 import NumberedCards from "../components/NumberedCards";
 import Breadcrumb from "../components/Breadcrumb";
+import BlogImageSection from "../components/BlogImageSection";
 import RelatedArticles from "../components/RelatedArticles";
+import TableOfContents from "../components/TableOfContents";
 import MobileTableOfContents from "../components/MobileTableOfContents";
-import TOCSidebar from "../components/TOCSidebar";
 import InsightCards, { InsightCard } from "../components/InsightCard";
 import RelatedReadingBox from "../components/Relatedreadingbox";
-import BlogImageSection from "../components/BlogImageSection";
 
 export const dynamic = "force-static";
+
+// ── Schema ─────────────────────────────────────────────────────────────────────
+const schemaBestAmazonSellerToolsIndia2026 = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://insydz.com/#organization",
+      name: "Insydz",
+      url: "https://insydz.com",
+      logo: { "@type": "ImageObject", url: "https://insydz.com/logo.png" },
+      sameAs: [
+        "https://www.instagram.com/growwithinsydz",
+        "https://www.linkedin.com/company/insydz/",
+        "https://www.facebook.com/profile.php?id=61586202582209",
+        "https://x.com/growwithinsydz",
+      ],
+      description:
+        "AI-powered ecommerce analytics platform for Amazon and Flipkart sellers.",
+    },
+    {
+      "@type": "WebPage",
+      "@id":
+        "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026",
+      url: "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026",
+      name: "What Are the Best Amazon Seller Tools for Indian Sellers in 2026?",
+      description:
+        "Five tool categories every Amazon India and Flipkart seller should cover, where global names like Helium 10 and Jungle Scout hold up, and where they fall short.",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Insydz",
+        url: "https://insydz.com",
+      },
+      breadcrumb: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026#breadcrumb",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id":
+        "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://insydz.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Resources",
+          item: "https://insydz.com/resources",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Expert Blog",
+          item: "https://insydz.com/resources/expert-blog",
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Best Amazon Seller Tools India 2026",
+          item: "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026",
+        },
+      ],
+    },
+    {
+      "@type": "BlogPosting",
+      "@id":
+        "https://insydz.com/resources/expert-blog/best-amazon-seller-tools-india-2026#article",
+      headline:
+        "What Are the Best Amazon Seller Tools for Indian Sellers in 2026?",
+      author: {
+        "@type": "Organization",
+        name: "Insydz Research Team",
+        url: "https://insydz.com",
+      },
+      publisher: { "@id": "https://insydz.com/#organization" },
+      datePublished: "2026-09-01",
+      dateModified: "2026-09-01",
+      keywords: [
+        "best amazon seller tools india 2026",
+        "amazon india seller software",
+        "insydz vs helium 10",
+        "flipkart seller analytics tool",
+        "amazon keyword research tool india",
+      ],
+      articleSection: "Tool Comparison",
+      inLanguage: "en-IN",
+      wordCount: 1800,
+      timeRequired: "PT5M",
+    },
+  ],
+};
 
 // ── TOC Items ──────────────────────────────────────────────────────────────────
 const tocItems = [
@@ -306,342 +404,391 @@ const relatedArticlesCards = [
 export default function BestAmazonSellerToolsIndia2026Content() {
   const { resolvedTheme } = useTheme();
   const [activeSection, setActiveSection] = useState("s1");
-  const isDark = resolvedTheme === "dark";
+  const [scrollPct, setScrollPct] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 140;
-      for (const item of tocItems) {
-        const element = document.getElementById(item.id);
-        if (element) {
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(item.id);
-            break;
-          }
-        }
-      }
+    const id = "insydz-best-amazon-seller-tools-india-2026-schema";
+    if (document.getElementById(id)) return;
+    const script = document.createElement("script");
+    script.id = id;
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(schemaBestAmazonSellerToolsIndia2026);
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById(id)?.remove();
     };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    setActiveSection(id);
-    const element = document.getElementById(id);
-    if (element) {
-      const top =
-        element.getBoundingClientRect().top + window.pageYOffset - 120;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
+  useEffect(() => {
+    const onScroll = () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollPct(Math.min((window.scrollY / total) * 100, 100));
+      let found = false;
+      for (let i = tocItems.length - 1; i >= 0; i--) {
+        const el = document.getElementById(tocItems[i].id);
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(tocItems[i].id);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        setActiveSection("s1");
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const go = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0A0F1A] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+        *,*::before,*::after{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{overflow-x:hidden}
+        
+        .read-progress{position:fixed;top:64px;left:0;height:3px;background:linear-gradient(90deg,#F97316,#FB923C);z-index:200;transition:width .1s linear;border-radius:0 2px 2px 0}
+        @media(min-width:640px){.read-progress{top:72px}}
+        @media(min-width:1024px){.read-progress{top:80px}}
+
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
+
+        .toc-sidebar{display:none}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
+        @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
+        .dark .toc-sidebar{background:#111827;border-color:#1f2937}
+
+        .mobile-toc-btn{display:flex;width:100%;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;color:#111;cursor:pointer;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .dark .mobile-toc-btn{background:#111827;border-color:#1f2937;color:#f9fafb}
+        @media(min-width:768px){.mobile-toc-btn{display:none}}
+        .mobile-toc-panel{display:none;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:20px}
+        .dark .mobile-toc-panel{background:#111827;border-color:#1f2937}
+        .mobile-toc-panel.open{display:block}
+
+        .article-body{font-family:'Lora',serif;font-size:15px;line-height:1.78;color:#1E293B}
+        @media(min-width:640px){.article-body{font-size:15.5px}}
+        @media(min-width:1024px){.article-body{font-size:16px}}
+        .dark .article-body{color:#d1d5db}
+
+        .article-body p,.article-body li{font-family:'Lora',serif;margin-bottom:14px;font-size:14.5px;line-height:1.78}
+        @media(min-width:640px){.article-body p{font-size:15px;margin-bottom:16px}}
+        .article-body strong{font-weight:700;color:#0A0F1A}
+        .dark .article-body strong{color:#f9fafb}
+
+        .article-body h1,.article-body h2,.article-body h3,.article-body h4,.article-body th,.article-body td{font-family:'Sora',sans-serif}
+        .article-body h2{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:#0A0F1A;margin:40px 0 12px;padding-bottom:10px;border-bottom:2px solid #E5E7EB;letter-spacing:-.3px;line-height:1.3;scroll-margin-top:120px}
+        @media(min-width:640px){.article-body h2{font-size:20px;margin:48px 0 14px}}
+        @media(min-width:1024px){.article-body h2{font-size:22px;margin:52px 0 14px}}
+        .dark .article-body h2{color:#f9fafb;border-color:#1f2937}
+        .article-body h2:first-child{margin-top:0}
+
+        /* TOC links */
+        .toc-link{display:block;font-size:13px;font-weight:500;color:#64748B;padding:8px 16px;border-radius:6px;cursor:pointer;border:none;background:none;text-align:left;width:100%;transition:all .15s ease;margin-bottom:4px;line-height:1.4;border-left:3px solid transparent;font-family:'Sora',sans-serif}
+        @media(min-width:1024px){.toc-link{font-size:14px;padding:8px 18px}}
+        .toc-link:hover{color:#F97316;background:#FFF7ED;border-left-color:#FDBA74}
+        .toc-link.active{color:#F97316;background:#FFF7ED;border-left-color:#F97316}
+        .dark .toc-link{color:#9CA3AF}
+        .dark .toc-link:hover{background:rgba(249,115,22,.1);color:#FB923C;border-left-color:rgba(249,115,22,.4)}
+        .dark .toc-link.active{background:rgba(249,115,22,.15);color:#FB923C;border-left-color:#F97316}
+
+        #s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8{scroll-margin-top:120px}
+
+        /* quote box */
+        .quote-box{background:#FFFBEB;border-left:4px solid #D97706;border-radius:10px;padding:20px 22px;margin:24px 0}
+        .quote-box .box-label{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#B45309;margin-bottom:8px}
+        .quote-box p{margin:0;font-size:14.5px;line-height:1.72;font-style:italic;color:#1E293B}
+        .dark .quote-box{background:#1c1507;border-color:#78350f}
+        .dark .quote-box p{color:#e5e7eb}
+
+        /* graphic panels */
+        .blog-graphic-hero,.blog-graphic{border-radius:14px;overflow:hidden;margin:24px 0}
+        .g{position:relative;min-height:400px;padding:40px 36px;display:flex;align-items:center;overflow:hidden}
+        .gl{position:relative;z-index:10;max-width:60%}
+        .gl-eyebrow{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:18px}
+        .eb{width:26px;height:2px;background:rgba(255,255,255,.35);border-radius:1px;flex-shrink:0}
+        .gl-h{font-size:44px;font-weight:900;color:#fff;line-height:.98;letter-spacing:-2px;margin-bottom:16px;font-family:'Sora',sans-serif}
+        .y{color:#FDE68A}.or{color:#FDBA74}.gr2{color:#6EE7B7}
+        .gl-sub{font-size:13px;font-weight:400;color:rgba(255,255,255,.55);line-height:1.72;max-width:320px}
+        .gr-c{position:relative;z-index:5;margin-left:auto;display:flex;align-items:center}
+        .orb{position:absolute;border-radius:50%;pointer-events:none}
+        .wc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 20px 48px rgba(0,0,0,.28)}
+        .wc-bar{background:#f8fafc;border-bottom:1px solid #eef1f6;padding:8px 12px;display:flex;align-items:center;gap:5px}
+        .cd{width:8px;height:8px;border-radius:50%}
+        .cd-r{background:#ff5f57}.cd-y{background:#febc2e}.cd-g{background:#28c840}
+        .wc-title{font-size:9.5px;font-weight:700;color:#6b7280;margin-left:5px}
+        .b-live{margin-left:auto;background:#dcfce7;color:#15803d;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px}
+        .bg-excel{background:linear-gradient(135deg,#0a1628 0%,#1e3a5f 40%,#1D4ED8 100%)}
+        .bg-switch{background:linear-gradient(135deg,#0F172A 0%,#7C2D12 40%,#F97316 100%)}
+        .bg-results{background:linear-gradient(135deg,#022c22 0%,#065F46 45%,#16A34A 100%)}
+        .art-img-cap{font-family:'Sora',sans-serif;font-size:12px;color:#94A3B8;font-style:italic;text-align:center;margin:10px 0 8px;padding:0 10px}
+        @media(max-width:768px){.g{flex-direction:column;padding:32px 24px;gap:24px}.gl{max-width:100%}.gr-c{margin-left:0}.gl-h{font-size:32px}}
+
+        /* metrics grid */
+        .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 28px}
+        .metric-card{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:18px 20px}
+        .dark .metric-card{background:#111827;border-color:#1f2937}
+        .mc-num{display:block;font-size:26px;font-weight:800;color:#F97316;line-height:1;margin-bottom:6px;font-family:'Sora',sans-serif}
+        .mc-lbl{display:block;font-size:13px;color:#64748B;line-height:1.5;font-family:'Sora',sans-serif}
+        .dark .mc-lbl{color:#9ca3af}
+        .mc-sub{display:block;font-size:11.5px;color:#94A3B8;margin-top:3px;font-family:'Sora',sans-serif}
+        @media(max-width:580px){.metrics{grid-template-columns:1fr}}
+
+        /* related box */
+        .related-box{background:#F0FDFA;border-left:4px solid #0D9488;border-radius:10px;padding:20px 22px;margin-top:32px}
+        .related-box .box-label{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#0D9488;margin-bottom:8px}
+        .related-box ul{margin:0;padding-left:18px}
+        .related-box li{font-size:14px;margin-bottom:6px;line-height:1.6}
+        .related-box a{color:#0D9488;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+        .dark .related-box{background:#042f2e;border-color:#134e4a}
+
+        /* breadcrumb */
+        .breadcrumb{background:#F5F8FF;border-bottom:1px solid #E5E7EB;padding:8px 0}
+        .breadcrumb-inner{max-width:1240px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:4px;font-size:11.5px;color:#94A3B8;flex-wrap:wrap;font-family:'Sora',sans-serif}
+        @media(min-width:640px){.breadcrumb-inner{padding:0 20px;gap:6px;font-size:12.5px}}
+        @media(min-width:1024px){.breadcrumb-inner{padding:0 24px}}
+
+        .final-cta-block{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);padding:clamp(48px,8vw,40px) 20px;text-align:center;margin:60px 0 0}
+      `}</style>
+
+      <div className="read-progress" style={{ width: `${scrollPct}%` }} />
+
       <MarketingHeader />
 
       <Breadcrumb
         items={[
-          {
-            label: "Home",
-            href: "/",
-          },
-          {
-            label: "Blog",
-            href: "/resources/expert-blog",
-          },
-          { label: "Best Amazon Seller Tools India 2026", href: "#" },
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/resources/expert-blog" },
+          { label: "Best Amazon Seller Tools India 2026" },
         ]}
       />
 
-      {/* Hero Section */}
+      {/* HERO SECTION */}
       <HeroSection
         resolvedTheme={resolvedTheme}
         badgeText="Seller Tools & Strategy · Tool Comparison · India 2026"
-        title="What Are the Best Amazon Seller Tools for Indian Sellers in 2026?"
-        description="Five tool categories every Amazon India and Flipkart seller should cover, where global names like Helium 10 and Jungle Scout hold up, and where they fall short for INR pricing and Flipkart."
+        title={
+          <>
+            What Are the Best Amazon Seller Tools for{" "}
+            <span style={{ color: "#2563EB" }}>
+              Indian Sellers in 2026?
+            </span>
+          </>
+        }
+        description={
+          <>
+            Five tool categories every Amazon India and Flipkart seller should
+            cover, where global names like Helium 10 and Jungle Scout hold up,
+            and where they fall short for INR pricing and Flipkart.
+          </>
+        }
         authorName="Vikrant Singh"
         authorUrl="/author/vikrant-singh"
         publishDate="September 2026"
         readTime="5 min read"
-        tags={["Tool Comparison", "India 2026"]}
         bgColor={{
-          light:
-            "linear-gradient(150deg, #EFF6FF 0%, #DBEAFE 50%, #EEF2FF 100%)",
-          dark: "linear-gradient(150deg, #0C1A27 0%, #0c1445 50%, #1e1b4b 100%)",
+          light: "#EFF6FF",
+          dark: "#0C1A27",
         }}
         highlightColor="#2563EB"
       />
 
-      {/* ── Custom Graphic Banner (Matching Image attached) ───────────────── */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 my-8">
+      <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
+        {/* Custom Graphic Banner */}
         <BlogImageSection
           imageSrc="/best-amazon-seller-tools-india.png"
           altText="Amazon India Seller Tool Comparison"
           caption="Insydz India tool coverage check for 2026. Four of the five criteria Indian sellers need most — Amazon India native data, Flipkart coverage, INR and GST margins, and WhatsApp alerts — are either unique to Insydz or unavailable in Helium 10 or Jungle Scout."
         />
-      </div>
 
-      {/* Quick Answer Banner */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mb-8">
+        {/* Quick Answer Banner */}
         <InfoBanner
-          title="⚡ Quick Answer"
-          content="The best Amazon seller tools for Indian sellers in 2026 fall into five categories: competitor price tracking, keyword research, product research, PPC management, and review analytics. Most established names were built for the US marketplace. For Amazon India and Flipkart, the better test is which tool understands rupee price points, GST-inclusive margins, and festive demand cycles — not which one has the most features. Insydz is the only platform that covers both Amazon India and Flipkart from one connection, with a free plan and no credit card required."
           accentColor="#2563EB"
           backgroundColor="#EFF6FF"
+          title="⚡ QUICK ANSWER"
+          content="The best Amazon seller tools for Indian sellers in 2026 fall into five categories: competitor price tracking, keyword research, product research, PPC management, and review analytics. Most established names were built for the US marketplace. For Amazon India and Flipkart, the better test is which tool understands rupee price points, GST-inclusive margins, and festive demand cycles — not which one has the most features. Insydz is the only platform that covers both Amazon India and Flipkart from one connection, with a free plan and no credit card required."
         />
-      </div>
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mb-8">
-        {/* s1: Key Takeaways */}
-        <section id="s1" className="scroll-mt-28 space-y-6">
-          <KeyTakeawaysBox
-            title="Key Takeaways"
-            items={keyTakeaways}
-            accentColor="#2563EB"
-            backgroundColor={isDark ? "#0C1A27" : "#0F172A"}
-          />
 
-          <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-            Search best amazon seller tools and most lists read the same way: a
-            comparison of ten to fifteen tools, few of which mention India. That
-            is the gap this guide fills — tools organised by what an Indian
-            seller actually needs to check, in what order, and where a global
-            tool starts to fall short.
-          </p>
-        </section>
+        {/* Key Takeaways Box */}
+        <div
+          style={{ maxWidth: 1240, margin: "0 auto", padding: "8px 12px 0" }}
+        >
+          <div id="s1">
+            <KeyTakeawaysBox
+              title="Key Takeaways"
+              items={keyTakeaways}
+              accentColor="#2563EB"
+              backgroundColor="#0C1A27"
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Mobile TOC */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:hidden mb-6">
-        <MobileTableOfContents
+      {/* ARTICLE LAYOUT */}
+      <div className="article-layout">
+        {/* Desktop Sidebar */}
+        <TableOfContents
           tocItems={tocItems}
           activeSection={activeSection}
-          go={scrollToSection}
+          go={go}
+          resolvedTheme={resolvedTheme}
         />
-      </div>
 
-      {/* Main Content Layout */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Sticky Sidebar (Left Column) */}
-          <aside className="hidden lg:block lg:col-span-4 space-y-6 sticky top-28">
-            <TOCSidebar
-              items={tocItems}
-              activeSection={activeSection}
-              onNavigate={scrollToSection}
+        {/* MAIN */}
+        <main style={{ minWidth: 0 }}>
+          {/* Mobile TOC */}
+          <MobileTableOfContents
+            tocItems={tocItems}
+            activeSection={activeSection}
+            go={go}
+            resolvedTheme={resolvedTheme}
+          />
+
+          <article className="article-body">
+            <p>
+              Search best amazon seller tools and most lists read the same way: a
+              comparison of ten to fifteen tools, few of which mention India. That
+              is the gap this guide fills — tools organised by what an Indian
+              seller actually needs to check, in what order, and where a global
+              tool starts to fall short.
+            </p>
+
+            <div id="s2">
+              <SectionQA
+                title="What Are Indian Sellers Actually Searching For?"
+                paragraph1="Before picking a category, it helps to see where actual search demand sits among Indian sellers."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            {/* Monthly Search Volume Box */}
+            <div className="bg-slate-50 dark:bg-slate-900/90 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-6 shadow-sm space-y-4 my-6">
+              <div className="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                <span>🔍</span> Monthly Search Volume by Category — Amazon
+                India (2026)
+              </div>
+
+              <div className="space-y-3">
+                {searchVolumeData.map((row, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between text-sm py-1 border-b border-slate-200 dark:border-slate-800 last:border-0"
+                  >
+                    <span className="font-semibold text-slate-800 dark:text-slate-200 w-44 shrink-0">
+                      {row.category}
+                    </span>
+                    <div className="flex-1 mx-4 bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full"
+                        style={{ width: row.width }}
+                      ></div>
+                    </div>
+                    <span className="font-bold text-blue-600 dark:text-blue-400 w-16 text-right">
+                      {row.volume}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-800">
+                Average monthly search volume, highest-volume query per
+                category. Source: Insydz keyword research data, 2026. Amazon
+                India-focused terms only.
+              </p>
+            </div>
+
+            <div id="s3">
+              <SectionQA
+                title="What Are the Five Categories Every Indian Seller Needs?"
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            <NumberedCards
+              items={fiveCategories}
+              numberColor="#2563EB"
+              backgroundColor={
+                resolvedTheme === "dark" ? "#0F172A" : "#F8FAFC"
+              }
+              borderColor={resolvedTheme === "dark" ? "#1E293B" : "#D7E3FF"}
+              variant="number"
             />
 
-            {/* Sidebar CTA Box */}
-            {/* <div className="bg-gradient-to-br from-[#0C1A27] to-[#0a1a3c] text-white rounded-2xl p-6 shadow-xl border border-blue-900/50 space-y-4">
-              <h3 className="font-extrabold text-lg leading-snug">
-                The Only Seller Tool Built for Amazon India and Flipkart
-                Together
-              </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                INR pricing, GST-aware margins, Flipkart coverage, and WhatsApp
-                alerts in one dashboard. Free plan available, no credit card
-                required.
-              </p>
-              <ul className="text-xs text-slate-300 space-y-2">
-                <li className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold">✓</span> Competitor
-                  price tracking, both platforms
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold">✓</span>{" "}
-                  India-native keyword research
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold">✓</span> Product
-                  research with Opportunity Score
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold">✓</span> Review
-                  analytics and listing alerts
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold">✓</span> Free to
-                  start, no credit card
-                </li>
-              </ul>
+            <div id="s4">
+              <SectionQA
+                title="How Do Insydz, Helium 10, and Jungle Scout Compare?"
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            <DataTable columns={comparisonColumns} rows={comparisonRows} />
+
+            <p className="mt-4">
+              See the full{" "}
               <Link
-                href="/login"
-                className="block text-center w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-full transition-colors shadow-md"
+                href="/compare/insydz-vs-helium-10"
+                className="text-blue-600 dark:text-blue-400 underline font-semibold"
               >
-                Start Free on Insydz
-              </Link>
-            </div> */}
-          </aside>
+                Insydz vs Helium 10 comparison
+              </Link>{" "}
+              for a deeper breakdown.
+            </p>
 
-          {/* Main Article Content (Right Column) */}
-          <main className="lg:col-span-8 space-y-10">
-            {/* s2: What Are Indian Sellers Searching For? */}
-            <section id="s2" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                What Are Indian Sellers Actually Searching For?
-              </h2>
-
-              <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                Before picking a category, it helps to see where actual search
-                demand sits among Indian sellers.
-              </p>
-
-              {/* Monthly Search Volume Box */}
-              <div className="bg-slate-50 dark:bg-slate-900/90 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-6 shadow-sm space-y-4">
-                <div className="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                  <span>🔍</span> Monthly Search Volume by Category — Amazon
-                  India (2026)
-                </div>
-
-                <div className="space-y-3">
-                  {searchVolumeData.map((row, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between text-sm py-1 border-b border-slate-200 dark:border-slate-800 last:border-0"
-                    >
-                      <span className="font-semibold text-slate-800 dark:text-slate-200 w-44 shrink-0">
-                        {row.category}
-                      </span>
-                      <div className="flex-1 mx-4 bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full"
-                          style={{ width: row.width }}
-                        ></div>
-                      </div>
-                      <span className="font-bold text-blue-600 dark:text-blue-400 w-16 text-right">
-                        {row.volume}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-800">
-                  Average monthly search volume, highest-volume query per
-                  category. Source: Insydz keyword research data, 2026. Amazon
-                  India-focused terms only.
-                </p>
-              </div>
-            </section>
-
-            {/* s3: Five Categories */}
-            <section id="s3" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                What Are the Five Categories Every Indian Seller Needs?
-              </h2>
-
-              <NumberedCards
-                items={fiveCategories}
-                numberColor="#2563EB"
-                backgroundColor={isDark ? "#0F172A" : "#F8FAFC"}
-                borderColor={isDark ? "#1E293B" : "#D7E3FF"}
-                variant="number"
+            <div id="s5">
+              <SectionQA
+                title="Where Do Global Tools Fall Short for India?"
+                paragraph1="Most Amazon seller software built for the US market treats Amazon India as an afterthought — and neither major global player tracks Flipkart. For a seller running both marketplaces, that means exporting two sets of data by hand every week. Tools built from the ground up for this market — INR pricing, GST-aware fee math, Big Billion Days demand patterns — close that gap without the manual work."
+                resolvedTheme={resolvedTheme}
               />
-            </section>
+            </div>
 
-            {/* s4: Comparison Table */}
-            <section id="s4" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                How Do Insydz, Helium 10, and Jungle Scout Compare?
-              </h2>
+            <InfoBanner
+              accentColor="#16A34A"
+              backgroundColor="#F0FDF4"
+              title="⚡ The Defining Difference"
+              content="It also matters how a tool connects to your account. A platform using Amazon's official Selling Partner API only ever gets read access to what you approve — unlike sharing your Seller Central password directly, which is a security risk. Always confirm a tool uses the Selling Partner API before connecting."
+            />
 
-              <DataTable columns={comparisonColumns} rows={comparisonRows} />
-
-              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300">
-                See the full{" "}
-                <Link
-                  href="/compare/insydz-vs-helium-10"
-                  className="text-blue-600 dark:text-blue-400 underline font-semibold"
-                >
-                  Insydz vs Helium 10 comparison
-                </Link>{" "}
-                for a deeper breakdown.
-              </p>
-            </section>
-
-            {/* s5: Where Global Tools Fall Short */}
-            <section id="s5" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                Where Do Global Tools Fall Short for India?
-              </h2>
-
-              <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                Most Amazon seller software built for the US market treats
-                Amazon India as an afterthought — and neither major global
-                player tracks Flipkart. For a seller running both marketplaces,
-                that means exporting two sets of data by hand every week. Tools
-                built from the ground up for this market — INR pricing,
-                GST-aware fee math, Big Billion Days demand patterns — close
-                that gap without the manual work.
-              </p>
-
-              <InfoBanner
-                title="⚡ The Defining Difference"
-                content="It also matters how a tool connects to your account. A platform using Amazon's official Selling Partner API only ever gets read access to what you approve — unlike sharing your Seller Central password directly, which is a security risk. Always confirm a tool uses the Selling Partner API before connecting."
-                accentColor="#16A34A"
-                backgroundColor="#F0FDF4"
+            <div id="s6">
+              <SectionQA
+                title="How Do You Choose Based on Your Stage?"
+                paragraph1="The fastest way to decide is to try one tool and watch what it actually surfaces in the first week. Insydz's free plan runs Amazon India and Flipkart price tracking, keyword tracking, and product research side by side — no card required."
+                resolvedTheme={resolvedTheme}
               />
-            </section>
-
-            {/* s6: Choose by Stage */}
-            <section id="s6" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                How Do You Choose Based on Your Stage?
-              </h2>
-
               <InsightCards cards={stageCards} columns={2} />
+            </div>
 
-              <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                The fastest way to decide is to try one tool and watch what it
-                actually surfaces in the first week. Insydz's free plan runs
-                Amazon India and Flipkart price tracking, keyword tracking, and
-                product research side by side — no card required.
-              </p>
-            </section>
-
-            {/* s7: FAQs */}
-            <section id="s7" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                Frequently Asked Questions
-              </h2>
-
+            <div id="s7">
+              <SectionQA
+                title="Frequently Asked Questions"
+                resolvedTheme={resolvedTheme}
+              />
               <FAQ faqs={faqs} accentColor="#2563EB" />
-            </section>
+            </div>
 
-            {/* s8: Summary */}
-            <section id="s8" className="scroll-mt-28 space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white border-b-2 border-blue-500/20 pb-3">
-                Summary: Choosing the Right Amazon Seller Tool for India in 2026
-              </h2>
-
-              <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                The best Amazon seller tool for an Indian seller is not the one
-                with the most global features — it is the one built around how
-                Amazon India and Flipkart actually work. That means five
-                categories covered: competitor price tracking, keyword research,
-                product research, PPC management, and review analytics. It means
-                India-native search volume data instead of US figures applied to
-                Indian categories. It means INR pricing with GST-aware margins,
-                Flipkart coverage alongside Amazon India, and WhatsApp alerts
-                that reach you the moment something changes.
-              </p>
-
-              <p className="text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                Helium 10 and Jungle Scout remain capable tools for sellers
-                focused on the US marketplace, but both fall short on the
-                specifics that matter most for India — currency, GST, and
-                Flipkart chief among them. Insydz was built to close exactly
-                that gap, with a free plan that lets you test price tracking,
-                keyword rank, and product research on your own ASINs before
-                committing to anything paid.
-              </p>
+            <div id="s8">
+              <SectionQA
+                title="Summary: Choosing the Right Amazon Seller Tool for India in 2026"
+                paragraph1="The best Amazon seller tool for an Indian seller is not the one with the most global features — it is the one built around how Amazon India and Flipkart actually work. That means five categories covered: competitor price tracking, keyword research, product research, PPC management, and review analytics. It means India-native search volume data instead of US figures applied to Indian categories. It means INR pricing with GST-aware margins, Flipkart coverage alongside Amazon India, and WhatsApp alerts that reach you the moment something changes."
+                paragraph2="Helium 10 and Jungle Scout remain capable tools for sellers focused on the US marketplace, but both fall short on the specifics that matter most for India — currency, GST, and Flipkart chief among them. Insydz was built to close exactly that gap, with a free plan that lets you test price tracking, keyword rank, and product research on your own ASINs before committing to anything paid."
+                resolvedTheme={resolvedTheme}
+              />
 
               <RelatedReadingBox
                 label="📌 Related Reading on Insydz"
                 links={relatedReadingLinks}
                 accentColor="#2563EB"
                 backgroundColor="#EFF6FF"
+                resolvedTheme={resolvedTheme}
               />
 
               <RelatedArticles
@@ -649,9 +796,9 @@ export default function BestAmazonSellerToolsIndia2026Content() {
                 cards={relatedArticlesCards}
                 resolvedTheme={resolvedTheme}
               />
-            </section>
-          </main>
-        </div>
+            </div>
+          </article>
+        </main>
       </div>
 
       {/* Bottom Final CTA */}
