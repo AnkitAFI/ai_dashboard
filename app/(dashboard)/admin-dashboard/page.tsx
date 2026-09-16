@@ -846,6 +846,7 @@ interface UserRow {
   onboarding_details: string | null;
   seller_id: string | null;
   seller_sync_status: string | null;
+  sp_api_connected: boolean;
   mobile_number: string | null;
   total_amount_paid: number;
 }
@@ -899,6 +900,7 @@ export default function AdminDashboard() {
   const [filterVerified, setFilterVerified] = useState("all");
   const [filterActive, setFilterActive] = useState("all");
   const [filterMonth, setFilterMonth] = useState("all");
+  const [filterMarketplace, setFilterMarketplace] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
@@ -1125,10 +1127,11 @@ export default function AdminDashboard() {
         filterActive === "all" ||
         (filterActive === "active" && u.is_active !== false) ||
         (filterActive === "deleted" && u.is_active === false);
+      const matchesMarketplace = filterMarketplace === "all" || (u.onboarding_marketplace && u.onboarding_marketplace.toLowerCase() === filterMarketplace.toLowerCase());
       const matchesMonth = filterMonth === "all" || (
         u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
       );
-      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMonth;
+      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth;
     })
     .sort((a, b) => {
       const av = a[sortField] ?? "";
@@ -1402,6 +1405,7 @@ export default function AdminDashboard() {
               <PanelHead title="Quick Stats" sub="Key metrics at a glance" />
               {[
                 { label: "Verification Rate", value: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}%`, color: "#10b981" },
+                { label: "Stores Connected", value: users.filter(u => u.sp_api_connected).length, color: "#6366f1" },
                 { label: "Ads Connected", value: stats?.ads_connected_users ?? 0, color: "#10b981" },
                 { label: "Paid Users", value: paidUsers, color: "#6366f1" },
                 { label: "Free Users", value: freeCount, color: "#94a3b8" },
@@ -1451,6 +1455,11 @@ export default function AdminDashboard() {
                   <option value="all">All Months</option>
                   {uniqueMonths.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
+                <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} className="tbl-select">
+                  <option value="all">All Marketplaces</option>
+                  <option value="amazon">Amazon</option>
+                  <option value="flipkart">Flipkart</option>
+                </select>
               </div>
             </div>
 
@@ -1467,6 +1476,7 @@ export default function AdminDashboard() {
                     <Th label="Business" field="business_name" />
                     <Th label="Location" field="location" />
                     <Th label="Marketplace" field="onboarding_marketplace" />
+                    <Th label="Store Linked" field="sp_api_connected" />
                     <Th label="Seller ID" field="seller_id" />
                     <Th label="Sync" field="seller_sync_status" />
                     <Th label="AI Chats" field="ai_chat_used" />
@@ -1577,6 +1587,17 @@ export default function AdminDashboard() {
 
                           {/* Marketplace */}
                           <td style={{ padding: "11px 14px", fontSize: 12, color: "#64748b" }}>{fmt(u.onboarding_marketplace)}</td>
+
+                          {/* Store Linked */}
+                          <td style={{ padding: "11px 14px", fontSize: 11 }}>
+                            {u.sp_api_connected ? (
+                              <span style={{ padding: "2px 5px", fontSize: 9, fontWeight: 700, borderRadius: 4, background: "#dcfce7", color: "#16a34a", border: "1px solid #bbf7d0", whiteSpace: "nowrap" }}>
+                                Yes 🟢
+                              </span>
+                            ) : (
+                              <span style={{ color: "#94a3b8" }}>—</span>
+                            )}
+                          </td>
 
                           {/* Seller ID */}
                           <td style={{ padding: "11px 14px", fontSize: 11, color: "#94a3b8", fontFamily: "monospace" }}>
