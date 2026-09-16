@@ -7577,9 +7577,13 @@ def get_admin_stats(
     amount_map = {row.user_id: (row.total_amount or 0) for row in payment_sums}
 
     # Track Amazon Ads connected users
-    from app.models.schema_v2 import AmazonAdsCredential
+    from app.models.schema_v2 import AmazonAdsCredential, AmazonSPAPICredential
     ads_connected_count = db.query(AmazonAdsCredential.user_id).distinct().count()
     connected_user_ids = {row[0] for row in db.query(AmazonAdsCredential.user_id).distinct().all()}
+
+    # Track Amazon SP-API connected users (Amazon Store Setup)
+    sp_api_connected_count = db.query(AmazonSPAPICredential.user_id).distinct().count()
+    sp_api_connected_user_ids = {row[0] for row in db.query(AmazonSPAPICredential.user_id).distinct().all()}
 
     # all users with details
     users = db.query(models.User).order_by(models.User.created_at.desc()).all()
@@ -7594,6 +7598,7 @@ def get_admin_stats(
         "is_verified": u.is_verified,
         "is_active": u.is_active,
         "ads_connected": u.id in connected_user_ids,
+        "sp_api_connected": u.id in sp_api_connected_user_ids,
 
         "ai_chat_used": u.ai_chat_used or 0,
         "ai_chat_month": u.ai_chat_month,
