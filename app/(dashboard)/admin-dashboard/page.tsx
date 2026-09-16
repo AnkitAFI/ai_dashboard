@@ -1110,6 +1110,16 @@ export default function AdminDashboard() {
     return Array.from(months).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   }, [users]);
 
+  const uniqueMarketplaces = useMemo(() => {
+    const mps = new Set<string>();
+    users.forEach(u => {
+      if (u.onboarding_marketplace) {
+        mps.add(u.onboarding_marketplace.toLowerCase().trim());
+      }
+    });
+    return Array.from(mps).sort();
+  }, [users]);
+
   const filtered = users
     .filter(u => {
       const q = search.toLowerCase();
@@ -1457,8 +1467,7 @@ export default function AdminDashboard() {
                 </select>
                 <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} className="tbl-select">
                   <option value="all">All Marketplaces</option>
-                  <option value="amazon">Amazon</option>
-                  <option value="flipkart">Flipkart</option>
+                  {uniqueMarketplaces.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
                 </select>
               </div>
             </div>
