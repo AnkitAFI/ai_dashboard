@@ -157,8 +157,8 @@ function DashboardContent() {
               "You can add your Seller ID anytime from the Seller Dashboard.",
           });
         } else {
-          // existing_seller with connected store — no category filter, just show dashboard
-          localStorage.setItem("sidebar-mode", "seller");
+          // existing_seller with connected store — default to explorer mode now since seller dashboard is deprecated
+          localStorage.setItem("sidebar-mode", "explorer");
           window.dispatchEvent(new Event("sidebar-mode-changed"));
 
           toast({
