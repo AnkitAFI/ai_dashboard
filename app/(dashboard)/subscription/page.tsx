@@ -530,12 +530,12 @@ export default function Subscription() {
                               className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
                             >
                               {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                              Cancel Subscription
+                              Cancel Auto Renewal
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+                              <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle. No refund will be issued.
                               </AlertDialogDescription>

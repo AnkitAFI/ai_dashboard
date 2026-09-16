@@ -2,6 +2,12 @@
 const nextConfig = {
   async redirects() {
     return [
+      // Fix for cached users navigating to the removed seller dashboard
+      {
+        source: "/seller/dashboard",
+        destination: "/dashboard",
+        permanent: true,
+      },
       // ── 1. User-Reported 404 URLs & Broken Internal Links ─────────────────
       {
         source: "/resources/expert-blog/amazon-buy-box-win-rate",
