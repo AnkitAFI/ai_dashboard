@@ -153,7 +153,7 @@ const nextConfig = {
       },
       {
         source: "/blog/why-did-my-amazon-india-sales-drop-suddenly",
-        destination: "/resources/expert-blog/amazon-sales-drop",
+        destination: "/resources/expert-blog/amazon-listing-not-ranking-india",
         permanent: true,
       },
       {
@@ -164,6 +164,47 @@ const nextConfig = {
       {
         source: "/blog/:slug*",
         destination: "/resources/expert-blog/:slug*",
+        permanent: true,
+      },
+      // ── 4. Low-Traction Blog 301 Redirect Map ────────────────────────────
+      {
+        source: "/resources/expert-blog/analyze-amazon-reviews-india-content",
+        destination: "/resources/expert-blog/amazon-review-analysis-guide-india",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/prime-day-india-2026-seller-questions",
+        destination: "/features/festive-trend-feature",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/amazon-sales-drop",
+        destination: "/resources/expert-blog/amazon-listing-not-ranking-india",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/amazon-india-price-war-strategy",
+        destination: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/switch-excel-ai-amazon-india",
+        destination: "/solutions/amazon-sellers",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/top-amazon-india-sellers-habits",
+        destination: "/resources/expert-blog/how-to-rank-page-1-amazon-india",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/agency-client-reporting-automation",
+        destination: "/solutions/ecommerce-agencies",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/amazon-repricing-strategy-india-2026",
+        destination: "/use-cases/track-competitor-prices",
         permanent: true,
       },
     ];
