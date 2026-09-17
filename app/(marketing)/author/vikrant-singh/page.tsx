@@ -80,7 +80,7 @@ const articles: Article[] = [
     category: "Pricing Strategy",
     readTime: "12 min read",
     image: "/amazon-repricing-strategy-india-image0.png",
-    route: "/resources/expert-blog/amazon-repricing-strategy-india-2026",
+    route: "/use-cases/track-competitor-prices",
     popular: true,
   },
   {
@@ -91,7 +91,7 @@ const articles: Article[] = [
     category: "Review Intelligence Pillar",
     readTime: "12 min read",
     image: "/analyze-500-reviews-product-opportunities.png",
-    route: "/resources/expert-blog/analyze-amazon-reviews-india-content",
+    route: "/resources/expert-blog/amazon-review-analysis-guide-india",
     popular: true,
   },
   {
@@ -102,7 +102,7 @@ const articles: Article[] = [
     category: "Seller Tools & Strategy",
     readTime: "10 min read",
     image: "/Excel to AI Competitor Tracker on Amazon India_ 30 Days.png",
-    route: "/resources/expert-blog/switch-excel-ai-amazon-india",
+    route: "/solutions/amazon-sellers",
     popular: true,
   },
   {
@@ -113,7 +113,7 @@ const articles: Article[] = [
     category: "Seller Tools & Strategy",
     readTime: "11 min read",
     image: "/Habits of Top Amazon India Sellers.png",
-    route: "/resources/expert-blog/top-amazon-india-sellers-habits",
+    route: "/resources/expert-blog/how-to-rank-page-1-amazon-india",
     popular: true,
   },
   {
@@ -124,7 +124,7 @@ const articles: Article[] = [
     category: "Festive Trends",
     readTime: "13 min read",
     image: "/prime-day-india-2026-seller-questions.png",
-    route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
+    route: "/features/festive-trend-feature",
     popular: true,
   },
   {
@@ -190,7 +190,7 @@ const articles: Article[] = [
     category: "Seller Tools & Strategy",
     readTime: "12 min read",
     image: "/Amazon India Sales Drop.png",
-    route: "/resources/expert-blog/amazon-sales-drop",
+    route: "/resources/expert-blog/amazon-listing-not-ranking-india",
     popular: true,
   },
   {
