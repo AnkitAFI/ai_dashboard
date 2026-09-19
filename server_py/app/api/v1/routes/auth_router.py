@@ -494,9 +494,22 @@ def google_verify_otp(
     del_cache(f"pending_google_{req.email}")
     del_cache(f"google_otp_{req.email}")
     
+    ip_address = request.headers.get("X-Forwarded-For")
+    if ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    else:
+        ip_address = request.client.host if request.client else "Unknown IP"
+        
+    user_agent = request.headers.get("user-agent")
+
     # Login & return token
     access_token = create_access_token(data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(days=SESSION_EXPIRE_DAYS_REMEMBER))
-    session_id = create_session(user.id)
+    session_id = create_session(
+        user_id=user.id,
+        remember_me=False,
+        ip_address=ip_address,
+        user_agent=user_agent
+    )
     response.set_cookie(key="session_id", value=session_id, httponly=True, secure=SESSION_COOKIE_SECURE, samesite="lax", max_age=SESSION_EXPIRE_DAYS_REMEMBER * 86400, path="/")
     
     if background_tasks:
