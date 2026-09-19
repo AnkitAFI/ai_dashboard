@@ -6933,6 +6933,7 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=max_age,
+            path="/",
             # domain=".insydz.com"
         )
         
@@ -7258,6 +7259,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60,
+            path="/",
             # domain=".insydz.com"
         )
         

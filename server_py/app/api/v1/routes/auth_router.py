@@ -497,7 +497,7 @@ def google_verify_otp(
     # Login & return token
     access_token = create_access_token(data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(days=SESSION_EXPIRE_DAYS_REMEMBER))
     session_id = create_session(user.id)
-    response.set_cookie(key="session_id", value=session_id, httponly=True, secure=SESSION_COOKIE_SECURE, samesite="lax", max_age=SESSION_EXPIRE_DAYS_REMEMBER * 86400)
+    response.set_cookie(key="session_id", value=session_id, httponly=True, secure=SESSION_COOKIE_SECURE, samesite="lax", max_age=SESSION_EXPIRE_DAYS_REMEMBER * 86400, path="/")
     
     if background_tasks:
         try:
@@ -765,6 +765,7 @@ def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response,
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=max_age,
+            path="/",
             # domain=".insydz.com"
         )
         return json_resp
