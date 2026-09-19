@@ -245,8 +245,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
         credentials: "include",
+        cache: "no-store",
         headers: {
           Accept: "application/json",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
         },
       });
 
