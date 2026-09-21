@@ -44,7 +44,16 @@ class Settings(BaseSettings):
     AMAZON_SP_API_ROLE_ARN: str = ""
     AMAZON_SP_API_AWS_ACCESS_KEY: str = ""
     AMAZON_SP_API_AWS_SECRET_KEY: str = ""
-    
+
+    # Amazon SQS (Hijacker & Buy Box Alerts)
+    # AMAZON_SQS_QUEUE_URL: The full URL of your AWS SQS queue
+    AMAZON_SQS_QUEUE_URL: str = ""
+    # AMAZON_SQS_DESTINATION_ID: The destinationId returned by SP-API CreateDestination
+    #   This links the SP-API subscription to your SQS queue ARN
+    AMAZON_SQS_DESTINATION_ID: str = ""
+    # Region for SQS (India = ap-south-1). Uses AMAZON_SP_API_AWS_ACCESS_KEY/SECRET above.
+    AWS_REGION: str = "ap-south-1"
+
     # Ollama Settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     

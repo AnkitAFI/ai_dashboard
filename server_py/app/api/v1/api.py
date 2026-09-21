@@ -83,3 +83,6 @@ api_router.include_router(amazon_sp_api_inventory_router)
 
 from app.api.v1.routes.amazon_sp_api_reviews import router as amazon_sp_api_reviews_router
 api_router.include_router(amazon_sp_api_reviews_router, prefix="/amazon-sp-api/reviews", tags=["Amazon SP-API Reviews"])
+
+from app.api.v1.routes.amazon_sp_api_hijacker_router import router as amazon_sp_api_hijacker_router
+api_router.include_router(amazon_sp_api_hijacker_router)

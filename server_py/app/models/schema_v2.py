@@ -211,6 +211,15 @@ class AmazonSPAPISettings(Base):
     selling_partner_id = Column(String(255), nullable=False, index=True)
     
     global_target_margin = Column(Numeric(5, 2), default=5.0) # E.g. 5.0 for 5%
+
+    # ── Hijacker Alert Preferences (per store) ──────────────────────────────────
+    # Whether the user wants email notifications when a hijacker is detected
+    hijacker_email_alerts_enabled = Column(Boolean, default=False)
+    # Only alert if competitor is cheaper by at least this amount (₹)
+    # Default 0 = alert on any price difference
+    hijacker_min_price_diff = Column(Numeric(10, 2), default=0.0)
+    # Which type of events to alert on: NEW_HIJACKER, LOST_BUY_BOX, BOTH
+    hijacker_alert_type_filter = Column(String(20), default="BOTH")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -622,3 +631,53 @@ class AmazonSPAPIOrderReviewLog(Base):
     __table_args__ = (
         UniqueConstraint('selling_partner_id', 'amazon_order_id', name='uix_sp_review_log_order'),
     )
+
+
+class AmazonSPAPIHijackerMonitoredASIN(Base):
+    """
+    Stores the list of ASINs a user has explicitly chosen to monitor for hijackers.
+    Premium users can select up to 20. Enterprise users are unlimited.
+    Amazon monitors ALL ASINs at the subscription level — this table is our
+    application-layer filter to drop messages for unselected ASINs.
+    """
+    __tablename__ = "amazon_sp_api_hijacker_monitored_asins"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+
+    asin = Column(String(50), nullable=False, index=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'selling_partner_id', 'asin', name='uix_hijacker_monitored_asin'),
+    )
+
+
+class AmazonSPAPIHijackerAlert(Base):
+    """
+    Stores individual hijacker / buy-box-lost events detected by the SQS worker.
+    Each row represents one event on one ASIN for one seller account.
+    is_resolved is set to True when the seller marks it as handled.
+    """
+    __tablename__ = "amazon_sp_api_hijacker_alerts"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+
+    asin = Column(String(50), nullable=False, index=True)
+    # NEW_HIJACKER = a new seller appeared on the listing
+    # LOST_BUY_BOX = the seller lost the Add to Cart button to a competitor
+    alert_type = Column(String(20), nullable=False)
+
+    hijacker_seller_name = Column(String(255), nullable=True)  # Competitor seller name if available
+    hijacker_price = Column(Numeric(10, 2), nullable=True)     # Competitor's listed price
+    your_price = Column(Numeric(10, 2), nullable=True)         # Your price at time of alert
+    price_difference = Column(Numeric(10, 2), nullable=True)   # your_price - hijacker_price (pre-calculated)
+
+    is_resolved = Column(Boolean, default=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

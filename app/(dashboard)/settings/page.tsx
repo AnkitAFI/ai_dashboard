@@ -1048,7 +1048,7 @@ export default function Settings() {
                         {session.created_at && (
                           <>
                             <span>•</span>
-                            <span>Logged in: {new Date(session.created_at).toLocaleString()}</span>
+                            <span>Logged in: {new Date(session.created_at.endsWith('Z') || session.created_at.includes('+') ? session.created_at : `${session.created_at}Z`).toLocaleString()}</span>
                           </>
                         )}
                       </div>

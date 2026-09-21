@@ -8,7 +8,7 @@ from typing import Optional
 
 import razorpay
 import sib_api_v3_sdk
-from fastapi import APIRouter, Depends, HTTPException, Header, Request
+from fastapi import APIRouter, Depends, HTTPException, Header, Request, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sib_api_v3_sdk.rest import ApiException
@@ -127,14 +127,43 @@ def _active_order(user_id: int, db: Session) -> Optional["models.PaymentOrder"]:
     )
 
 
-def _sync_user(user: "models.User", order: "models.PaymentOrder", db: Session) -> None:
-    """Single place that writes tier + expiry to users table."""
+async def trigger_hijacker_subscriptions_bg(user_id: int):
+    """Background task to activate Amazon SP-API subscriptions on upgrade."""
+    from app.db.session import SessionLocal
+    from app.api.v1.routes.amazon_sp_api_router import _get_access_token, _call_create_subscription
+    from app.models.schema_v2 import AmazonSPAPICredential
+    from app.core.config import settings
+
+    if not getattr(settings, "AMAZON_SQS_DESTINATION_ID", None):
+        return
+
+    db = SessionLocal()
+    try:
+        creds = db.query(AmazonSPAPICredential).filter(AmazonSPAPICredential.user_id == user_id).all()
+        for c in creds:
+            if not c.refresh_token:
+                continue
+            try:
+                fresh_token = await _get_access_token(c.refresh_token)
+                await _call_create_subscription(fresh_token, c.selling_partner_id)
+            except Exception as e:
+                print(f"[HIJACKER] Bg task error for store {c.selling_partner_id}: {e}")
+    finally:
+        db.close()
+
+
+def _sync_user(user: "models.User", order: "models.PaymentOrder", db: Session) -> bool:
+    """Single place that writes tier + expiry to users table. Returns True if upgraded."""
+    old_tier = user.subscription_tier
     user.subscription_tier       = order.plan_id
     user.subscription_expires_at = order.expires_at
     user.updated_at              = datetime.now()
     db.commit()
     db.refresh(user)
     print(f"✅ _sync_user: user {user.id} → {order.plan_id} until {order.expires_at:%Y-%m-%d}")
+    if order.plan_id in ("premium", "enterprise") and old_tier not in ("premium", "enterprise"):
+        return True
+    return False
 
 
 def _prorated_upgrade_price(current_order: "models.PaymentOrder", new_plan_id: str) -> tuple[int, str]:
@@ -562,6 +591,7 @@ def create_payment_order(
 @router.post("/verify")
 def verify_payment(
     data:         VerifyPaymentRequest,
+    background_tasks: BackgroundTasks,
     current_user: models.User = Depends(get_current_user),
     db:           Session     = Depends(get_db),
 ):
@@ -588,7 +618,8 @@ def verify_payment(
             # Self-heal users table if stale
             if (current_user.subscription_tier       != order.plan_id or
                 current_user.subscription_expires_at != order.expires_at):
-                _sync_user(current_user, order, db)
+                if _sync_user(current_user, order, db):
+                    background_tasks.add_task(trigger_hijacker_subscriptions_bg, current_user.id)
         except Exception as e:
             db.rollback()
             print(f"❌ verify self-heal: {e}")
@@ -625,7 +656,8 @@ def verify_payment(
             db.add(redemption)
             
         db.flush()
-        _sync_user(current_user, order, db)
+        if _sync_user(current_user, order, db):
+            background_tasks.add_task(trigger_hijacker_subscriptions_bg, current_user.id)
     except Exception as e:
         db.rollback()
         raise HTTPException(500, f"DB error activating plan: {e}")
@@ -710,6 +742,7 @@ def payment_history(
 @router.post("/webhook")
 async def razorpay_webhook(
     request:              Request,
+    background_tasks:     BackgroundTasks,
     x_razorpay_signature: Optional[str] = Header(None),
     db:                   Session       = Depends(get_db),
 ):
@@ -757,7 +790,8 @@ async def razorpay_webhook(
         db.flush()
         user = db.query(models.User).filter(models.User.id == order.user_id).first()
         if user:
-            _sync_user(user, order, db)
+            if _sync_user(user, order, db):
+                background_tasks.add_task(trigger_hijacker_subscriptions_bg, user.id)
         else:
             db.commit()
         print(f"✅ Webhook: order {order.id} activated")
@@ -777,6 +811,7 @@ async def razorpay_webhook(
 @router.get("/subscription-status/{user_id}")
 def subscription_status(
     user_id:      int,
+    background_tasks: BackgroundTasks,
     current_user: models.User = Depends(get_current_user),
     db:           Session     = Depends(get_db),
 ):
@@ -792,7 +827,8 @@ def subscription_status(
         updated_at = getattr(current_user, "updated_at", None) or datetime.min
         if updated_at <= paid_at:
             try:
-                _sync_user(current_user, active, db)
+                if _sync_user(current_user, active, db):
+                    background_tasks.add_task(trigger_hijacker_subscriptions_bg, current_user.id)
                 print(f"🔧 self-healed user {user_id} → {active.plan_id}")
             except Exception as e:
                 db.rollback()

@@ -42,6 +42,7 @@ import {
   HelpCircle,
   Sun,
   Moon,
+  ShieldAlert,
   Link as LinkIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -168,6 +169,7 @@ const SELLER_SECTIONS: NavSection[] = [
       { href: "/seller/restock", label: "Restock Forecaster", icon: Package, badge: "NEW" },
       { href: "/seller/reviews", label: "Review Automator", icon: Star, badge: "NEW" },
       { href: "/seller/reimbursements", label: "Lost Money Recovery", icon: ShieldCheck, badge: "NEW" },
+      { href: "/seller/alerts", label: "Listing Protection", icon: ShieldAlert, badge: "NEW" },
     ],
   },
   {
