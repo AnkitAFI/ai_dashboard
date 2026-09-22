@@ -183,19 +183,25 @@ export default function ProfitabilityDashboard() {
           </div>
         </div>
 
-        {maxAccounts > 1 && accounts.length > 1 && (
-          <select
-            value={selectedSpId}
-            onChange={(e) => setSelectedSpId(e.target.value)}
-            className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}
-          >
-            {accounts.map(acc => (
-              <option key={acc.selling_partner_id} value={acc.selling_partner_id}>
-                Account: {acc.selling_partner_id.substring(0, 8)}... ({acc.region})
-              </option>
-            ))}
-          </select>
-        )}
+        <div className="flex items-center gap-3">
+          {accounts.length > 1 ? (
+            <select
+              value={selectedSpId}
+              onChange={(e) => setSelectedSpId(e.target.value)}
+              className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}
+            >
+              {accounts.map(acc => (
+                <option key={acc.selling_partner_id} value={acc.selling_partner_id}>
+                  Store: {acc.selling_partner_id.substring(0, 8)}... ({acc.region})
+                </option>
+              ))}
+            </select>
+          ) : accounts.length === 1 ? (
+            <div className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
+              Store: {accounts[0].selling_partner_id.substring(0, 8)}...
+            </div>
+          ) : null}
+        </div>
       </header>
 
       {accounts.length === 0 ? (
