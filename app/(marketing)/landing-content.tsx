@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CustomBookDemoModal } from "@/components/ui/custom-book-demo-modal";
 import {
   X,
   Zap,

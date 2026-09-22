@@ -622,3 +622,22 @@ class AmazonSPAPIOrderReviewLog(Base):
     __table_args__ = (
         UniqueConstraint('selling_partner_id', 'amazon_order_id', name='uix_sp_review_log_order'),
     )
+
+class DemoBooking(Base):
+    __tablename__ = "demo_bookings"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    
+    # Store encrypted PII for privacy
+    email = Column(EncryptedString(), nullable=False)
+    phone = Column(EncryptedString(), nullable=True)
+    
+    # Store hashes for rate-limiting lookups
+    email_hash = Column(HashedString(255), index=True, nullable=False)
+    ip_hash = Column(HashedString(255), index=True, nullable=True)
+    
+    context = Column(Text, nullable=True)
+    date = Column(String(50), nullable=False) # Store as YYYY-MM-DD
+    time_slot = Column(String(50), nullable=False) # e.g. "11:00 AM"
+    consent_given = Column(Boolean, default=True, nullable=False) # GDPR proof of consent
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

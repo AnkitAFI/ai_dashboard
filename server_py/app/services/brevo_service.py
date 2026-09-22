@@ -84,3 +84,52 @@ class BrevoService:
         except Exception as e:
             logger.error(f"[Brevo] Unexpected error during contact sync for {email}: {e}")
             return False
+
+    @staticmethod
+    def send_demo_booking_email(booking_data: dict, admin_email: str):
+        """
+        Sends an email notification via Brevo Transactional Email API for new demo bookings.
+        """
+        configuration = BrevoService.get_configuration()
+        if not configuration.api_key['api-key']:
+            logger.warning("[Brevo] BREVO_API_KEY not found in environment, skipping demo email notification.")
+            return False
+            
+        try:
+            api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            
+            sender_email = os.environ.get("BREVO_SENDER_EMAIL", "noreply@insydz.com")
+            sender_name = os.environ.get("BREVO_SENDER_NAME", "Insydz")
+            
+            # Format HTML content
+            html_content = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2>New Demo Booked! 🎉</h2>
+                    <p>You have a new demo booking. Here are the details:</p>
+                    <ul>
+                        <li><strong>Name:</strong> {booking_data.get('name')}</li>
+                        <li><strong>Email:</strong> {booking_data.get('email')}</li>
+                        <li><strong>Phone:</strong> {booking_data.get('phone', 'N/A')}</li>
+                        <li><strong>Date:</strong> {booking_data.get('date')}</li>
+                        <li><strong>Time Slot (IST):</strong> {booking_data.get('time_slot')}</li>
+                        <li><strong>Context:</strong> {booking_data.get('context', 'None')}</li>
+                    </ul>
+                </body>
+            </html>
+            """
+            
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                to=[{"email": admin_email}],
+                sender={"email": sender_email, "name": sender_name},
+                subject=f"New Demo Booking: {booking_data.get('name')} - {booking_data.get('date')} at {booking_data.get('time_slot')}",
+                html_content=html_content
+            )
+            
+            api_instance.send_transac_email(send_smtp_email)
+            logger.info(f"[Brevo] Demo booking email sent to {admin_email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"[Brevo] Failed to send demo booking email to {admin_email}: {e}")
+            return False

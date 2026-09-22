@@ -19,6 +19,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import SyncPendingBanner from "@/components/seller/sync-pending-banner";
 
 export default function RestockForecasterDashboard() {
   const { user } = useAuth();
@@ -33,6 +34,8 @@ export default function RestockForecasterDashboard() {
   
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedSpId, setSelectedSpId] = useState<string>("");
+  const [accountStatus, setAccountStatus] = useState<string>("");
+  const [connectedAt, setConnectedAt] = useState<string | null>(null);
   
   const [inventoryData, setInventoryData] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,6 +67,8 @@ export default function RestockForecasterDashboard() {
         const data = await res.json();
         setAccounts(data.accounts || []);
         if (data.accounts && data.accounts.length > 0) {
+          setAccountStatus(data.accounts[0].sync_status || "");
+          setConnectedAt(data.accounts[0].connected_at || null);
           setSelectedSpId(data.accounts[0].selling_partner_id);
         } else {
           setLoading(false); // No accounts
@@ -84,7 +89,14 @@ export default function RestockForecasterDashboard() {
       const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/inventory/${spId}/forecaster`, { credentials: "include" });
       
       if (res.status === 403) {
-        setIsPremiumRequired(true);
+        // 403 can mean tier restriction OR pending sync.
+        // Only show premium lock if we know user tier is insufficient.
+        const tier = (typeof window !== "undefined" ? (user?.subscriptionTier || "free") : "free");
+        const isPremium = tier === "premium" || tier === "enterprise";
+        if (!isPremium) {
+          setIsPremiumRequired(true);
+        }
+        // If premium but still 403, account is pending sync — leave isPremiumRequired false
         return;
       }
 
@@ -290,6 +302,57 @@ export default function RestockForecasterDashboard() {
             </p>
             <Button onClick={() => window.location.href = '/subscription'} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">
               Upgrade to Premium
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (accountStatus === "PENDING" || accountStatus === "SYNCING") && inventoryData.length === 0 ? (
+        <SyncPendingBanner
+          connectedAt={connectedAt}
+          syncStatus={accountStatus}
+          featureName="inventory data"
+          pollFn={async () => {
+            const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" });
+            if (res.ok) {
+              const data = await res.json();
+              return data.accounts?.[0]?.sync_status || "PENDING";
+            }
+            return "PENDING";
+          }}
+          onSyncComplete={() => fetchAccounts()}
+        />
+      ) : accountStatus === "COMPLETED" && inventoryData.length === 0 ? (
+        <Card className={`mt-8 rounded-2xl border border-dashed ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
+              <Package className={`w-8 h-8 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">No Inventory Found</h2>
+            <p className="text-muted-foreground max-w-md mb-3">
+              Your store is synced but we couldn't find any active FBA inventory.
+            </p>
+            <p className={`text-sm max-w-md mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              This happens if you have no FBA products listed, or your inventory was recently removed. Once you send stock to an Amazon FBA warehouse, it will appear here.
+            </p>
+            <Button variant="outline" onClick={() => fetchAccounts()} className="rounded-full">
+              Refresh
+            </Button>
+          </CardContent>
+        </Card>
+      ) : accountStatus === "FAILED" ? (
+        <Card className={`mt-8 rounded-2xl border ${isDark ? 'bg-red-950/20 border-red-900/40' : 'bg-red-50 border-red-200'}`}>
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}>
+              <AlertTriangle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">Sync Failed</h2>
+            <p className="text-muted-foreground max-w-md mb-3">
+              We lost access to your Amazon Seller account. This usually means Amazon revoked the connection or the authorization expired.
+            </p>
+            <p className={`text-sm max-w-md mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Please disconnect and reconnect your store to restore access. Your historical data is safe and will reappear after reconnecting.
+            </p>
+            <Button onClick={() => window.location.href = '/seller/store'} className="bg-red-500 hover:bg-red-600 text-white rounded-full font-bold gap-2">
+              Reconnect Store
             </Button>
           </CardContent>
         </Card>

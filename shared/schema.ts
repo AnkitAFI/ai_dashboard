@@ -224,12 +224,24 @@ export const chatMessages = pgTable("chat_messages", {
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
+export const demoBookings = pgTable("demo_bookings", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  context: text("context"),
+  date: text("date").notNull(), // ISO string YYYY-MM-DD
+  timeSlot: text("time_slot").notNull(), // e.g., "11:30 AM"
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
 // Insert schemas
 export const insertUserAuthSchema = createInsertSchema(usersAuth);
 export const insertUserProfileSchema = createInsertSchema(userProfiles);
 export const insertProductSchema = createInsertSchema(products);
 export const insertAnalyticsSchema = createInsertSchema(analytics);
 export const insertChatMessageSchema = createInsertSchema(chatMessages);
+export const insertDemoBookingSchema = createInsertSchema(demoBookings);
 
 // Types
 export type UserAuth = typeof usersAuth.$inferSelect;
@@ -237,3 +249,4 @@ export type UserProfile = typeof userProfiles.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
+export type DemoBooking = typeof demoBookings.$inferSelect;

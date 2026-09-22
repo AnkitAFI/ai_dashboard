@@ -126,7 +126,9 @@ def get_sp_api_status(current_user = Depends(get_current_user), db: Session = De
         accounts.append({
             "region": c.region,
             "sync_status": c.sync_status,
-            "selling_partner_id": c.selling_partner_id
+            "selling_partner_id": c.selling_partner_id,
+            "connected_at": c.created_at.isoformat() if c.created_at else None,
+            "updated_at": c.updated_at.isoformat() if c.updated_at else None,
         })
     
     return {
@@ -138,14 +140,23 @@ def get_sp_api_status(current_user = Depends(get_current_user), db: Session = De
 
 @router.delete("/disconnect/{selling_partner_id}")
 def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Disconnect and purge Amazon SP-API credentials. Pure DB write — no Amazon API call."""
-    creds = db.query(AmazonSPAPICredential).filter(
-        AmazonSPAPICredential.user_id == current_user.id,
-        AmazonSPAPICredential.selling_partner_id == selling_partner_id
-    ).first()
+    """Disconnect and purge Amazon SP-API credentials. Pure DB write — no Amazon API call.
     
-    if creds:
-        db.delete(creds)
+    IMPORTANT: selling_partner_id is an EncryptedString — cannot be filtered directly in SQL
+    (the DB stores ciphertext, not plaintext). We fetch all credentials for this user and
+    match in Python after SQLAlchemy decrypts them.
+    """
+    all_creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id
+    ).all()
+    
+    # Match in Python — SQLAlchemy's TypeDecorator decrypts on read
+    target = next((c for c in all_creds if c.selling_partner_id == selling_partner_id), None)
+    
+    if target:
+        db.delete(target)
         db.commit()
         return {"status": "success"}
+    
+    logger.warning(f"Disconnect failed: no credential found for user {current_user.id} with selling_partner_id={selling_partner_id!r}. User has {len(all_creds)} credential(s).")
     raise HTTPException(status_code=404, detail="Account not found")
