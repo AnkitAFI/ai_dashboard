@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { Loader2, Clock, RefreshCw, CheckCircle2 } from "lucide-react";
@@ -30,35 +30,12 @@ function formatElapsed(minutes: number): string {
   return `${hours}h ${mins}m ago`;
 }
 
-function getProgressPercent(minutes: number): number {
-  const totalMinutes = TOTAL_SYNC_HOURS * 60;
-  const raw = Math.min(minutes / totalMinutes, 1);
-  return Math.max(3, Math.min(95, Math.round(Math.sqrt(raw) * 95)));
-}
-
 function getEstimatedLabel(minutes: number): string {
   const remaining = Math.max(0, TOTAL_SYNC_HOURS * 60 - minutes);
   if (remaining <= 5) return "almost done";
   if (remaining < 60) return `~${Math.ceil(remaining / 10) * 10} min left`;
   const hours = Math.ceil(remaining / 60);
   return hours === 1 ? "~1 hour left" : `up to ${hours} hours left`;
-}
-
-const SYNC_STEPS = [
-  { at: 0,  label: "Authenticating with Amazon SP-API" },
-  { at: 5,  label: "Fetching your order history" },
-  { at: 20, label: "Pulling inventory & catalog data" },
-  { at: 40, label: "Calculating financial metrics" },
-  { at: 70, label: "Building profitability models" },
-  { at: 90, label: "Finalising your dashboard data" },
-];
-
-function getCurrentStep(progress: number): string {
-  let current = SYNC_STEPS[0].label;
-  for (const step of SYNC_STEPS) {
-    if (progress >= step.at) current = step.label;
-  }
-  return current;
 }
 
 export default function SyncPendingBanner({ connectedAt, syncStatus, onSyncComplete, pollFn, featureName }: SyncPendingBannerProps) {
@@ -88,8 +65,6 @@ export default function SyncPendingBanner({ connectedAt, syncStatus, onSyncCompl
     return () => clearInterval(interval);
   }, [poll]);
 
-  const progress = getProgressPercent(elapsed);
-  const currentStep = getCurrentStep(progress);
   const estimatedLabel = getEstimatedLabel(elapsed);
 
   if (justCompleted) {
@@ -118,17 +93,6 @@ export default function SyncPendingBanner({ connectedAt, syncStatus, onSyncCompl
         </p>
       </div>
 
-      <div className="px-8 pb-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className={`text-xs font-semibold uppercase tracking-wide ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Sync Progress</span>
-          <span className={`text-xs font-bold ${isDark ? "text-slate-300" : "text-slate-600"}`}>{progress}%</span>
-        </div>
-        <div className={`h-2.5 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
-          <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${progress}%` }} />
-        </div>
-        <p className={`text-xs mt-2 ${isDark ? "text-slate-500" : "text-slate-400"}`}>{currentStep}...</p>
-      </div>
-
       <div className={`mx-8 mb-6 grid grid-cols-3 divide-x rounded-xl border ${isDark ? "bg-slate-900/60 border-slate-800 divide-slate-800" : "bg-white border-slate-100 divide-slate-100"}`}>
         <div className="px-4 py-3 text-center">
           <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -153,15 +117,6 @@ export default function SyncPendingBanner({ connectedAt, syncStatus, onSyncCompl
         </div>
       </div>
 
-      <div className={`mx-8 mb-8 p-4 rounded-xl text-sm ${isDark ? "bg-indigo-950/30 border border-indigo-900/40 text-indigo-300" : "bg-indigo-50 border border-indigo-100 text-indigo-700"}`}>
-        <p className="font-semibold mb-2">What happens during sync?</p>
-        <ul className={`space-y-1.5 text-xs list-disc list-inside ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-          <li>We fetch up to 12 months of orders, refunds, and inventory events from Amazon</li>
-          <li>Amazon rate-limits access — we process your data in batches to stay compliant</li>
-          <li>This page checks automatically every 45 seconds and will update when ready</li>
-          <li>You do not need to keep this tab open — come back anytime</li>
-        </ul>
-      </div>
     </div>
   );
 }

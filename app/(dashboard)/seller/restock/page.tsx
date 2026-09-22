@@ -227,7 +227,7 @@ export default function RestockForecasterDashboard() {
             </div>
           ) : null}
 
-          {!isPremiumRequired && accounts.length > 0 && (
+          {!isPremiumRequired && accounts.length > 0 && accountStatus === "COMPLETED" && inventoryData.length > 0 && (
             <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2 rounded-full border-indigo-200 dark:border-indigo-800">

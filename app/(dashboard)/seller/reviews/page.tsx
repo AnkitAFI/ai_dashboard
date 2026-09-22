@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Mail, Clock, ShieldAlert, Crown, Search, Settings2, Trash2, Plus, Star, Menu, AlertTriangle, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import SyncPendingBanner from "@/components/seller/sync-pending-banner"
 import {
   Select,
   SelectContent,
@@ -179,6 +180,8 @@ export default function ReviewAutomatorPage() {
     )
   }
 
+  const activeAccountObj = accounts.find(a => a.selling_partner_id === selectedAccount)
+
   return (
     <div className="min-h-screen flex flex-col bg-transparent max-w-7xl mx-auto w-full pb-12">
       
@@ -231,6 +234,37 @@ export default function ReviewAutomatorPage() {
             </p>
             <Button onClick={() => window.location.href = '/seller/store'} size="lg" className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold rounded-full">
               Connect Seller Account
+            </Button>
+          </CardContent>
+        </Card>
+      ) : activeAccountObj && (activeAccountObj.sync_status === "PENDING" || activeAccountObj.sync_status === "SYNCING") ? (
+        <SyncPendingBanner
+          connectedAt={activeAccountObj.connected_at}
+          syncStatus={activeAccountObj.sync_status}
+          onSyncComplete={() => {
+            fetchAccounts()
+            if (selectedAccount) fetchData(selectedAccount)
+          }}
+          pollFn={async () => {
+            const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" })
+            const data = await res.json()
+            const acc = (data.accounts || []).find((a: any) => a.selling_partner_id === selectedAccount)
+            return acc ? acc.sync_status : ""
+          }}
+          featureName="Review Automator"
+        />
+      ) : activeAccountObj && activeAccountObj.sync_status === "FAILED" ? (
+        <Card className={`mt-8 rounded-2xl border ${isDark ? "bg-red-950/20 border-red-900/50" : "bg-red-50/50 border-red-100"}`}>
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? "bg-red-900/50" : "bg-red-100"}`}>
+              <AlertTriangle className={`w-8 h-8 ${isDark ? "text-red-400" : "text-red-600"}`} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Sync Failed</h2>
+            <p className="text-muted-foreground max-w-md mb-8">
+              We encountered an error connecting to your Amazon account. Your seller token may have expired or been revoked.
+            </p>
+            <Button onClick={() => window.location.href = '/seller/store'} size="lg" className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-full">
+              Reconnect Account
             </Button>
           </CardContent>
         </Card>
