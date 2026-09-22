@@ -105,6 +105,7 @@ const navigationMenu: NavigationMenu = {
 
 
 import { useTheme } from "next-themes";
+import { CustomBookDemoModal } from "@/components/ui/custom-book-demo-modal";
 
 export function MarketingHeader() {
   const router = useRouter();
@@ -236,15 +237,15 @@ export function MarketingHeader() {
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center space-x-3 group" aria-label="Insydz – Home">
-            <div className="relative">
+        <div className="flex items-center justify-between h-20 gap-4 xl:gap-8">
+          <Link href="/" className="flex items-center space-x-3 group shrink-0" aria-label="Insydz – Home">
+            <div className="relative shrink-0 min-w-[40px]">
               <img
                 src="/logo.png"
                 alt="Insydz Logo"
-                className="w-10 h-auto shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
+                className="w-10 h-10 shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain shrink-0"
               />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse shrink-0"></div>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Insydz
@@ -252,14 +253,14 @@ export function MarketingHeader() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2" ref={dropdownRef}>
             {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as const).map((menu) => (
               <div key={menu} className="relative">
                 <button
                   onMouseEnter={() => setActiveDropdown(menu)}
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === menu}
-                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isSectionActive(menu)
+                  className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${isSectionActive(menu)
                       ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                       : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                     }`}
@@ -283,7 +284,7 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${pathname === "/pricing"
+              className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all whitespace-nowrap ${pathname === "/pricing"
                   ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                   : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                 }`}
@@ -294,10 +295,14 @@ export function MarketingHeader() {
             <Link
               href="/login"
               onMouseEnter={() => setActiveDropdown(null)}
-              className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              className="ml-1 xl:ml-2 text-[13px] xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 py-1.5 xl:px-5 xl:py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap"
             >
               Login
             </Link>
+
+            <CustomBookDemoModal
+              className="ml-1 xl:ml-2 text-[13px] xl:text-sm font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 px-3 py-1.5 xl:py-2 rounded-lg transition-all whitespace-nowrap"
+            />
 
             <button
               className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
@@ -368,10 +373,14 @@ export function MarketingHeader() {
               Pricing
             </Link>
 
+            <CustomBookDemoModal
+              className="block w-full mt-4 text-center border-2 border-purple-500 text-purple-600 dark:text-purple-400 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 font-semibold px-5 py-2 rounded-full transition-all"
+            />
+
             <Link
               href="/login"
               onClick={() => setIsMenuOpen(false)}
-              className="block w-full mt-2 text-center bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold px-5 py-2 rounded-full"
+              className="block w-full mt-3 text-center bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold px-5 py-2 rounded-full"
             >
               Login
             </Link>

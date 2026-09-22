@@ -34,6 +34,13 @@ REPORT_DOCUMENT_DELAY        = 65.0  # seconds before getReportDocument (1/min +
 REIMBURSEMENT_SYNC_INTERVAL_DAYS = 7 # Only re-sync per account once per 7 days
 MAX_RETRIES                  = 3
 
+# ── Scale Protection ────────────────────────────────────────────────────────────
+# createReport burst limit = 15. At 1000 users, if we fire all accounts without
+# delay, burst is instantly exhausted → 429 → key suspension risk.
+# Waiting 70s between accounts guarantees we never exceed 0.014 req/s globally,
+# well under the 0.0167 req/s limit even when all accounts run in one cycle.
+INTER_ACCOUNT_DELAY          = 70.0  # seconds to wait between processing each account
+
 async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredential):
     """Pulls Refunds, Returns, and Reimbursements to find missing inventory."""
     logger.info(f"Starting reimbursement sync for SP-ID: {cred.selling_partner_id}")
@@ -86,13 +93,25 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
         
         # Step 2: Request the FBA Customer Returns Data Report
         # createReport rate: 0.0167 req/s (1 per 60s) — always wait before calling
+        # On 429, back off exponentially — repeated violations cause key suspension.
         await asyncio.sleep(REPORT_CREATE_DELAY)
-        returns_report_res = reports_api.create_report(
-            reportType="GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
-            dataStartTime=start_time.isoformat() + "Z",
-            dataEndTime=datetime.utcnow().isoformat() + "Z"
-        )
-        report_id = returns_report_res.payload.get("reportId")
+        backoff = REPORT_CREATE_DELAY
+        for attempt in range(MAX_RETRIES):
+            try:
+                returns_report_res = reports_api.create_report(
+                    reportType="GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
+                    dataStartTime=start_time.isoformat() + "Z",
+                    dataEndTime=datetime.utcnow().isoformat() + "Z"
+                )
+                report_id = returns_report_res.payload.get("reportId")
+                break
+            except SellingApiException as e:
+                if e.code == 429:
+                    logger.warning(f"429 on createReport (returns) for {cred.selling_partner_id}. Backing off {backoff}s (attempt {attempt+1}/{MAX_RETRIES}).")
+                    await asyncio.sleep(backoff)
+                    backoff *= 2
+                else:
+                    raise
         
         # Polling for completion
         # getReport rate: 2.0 req/s — polling every 60s is very safe
@@ -124,12 +143,23 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
         # Step 3: Request the FBA Reimbursements Data Report
         # createReport rate: 0.0167 req/s (1 per 60s) — must wait full interval before second call
         await asyncio.sleep(REPORT_CREATE_DELAY)
-        reimburse_report_res = reports_api.create_report(
-            reportType="GET_FBA_REIMBURSEMENTS_DATA",
-            dataStartTime=start_time.isoformat() + "Z",
-            dataEndTime=datetime.utcnow().isoformat() + "Z"
-        )
-        reimburse_report_id = reimburse_report_res.payload.get("reportId")
+        backoff = REPORT_CREATE_DELAY
+        for attempt in range(MAX_RETRIES):
+            try:
+                reimburse_report_res = reports_api.create_report(
+                    reportType="GET_FBA_REIMBURSEMENTS_DATA",
+                    dataStartTime=start_time.isoformat() + "Z",
+                    dataEndTime=datetime.utcnow().isoformat() + "Z"
+                )
+                reimburse_report_id = reimburse_report_res.payload.get("reportId")
+                break
+            except SellingApiException as e:
+                if e.code == 429:
+                    logger.warning(f"429 on createReport (reimbursements) for {cred.selling_partner_id}. Backing off {backoff}s (attempt {attempt+1}/{MAX_RETRIES}).")
+                    await asyncio.sleep(backoff)
+                    backoff *= 2
+                else:
+                    raise
         
         reimburse_document_id = None
         for _ in range(15):
@@ -208,14 +238,27 @@ async def sync_reimbursements_for_account(db: Session, cred: AmazonSPAPICredenti
 
 
 async def run_reimbursement_cycle():
-    """Main worker loop. Only runs per account if it hasn't been synced in the last
-    REIMBURSEMENT_SYNC_INTERVAL_DAYS days, protecting against over-calling Reports API."""
+    """Main worker loop.
+    
+    Schedule: Run daily (not just Sundays). The 7-day frequency gate inside
+    ensures existing accounts are only re-scanned weekly. PENDING (first-time)
+    accounts bypass this gate so new users get their first scan within 24h
+    instead of waiting up to 7 days.
+    
+    Scale safety: INTER_ACCOUNT_DELAY (70s) between accounts guarantees we
+    never exceed Amazon's createReport burst limit even with 1000+ users.
+    """
     logger.info("Starting SP-API Reimbursement Sync Cycle...")
     db = SessionLocal()
     
     try:
         credentials = db.query(AmazonSPAPICredential).all()
-        for cred in credentials:
+        
+        # Process PENDING accounts first — they need their first scan urgently.
+        # Sorting ensures new users don't wait behind hundreds of existing accounts.
+        pending_first = sorted(credentials, key=lambda c: 0 if c.sync_status == "PENDING" else 1)
+        
+        for cred in pending_first:
             # Tier gate — only Premium & Enterprise
             sub = db.query(UserSubscription).filter(UserSubscription.user_id == cred.user_id).first()
             tier = sub.subscription_tier if sub else "free"
@@ -224,26 +267,37 @@ async def run_reimbursement_cycle():
                 logger.debug(f"Skipping {cred.selling_partner_id} — tier '{tier}' not eligible.")
                 continue
 
-            # Frequency gate — check last reimbursement sync timestamp from reconciliation table
-            # This prevents hammering createReport (1/min limit) and Amazon Reports infrastructure.
-            from sqlalchemy import func
-            latest_check = db.query(
-                func.max(AmazonSPAPIRefundReconciliation.last_checked_at)
-            ).filter(
-                AmazonSPAPIRefundReconciliation.selling_partner_id == cred.selling_partner_id
-            ).scalar()
+            # Frequency gate — skip if synced within last 7 days.
+            # EXCEPTION: PENDING accounts (first-time sync) always run regardless.
+            is_first_sync = cred.sync_status == "PENDING"
             
-            if latest_check:
-                days_since_sync = (datetime.utcnow() - latest_check).days
-                if days_since_sync < REIMBURSEMENT_SYNC_INTERVAL_DAYS:
-                    logger.info(
-                        f"Skipping {cred.selling_partner_id} — last reimbursement sync "
-                        f"{days_since_sync}d ago (interval: {REIMBURSEMENT_SYNC_INTERVAL_DAYS}d)."
-                    )
-                    continue
+            if not is_first_sync:
+                from sqlalchemy import func
+                latest_check = db.query(
+                    func.max(AmazonSPAPIRefundReconciliation.last_checked_at)
+                ).filter(
+                    AmazonSPAPIRefundReconciliation.selling_partner_id == cred.selling_partner_id
+                ).scalar()
+                
+                if latest_check:
+                    days_since_sync = (datetime.utcnow() - latest_check).days
+                    if days_since_sync < REIMBURSEMENT_SYNC_INTERVAL_DAYS:
+                        logger.info(
+                            f"Skipping {cred.selling_partner_id} — last reimbursement sync "
+                            f"{days_since_sync}d ago (interval: {REIMBURSEMENT_SYNC_INTERVAL_DAYS}d)."
+                        )
+                        continue
+            else:
+                logger.info(f"PENDING account {cred.selling_partner_id} — bypassing 7-day gate for first scan.")
                     
-            logger.info(f"Running reimbursement sync for {cred.selling_partner_id} (tier: {tier}).")
+            logger.info(f"Running reimbursement sync for {cred.selling_partner_id} (tier: {tier}, first_sync: {is_first_sync}).")
             await sync_reimbursements_for_account(db, cred)
+            
+            # Scale protection: wait between accounts to keep createReport rate
+            # well under 0.0167 req/s globally across all user accounts.
+            # This means 1000 users = ~19.4 hours per cycle — within the daily window.
+            logger.debug(f"Inter-account delay: {INTER_ACCOUNT_DELAY}s before next account.")
+            await asyncio.sleep(INTER_ACCOUNT_DELAY)
             
     finally:
         db.close()

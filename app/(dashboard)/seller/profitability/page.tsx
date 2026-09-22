@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+import SyncPendingBanner from "@/components/seller/sync-pending-banner";
 
 export default function ProfitabilityDashboard() {
   const { user } = useAuth();
@@ -26,6 +27,8 @@ export default function ProfitabilityDashboard() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [maxAccounts, setMaxAccounts] = useState(1);
   const [selectedSpId, setSelectedSpId] = useState<string>("");
+  const [accountStatus, setAccountStatus] = useState<string>("");
+  const [connectedAt, setConnectedAt] = useState<string | null>(null);
 
   const [summary, setSummary] = useState<any>(null);
   const [asins, setAsins] = useState<any[]>([]);
@@ -58,10 +61,11 @@ export default function ProfitabilityDashboard() {
         setAccounts(data.accounts || []);
         setMaxAccounts(data.max_accounts || 1);
         if (data.accounts && data.accounts.length > 0) {
+          setAccountStatus(data.accounts[0].sync_status || "");
+          setConnectedAt(data.accounts[0].connected_at || null);
           setSelectedSpId(data.accounts[0].selling_partner_id);
         }
       } else if (res.status !== 401) {
-        // 401 means not logged in — handled by auth context, don't show extra error
         setFetchError("Could not load account status. Please refresh the page.");
       }
     } catch (e) {
@@ -80,8 +84,8 @@ export default function ProfitabilityDashboard() {
       if (summaryRes.ok) {
         setSummary(await summaryRes.json());
       } else if (summaryRes.status === 403) {
-        // Store not owned by this user — clear and show not-connected state
-        setAccounts([]);
+        // 403 here means the account is pending sync or access denied — do NOT clear accounts
+        // The UI will show a "syncing" state based on accountStatus
       } else if (summaryRes.status !== 401) {
         setFetchError("Failed to load financial data. Please try again in a moment.");
       }
@@ -206,6 +210,59 @@ export default function ProfitabilityDashboard() {
             </p>
             <Button onClick={() => window.location.href = '/seller/store'} size="lg" className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold rounded-full">
               Connect Seller Account
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (accountStatus === "PENDING" || accountStatus === "SYNCING") && !summary ? (
+        <SyncPendingBanner
+          connectedAt={connectedAt}
+          syncStatus={accountStatus}
+          featureName="financial data"
+          pollFn={async () => {
+            const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" });
+            if (res.ok) {
+              const data = await res.json();
+              return data.accounts?.[0]?.sync_status || "PENDING";
+            }
+            return "PENDING";
+          }}
+          onSyncComplete={() => {
+            fetchStatus();
+          }}
+        />
+      ) : accountStatus === "COMPLETED" && !summary ? (
+        <Card className={`mt-8 rounded-2xl border border-dashed ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
+              <TrendingUp className={`w-8 h-8 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">No Financial Data Yet</h2>
+            <p className="text-muted-foreground max-w-md mb-3">
+              Your store is synced but we couldn't find any orders or financial events in the last 30 days.
+            </p>
+            <p className={`text-sm max-w-md mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              This usually means your store is new or had no activity in this period. Once you start receiving orders, your financial data will appear here automatically.
+            </p>
+            <Button variant="outline" onClick={() => fetchStatus()} className="rounded-full">
+              Refresh
+            </Button>
+          </CardContent>
+        </Card>
+      ) : accountStatus === "FAILED" ? (
+        <Card className={`mt-8 rounded-2xl border ${isDark ? 'bg-red-950/20 border-red-900/40' : 'bg-red-50 border-red-200'}`}>
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}>
+              <AlertTriangle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">Sync Failed</h2>
+            <p className="text-muted-foreground max-w-md mb-3">
+              We lost access to your Amazon Seller account. This usually means Amazon revoked the connection or the authorization expired.
+            </p>
+            <p className={`text-sm max-w-md mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Please disconnect and reconnect your store to restore access. Your historical data is safe and will reappear after reconnecting.
+            </p>
+            <Button onClick={() => window.location.href = '/seller/store'} className="bg-red-500 hover:bg-red-600 text-white rounded-full font-bold gap-2">
+              Reconnect Store
             </Button>
           </CardContent>
         </Card>
