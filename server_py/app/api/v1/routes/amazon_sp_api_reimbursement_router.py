@@ -26,11 +26,11 @@ def verify_tenant_and_tier(selling_partner_id: str, current_user = Depends(get_c
     # Enforce strict tier requirement
     require_tier(current_user.id, "premium", db)
     
-    creds = db.query(AmazonSPAPICredential).filter(
-        AmazonSPAPICredential.user_id == current_user.id,
-        AmazonSPAPICredential.selling_partner_id == selling_partner_id
-    ).first()
-    if not creds:
+    user_creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id
+    ).all()
+    
+    if not any(c.selling_partner_id == selling_partner_id for c in user_creds):
         raise HTTPException(status_code=403, detail="Forbidden: Account access denied or not connected.")
     return selling_partner_id
 

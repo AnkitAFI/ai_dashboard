@@ -33,11 +33,12 @@ class UpdateCOGSRequest(BaseModel):
 # --- Dependencies for Tenant Isolation ---
 def verify_tenant_access(selling_partner_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     """Tier-open: Only checks that the user owns this selling_partner_id. Used for KPI summary (all tiers)."""
-    creds = db.query(AmazonSPAPICredential).filter(
-        AmazonSPAPICredential.user_id == current_user.id,
-        AmazonSPAPICredential.selling_partner_id == selling_partner_id
-    ).first()
-    if not creds:
+    user_creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id
+    ).all()
+    
+    has_access = any(c.selling_partner_id == selling_partner_id for c in user_creds)
+    if not has_access:
         raise HTTPException(status_code=403, detail="Forbidden: Account access denied or not connected.")
     return selling_partner_id
 
@@ -50,11 +51,12 @@ def verify_tenant_access_premium(selling_partner_id: str, current_user = Depends
             status_code=403,
             detail="upgrade_required:premium"
         )
-    creds = db.query(AmazonSPAPICredential).filter(
-        AmazonSPAPICredential.user_id == current_user.id,
-        AmazonSPAPICredential.selling_partner_id == selling_partner_id
-    ).first()
-    if not creds:
+    user_creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id
+    ).all()
+    
+    has_access = any(c.selling_partner_id == selling_partner_id for c in user_creds)
+    if not has_access:
         raise HTTPException(status_code=403, detail="Forbidden: Account access denied or not connected.")
     return selling_partner_id
 

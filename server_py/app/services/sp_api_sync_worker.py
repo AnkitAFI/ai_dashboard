@@ -30,25 +30,24 @@ ORDER_ITEMS_DELAY  = 2.0   # seconds — getOrderItems       (0.5 req/sec = 1 pe
 FINANCES_DELAY     = 2.5   # seconds — listFinancialEvents (0.5 req/sec; 2.5s gives safe buffer)
 MAX_RETRIES        = 3
 
-async def fetch_with_backoff(client: httpx.AsyncClient, url: str, headers: dict, params: dict):
-    """Executes a request with exponential backoff on 429 Too Many Requests."""
+async def execute_sp_api_with_backoff(func, *args, **kwargs):
+    """Executes a synchronous SP-API call with exponential backoff on 429 Too Many Requests."""
     retries = 0
     backoff = 5.0 # Start with 5 seconds backoff
     
     while retries < MAX_RETRIES:
-        response = await client.get(url, headers=headers, params=params)
-        
-        if response.status_code == 429:
-            logger.warning(f"429 Rate Limit Hit. Backing off for {backoff} seconds...")
-            await asyncio.sleep(backoff)
-            retries += 1
-            backoff *= 2 # Exponential increase
-            continue
+        try:
+            return func(*args, **kwargs)
+        except SellingApiException as e:
+            error_str = str(e).lower()
+            if "429" in error_str or "quotaexceeded" in error_str or "too many requests" in error_str:
+                logger.warning(f"429 Rate Limit Hit. Backing off for {backoff} seconds...")
+                await asyncio.sleep(backoff)
+                retries += 1
+                backoff *= 2 # Exponential increase
+                continue
+            raise
             
-        response.raise_for_status()
-        await asyncio.sleep(RATE_LIMIT_DELAY) # Strict 1 req/sec between successful calls
-        return response.json()
-        
     raise Exception("Max retries exceeded on SP-API rate limits.")
 
 async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
@@ -81,7 +80,7 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
         finances_api = Finances(credentials=credentials, marketplace=Marketplaces.IN)
         
         # 1. Fetch Orders (Max 1 request per min per selling partner based on SP-API burst limits, but we sync every few hours)
-        res = orders_api.get_orders(CreatedAfter=created_after.isoformat())
+        res = await execute_sp_api_with_backoff(orders_api.get_orders, CreatedAfter=created_after.isoformat())
         orders_data = res.payload.get('Orders', [])
         
         for order_data in orders_data:
@@ -95,7 +94,7 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
             # Fetch Order Items for ASIN and Qty
             # getOrderItems rate: 0.5 req/sec → must wait 2.0s between calls
             await asyncio.sleep(ORDER_ITEMS_DELAY)
-            items_res = orders_api.get_order_items(amazon_order_id)
+            items_res = await execute_sp_api_with_backoff(orders_api.get_order_items, amazon_order_id)
             items = items_res.payload.get('OrderItems', [])
             
             for item in items:
@@ -121,7 +120,7 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
             # 2. Fetch Financial Events (Fees)
             # listFinancialEventsForOrder rate: 0.5 req/sec → must wait 2.0s between calls (using 2.5 for buffer)
             await asyncio.sleep(FINANCES_DELAY)
-            fin_res = finances_api.list_financial_events_for_order(amazon_order_id)
+            fin_res = await execute_sp_api_with_backoff(finances_api.list_financial_events_for_order, amazon_order_id)
             fin_events = fin_res.payload.get('FinancialEvents', {})
             
             # Aggregate all fee types for this order

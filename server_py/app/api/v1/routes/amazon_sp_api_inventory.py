@@ -27,12 +27,11 @@ def get_inventory_forecaster(selling_partner_id: str, current_user = Depends(get
     """Fetch all ASIN inventory data and join with user settings to calculate restock dates."""
     check_premium_access(current_user.id, db)
     
-    # Ensure they own this store
-    cred = db.query(AmazonSPAPICredential).filter(
-        AmazonSPAPICredential.user_id == current_user.id,
-        AmazonSPAPICredential.selling_partner_id == selling_partner_id
-    ).first()
-    if not cred:
+    user_creds = db.query(AmazonSPAPICredential).filter(
+        AmazonSPAPICredential.user_id == current_user.id
+    ).all()
+    
+    if not any(c.selling_partner_id == selling_partner_id for c in user_creds):
         raise HTTPException(status_code=403, detail="Not authorized for this seller account.")
         
     summaries = db.query(AmazonSPAPIInventorySummary).filter(
