@@ -74,10 +74,12 @@ def get_user_tier(user_id: Optional[str], db: Session) -> str:
     return str(row[0]).lower() if row and row[0] else "free"
 
 
+from fastapi import HTTPException
+
 def require_tier(user_id: Optional[str], required: str, db: Session) -> str:
     tier = get_user_tier(user_id, db)
     if TIER_ORDER.get(tier, 0) < TIER_ORDER.get(required, 0):
-        raise PermissionError(f"upgrade_required:{required}")
+        raise HTTPException(status_code=403, detail=f"upgrade_required:{required}")
     return tier
 
 
