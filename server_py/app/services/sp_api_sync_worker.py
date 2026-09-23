@@ -120,7 +120,7 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
             # 2. Fetch Financial Events (Fees)
             # listFinancialEventsForOrder rate: 0.5 req/sec → must wait 2.0s between calls (using 2.5 for buffer)
             await asyncio.sleep(FINANCES_DELAY)
-            fin_res = await execute_sp_api_with_backoff(finances_api.list_financial_events_for_order, amazon_order_id)
+            fin_res = await execute_sp_api_with_backoff(finances_api.get_financial_events_for_order, amazon_order_id)
             fin_events = fin_res.payload.get('FinancialEvents', {})
             
             # Aggregate all fee types for this order
