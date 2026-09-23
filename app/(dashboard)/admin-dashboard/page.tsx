@@ -847,6 +847,7 @@ interface UserRow {
   seller_id: string | null;
   seller_sync_status: string | null;
   sp_api_connected: boolean;
+  sp_api_seller_id: string | null;
   mobile_number: string | null;
   total_amount_paid: number;
 }
@@ -1486,6 +1487,7 @@ export default function AdminDashboard() {
                     <Th label="Location" field="location" />
                     <Th label="Marketplace" field="onboarding_marketplace" />
                     <Th label="Store Linked" field="sp_api_connected" />
+                    <Th label="SP-API Seller ID" field="sp_api_seller_id" />
                     <Th label="Seller ID" field="seller_id" />
                     <Th label="Sync" field="seller_sync_status" />
                     <Th label="AI Chats" field="ai_chat_used" />
@@ -1606,6 +1608,11 @@ export default function AdminDashboard() {
                             ) : (
                               <span style={{ color: "#94a3b8" }}>—</span>
                             )}
+                          </td>
+
+                          {/* SP-API Seller ID */}
+                          <td style={{ padding: "11px 14px", fontSize: 11, color: "#1e293b", fontFamily: "monospace", fontWeight: 600 }}>
+                            {u.sp_api_seller_id ? <span title={u.sp_api_seller_id}>{u.sp_api_seller_id}</span> : "—"}
                           </td>
 
                           {/* Seller ID */}

@@ -58,6 +58,9 @@ api_router.include_router(consent_router)
 api_router.include_router(data_router)
 api_router.include_router(listing_agent_router)
 
+from app.api.v1.routes.map_monitor_router import router as map_monitor_router
+api_router.include_router(map_monitor_router, prefix="/map-monitor", tags=["MAP Monitor"])
+
 from app.api.v1.routes.credentials_router import router as credentials_router
 api_router.include_router(credentials_router)
 

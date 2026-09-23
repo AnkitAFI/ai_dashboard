@@ -7584,8 +7584,10 @@ def get_admin_stats(
     connected_user_ids = {row[0] for row in db.query(AmazonAdsCredential.user_id).distinct().all()}
 
     # Track Amazon SP-API connected users (Amazon Store Setup)
-    sp_api_connected_count = db.query(AmazonSPAPICredential.user_id).distinct().count()
-    sp_api_connected_user_ids = {row[0] for row in db.query(AmazonSPAPICredential.user_id).distinct().all()}
+    sp_api_credentials = db.query(AmazonSPAPICredential.user_id, AmazonSPAPICredential.selling_partner_id).all()
+    sp_api_connected_count = len({row.user_id for row in sp_api_credentials})
+    sp_api_connected_user_ids = {row.user_id for row in sp_api_credentials}
+    sp_api_seller_map = {row.user_id: row.selling_partner_id for row in sp_api_credentials}
 
     # all users with details
     users = db.query(models.User).order_by(models.User.created_at.desc()).all()
@@ -7631,6 +7633,7 @@ def get_admin_stats(
 
         "seller_id": u.seller_id,
         "seller_sync_status": u.seller_sync_status,
+        "sp_api_seller_id": sp_api_seller_map.get(u.id),
 
         "mobile_number": u.mobile_number,
 

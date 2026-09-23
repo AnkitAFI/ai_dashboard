@@ -16,17 +16,17 @@ export default function ReimbursementDashboard() {
   const { toast } = useToast();
   const { theme, resolvedTheme } = useTheme();
   const { toggle } = useSidebar();
-  
+
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [isPremiumRequired, setIsPremiumRequired] = useState(false);
-  
+
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedSpId, setSelectedSpId] = useState<string>("");
   const [accountStatus, setAccountStatus] = useState<string>("");
   const [connectedAt, setConnectedAt] = useState<string | null>(null);
-  
+
   const [summary, setSummary] = useState<any>(null);
   const [discrepancies, setDiscrepancies] = useState<any[]>([]);
 
@@ -109,20 +109,20 @@ export default function ReimbursementDashboard() {
         throw new Error("Failed to update status");
       }
       toast({ title: "Updated", description: "Status updated successfully." });
-      
+
       // Update local state to avoid full refetch
-      setDiscrepancies(prev => prev.map(d => 
+      setDiscrepancies(prev => prev.map(d =>
         d.amazon_order_id === orderId ? { ...d, status: newStatus } : d
       ));
-      
+
       // Optionally refresh summary if needed
       const summaryRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/reimbursements/${selectedSpId}/summary`, { credentials: "include" });
       if (summaryRes.ok) setSummary(await summaryRes.json());
-      
+
     } catch (error: any) {
       // Safe, non-technical error message for the seller
-      const safeMessage = error.message.includes("Premium") 
-        ? error.message 
+      const safeMessage = error.message.includes("Premium")
+        ? error.message
         : "Oops! Something went wrong while saving. Please try again in a few minutes.";
       toast({ title: "Update Failed", description: safeMessage, variant: "destructive" });
     } finally {
@@ -155,10 +155,10 @@ export default function ReimbursementDashboard() {
             <p className="page-subtitle">Find orders where the buyer got a refund, but the item never returned to the warehouse. Claim your money back!</p>
           </div>
         </div>
-        
+
         {accounts.length > 0 && (
-          <select 
-            value={selectedSpId} 
+          <select
+            value={selectedSpId}
             onChange={(e) => setSelectedSpId(e.target.value)}
             className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}
           >
@@ -194,7 +194,7 @@ export default function ReimbursementDashboard() {
             </div>
             <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">Premium Feature Locked</h2>
             <p className="text-muted-foreground max-w-lg mb-8 text-lg">
-              The <b>Lost Money Recovery</b> tool is an exclusive feature for our Premium and Enterprise members. 
+              The <b>Lost Money Recovery</b> tool is an exclusive feature for our Premium and Enterprise members.
               Upgrade your plan to automatically scan for missing FBA returns and recover thousands of rupees!
             </p>
             <Button onClick={() => window.location.href = '/subscription'} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">
@@ -264,7 +264,7 @@ export default function ReimbursementDashboard() {
                   <h3 className="text-3xl font-bold text-red-500">₹{summary.total_potential_lost.toLocaleString()}</h3>
                 </CardContent>
               </Card>
-              
+
               <Card className={`rounded-2xl border-none shadow-sm ${isDark ? 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40' : 'bg-gradient-to-br from-emerald-50 to-teal-50'} overflow-hidden relative`}>
                 <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                 <CardContent className="p-6">
@@ -332,7 +332,7 @@ export default function ReimbursementDashboard() {
                           {disc.status === 'IGNORED' && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300">Ignored</span>}
                         </td>
                         <td className="px-4 py-3">
-                          <select 
+                          <select
                             value={disc.status}
                             onChange={(e) => handleStatusUpdate(disc.amazon_order_id, e.target.value)}
                             disabled={isUpdating === disc.amazon_order_id}
