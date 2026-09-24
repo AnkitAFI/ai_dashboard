@@ -120,34 +120,32 @@ export default function LandingContent() {
             {/* Left Content */}
             <div className="flex flex-col space-y-3 lg:space-y-4 text-left mt-2 lg:mt-0">
               {/* Pill */}
-              <h1 className="inline-flex w-fit max-w-full items-center px-3 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-xs sm:text-sm md:text-base lg:text-lg font-semibold shadow-sm whitespace-normal text-center">
-                Amazon & Flipkart Seller Analytics Software
+              <h1 className="inline-flex w-fit max-w-full items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-[13px] sm:text-sm font-semibold shadow-sm text-center sm:whitespace-nowrap">
+                Run Your Amazon & Flipkart Business from One Place
               </h1>
 
               {/* Heading */}
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-gray-900 dark:text-white">
-                <span className="block mb-1 text-gray-900">Stop Guessing.</span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-gray-900 dark:text-white">
+                <span className="block mb-1 text-gray-900">Everything You Need to</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
-                  Make Selling Decisions <br className="hidden sm:inline" />{" "}
-                  Better & Faster
+                  Sell & Grow on <br className="hidden sm:inline" />{" "}
+                  Amazon and Flipkart
                 </span>
-              </h1>
+              </h2>
 
               {/* Paragraphs */}
               <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-xl leading-relaxed">
                 <p>
-                  Insydz helps Amazon and Flipkart sellers understand their data
-                  and grow their business. Our{" "}
+                  Insydz is an{" "}
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    seller analytics platform
+                    all-in-one e-commerce platform
                   </span>{" "}
-                  and{" "}
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    Flipkart seller dashboard
-                  </span>{" "}
-                  show you exactly which products make money, how your keywords
-                  rank, and where you're losing sales with instant WhatsApp
-                  alerts the moment something changes.
+                  for Amazon and Flipkart sellers. It simplifies your everyday
+                  selling tasks with tools for ad automation, keyword research,
+                  competitor analysis, price optimization, listing optimization,
+                  and more. Connect your Amazon seller account and access Flipkart
+                  data and insights in one place, helping you make smarter decisions
+                  and grow your online sales.
                 </p>
               </div>
 
