@@ -301,7 +301,7 @@ export function MarketingHeader() {
             </Link>
 
             <CustomBookDemoModal
-              className="ml-1 xl:ml-2 text-[13px] xl:text-sm font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 px-3 py-1.5 xl:py-2 rounded-lg transition-all whitespace-nowrap"
+              className="ml-1 xl:ml-2 text-[13px] xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 py-1.5 xl:px-5 xl:py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap"
             />
 
             <button
@@ -374,7 +374,7 @@ export function MarketingHeader() {
             </Link>
 
             <CustomBookDemoModal
-              className="block w-full mt-4 text-center border-2 border-purple-500 text-purple-600 dark:text-purple-400 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 font-semibold px-5 py-2 rounded-full transition-all"
+              className="block w-full mt-4 text-center bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full transition-all"
             />
 
             <Link
