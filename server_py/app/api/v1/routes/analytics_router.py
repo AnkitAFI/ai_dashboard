@@ -5,9 +5,11 @@ from typing import List, Dict, Any, Optional
 from app.db.session import get_db
 from app.services.analytics_service import AnalyticsService
 from app.api.deps import r, get_optional_user, get_current_user
-from app.models.legacy_models import UserBehaviorLog
+from app.models.legacy_models import UserBehaviorLog, User
 import json
 from datetime import datetime
+from fastapi.responses import StreamingResponse
+from app.services.pdf_export_service import generate_behavior_logs_pdf
 
 router = APIRouter(tags=["Analytics"])
 service = AnalyticsService()
@@ -170,3 +172,49 @@ def get_admin_behavior_logs(
         for log in logs
     ]
 
+@router.get("/admin/behavior-logs/export-pdf")
+def export_admin_behavior_logs_pdf(
+    current_user: Any = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    ADMIN_EMAIL = "syatharthdelhi@gmail.com"
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    # Get all logs
+    logs_orm = db.query(UserBehaviorLog).order_by(UserBehaviorLog.created_at.desc()).all()
+    logs_data = [
+        {
+            "id": log.id,
+            "user_id": log.user_id,
+            "session_id": log.session_id,
+            "event_type": log.event_type,
+            "page_path": log.page_path,
+            "properties": log.properties or {},
+            "ip_address": log.ip_address,
+            "user_agent": log.user_agent,
+            "created_at": str(log.created_at),
+            "user_email": log.user_email
+        }
+        for log in logs_orm
+    ]
+
+    # Get all users to build user_data mapping
+    users = db.query(User).all()
+    user_data = {}
+    for user in users:
+        user_data[user.email] = {
+            "name": f"{user.first_name} {user.last_name}",
+            "id": user.id
+        }
+
+    # Generate PDF
+    pdf_buffer = generate_behavior_logs_pdf(logs_data, user_data)
+
+    filename = f"behavior_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )

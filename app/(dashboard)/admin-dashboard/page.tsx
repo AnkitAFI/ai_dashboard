@@ -1011,6 +1011,29 @@ export default function AdminDashboard() {
     }
   };
 
+  const downloadBehaviorReport = async () => {
+    try {
+      toast({ title: "Generating PDF...", description: "Please wait while we generate the report. This might take a few seconds." });
+      const res = await fetch(`${API_BASE_URL}/api/admin/behavior-logs/export-pdf`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to generate PDF");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `behavior_logs_${new Date().getTime()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error(error);
+      toast({ title: "Export Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLimit = parseInt(e.target.value, 10);
     setBehaviorLimit(newLimit);
@@ -1924,6 +1947,10 @@ export default function AdminDashboard() {
                 <button onClick={() => fetchBehaviorLogs()} disabled={behaviorLoading} className="hdr-btn" style={{ opacity: behaviorLoading ? 0.6 : 1 }}>
                   <RefreshCw size={13} style={{ animation: behaviorLoading ? "spin 0.8s linear infinite" : "none" }} />
                   {behaviorLoading ? "Loading…" : "Refresh"}
+                </button>
+                <button onClick={downloadBehaviorReport} className="hdr-btn" style={{ color: "#4f46e5", borderColor: "#c7d2fe", background: "#e0e7ff" }}>
+                  <Download size={13} />
+                  Export PDF
                 </button>
               </div>
 
