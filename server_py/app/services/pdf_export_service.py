@@ -143,9 +143,6 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
         legend.yGap = 0
         legend.dxTextSpace = 5
         legend.alignment = 'right'
-        legend.dividerLines = 1|2|4
-        legend.dividerOffsY = 4.5
-        legend.subCols.rMin = 0
         
         legend.colorNamePairs = [(pie.slices[i].fillColor, labels[i]) for i in range(len(data))]
         pie.labels = [] 
