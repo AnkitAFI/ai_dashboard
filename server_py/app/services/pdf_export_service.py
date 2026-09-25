@@ -11,6 +11,30 @@ from reportlab.graphics.charts.piecharts import Pie
 from reportlab.graphics.charts.legends import Legend
 from typing import List, Dict
 
+def parse_user_agent(ua: str) -> str:
+    if not ua:
+        return "Unknown"
+    
+    ua_lower = ua.lower()
+    os = "Unknown OS"
+    if "windows" in ua_lower: os = "Windows"
+    elif "mac os" in ua_lower or "macintosh" in ua_lower: os = "macOS"
+    elif "android" in ua_lower: os = "Android"
+    elif "iphone" in ua_lower or "ipad" in ua_lower: os = "iOS"
+    elif "linux" in ua_lower: os = "Linux"
+    
+    browser = "Unknown Browser"
+    if "edg" in ua_lower: browser = "Edge"
+    elif "opr" in ua_lower or "opera" in ua_lower: browser = "Opera"
+    elif "chrome" in ua_lower: browser = "Chrome"
+    elif "firefox" in ua_lower: browser = "Firefox"
+    elif "safari" in ua_lower and "chrome" not in ua_lower: browser = "Safari"
+    
+    if os == "Unknown OS" and browser == "Unknown Browser":
+        return ua[:30] + "..." if len(ua) > 30 else ua
+        
+    return f"{browser} on {os}"
+
 def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> io.BytesIO:
     """
     Generate a highly refined, structured PDF report for user behavior logs with charts.
@@ -212,9 +236,10 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
             event = log.get('event_type', '')
             path = log.get('page_path', '')
             ua = log.get('user_agent', '')
+            parsed_ua = parse_user_agent(ua)
             
             p_path = Paragraph(str(path), cell_style)
-            p_ua = Paragraph(str(ua), cell_style)
+            p_ua = Paragraph(parsed_ua, cell_style)
             
             # Color event
             evt_color = event_colors.get(event, '#475569')
