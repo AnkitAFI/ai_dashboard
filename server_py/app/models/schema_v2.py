@@ -641,3 +641,25 @@ class DemoBooking(Base):
     time_slot = Column(String(50), nullable=False) # e.g. "11:00 AM"
     consent_given = Column(Boolean, default=True, nullable=False) # GDPR proof of consent
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class AmazonSPAPIStateSales(Base):
+    __tablename__ = "amazon_sp_api_state_sales"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    asin = Column(String(50), nullable=False, index=True)
+    state = Column(String(100), nullable=False, index=True)
+    city = Column(String(100), nullable=True)
+    
+    units_sold = Column(Integer, default=0)
+    revenue = Column(Numeric(10, 2), default=0.0)
+    
+    date_recorded = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'selling_partner_id', 'asin', 'state', name='uix_sp_state_sales'),
+    )
+

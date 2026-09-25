@@ -243,3 +243,53 @@ def apply_global_inventory_settings(
         
     db.commit()
     return {"status": "success", "updated_count": len(asin_list)}
+
+@router.get("/{selling_partner_id}/state-sales")
+def get_state_sales(
+    selling_partner_id: str, 
+    asin: Optional[str] = None,
+    current_user = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    """Fetch state-wise sales for demographic visualization."""
+    check_premium_access(current_user.id, db)
+    
+    # Audit Logging for viewing demographic data
+    audit = AmazonSPAPIAuditLog(
+        user_id=current_user.id,
+        selling_partner_id=selling_partner_id,
+        action="VIEW_DEMOGRAPHICS_STATE_SALES",
+        asin=asin if asin else "ALL",
+        ip_address="internal_api"
+    )
+    db.add(audit)
+    db.commit()
+
+    from app.models.schema_v2 import AmazonSPAPIStateSales
+    from sqlalchemy import func
+
+    query = db.query(
+        AmazonSPAPIStateSales.state,
+        func.sum(AmazonSPAPIStateSales.units_sold).label("total_units"),
+        func.sum(AmazonSPAPIStateSales.revenue).label("total_revenue")
+    ).filter(
+        AmazonSPAPIStateSales.user_id == current_user.id,
+        AmazonSPAPIStateSales.selling_partner_id == selling_partner_id
+    )
+    
+    if asin:
+        query = query.filter(AmazonSPAPIStateSales.asin == asin)
+        
+    query = query.group_by(AmazonSPAPIStateSales.state).order_by(func.sum(AmazonSPAPIStateSales.units_sold).desc())
+    
+    results = query.all()
+    
+    data = []
+    for r in results:
+        data.append({
+            "state": r.state,
+            "units_sold": int(r.total_units) if r.total_units else 0,
+            "revenue": float(r.total_revenue) if r.total_revenue else 0.0
+        })
+        
+    return {"data": data}

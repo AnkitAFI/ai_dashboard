@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
-import { Menu, Package, AlertTriangle, Loader2, Crown, Search, Filter, Settings, CheckCircle2 } from "lucide-react";
+import { Menu, Package, AlertTriangle, Loader2, Crown, Search, Filter, Settings, CheckCircle2, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,31 @@ export default function RestockForecasterDashboard() {
   const [bulkTransitTime, setBulkTransitTime] = useState(5);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
+
+  // State Sales (Demographics) Modal
+  const [isStateSalesOpen, setIsStateSalesOpen] = useState(false);
+  const [selectedAsinForStates, setSelectedAsinForStates] = useState<string | null>(null);
+  const [stateSalesData, setStateSalesData] = useState<any[]>([]);
+  const [isLoadingStates, setIsLoadingStates] = useState(false);
+  
+  const openStateSales = async (asin: string) => {
+    setSelectedAsinForStates(asin);
+    setIsStateSalesOpen(true);
+    setIsLoadingStates(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/inventory/${selectedSpId}/state-sales?asin=${asin}`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setStateSalesData(data.data || []);
+      } else {
+        toast({ title: "Oops!", description: "Could not load location data right now.", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingStates(false);
+    }
+  };
 
   const isDark = resolvedTheme === "dark";
 
@@ -271,6 +296,61 @@ export default function RestockForecasterDashboard() {
               </DialogContent>
             </Dialog>
           )}
+          
+          <Dialog open={isStateSalesOpen} onOpenChange={setIsStateSalesOpen}>
+            <DialogContent className={`max-w-2xl ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white'}`}>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl">
+                  <MapPin className="w-5 h-5 text-indigo-500" />
+                  Where Your Customers Are (State-wise Sales)
+                </DialogTitle>
+                <DialogDescription>
+                  See which states are buying <span className="font-bold">{selectedAsinForStates}</span> the most. Use this to plan targeted ads or localized inventory!
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4 min-h-[300px]">
+                {isLoadingStates ? (
+                  <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground">
+                    <Loader2 className="w-8 h-8 animate-spin mb-4 text-indigo-500" />
+                    <p>Fetching your customer locations...</p>
+                  </div>
+                ) : stateSalesData.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed">
+                    <MapPin className="w-10 h-10 mb-2 opacity-20" />
+                    <p>No geographic sales data found for this product yet.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-y-auto max-h-[400px] pr-2">
+                    <table className="w-full text-sm text-left">
+                      <thead className={`text-xs uppercase bg-muted/40 sticky top-0 ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-500 bg-slate-100'}`}>
+                        <tr>
+                          <th className="px-4 py-3 font-semibold rounded-tl-lg">State</th>
+                          <th className="px-4 py-3 font-semibold text-right">Units Sold</th>
+                          <th className="px-4 py-3 font-semibold text-right rounded-tr-lg">Revenue Generated</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {stateSalesData.map((s, i) => (
+                          <tr key={i} className="hover:bg-muted/30 transition-colors">
+                            <td className="px-4 py-3 font-medium flex items-center gap-2">
+                              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${i < 3 ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                                {i + 1}
+                              </span>
+                              {s.state}
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold">{s.units_sold}</td>
+                            <td className="px-4 py-3 text-right text-emerald-600 dark:text-emerald-400 font-medium">₹{s.revenue.toLocaleString('en-IN')}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+          
         </div>
       </header>
 
@@ -511,19 +591,28 @@ export default function RestockForecasterDashboard() {
                         {item.total_stock === 0 ? (
                           <div>
                             <div className="text-red-500 font-bold mb-1">🚨 URGENT: Order NOW</div>
-                            <div className="text-xs text-muted-foreground">Rec Qty: {item.recommended_order_quantity}</div>
+                            <div className="text-xs text-muted-foreground mb-3">Rec Qty: {item.recommended_order_quantity}</div>
                           </div>
                         ) : item.is_critical ? (
                           <div>
                             <div className="text-amber-500 font-bold mb-1">⚠️ Order by {new Date(item.reorder_date).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</div>
-                            <div className="text-xs text-muted-foreground">Rec Qty: {item.recommended_order_quantity}</div>
+                            <div className="text-xs text-muted-foreground mb-3">Rec Qty: {item.recommended_order_quantity}</div>
                           </div>
                         ) : (
                           <div>
                             <div className="text-emerald-500 font-medium mb-1">✅ Order by {new Date(item.reorder_date).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</div>
-                            <div className="text-xs text-muted-foreground">Rec Qty: {item.recommended_order_quantity}</div>
+                            <div className="text-xs text-muted-foreground mb-3">Rec Qty: {item.recommended_order_quantity}</div>
                           </div>
                         )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-7 text-xs rounded-full gap-1.5 w-full flex justify-center border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                          onClick={() => openStateSales(item.asin)}
+                        >
+                          <MapPin className="w-3 h-3" />
+                          Where customers are
+                        </Button>
                       </td>
                     </tr>
                   ))}
