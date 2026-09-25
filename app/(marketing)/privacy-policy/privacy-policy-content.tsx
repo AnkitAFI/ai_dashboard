@@ -50,15 +50,16 @@ export default function PrivacyPolicyContent() {
               <li>Search queries and interactions with our platform</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">2.3 Business Data</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">2.3 Your Business and Connected Amazon Data</h3>
             <p className="text-gray-700 dark:text-gray-300">
-              When you use our analytics services, we may collect and process:
+              When you use our tools and connect your Amazon Seller account or Amazon Ads, we securely collect and use this information:
             </p>
             <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
-              <li>Product information and catalog data</li>
-              <li>Sales and performance metrics</li>
-              <li>Customer review data from connected platforms</li>
-              <li>Market research and competitive analysis data</li>
+              <li>The secure connection keys needed to link your Amazon account (we keep these locked and hidden)</li>
+              <li>Your product details, listings, and how much stock you have</li>
+              <li>Your sales numbers, fees, and overall business performance</li>
+              <li>Details about your orders and the reviews customers leave</li>
+              <li>Data on your ads, how much you spend, and what words people search for</li>
             </ul>
           </section>
 

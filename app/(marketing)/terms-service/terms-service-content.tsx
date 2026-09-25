@@ -152,7 +152,17 @@ export default function TermsOfServiceContent() {
               Our Services provide informational content and analytics tools only. We do not provide financial, legal, investment, or business advice. You should consult qualified professionals before making important business decisions.
             </p>
 
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">7.4 AS-IS Basis</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">7.4 Connecting Your Amazon Account and Automations</h3>
+            <p className="text-gray-700 dark:text-gray-300">
+              When you connect your Amazon Seller account or Amazon Ads account to our platform, you allow us to read your data and do tasks automatically for you (like asking for reviews or managing ads). By doing this, you agree that:
+            </p>
+            <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2 mt-2 mb-4">
+              <li>It is your job to make sure you follow all of Amazon's rules and policies for sellers.</li>
+              <li>If Amazon gives you a warning, suspends your account, or blocks you because of using our automated features, we are not responsible for it.</li>
+              <li>Our profit calculations, restock suggestions, and lost money (reimbursement) reports are just estimates to help you. We are not responsible if there are any losses, if you order too much or too little stock, or if a reimbursement claim is missed.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">7.5 AS-IS Basis</h3>
             <p className="text-gray-700 dark:text-gray-300">
               THE SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
             </p>
