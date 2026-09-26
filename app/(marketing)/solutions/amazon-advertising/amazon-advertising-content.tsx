@@ -30,7 +30,7 @@ const coreFeatures = [
     ],
     scenario: "A customer searches 'boat airdopes 141 black' and buys 3 times profitably. Insydz recommends adding it as an exact keyword and blocking it in your auto campaign.",
     link: "/signup",
-    linkLabel: "Get notified when this feature launches →",
+    linkLabel: "Start Optimizing Now →",
     color: "from-purple-500 to-pink-500",
   },
   {
@@ -45,7 +45,7 @@ const coreFeatures = [
     ],
     scenario: "Your keyword is spending at 40% ACOS while your goal is 25%. Our tool recommends lowering your bid from ₹20 to ₹12.50 so you stay profitable.",
     link: "/signup",
-    linkLabel: "Get notified when this feature launches →",
+    linkLabel: "Start Optimizing Now →",
     color: "from-indigo-500 to-purple-500",
   },
   {
@@ -60,7 +60,7 @@ const coreFeatures = [
     ],
     scenario: "Open your dashboard at 9am to see 14 clear recommendations. Click 'Approve' on the ones you like to apply them safely to your campaigns.",
     link: "/signup",
-    linkLabel: "Get notified when this feature launches →",
+    linkLabel: "Start Optimizing Now →",
     color: "from-pink-500 to-rose-500",
   },
   {
@@ -75,7 +75,7 @@ const coreFeatures = [
     ],
     scenario: "Your ad spend increased slightly, but your organic ranking improved, lowering your overall marketing cost from 14% to 11%. You see your true profit growth.",
     link: "/signup",
-    linkLabel: "Get notified when this feature launches →",
+    linkLabel: "Start Optimizing Now →",
     color: "from-blue-500 to-purple-500",
   },
 ];
@@ -148,16 +148,6 @@ const faqs: FAQItem[] = [
     q: "Is Insydz suitable for sellers on Amazon India?",
     a: "Yes! Insydz is built specifically for Amazon India sellers. Everything is displayed in INR, supports Indian product categories, and provides simple explanations without confusing technical jargon.",
   },
-  {
-    id: "faq-6",
-    q: "When is the Amazon PPC Optimization feature launching?",
-    a: "Our core seller analytics tools (Competitor Tracking, Review Mining, and Rank Tracking) are live today. The Amazon PPC & Advertising Optimizer is launching soon! You can sign up now to get notified and join our early access waitlist.",
-  },
-  {
-    id: "faq-7",
-    q: "Can I join the early access waitlist for Insydz Amazon Ads software?",
-    a: "Yes! You can sign up now with no credit card required to get notified on launch. Our upcoming Amazon Advertising & PPC optimization software connects directly to your advertising campaigns to help you scale profitably.",
-  },
 ];
 
 export default function AmazonAdvertisingContent() {
@@ -182,7 +172,7 @@ export default function AmazonAdvertisingContent() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
                 </span>
-                <h1 className="text-sm font-medium text-purple-700 dark:text-purple-300">Amazon Advertising & PPC Optimization Tool · COMING SOON</h1>
+                <h1 className="text-sm font-medium text-purple-700 dark:text-purple-300">Amazon Advertising & PPC Optimization Tool</h1>
               </div>
 
               <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
@@ -204,7 +194,7 @@ export default function AmazonAdvertisingContent() {
                 <Button onClick={handleGetStarted} size="lg"
                   className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group"
                 >
-                  Get Notified on Launch
+                  Start Optimizing Now
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -445,7 +435,7 @@ export default function AmazonAdvertisingContent() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black px-12 py-6 text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group w-full sm:w-auto"
             >
-              Get Notified on Launch
+              Start Optimizing Now
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -554,7 +544,7 @@ export default function AmazonAdvertisingContent() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-white hover:bg-gray-100 text-purple-700 font-black px-12 py-6 text-lg rounded-full shadow-2xl group transition-all hover:scale-105"
             >
-              Get Notified on Launch
+              Start Optimizing Now
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -570,7 +560,7 @@ export default function AmazonAdvertisingContent() {
 
       {/* STICKY MOBILE CTA */}
       <StickyMobileCTA
-        label="Get Notified on Launch"
+        label="Start Optimizing Now"
         href="/signup"
         gradient="from-purple-500 to-pink-500"
         borderColor="border-purple-300 dark:border-purple-700"

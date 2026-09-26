@@ -15,7 +15,7 @@ const TIME_SLOTS = [
   "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM"
 ];
 
-export function CustomBookDemoModal({ className, text = "Book a Demo" }: { className?: string, text?: string }) {
+export function CustomBookDemoModal({ className, text = "Book a Demo" }: { className?: string, text?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [timeSlot, setTimeSlot] = useState<string | null>(null);

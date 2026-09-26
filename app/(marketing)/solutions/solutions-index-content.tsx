@@ -188,7 +188,7 @@ export default function SolutionsPage() {
     {
       id: 'amazon-advertising',
       icon: <BarChart3 className="w-10 h-10" />,
-      title: 'Amazon Advertising & PPC (COMING SOON)',
+      title: 'Amazon Advertising & PPC',
       subtitle: 'For Amazon Advertisers & PPC Teams',
       whoItsFor: 'Sellers, agencies & brands scaling Amazon Ads',
       pain: 'High ACOS and bleeding search terms wasting 30%+ of ad spend every day.',
