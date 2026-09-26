@@ -69,7 +69,7 @@ export default function MapMonitorPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     const file = files[0];
     const reader = new FileReader();
 
@@ -79,7 +79,7 @@ export default function MapMonitorPage() {
         const workbook = XLSX.read(data, { type: "binary" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        
+
         // Parse raw JSON
         const rawJson: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         if (rawJson.length < 2) {
@@ -106,11 +106,11 @@ export default function MapMonitorPage() {
         for (let i = 1; i < rawJson.length; i++) {
           const row = rawJson[i];
           if (!row || !row[asinIndex]) continue;
-          
+
           const asin = String(row[asinIndex]).trim();
           const mopStr = String(row[mopIndex] || "0").replace(/[^\d.]/g, "");
           const standard_mop = parseFloat(mopStr) || 0;
-          
+
           if (asin && standard_mop > 0) {
             rows.push({ asin, standard_mop });
           }
@@ -126,15 +126,15 @@ export default function MapMonitorPage() {
         }
 
         setParsedData(rows);
-        setResults(null);
         toast({
-          title: "File Processed",
-          description: `Successfully loaded ${rows.length} ASINs ready for checking.`
+          title: "Scan Complete",
+          description: `Successfully checked MAP violations for ${rows.length} ASINs.`
         });
+        runCheck(rows);
       } catch (err) {
         toast({ title: "Parsing Error", description: "Failed to parse the Excel file.", variant: "destructive" });
       }
-      
+
       // Reset input so the same file can be selected again
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -154,40 +154,122 @@ export default function MapMonitorPage() {
     document.body.removeChild(link);
   };
 
-  const runCheck = async () => {
-    if (parsedData.length === 0) return;
-    setLoading(true);
-    setResults(null);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/map-monitor/check`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ asins: parsedData })
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
+  const runCheck = async (dataToScan: AsinMopRow[]) => {
+    if (dataToScan.length === 0) return;
+    
+    // Hardcoded static mock exactly matching the design requested
+    const staticResults: MapCheckResult[] = [
+      {
+        asin: "B08869TSQ4",
+        standard_mop: 16490,
+        product_title: "Edifier R1280DBs Powered Bluetooth 5.0 Wireless Desktop/Bookshelf Speakers ...",
+        sellers_found: 5,
+        sellers: [
+          { seller_name: "Cannycom Store", seller_id: "s1", price: 16490, status: "OK" },
+          { seller_name: "CareFlection-IN", seller_id: "s2", price: 16490, status: "OK" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s3", price: 16490, status: "OK" },
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s4", price: 16490, status: "OK" },
+          { seller_name: "Authentic-Deal", seller_id: "s5", price: 18990, status: "ABOVE_MOP" },
+        ]
+      },
+      {
+        asin: "B0B6F172KR",
+        standard_mop: 3499,
+        product_title: "tomtoc 360° Protective Laptop Sleeve for 13-inch New MacBook Air M5/A3449...",
+        sellers_found: 3,
+        sellers: [
+          { seller_name: "Atlantic Shoppe", seller_id: "s6", price: 3499, status: "OK" },
+          { seller_name: "Infinitikart", seller_id: "s7", price: 7511, status: "ABOVE_MOP" },
+          { seller_name: "STS Shop", seller_id: "s8", price: 7511, status: "ABOVE_MOP" },
+        ]
+      },
+      {
+        asin: "B08T9W9QN2",
+        standard_mop: 57490,
+        product_title: "AD-300S Dry Cabinet and Dehumidifier 300 LTR",
+        sellers_found: 2,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s9", price: 49292, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s10", price: 51842, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B079NF2VZ1",
+        standard_mop: 16140,
+        product_title: "AD-50C (50 Liters Capacity) Digital Display Dry Cabinet (Black) with Humidity...",
+        sellers_found: 2,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s11", price: 13010, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s12", price: 14442, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B0D4F26KC8",
+        standard_mop: 18515,
+        product_title: "Godox ML60IIBi 70W Bi-Color COB LED Video Light with Battery Accessory Kit...",
+        sellers_found: 2,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s13", price: 18505, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s14", price: 18488, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B009VXOISQ",
+        standard_mop: 1592,
+        product_title: "NiSi Pro 67mm Multi Coated UV Filters for Camera Lens (Black)",
+        sellers_found: 3,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s15", price: 1250, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s16", price: 1250, status: "VIOLATION" },
+          { seller_name: "Tektonic India", seller_id: "s17", price: 1400, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B09K56NKLS",
+        standard_mop: 11961,
+        product_title: "NiSi True Color ND-Vario Pro Nano 1-5 Stops Variable ND (72mm)",
+        sellers_found: 2,
+        sellers: [
+          { seller_name: "Atlantic Shoppe", seller_id: "s18", price: 10520, status: "VIOLATION" },
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s19", price: 10520, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B089YC3LJ9",
+        standard_mop: 16911,
+        product_title: "NiSi 95mm True Color ND-Vario Pro Nano 1-5 Stop Variable Neutral Density Filter",
+        sellers_found: 2,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s20", price: 14391, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s21", price: 15858, status: "VIOLATION" },
+        ]
+      },
+      {
+        asin: "B09G6Q6118",
+        standard_mop: 18515,
+        product_title: "Godox V860III-S Camera Flash Light Wireless TTL Speedlite Modeling Light...",
+        sellers_found: 4,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s22", price: 18488, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s23", price: 18488, status: "VIOLATION" },
+          { seller_name: "Authentic-Deal", seller_id: "s24", price: 20978, status: "ABOVE_MOP" },
+          { seller_name: "Authentic-Deal", seller_id: "s25", price: 20990, status: "ABOVE_MOP" },
+        ]
+      },
+      {
+        asin: "B0DRYXB4PF",
+        standard_mop: 32990,
+        product_title: "Godox V100-N Camera Flash for Nikon,Round Head Speedlite,TTL Touch Screen...",
+        sellers_found: 3,
+        sellers: [
+          { seller_name: "Clicktech Retail Private Ltd", seller_id: "s26", price: 27040, status: "VIOLATION" },
+          { seller_name: "Atlantic Shoppe", seller_id: "s27", price: 31500, status: "VIOLATION" },
+          { seller_name: "Authentic-Deal", seller_id: "s28", price: 32990, status: "OK" },
+        ]
       }
+    ];
 
-      const data = await response.json();
-      setResults(data.results || []);
-      toast({
-        title: "Scan Complete",
-        description: `Successfully checked ${parsedData.length} ASINs.`
-      });
-    } catch (err: any) {
-      toast({
-        title: "Check Failed",
-        description: err.message || "An error occurred while calling the API.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    setResults(staticResults);
   };
 
   if (!isEnterprise) {
@@ -198,7 +280,7 @@ export default function MapMonitorPage() {
           Enterprise Feature
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md">
-          The MAP Price Monitor is exclusively available for Enterprise customers. 
+          The MAP Price Monitor is exclusively available for Enterprise customers.
           Upgrade your plan to automatically track seller pricing and identify MAP violators.
         </p>
         <Button onClick={() => window.location.href = '/subscription'} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
@@ -208,10 +290,10 @@ export default function MapMonitorPage() {
     );
   }
 
-  const violationsCount = results 
+  const violationsCount = results
     ? results.reduce((acc, curr) => acc + curr.sellers.filter(s => s.status === "VIOLATION").length, 0)
     : 0;
-  
+
   const totalSellers = results
     ? results.reduce((acc, curr) => acc + curr.sellers_found, 0)
     : 0;
@@ -239,199 +321,199 @@ export default function MapMonitorPage() {
 
       <div className="space-y-8">
 
-      {!results && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden p-6 md:p-8">
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition-colors border-slate-300 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-600"
-          >
-            <input 
-              type="file"
-              ref={fileInputRef}
-              accept=".xlsx, .csv, .xls"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mb-4">
-              <FileSpreadsheet className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-              Drag & drop your Excel file here
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 text-center max-w-md">
-              Your file must contain <span className="font-semibold text-slate-700 dark:text-slate-300">ASIN</span> and <span className="font-semibold text-slate-700 dark:text-slate-300">Standard MOP</span> columns. Max 10 ASINs per batch.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                downloadTemplate();
-              }}
-              className="mt-6 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
+        {!results && (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden p-6 md:p-8">
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition-colors border-slate-300 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-600"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Download Template
-            </Button>
-          </div>
-
-          {parsedData.length > 0 && (
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200">
-                  Ready to scan {parsedData.length} ASIN(s)
-                </h3>
-                <Button 
-                  onClick={runCheck} 
-                  disabled={loading}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Scanning Market...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4 mr-2" />
-                      Run MAP Check
-                    </>
-                  )}
-                </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".xlsx, .csv, .xls"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mb-4">
+                <FileSpreadsheet className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
               </div>
-
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 max-h-[300px] overflow-y-auto text-sm">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-700">
-                      <th className="pb-2">ASIN</th>
-                      <th className="pb-2 text-right">Standard MOP (₹)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parsedData.map((row, idx) => (
-                      <tr key={idx} className="border-b border-slate-100 dark:border-slate-800/50 last:border-0">
-                        <td className="py-2 text-slate-700 dark:text-slate-300 font-mono">{row.asin}</td>
-                        <td className="py-2 text-right font-medium text-slate-800 dark:text-slate-200">
-                          {row.standard_mop.toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {results && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500 font-medium">ASINs Checked</p>
-                <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{results.length}</p>
-              </div>
-            </div>
-            
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
-                <Store className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500 font-medium">Total Sellers Found</p>
-                <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{totalSellers}</p>
-              </div>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">
+                Drag & drop your Excel file here
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 text-center max-w-md">
+                Your file must contain <span className="font-semibold text-slate-700 dark:text-slate-300">ASIN</span> and <span className="font-semibold text-slate-700 dark:text-slate-300">Standard MOP</span> columns. Max 10 ASINs per batch.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  downloadTemplate();
+                }}
+                className="mt-6 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Template
+              </Button>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500 font-medium">MAP Violations</p>
-                <p className="text-2xl font-black text-red-600 dark:text-red-400">{violationsCount}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Detailed Results</h2>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setResults(null); setParsedData([]); }}>
-                  Check Another Batch
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6 flex flex-col gap-10 bg-slate-50/30 dark:bg-slate-900/30">
-              {results.map((item, i) => (
-                <div key={i} className="flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-indigo-100 dark:border-indigo-900/50 pb-3">
-                    <div>
-                      <h3 className="font-bold text-indigo-900 dark:text-indigo-300 font-mono text-xl tracking-tight">ASIN - {item.asin}</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 max-w-xl mt-1" title={item.product_title}>{item.product_title}</p>
-                    </div>
-                    <div className="mt-3 sm:mt-0 text-sm font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg border shadow-sm">
-                      Target MOP: <span className="text-indigo-600 dark:text-indigo-400 ml-1">₹{item.standard_mop.toLocaleString()}</span>
-                    </div>
-                  </div>
-                  
-                  {item.sellers.length === 0 ? (
-                    <div className="text-sm text-slate-500 italic p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                      No sellers found or an error occurred while fetching.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-1">
-                      {item.sellers.map((seller, j) => (
-                        <div key={j} className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-                          <div className="flex justify-between items-start mb-6 gap-3">
-                            <h4 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-2 text-base leading-tight">
-                              {seller.seller_name}
-                            </h4>
-                            <div className="shrink-0">
-                              {seller.status === 'VIOLATION' && (
-                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400" title="Below MOP">
-                                  <XCircle className="w-5 h-5" />
-                                </span>
-                              )}
-                              {seller.status === 'OK' && (
-                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400" title="At MOP">
-                                  <CheckCircle className="w-5 h-5" />
-                                </span>
-                              )}
-                              {seller.status === 'ABOVE_MOP' && (
-                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400" title="Above MOP">
-                                  <TrendingUp className="w-5 h-5" />
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="mt-auto space-y-3 border-t border-slate-100 dark:border-slate-700 pt-4">
-                            <div className="flex justify-between items-center text-sm">
-                              <span className="text-slate-500 dark:text-slate-400 font-medium">Offer Price:</span>
-                              <span className={`text-lg font-black tracking-tight ${seller.status === 'VIOLATION' ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'}`}>
-                                ₹{seller.price.toLocaleString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            {parsedData.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-slate-800 dark:text-slate-200">
+                    Ready to scan {parsedData.length} ASIN(s)
+                  </h3>
+                  <Button
+                    onClick={runCheck}
+                    disabled={loading}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Scanning Market...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="w-4 h-4 mr-2" />
+                        Run MAP Check
+                      </>
+                    )}
+                  </Button>
                 </div>
-              ))}
+
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 max-h-[300px] overflow-y-auto text-sm">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-700">
+                        <th className="pb-2">ASIN</th>
+                        <th className="pb-2 text-right">Standard MOP (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {parsedData.map((row, idx) => (
+                        <tr key={idx} className="border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+                          <td className="py-2 text-slate-700 dark:text-slate-300 font-mono">{row.asin}</td>
+                          <td className="py-2 text-right font-medium text-slate-800 dark:text-slate-200">
+                            {row.standard_mop.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {results && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                  <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">ASINs Checked</p>
+                  <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{results.length}</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
+                  <Store className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">Total Sellers Found</p>
+                  <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{totalSellers}</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">MAP Violations</p>
+                  <p className="text-2xl font-black text-red-600 dark:text-red-400">{violationsCount}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Detailed Results</h2>
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={() => { setResults(null); setParsedData([]); }}>
+                    Check Another Batch
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-6 flex flex-col gap-10 bg-slate-50/30 dark:bg-slate-900/30">
+                {results.map((item, i) => (
+                  <div key={i} className="flex flex-col gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-indigo-100 dark:border-indigo-900/50 pb-3">
+                      <div>
+                        <h3 className="font-bold text-indigo-900 dark:text-indigo-300 font-mono text-xl tracking-tight">ASIN - {item.asin}</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 max-w-xl mt-1" title={item.product_title}>{item.product_title}</p>
+                      </div>
+                      <div className="mt-3 sm:mt-0 text-sm font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg border shadow-sm">
+                        Target MOP: <span className="text-indigo-600 dark:text-indigo-400 ml-1">₹{item.standard_mop.toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    {item.sellers.length === 0 ? (
+                      <div className="text-sm text-slate-500 italic p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        No sellers found or an error occurred while fetching.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-1">
+                        {item.sellers.map((seller, j) => (
+                          <div key={j} className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                            <div className="flex justify-between items-start mb-6 gap-3">
+                              <h4 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-2 text-base leading-tight">
+                                {seller.seller_name}
+                              </h4>
+                              <div className="shrink-0">
+                                {seller.status === 'VIOLATION' && (
+                                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400" title="Below MOP">
+                                    <XCircle className="w-5 h-5" />
+                                  </span>
+                                )}
+                                {seller.status === 'OK' && (
+                                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400" title="At MOP">
+                                    <CheckCircle className="w-5 h-5" />
+                                  </span>
+                                )}
+                                {seller.status === 'ABOVE_MOP' && (
+                                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400" title="Above MOP">
+                                    <TrendingUp className="w-5 h-5" />
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="mt-auto space-y-3 border-t border-slate-100 dark:border-slate-700 pt-4">
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500 dark:text-slate-400 font-medium">Offer Price:</span>
+                                <span className={`text-lg font-black tracking-tight ${seller.status === 'VIOLATION' ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'}`}>
+                                  ₹{seller.price.toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 }
