@@ -207,6 +207,7 @@ async def run_sync_cycle():
                     await sync_orders_for_account(db, cred)
                 except Exception as e:
                     logger.error(f"Failed to sync SP-ID {cred.selling_partner_id}: {e}")
+                    db.rollback()  # Reset the aborted database transaction
                     cred.sync_status = "FAILED"
                     db.commit()
             else:
