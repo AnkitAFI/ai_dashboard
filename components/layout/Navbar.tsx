@@ -33,7 +33,7 @@ const navigationMenu: NavigationMenu = {
   Solutions: [
     { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
     { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "COMING SOON", route: "/solutions/amazon-advertising" },
+    { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "", route: "/solutions/amazon-advertising" },
     { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
     { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
     { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
@@ -192,11 +192,10 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
           : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -400,7 +399,7 @@ export function Navbar() {
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Toggle dark mode"
             >
-              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>)}
+              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />)}
             </button>
           </div>
 
@@ -471,12 +470,12 @@ export function Navbar() {
             >
               {mounted && (resolvedTheme === "dark" ? (
                 <div className="flex items-center gap-2">
-                  <Sun className="w-5 h-5 text-yellow-400"/>
+                  <Sun className="w-5 h-5 text-yellow-400" />
                   <span className="text-sm font-medium text-gray-300">Switch to Light Mode</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Moon className="w-5 h-5 text-gray-800"/>
+                  <Moon className="w-5 h-5 text-gray-800" />
                   <span className="text-sm font-medium text-gray-700">Switch to Dark Mode</span>
                 </div>
               ))}

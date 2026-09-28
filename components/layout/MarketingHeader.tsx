@@ -50,7 +50,7 @@ const navigationMenu: NavigationMenu = {
     { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
     { name: "Seller Dashboard", icon: <LayoutGrid className="w-4 h-4" />, badge: "NEW", route: "/seller-dashboard" },
     { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "COMING SOON", route: "/solutions/amazon-advertising" },
+    { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "", route: "/solutions/amazon-advertising" },
     { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
     { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
     { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
@@ -187,8 +187,8 @@ export function MarketingHeader() {
         href={item.route}
         onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
         className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${isActive
-            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
-            : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
+          ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+          : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
           }`}
       >
         <span className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
@@ -232,8 +232,8 @@ export function MarketingHeader() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
-          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+        ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
+        : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -261,8 +261,8 @@ export function MarketingHeader() {
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === menu}
                   className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${isSectionActive(menu)
-                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                      : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                    ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                    : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                     }`}
                 >
                   {menu}
@@ -285,8 +285,8 @@ export function MarketingHeader() {
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
               className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all whitespace-nowrap ${pathname === "/pricing"
-                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                  : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                 }`}
             >
               Pricing
@@ -332,8 +332,8 @@ export function MarketingHeader() {
             <button
               onClick={() => scrollToSection('Home')}
               className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/"
-                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                 }`}
             >
               Home
@@ -345,8 +345,8 @@ export function MarketingHeader() {
                   onClick={() => toggleMobileMenu(menuName)}
                   aria-expanded={mobileActiveMenu === menuName}
                   className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${isSectionActive(menuName)
-                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                    ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                     }`}
                 >
                   {menuName}
@@ -366,8 +366,8 @@ export function MarketingHeader() {
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
               className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/pricing"
-                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                 }`}
             >
               Pricing

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -20,74 +21,455 @@ import {
   Users,
   Presentation,
   Star,
+  ArrowRight,
+  ShieldCheck,
+  Link2,
+  BarChart3,
+  TrendingUp,
+  Search,
+  Megaphone,
+  Tag,
+  FileCheck2,
+  Bell,
+  Sparkles,
 } from "lucide-react";
 
-const testimonials = [
+const FONT_STACK =
+  "'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif";
+
+const heroBadges = [
   {
-    logo: "🛒",
-    logoColor: "text-orange-500",
-    rating: "4.9",
-    text: "Insydz helped me identify which products were quietly losing margin. Within two weeks I restructured my pricing and saw a 22% improvement in net profit. I didn't need to guess anymore — the data was right there.",
-    author: "Rahul Gupta",
-    handle: "Electronics · 3 yrs on Amazon",
-    role: "Amazon Seller · Delhi",
-    badge: "Amazon India",
+    icon: Megaphone,
+    iconBg: "bg-violet-100 dark:bg-violet-900/40",
+    iconColor: "text-violet-700 dark:text-violet-300",
+    title: "Ad automation",
+    subtitle: "ACoS down 3.2 pts",
+    subtitleColor: "text-[#15803d] dark:text-green-400",
+    rotate: -3,
   },
   {
-    logo: "🏷️",
-    logoColor: "text-pink-500",
-    rating: "5.0",
-    text: "Competitor tracking on Insydz is a game changer. I used to spend hours manually checking prices — now it's all there every morning. Big Billion Days prep was so much smoother this year because of the alerts.",
-    author: "Priya Sharma",
-    handle: "Fashion & Apparel · 5 yrs on Flipkart",
-    role: "Flipkart Seller · Mumbai",
-    badge: "Flipkart",
+    icon: Search,
+    iconBg: "bg-[#e3edff] dark:bg-blue-900/40",
+    iconColor: "text-[#1e40af] dark:text-blue-400",
+    title: "Keyword research",
+    subtitle: "1,240 keywords found",
+    rotate: 2,
   },
   {
-    logo: "📊",
-    logoColor: "text-blue-500",
-    rating: "4.8",
-    text: "Managing 4 brands across Amazon and Flipkart was a nightmare before Insydz. Now I have one dashboard and my clients get reports they can actually act on. It has genuinely changed how I run my agency.",
-    author: "Aarav Kumar",
-    handle: "Multi-brand Agency · Bengaluru",
-    role: "Brand Manager · Bengaluru",
-    badge: "Amazon + Flipkart",
+    icon: Users,
+    title: "Competitor analysis",
+    subtitle: "12 sellers tracked",
+    dark: true,
+    rotate: -3,
   },
   {
-    logo: "🔍",
-    logoColor: "text-purple-500",
-    rating: "4.7",
-    text: "The AI keyword suggestions took my listings from page 4 to page 1 within a month. I was skeptical at first but the data doesn't lie — my organic sales doubled and my ad spend dropped 30%.",
-    author: "Sneha Mehta",
-    handle: "Home & Kitchen · 2 yrs on Amazon",
-    role: "Amazon Seller · Pune",
-    badge: "Amazon India",
+    icon: Tag,
+    iconBg: "bg-[#dcfce7] dark:bg-green-900/40",
+    iconColor: "text-[#166534] dark:text-green-400",
+    title: "Price optimization",
+    subtitle: "Suggested price ₹549",
+    rotate: 3,
   },
   {
-    logo: "🏆",
-    logoColor: "text-yellow-500",
-    rating: "4.9",
-    text: "Finally a tool built for Indian marketplaces, not just adapted from western tools. The Flipkart-specific insights are accurate and the support team actually understands our local market challenges.",
-    author: "Vikram Reddy",
-    handle: "Sports & Fitness · 4 yrs on Flipkart",
-    role: "Flipkart Seller · Hyderabad",
-    badge: "Flipkart",
+    icon: FileCheck2,
+    iconBg: "bg-[#fce7f3] dark:bg-pink-900/40",
+    iconColor: "text-[#9d174d] dark:text-pink-400",
+    title: "Listing optimization",
+    subtitle: "Listing score 92/100",
+    rotate: -2,
   },
   {
-    logo: "🚀",
-    logoColor: "text-pink-500",
-    rating: "4.8",
-    text: "We onboarded 12 new clients after showing them Insydz reports during pitches. The data precision and India-specific market intelligence gives us an edge no other tool provides. Our clients love the dashboards.",
-    author: "Nidhi Joshi",
-    handle: "E-commerce Agency · 12 clients",
-    role: "E-commerce Agency · Ahmedabad",
-    badge: "Amazon + Flipkart",
+    icon: Bell,
+    iconBg: "bg-[#ffedd5] dark:bg-orange-900/40",
+    iconColor: "text-[#9a3412] dark:text-orange-400",
+    title: "Smart alerts",
+    subtitle: "On WhatsApp, 24/7",
+    rotate: 3,
   },
 ];
+
+// Matches the 3 seller stories shown in the design (star rating, marketplace tag,
+// headline stat, quote, avatar + role) — dark card in the middle like the mockup.
+const testimonials = [
+  {
+    stat: "+22% net profit",
+    tag: "Amazon",
+    tagBg: "bg-[#fff1e0] dark:bg-orange-900/40",
+    tagColor: "text-[#9a3412] dark:text-orange-400",
+    quote:
+      "Insydz helped me find which products were quietly losing margin. Within two weeks I fixed my pricing. I did not need to guess anymore.",
+    author: "Rahul Gupta",
+    role: "Electronics, 3 years on Amazon",
+    avatar: "RG",
+    avatarBg: "bg-violet-100 dark:bg-violet-900/40",
+    avatarColor: "text-violet-700 dark:text-violet-300",
+    dark: false,
+  },
+  {
+    stat: "Hours saved daily",
+    tag: "Flipkart",
+    tagBg: "bg-[#e3edff] dark:bg-blue-900/40",
+    tagColor: "text-[#c9c2dd]",
+    quote:
+      "Competitor tracking is a game changer. I used to check prices by hand for hours. Now it is all there every morning, and Big Billion Days prep was much smoother.",
+    author: "Priya Sharma",
+    role: "Fashion and apparel, 5 years on Flipkart",
+    avatar: "PS",
+    avatarBg: "bg-[#fce7f3]",
+    avatarColor: "text-[#9d174d]",
+    dark: true,
+  },
+  {
+    stat: "4 brands, 1 dashboard",
+    tag: "Agency",
+    tagBg: "bg-[#f3effd] dark:bg-violet-900/20",
+    tagColor: "text-[#4b4560] dark:text-gray-300",
+    quote:
+      "Managing four brands across Amazon and Flipkart was hard. Now I have one dashboard and my clients get reports they can actually act on.",
+    author: "Aarav Kumar",
+    role: "Multi brand agency, Bengaluru",
+    avatar: "AK",
+    avatarBg: "bg-[#dcfce7]",
+    avatarColor: "text-[#166534]",
+    dark: false,
+  },
+];
+
+const featureTabs = [
+  {
+    key: "ads",
+    label: "Ad Automation",
+    href: "/solutions/amazon-advertising",
+    icon: Megaphone,
+    eyebrow: "Amazon PPC automation",
+    heading: "Automate your Amazon ads and cut wasted ad spend",
+    description:
+      "Ad Automation manages your Amazon Sponsored Products campaigns for you. It adjusts bids and budgets to match your ACoS and ROAS goals, so more of your ad spend turns into sales.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "Find and pause keywords that spend money but bring no sales",
+      "Set automatic bid and budget rules for each campaign",
+      "Track ACoS, ROAS and ad spend daily in one dashboard",
+      "Move budget to the campaigns that sell the most",
+    ],
+    bestFor: "Sellers who run Amazon PPC ads and want a lower ACoS without daily manual work.",
+    tools: ["Bid automation", "Budget rules", "ACoS tracking"],
+    tableTitle: "Campaign performance",
+    tableHeaders: ["CAMPAIGN", "SPEND", "ACOS", "STATUS"],
+    tableRows: [
+      { col1: "Kurti sets, exact", col2: "₹18,400", col3: "14.2%", col4: "Healthy", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Bottles, broad", col2: "₹12,900", col3: "48.0%", col4: "Overspending", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Yoga mats, auto", col2: "₹7,300", col3: "22.6%", col4: "Healthy", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Bedsheets, phrase", col2: "₹5,100", col3: "31.4%", col4: "Watch", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+    ],
+    tip: "Pause 6 keywords in \"Bottles, broad\" to save about ₹4,200 a week.",
+  },
+  {
+    key: "keywords",
+    label: "Keyword Research",
+    href: "/features/keyword-rank-tracking-feature",
+    icon: Search,
+    eyebrow: "Amazon and Flipkart keyword research",
+    heading: "Find high search volume keywords your buyers actually use",
+    description:
+      "Keyword Research shows what shoppers search for on Amazon India and Flipkart, how many times a month they search it and where your product ranks. Use it to choose the right keywords for your listings and ads.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "See monthly search volume for any keyword",
+      "Track your keyword rank daily on Amazon India and Flipkart",
+      "Find keywords your competitors rank for that you are missing",
+      "Get AI keyword suggestions for titles, bullet points and ads",
+    ],
+    bestFor: "Sellers launching new products or trying to reach page one of search results.",
+    tools: ["Keyword research", "Rank tracking", "Share of Voice"],
+    tableTitle: "Keyword tracker",
+    tableHeaders: ["KEYWORD", "SEARCHES", "YOUR RANK", "CHANGE"],
+    tableRows: [
+      { col1: "cotton kurti for women", col2: "48,200", col3: "#4", col4: "Up 7", trend: "up" },
+      { col1: "steel water bottle 1l", col2: "31,900", col3: "#2", col4: "Up 3", trend: "up" },
+      { col1: "yoga mat anti slip", col2: "22,400", col3: "#11", col4: "Down 5", trend: "down" },
+      { col1: "bedsheet double bed", col2: "19,700", col3: "#6", col4: "Same", trend: "flat" },
+      { col1: "lunch box for office", col2: "14,300", col3: "#9", col4: "Up 2", trend: "up" },
+    ],
+    tip: "Add \"anti slip yoga mat 6mm\" to your title to recover lost rank.",
+  },
+  {
+    key: "competitor",
+    label: "Competitor Analysis",
+    href: "/features/competitor-price-tracking-feature",
+    icon: Users,
+    eyebrow: "Competitor tracking",
+    heading: "Track competitor prices, reviews and rankings every day",
+    description:
+      "Competitor Analysis watches the sellers you compete with on Amazon and Flipkart. See every price change, new listing and review trend, and find the market gaps where you can grow.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "Monitor competitor prices and Buy Box changes daily",
+      "Compare ratings, reviews and search rankings side by side",
+      "Find new product opportunities with Opportunity Finder",
+      "Measure your category Share of Voice with Market Visibility",
+    ],
+    bestFor: "Sellers in crowded categories where competitors change prices often.",
+    tools: ["Opportunity Finder", "Market Visibility", "Price tracking"],
+    tableTitle: "Competitors on your top product",
+    tableHeaders: ["SELLER", "PRICE", "RATING", "CHANGE"],
+    tableRows: [
+      { col1: "Seller A", col2: "₹509", col3: "4.2", col4: "Price cut ₹40", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Seller B", col2: "₹549", col3: "4.4", col4: "No change", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Seller C", col2: "₹575", col3: "3.9", col4: "New listing", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "You", col2: "₹549", col3: "4.5", col4: "Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+    ],
+    tip: "Seller A cut prices this morning. Match at ₹519 to keep the Buy Box.",
+  },
+  {
+    key: "price",
+    label: "Price Optimization",
+    href: "/features/price-optimization-feature",
+    icon: Tag,
+    eyebrow: "Buy Box pricing",
+    heading: "Set the right price to win the Buy Box and protect your profit",
+    description:
+      "Price Optimization suggests the best selling price for each product. It checks competitor prices, demand and your margin, so you win the Buy Box without selling at a loss.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "Get a suggested price for every product",
+      "Check your profit margin before you change a price",
+      "Track Buy Box wins and losses for each listing",
+      "Spot products where you can safely raise your price",
+    ],
+    bestFor: "Sellers who share listings with other sellers or face frequent price wars.",
+    tools: ["Price suggestions", "Margin guard", "Buy Box tracking"],
+    tableTitle: "Price suggestions",
+    tableHeaders: ["PRODUCT", "NOW", "SUGGESTED", "IMPACT"],
+    tableRows: [
+      { col1: "Steel bottle, 1 litre", col2: "₹589", col3: "₹549", col4: "Win Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Cotton kurti set", col2: "₹799", col3: "₹829", col4: "+₹30 margin", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Yoga mat 6mm", col2: "₹699", col3: "₹699", col4: "Keep price", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Lunch box, steel", col2: "₹449", col3: "₹429", col4: "Win Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+    ],
+    tip: "You can raise the kurti set to ₹829 and still be the lowest priced seller in its category.",
+  },
+  {
+    key: "listing",
+    label: "Listing Optimization",
+    href: "/features/product-research-feature",
+    icon: FileCheck2,
+    eyebrow: "Product listing optimization",
+    heading: "Optimize product listings to rank higher and sell more",
+    description:
+      "Listing Optimization gives every product listing a quality score and shows exactly what to fix in your titles, bullet points, images and keywords. Better listings rank higher in search and turn more visitors into buyers.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "Get a listing score from 0 to 100 for every product",
+      "Get keyword rich title and bullet point suggestions",
+      "Find missing keywords, images and product details",
+      "See your score improve after each fix",
+    ],
+    bestFor: "Sellers with many products who need to know which listings to fix first.",
+    tools: ["Listing score", "Content suggestions", "Keyword gaps"],
+    tableTitle: "Listing health",
+    tableHeaders: ["PRODUCT", "SCORE", "ISSUE", "FIX"],
+    tableRows: [
+      { col1: "Cotton kurti set", col2: "92", col3: "None", col4: "Done", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Yoga mat 6mm", col2: "64", col3: "Short title", col4: "Fix now", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Steel bottle, 1 litre", col2: "78", col3: "3 images", col4: "Add 2", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Bedsheet, double", col2: "71", col3: "Weak bullets", col4: "Fix now", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+    ],
+    tip: "Two quick fixes on the yoga mat listing could lift its score to 85.",
+  },
+  {
+    key: "alerts",
+    label: "Smart Alerts",
+    href: "/features/whatsapp-alerts-feature",
+    icon: Bell,
+    eyebrow: "Real time seller alerts",
+    heading: "Get instant WhatsApp alerts before problems cost you sales",
+    description:
+      "Smart Alerts watch your Amazon and Flipkart store around the clock. When a competitor cuts prices, you lose the Buy Box or a keyword rank drops, you get an alert on WhatsApp and in your dashboard.",
+    bulletsHeading: "What you can do",
+    bullets: [
+      "Price drop alerts when competitors change their prices",
+      "Buy Box loss alerts for every listing",
+      "Keyword rank change and low stock alerts",
+      "All alerts sorted by priority, so you fix the most urgent first",
+    ],
+    bestFor: "Busy sellers who cannot check their dashboard all day.",
+    tools: ["WhatsApp alerts", "Buy Box alerts", "Rank alerts"],
+    tableTitle: "Today's alerts",
+    tableHeaders: ["ALERT", "PRODUCT", "TIME", "PRIORITY"],
+    tableRows: [
+      { col1: "Buy Box lost", col2: "Steel bottle", col3: "11:02", col4: "High", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Price drop by rival", col2: "Kurti set", col3: "09:41", col4: "High", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Rank improved", col2: "Yoga mat", col3: "08:15", col4: "Info", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Low stock", col2: "Lunch box", col3: "07:30", col4: "Medium", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+    ],
+    tip: "You have 2 high priority alerts. Both can be fixed with a price change.",
+  },
+];
+
+// Rows for the "What you get" comparison table in the Compare section.
+const compareRows = [
+  { label: "Amazon India marketplace coverage", insydz: "Full", global: "Often limited" },
+  { label: "Flipkart data in the same dashboard", insydz: "Included", global: "Usually not available" },
+  { label: "Pricing in Indian rupees", insydz: "From ₹0", global: "Usually billed in USD" },
+  { label: "Festive season and Indian buyer trends", insydz: "Built in", global: "Not India focused" },
+  { label: "Agency workflows for Indian businesses", insydz: "Included", global: "Varies by plan" },
+  { label: "Support that knows Indian marketplaces", insydz: "Yes", global: "Global support teams" },
+];
+
+const whyInsydz = [
+  { icon: Globe, text: "India first expertise", bg: "bg-violet-100 dark:bg-violet-900/40", color: "text-violet-700 dark:text-violet-300" },
+  { icon: Sparkles, text: "Superior AI insights", bg: "bg-[#fce7f3] dark:bg-pink-900/40", color: "text-[#9d174d] dark:text-pink-400" },
+  { icon: ShieldCheck, text: "Exceptional value", bg: "bg-[#dcfce7] dark:bg-green-900/40", color: "text-[#166534] dark:text-green-400" },
+  { icon: BarChart3, text: "Streamlined, simple UX", bg: "bg-[#e3edff] dark:bg-blue-900/40", color: "text-[#1e40af] dark:text-blue-400" },
+];
+
+const faqs = [
+  {
+    q: "Is Insydz really free to start?",
+    a: "Yes. The Free plan costs ₹0 a month and includes basic dashboard access, tracking for up to 25 products and weekly reports. No credit card is needed to sign up.",
+  },
+  {
+    q: "Does Insydz work for Flipkart sellers?",
+    a: "Yes. You can view Flipkart data and insights right next to your Amazon account, in the same dashboard.",
+  },
+  {
+    q: "Is my Amazon seller data safe?",
+    a: "Insydz follows Amazon's Acceptable Use Policy. Market insights come from public marketplace data, and we never share, pool or sell private seller data.",
+  },
+  {
+    q: "What can I do with Insydz?",
+    a: "Automate ads, research keywords, track competitors, get price suggestions, improve listings and receive smart alerts, all from one place.",
+  },
+  {
+    q: "Can I use Insydz for my agency clients?",
+    a: "Yes. Agencies manage multiple clients in one view and share client-ready reports. The Enterprise plan adds white label options.",
+  },
+  {
+    q: "Can I cancel or change my plan anytime?",
+    a: "Yes. You can upgrade, downgrade or cancel whenever you like.",
+  },
+];
+
+function FloatingBadge({
+  icon: Icon,
+  title,
+  subtitle,
+  iconBg = "bg-violet-100 dark:bg-violet-900/40",
+  iconColor = "text-violet-700 dark:text-violet-300",
+  subtitleColor = "text-[#5f5875] dark:text-gray-400",
+  dark = false,
+  rotate = 0,
+}: {
+  icon: React.ElementType;
+  title: string;
+  subtitle: string;
+  iconBg?: string;
+  iconColor?: string;
+  subtitleColor?: string;
+  dark?: boolean;
+  rotate?: number;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 rounded-2xl p-4 shadow-[0_18px_36px_rgba(40,20,90,0.12)] ${dark ? "bg-[#1a1033]" : "bg-white dark:bg-gray-950"
+        }`}
+      style={{ transform: `rotate(${rotate}deg)` }}
+    >
+      <span
+        className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${dark ? "bg-white dark:bg-gray-950/10" : iconBg
+          }`}
+      >
+        <Icon className={`h-5 w-5 ${dark ? "text-violet-300" : iconColor}`} />
+      </span>
+      <span className="flex flex-col gap-0.5">
+        <span className={`text-[15px] font-extrabold ${dark ? "text-white" : "text-[#1a1033] dark:text-gray-50"}`}>
+          {title}
+        </span>
+        <span className={`text-xs font-semibold ${dark ? "text-[#c9c2dd]" : subtitleColor}`}>
+          {subtitle}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="text-base font-extrabold tracking-[0.1em] text-violet-600 dark:text-violet-400 sm:text-lg">
+      {children}
+    </span>
+  );
+}
+
+function StarRow() {
+  return (
+    <span className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" />
+      ))}
+    </span>
+  );
+}
+
+function PrimaryButton({
+  children,
+  onClick,
+  href,
+  className = "",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  className?: string;
+}) {
+  const cls = `inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-8 py-4 text-[15px] font-extrabold text-white shadow-[0_14px_30px_rgba(124,58,237,0.3)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(124,58,237,0.38)] ${className}`;
+  if (href) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <button onClick={onClick} className={cls}>
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({
+  children,
+  onClick,
+  href,
+  className = "",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  className?: string;
+}) {
+  const cls = `inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#d9cff0] dark:border-gray-700 bg-white dark:bg-gray-950 px-7 py-[15px] text-[15px] font-bold text-[#1a1033] dark:text-gray-50 transition-colors hover:bg-[#faf8fe] dark:bg-gray-900 ${className}`;
+  if (href) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <button onClick={onClick} className={cls}>
+      {children}
+    </button>
+  );
+}
 
 export default function LandingContent() {
   const router = useRouter();
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  // Default to "Ad Automation" as it is the first tab.
+  const [activeFeatureTab, setActiveFeatureTab] = useState("ads");
+  const activeTab = featureTabs.find((t) => t.key === activeFeatureTab) ?? featureTabs[0];
 
   const handleGetStarted = () => {
     router.push("/login");
@@ -97,212 +479,515 @@ export default function LandingContent() {
     router.push("/login");
   };
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-x-clip">
+    <div
+      className="min-h-screen bg-white dark:bg-gray-950 text-[#1a1033] dark:text-gray-50 overflow-x-clip"
+      style={{ fontFamily: FONT_STACK }}
+    >
       {/* Hero Section */}
       <section
         id="Home"
-        className="relative min-h-[70vh] flex items-center justify-center pt-24 sm:pt-28 lg:pt-32 pb-12 lg:pb-16 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-x-clip scroll-mt-20"
+        className="relative overflow-hidden bg-[#fcfaff] dark:bg-gray-900 pt-28 pb-16 lg:pt-32 lg:pb-20 scroll-mt-20"
       >
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-1/4 left-0 w-96 h-96 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-        <div className="absolute top-1/3 right-0 w-96 h-96 bg-pink-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        {/* Decorative concentric circles */}
+        <div className="pointer-events-none absolute left-1/2 top-[420px] hidden -translate-x-1/2 lg:block">
+          <div className="h-[560px] w-[560px] rounded-full border border-[#ece4fb] dark:border-gray-800" />
+        </div>
+        <div className="pointer-events-none absolute left-1/2 top-[470px] hidden -translate-x-[46%] lg:block">
+          <div className="h-[380px] w-[380px] rounded-full border border-[#e4d8fa] dark:border-gray-800 bg-[#f6f1ff] dark:bg-gray-800/50" />
+        </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
-            {/* Left Content */}
-            <div className="flex flex-col space-y-3 lg:space-y-4 text-left mt-2 lg:mt-0">
-              {/* Pill */}
-              <h1 className="inline-flex w-fit max-w-full items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-[13px] sm:text-sm font-semibold shadow-sm text-center sm:whitespace-nowrap">
-                Run Your Amazon & Flipkart Business from One Place
-              </h1>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <Link
+              href="/login"
+              className="mx-auto inline-flex max-w-full items-center justify-center gap-2 rounded-full border border-[#e4dcf5] dark:border-gray-800 bg-white dark:bg-gray-950 py-1.5 pl-1.5 pr-4 text-xs font-semibold text-[#3b3552] dark:text-gray-300 shadow-[0_4px_14px_rgba(76,29,149,0.06)] sm:gap-3 sm:text-sm"
+            >
+              <span className="shrink-0 rounded-full bg-violet-100 dark:bg-violet-900/40 px-2.5 py-1 text-[11px] font-extrabold text-violet-700 dark:text-violet-300">
+                ALL IN ONE
+              </span>
+              <span className="truncate">Run Your Amazon & Flipkart Business<span className="hidden sm:inline"> from One Place</span></span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+            </Link>
 
-              {/* Heading */}
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-gray-900 dark:text-white">
-                <span className="block mb-1 text-gray-900">Everything You Need to</span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
-                  Sell & Grow on <br className="hidden sm:inline" />{" "}
-                  Amazon and Flipkart
+            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-[-0.03em] text-[#1a1033] dark:text-gray-50 sm:text-5xl lg:text-[56px]">
+              One platform to{" "}
+              <span className="relative inline-block">
+                grow faster
+                <svg
+                  className="pointer-events-none absolute left-0 -bottom-2 w-full"
+                  height="10"
+                  viewBox="0 0 400 18"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 12 C 90 2, 220 2, 396 10"
+                    fill="none"
+                    stroke="#db2777"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>{" "}
+              on{" "}
+              <span className="inline-block -rotate-2 rounded-2xl bg-[#fff1e0] dark:bg-orange-900/40 px-3 py-1 text-[#9a3412] dark:text-orange-400">
+                Amazon
+              </span>{" "}
+              and{" "}
+              <span className="inline-block rotate-2 rounded-2xl bg-[#e3edff] dark:bg-blue-900/40 px-3 py-1 text-[#1e40af] dark:text-blue-400">
+                Flipkart
+              </span>
+            </h1>
+
+            <p className="max-w-xl text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+              Ad automation, keyword research, competitor analysis, price and listing
+              optimization. Every everyday selling task, in one simple dashboard.
+            </p>
+
+            <div className="flex flex-col items-center gap-4 pt-2 sm:flex-row">
+              <PrimaryButton href="/signup">
+                Start free
+                <ArrowRight className="h-4 w-4" />
+              </PrimaryButton>
+              <CustomBookDemoModal
+                className="inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#d9cff0] dark:border-gray-700 bg-white dark:bg-gray-950 px-7 py-[15px] text-[15px] font-bold text-[#1a1033] dark:text-gray-50 transition-colors hover:bg-[#faf8fe] dark:bg-gray-900"
+                text="Book a demo"
+              />
+              <Link
+                href="/login"
+                className="text-[15px] font-bold text-[#1a1033] dark:text-gray-50 underline decoration-[#d9cff0] decoration-2 underline-offset-4 sm:hidden"
+              >
+                Log in
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-center text-sm font-semibold text-[#5f5875] dark:text-gray-400">
+              <span className="flex items-center gap-2">
+                <span className="flex">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-violet-100 dark:bg-violet-900/40 text-[10px] font-extrabold text-violet-700 dark:text-violet-300">
+                    RK
+                  </span>
+                  <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-pink-100 dark:bg-pink-900/40 text-[10px] font-extrabold text-pink-700 dark:text-pink-300">
+                    AS
+                  </span>
+                  <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-100 dark:bg-green-900/40 text-[10px] font-extrabold text-green-700 dark:text-green-300">
+                    PM
+                  </span>
                 </span>
-              </h2>
+                <span>
+                  <strong className="text-[#1a1033] dark:text-gray-50">5,000+</strong> sellers
+                </span>
+              </span>
+              <span className="h-1 w-1 rounded-full bg-[#c9c2dd]" />
+              <span>
+                <strong className="text-[#1a1033] dark:text-gray-50">2.5L+</strong> reviews analysed
+              </span>
+              <span className="h-1 w-1 rounded-full bg-[#c9c2dd]" />
+              <span>Free plan, no credit card needed</span>
+            </div>
+          </div>
 
-              {/* Paragraphs */}
-              <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-xl leading-relaxed">
-                <p>
-                  Insydz is an{" "}
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    all-in-one e-commerce platform
-                  </span>{" "}
-                  for Amazon and Flipkart sellers. It simplifies your everyday
-                  selling tasks with tools for ad automation, keyword research,
-                  competitor analysis, price optimization, listing optimization,
-                  and more. Connect your Amazon seller account and access Flipkart
-                  data and insights in one place, helping you make smarter decisions
-                  and grow your online sales.
-                </p>
+          {/* Compact Overview visual for phones (iPhone 12 Pro etc.) and tablets (iPad) —
+              the full 3-column floating-badge layout below needs real desktop width, so
+              this simpler stacked version covers everything under the lg breakpoint. */}
+          <div className="mx-auto mt-10 block max-w-md sm:mt-12 sm:max-w-xl lg:hidden">
+            <div className="relative overflow-hidden rounded-[22px] border border-[#e9e3f5] bg-white dark:bg-gray-950 shadow-[0_24px_50px_rgba(40,20,90,0.14)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3.5 sm:px-6 sm:py-4">
+                <span className="flex items-center gap-2 text-sm font-extrabold sm:text-base">
+                  <BarChart3 className="h-4 w-4 text-violet-600 dark:text-violet-400 sm:h-5 sm:w-5" />
+                  Overview
+                </span>
+                <span className="flex flex-wrap gap-1.5 sm:gap-2">
+                  <span className="flex items-center gap-1.5 rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-2.5 py-1 text-[10px] font-bold text-[#9a3412] dark:text-orange-400 sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+                    Amazon connected
+                  </span>
+                  <span className="flex items-center gap-1.5 rounded-full bg-[#e3edff] dark:bg-blue-900/40 px-2.5 py-1 text-[10px] font-bold text-[#1e40af] dark:text-blue-400 sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+                    Flipkart data
+                  </span>
+                </span>
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-1">
-                <Link
-                  href="/signup"
-                  className="inline-flex justify-center items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-all shadow-md hover:shadow-purple-500/20 transform hover:-translate-y-0.5"
-                >
-                  Start Free. No Card Needed.
-                </Link>
-
-                {/* Mobile-only Login button */}
-                <Link
-                  href="/login"
-                  className="sm:hidden inline-flex justify-center items-center px-6 py-3 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-400 hover:bg-purple-100 rounded-full transition-all shadow-sm"
-                >
-                  Login
-                </Link>
+              <div className="grid grid-cols-3 gap-3 border-t border-[#f0ebf8] px-4 py-4 sm:px-6 sm:py-5">
+                <div>
+                  <div className="text-[11px] font-semibold text-[#5f5875] dark:text-gray-400 sm:text-xs">Total sales</div>
+                  <div className="text-lg font-extrabold tracking-[-0.02em] sm:text-2xl">₹14.2L</div>
+                  <div className="text-[11px] font-bold text-[#15803d] dark:text-green-400 sm:text-xs">+18% this month</div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold text-[#5f5875] dark:text-gray-400 sm:text-xs">Orders</div>
+                  <div className="text-lg font-extrabold tracking-[-0.02em] sm:text-2xl">3,482</div>
+                  <div className="text-[11px] font-bold text-[#15803d] dark:text-green-400 sm:text-xs">+11%</div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold text-[#5f5875] dark:text-gray-400 sm:text-xs">Ad ROAS</div>
+                  <div className="text-lg font-extrabold tracking-[-0.02em] sm:text-2xl">4.6x</div>
+                  <div className="text-[11px] font-bold text-[#15803d] dark:text-green-400 sm:text-xs">+0.8x</div>
+                </div>
               </div>
 
-              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-xl leading-relaxed pt-4">
-                ⚡Get instant WhatsApp alerts for price drops, Buy Box losses &
-                keyword rank changes
-              </p>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-4 mt-1 border-t border-purple-100/50 dark:border-gray-800">
-                <div>
-                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    5,000+
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">
-                    Sellers trust Insydz
-                  </div>
+              <div className="border-t border-[#f0ebf8] p-4 sm:p-6">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 sm:mb-4">
+                  <span className="text-xs font-bold sm:text-sm">Sales by marketplace</span>
+                  <span className="flex gap-2.5 text-[11px] font-semibold text-[#5f5875] dark:text-gray-400 sm:gap-3 sm:text-xs">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-[3px] bg-violet-600" />
+                      Amazon
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-[3px] bg-pink-300" />
+                      Flipkart
+                    </span>
+                  </span>
                 </div>
-                <div>
-                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    2.5L+
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">
-                    Reviews analysed
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    24/7
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">
-                    Live market data
-                  </div>
+                <div className="flex h-24 items-end gap-2 sm:h-32 sm:gap-3">
+                  {[
+                    [45, 28],
+                    [55, 32],
+                    [50, 38],
+                    [68, 42],
+                    [80, 50],
+                    [100, 58],
+                  ].map(([amz, fk], i) => (
+                    <div key={i} className="flex h-full flex-1 items-end gap-1">
+                      <div className="flex-1 rounded-t-md bg-violet-600" style={{ height: `${amz}%` }} />
+                      <div className="flex-1 rounded-t-md bg-pink-300" style={{ height: `${fk}%` }} />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Right Content - Dashboard Mockup */}
-            <div className="relative w-full max-w-md mx-auto lg:ml-auto xl:max-w-lg mt-12 lg:mt-0 lg:pl-6 hidden lg:block scale-[0.8] xl:scale-[0.85] origin-right">
-              {/* Floating elements */}
-              <div
-                className="absolute -top-4 -right-2 z-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-xl shadow-purple-500/30 animate-bounce"
-                style={{ animationDuration: "3s" }}
-              >
-                Sales up 18% this week
+            {/* Feature badges as a horizontally-scrollable strip — works well with a thumb
+                swipe on both iPhone and iPad, and never causes page-level overflow. */}
+            <div className="-mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 [-webkit-overflow-scrolling:touch] sm:mx-0 sm:px-0">
+              {heroBadges.map((b, i) => (
+                <div key={i} className="w-[220px] shrink-0 sm:w-[240px]">
+                  <FloatingBadge {...b} rotate={0} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Overview diagram with floating feature badges — full "Sales by marketplace" bar chart */}
+          <div className="mx-auto mt-16 hidden max-w-6xl grid-cols-[1fr_1.9fr_1fr] items-center gap-6 lg:grid">
+            <div className="flex flex-col gap-6">
+              <FloatingBadge
+                icon={Megaphone}
+                iconBg="bg-violet-100 dark:bg-violet-900/40"
+                iconColor="text-violet-700 dark:text-violet-300"
+                title="Ad automation"
+                subtitle="ACoS down 3.2 pts"
+                subtitleColor="text-[#15803d] dark:text-green-400"
+                rotate={-3}
+              />
+              <FloatingBadge
+                icon={Search}
+                iconBg="bg-[#e3edff] dark:bg-blue-900/40"
+                iconColor="text-[#1e40af] dark:text-blue-400"
+                title="Keyword research"
+                subtitle="1,240 keywords found"
+                rotate={2}
+              />
+              <FloatingBadge
+                icon={Users}
+                title="Competitor analysis"
+                subtitle="12 sellers tracked"
+                dark
+                rotate={-3}
+              />
+            </div>
+
+            <div className="relative z-10 overflow-hidden rounded-[28px] border border-[#e9e3f5] bg-white dark:bg-gray-950 shadow-[0_40px_80px_rgba(40,20,90,0.18)]">
+              <div className="flex items-center justify-between px-6 py-4">
+                <span className="flex items-center gap-2 text-base font-extrabold">
+                  <BarChart3 className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                  Overview
+                </span>
+                <span className="flex gap-2">
+                  <span className="flex items-center gap-1.5 rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-3 py-1.5 text-xs font-bold text-[#9a3412] dark:text-orange-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+                    Amazon connected
+                  </span>
+                  <span className="flex items-center gap-1.5 rounded-full bg-[#e3edff] dark:bg-blue-900/40 px-3 py-1.5 text-xs font-bold text-[#1e40af] dark:text-blue-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+                    Flipkart data
+                  </span>
+                </span>
               </div>
 
-              <div
-                className="absolute -bottom-4 -left-2 sm:-left-4 z-20 bg-white border border-purple-200 text-purple-600 text-xs font-bold px-4 py-3 rounded-xl shadow-2xl animate-bounce"
-                style={{ animationDuration: "4s", animationDelay: "1s" }}
-              >
-                <span className="block text-gray-900 mb-0.5">
-                  Competitor dropped price
-                </span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  on 3 of your products
-                </span>
+              <div className="grid grid-cols-3 gap-4 border-t border-[#f0ebf8] px-6 py-5">
+                <div>
+                  <div className="text-xs font-semibold text-[#5f5875] dark:text-gray-400">Total sales</div>
+                  <div className="text-2xl font-extrabold tracking-[-0.02em]">₹14.2L</div>
+                  <div className="text-xs font-bold text-[#15803d] dark:text-green-400">+18% this month</div>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-[#5f5875] dark:text-gray-400">Orders</div>
+                  <div className="text-2xl font-extrabold tracking-[-0.02em]">3,482</div>
+                  <div className="text-xs font-bold text-[#15803d] dark:text-green-400">+11%</div>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-[#5f5875] dark:text-gray-400">Ad ROAS</div>
+                  <div className="text-2xl font-extrabold tracking-[-0.02em]">4.6x</div>
+                  <div className="text-xs font-bold text-[#15803d] dark:text-green-400">+0.8x</div>
+                </div>
               </div>
 
-              {/* Browser Window Mockup */}
-              <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-                {/* Browser Header */}
-                <div className="bg-[#1C1C28] px-4 py-2.5 flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              <div className="border-t border-[#f0ebf8] p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-sm font-bold">Sales by marketplace</span>
+                  <span className="flex gap-3 text-xs font-semibold text-[#5f5875] dark:text-gray-400">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-[3px] bg-violet-600" />
+                      Amazon
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-[3px] bg-pink-300" />
+                      Flipkart
+                    </span>
+                  </span>
+                </div>
+                <div className="flex h-36 items-end gap-4">
+                  {[
+                    [45, 28],
+                    [55, 32],
+                    [50, 38],
+                    [68, 42],
+                    [80, 50],
+                    [100, 58],
+                  ].map(([amz, fk], i) => (
+                    <div key={i} className="flex h-full flex-1 items-end gap-1.5">
+                      <div className="flex-1 rounded-t-md bg-violet-600" style={{ height: `${amz}%` }} />
+                      <div className="flex-1 rounded-t-md bg-pink-300" style={{ height: `${fk}%` }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <FloatingBadge
+                icon={Tag}
+                iconBg="bg-[#dcfce7] dark:bg-green-900/40"
+                iconColor="text-[#166534] dark:text-green-400"
+                title="Price optimization"
+                subtitle="Suggested price ₹549"
+                rotate={3}
+              />
+              <FloatingBadge
+                icon={FileCheck2}
+                iconBg="bg-[#fce7f3] dark:bg-pink-900/40"
+                iconColor="text-[#9d174d] dark:text-pink-400"
+                title="Listing optimization"
+                subtitle="Listing score 92/100"
+                rotate={-2}
+              />
+              <FloatingBadge
+                icon={Bell}
+                iconBg="bg-[#ffedd5] dark:bg-orange-900/40"
+                iconColor="text-[#9a3412] dark:text-orange-400"
+                title="Smart alerts"
+                subtitle="On WhatsApp, 24/7"
+                rotate={3}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+
+      {/* How It Works Section */}
+      <section className="bg-white dark:bg-gray-950 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>HOW IT WORKS</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
+              Up and running in three simple steps
+            </h2>
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+              No setup calls, no spreadsheets. Most sellers see their first insights on day one.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                icon: Link2,
+                bg: "bg-violet-100 dark:bg-violet-900/40",
+                color: "text-violet-700 dark:text-violet-300",
+                num: "01",
+                title: "Connect your Amazon account",
+                desc: "Sign up free and link your Amazon seller account securely. Add the Flipkart products you want to track.",
+              },
+              {
+                icon: BarChart3,
+                bg: "bg-[#e3edff] dark:bg-blue-900/40",
+                color: "text-[#1e40af] dark:text-blue-400",
+                num: "02",
+                title: "See everything in one place",
+                desc: "Sales, ads, keywords and competitor moves come together in one dashboard, with AI suggestions on what to do next.",
+              },
+              {
+                icon: TrendingUp,
+                bg: "bg-[#dcfce7] dark:bg-green-900/40",
+                color: "text-[#166534] dark:text-green-400",
+                num: "03",
+                title: "Act and grow your sales",
+                desc: "Fix prices, improve listings and cut wasted ad spend. Get an alert the moment something important changes.",
+              },
+            ].map((s, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-4 rounded-[24px] border border-[#eee9f7] p-8 shadow-[0_12px_30px_rgba(40,20,90,0.05)]"
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${s.bg}`}>
+                    <s.icon className={`h-6 w-6 ${s.color}`} />
+                  </span>
+                  <span className="text-4xl font-extrabold tracking-[-0.03em] text-[#ece4fb]">{s.num}</span>
+                </div>
+                <h3 className="text-lg font-extrabold">{s.title}</h3>
+                <p className="text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section — tabbed diagram */}
+      <section id="Features" className="scroll-mt-20 bg-[#f6f1ff] dark:bg-gray-800/50 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-10 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>FEATURES</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+              Every selling task, one platform
+            </h2>
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+              Six connected tools that cover your whole Amazon and Flipkart business, from ads to listings.
+            </p>
+          </div>
+
+          <div className="mx-auto mb-10 flex max-w-6xl items-center gap-1 overflow-x-auto rounded-full border border-[#e9e3f5] bg-white dark:bg-gray-950 p-1.5">
+            {featureTabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveFeatureTab(t.key)}
+                className={`flex-1 whitespace-nowrap rounded-full px-3.5 py-2.5 text-[13px] font-bold transition-colors sm:text-sm ${activeTab.key === t.key
+                  ? "bg-[#1a1033] text-white"
+                  : "text-[#3b3552] dark:text-gray-300 hover:bg-[#faf8fe] dark:bg-gray-900"
+                  }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 items-center gap-10 rounded-[28px] border border-[#e9e3f5] bg-white dark:bg-gray-950 p-8 shadow-[0_20px_50px_rgba(40,20,90,0.06)] lg:grid-cols-2 lg:p-12">
+            <div className="flex flex-col gap-5">
+              {activeTab.eyebrow && (
+                <span className="w-fit rounded-full bg-[#f3effd] dark:bg-violet-900/20 px-3 py-1 text-[11px] font-extrabold tracking-[0.05em] text-[#3b3552] dark:text-gray-300">
+                  {activeTab.eyebrow}
+                </span>
+              )}
+              <h3 className="text-2xl font-extrabold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
+                {activeTab.heading}
+              </h3>
+              <p className="text-[17px] leading-relaxed text-[#4b4560] dark:text-gray-300">{activeTab.description}</p>
+              
+              <div className="flex flex-col gap-2.5">
+                {activeTab.bulletsHeading && (
+                  <div className="text-[15px] font-extrabold text-[#1a1033] dark:text-white">
+                    {activeTab.bulletsHeading}
                   </div>
-                  <div className="mx-auto bg-background opacity-100 rounded px-3 py-1 text-[10px] text-white/50 w-48 text-center truncate font-medium">
-                    insydz.com/dashboard
+                )}
+                {activeTab.bullets.map((b, i) => (
+                  <div key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                    <span>{b}</span>
                   </div>
+                ))}
+              </div>
+
+              {activeTab.bestFor && (
+                <div className="flex items-start gap-3 rounded-[16px] border border-[#eee9f7] bg-[#faf8fe] p-4 text-[14px] leading-relaxed dark:border-gray-800 dark:bg-gray-900">
+                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
+                  <p className="text-[#4b4560] dark:text-gray-300">
+                    <strong className="text-[#1a1033] dark:text-white">Best for:</strong> {activeTab.bestFor}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="mr-1 text-sm font-extrabold">Tools:</span>
+                {activeTab.tools.map((tool, i) => (
+                  <span key={i} className="rounded-full bg-violet-600 px-4 py-2 text-sm font-bold text-white">
+                    {tool}
+                  </span>
+                ))}
+              </div>
+              <SecondaryButton href={activeTab.href} className="w-fit">
+                Explore {activeTab.label.toLowerCase()}
+                <ArrowRight className="h-4 w-4" />
+              </SecondaryButton>
+            </div>
+
+            {/* Diagram */}
+            <div className="overflow-hidden rounded-[20px] border border-[#eee9f7] bg-[#faf8fe] dark:bg-gray-900">
+                <div className="overflow-x-auto">
+                  <div className="flex items-center justify-between px-5 py-4">
+                    <span className="whitespace-nowrap text-sm font-extrabold">{activeTab.tableTitle}</span>
+                    {activeTab.key === 'alerts' ? (
+                      <span className="whitespace-nowrap rounded-full bg-[#dcfce7] dark:bg-green-900/40 px-3 py-1 text-xs font-bold text-[#166534] dark:text-green-400">
+                        WhatsApp
+                      </span>
+                    ) : (
+                      <span className="whitespace-nowrap rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-3 py-1 text-xs font-bold text-[#9a3412] dark:text-orange-400">
+                        Amazon India
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid min-w-[480px] grid-cols-[2.2fr_1fr_1fr_1fr] gap-2 bg-[#f3effd] dark:bg-violet-900/20 px-5 py-2.5 text-[11px] font-extrabold tracking-[0.05em] uppercase text-[#5f5875] dark:text-gray-400">
+                    {activeTab.tableHeaders.map((header, i) => (
+                      <span key={i}>{header}</span>
+                    ))}
+                  </div>
+                  {activeTab.tableRows.map((row: any, i) => (
+                    <div
+                      key={i}
+                      className="grid min-w-[480px] grid-cols-[2.2fr_1fr_1fr_1fr] items-center gap-2 border-t border-[#f0ebf8] px-5 py-3 text-sm"
+                    >
+                      <span className="whitespace-nowrap font-bold">{row.col1}</span>
+                      <span className="whitespace-nowrap">{row.col2}</span>
+                      <span className="whitespace-nowrap font-extrabold">{row.col3}</span>
+                      <span
+                        className={`w-fit justify-self-start whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-extrabold ${
+                          row.statusClass 
+                            ? row.statusClass 
+                            : row.trend === "up"
+                              ? "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400"
+                              : row.trend === "down"
+                                ? "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]"
+                                : "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300"
+                        }`}
+                      >
+                        {row.col4}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Dashboard Content */}
-                <div className="p-4 space-y-3">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-sm">
-                        Good morning, Rahul
-                      </h3>
-                    </div>
-                    <div className="text-[10px] text-gray-400 font-medium">
-                      22 Apr 2026
-                    </div>
-                  </div>
-
-                  {/* Stats Cards */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">
-                        Revenue Today
-                      </div>
-                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">
-                        ₹48,200
-                      </div>
-                      <div className="text-[8px] text-green-500 mt-0.5 font-bold">
-                        +12% vs yesterday
-                      </div>
-                    </div>
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">
-                        Orders
-                      </div>
-                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">
-                        143
-                      </div>
-                      <div className="text-[8px] text-green-500 mt-0.5 font-bold">
-                        +8 orders
-                      </div>
-                    </div>
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">
-                        Returns
-                      </div>
-                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">
-                        4
-                      </div>
-                      <div className="text-[8px] text-red-500 mt-0.5 font-bold">
-                        Review needed
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Chart */}
-                  <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 shadow-sm bg-white dark:bg-gray-900">
-                    <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-2 font-semibold">
-                      Weekly Sales on Amazon India
-                    </div>
-                    <div className="flex items-end gap-2 h-14">
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[30%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[40%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[35%]"></div>
-                      <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-t h-[60%]"></div>
-                      <div className="flex-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-t h-[90%] relative"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[50%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[70%]"></div>
-                    </div>
-                  </div>
-                </div>
+              <div className="m-5 flex items-center gap-3 rounded-2xl bg-[#1a1033] px-4 py-3.5 text-white">
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white dark:bg-gray-950/10">
+                  <Sparkles className="h-4 w-4 text-violet-300" />
+                </span>
+                <span className="text-[13px] leading-relaxed">
+                  <strong>AI tip:</strong> {activeTab.tip}
+                </span>
               </div>
             </div>
           </div>
@@ -310,1037 +995,645 @@ export default function LandingContent() {
       </section>
 
       {/* Video Masterclasses Section */}
-      <section className="pt-6 pb-16 lg:pt-8 bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
-            <div>
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-semibold bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-800/50 uppercase tracking-wider mb-4">
-                <span className="text-[10px]">▶</span> Video Masterclasses
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-4 tracking-tight">
-                Video Guides
+      <section className="bg-[#fdf2f8] dark:bg-pink-900/20 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col items-start gap-3 text-left">
+              <Eyebrow>VIDEO MASTERCLASSES</Eyebrow>
+              <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl">
+                Video guides
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl font-medium">
-                Free strategy walkthroughs on Amazon.in, Flipkart, PPC and
-                Diwali, Independence Day & GST-deadline festive prep straight
-                from real sellers.
+              <p className="max-w-2xl text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+                Free walkthroughs and playbooks from real sellers, including festive season prep for Diwali and Big Billion Days.
               </p>
             </div>
-            <div className="mt-6 md:mt-0">
-              <Link
-                href="/resources/video-guides"
-                className="inline-flex items-center gap-2 border border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 font-bold px-6 py-2.5 rounded-full transition-all text-sm shadow-sm"
-              >
-                View all videos <span className="text-base font-normal">→</span>
-              </Link>
-            </div>
+            <SecondaryButton href="/resources/video-guides" className="self-start md:self-auto">
+              View all videos
+              <ArrowRight className="h-4 w-4" />
+            </SecondaryButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                image: "/insydz-opportunity-finder-thumbnail.png",
+                video: "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
+                tag: "Product research",
+                duration: "06:12",
+                title: "Find winning products with Opportunity Finder",
+                desc: "Spot hidden market gaps, pricing gaps and demand signals on Amazon and Flipkart in seconds.",
+              },
+              {
+                image: "/insydz-complete-navigation-guide-thumbnail.png",
+                video: "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
+                tag: "Getting started",
+                duration: "08:45",
+                title: "Insydz complete navigation guide",
+                desc: "Set up your account and explore every seller tool, step by step.",
+              },
+              {
+                image: "/insydz-market-visibility-thumbnail.png",
+                video: "/videos/Insydz’s%20Market%20Visibility.mp4",
+                tag: "Competitor analysis",
+                duration: "05:30",
+                title: "See your whole category with Market Visibility",
+                desc: "Understand market gaps, keyword opportunities and exactly how to scale.",
+              },
+            ].map((v, i) => (
               <div
-                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('/insydz-opportunity-finder-thumbnail.png')",
-                }}
-                onClick={() =>
-                  setPlayingVideo(
-                    "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
-                  )
-                }
+                key={i}
+                className="flex h-full flex-col overflow-hidden rounded-[24px] border border-[#eee9f7] bg-white dark:bg-gray-950 shadow-[0_12px_30px_rgba(40,20,90,0.05)]"
               >
-                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                  <svg
-                    className="w-5 h-5 fill-current text-[#4338ca] ml-1"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                  Product Research
-                </span>
-                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">
-                  06:12
-                </span>
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3
-                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
-                  onClick={() =>
-                    setPlayingVideo(
-                      "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
-                    )
-                  }
+                <div
+                  className="relative aspect-video w-full cursor-pointer bg-cover bg-center"
+                  style={{ backgroundImage: `url('${v.image}')` }}
+                  onClick={() => setPlayingVideo(v.video)}
                 >
-                  Find Winning Product Opportunities with Insydz's Opportunity
-                  Finder
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
-                  Discover hidden market gaps on Amazon and Flipkart using
-                  Insydz Opportunity Finder. See competitor counts, pricing
-                  gaps, demand signals, and AI-powered insights all in seconds.
-                </p>
-                {/* <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
-                  <span className="flex items-center gap-1">
-                    👁 14.2K views
+                  <span className="absolute left-4 top-4 rounded-full bg-black/50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white backdrop-blur-sm">
+                    {v.tag}
                   </span>
-                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                    <svg
-                      className="w-4 h-4 text-red-600 fill-current"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z" />
-                    </svg>{" "}
-                    YouTube
+                  <span className="absolute bottom-4 left-4 rounded bg-black/75 px-2 py-0.5 text-xs font-semibold text-white">
+                    {v.duration}
                   </span>
-                </div> */}
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
-              <div
-                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('/insydz-complete-navigation-guide-thumbnail.png')",
-                }}
-                onClick={() =>
-                  setPlayingVideo(
-                    "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
-                  )
-                }
-              >
-                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                  <svg
-                    className="w-5 h-5 fill-current text-[#0f766e] ml-1"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white dark:bg-gray-950/90 shadow-lg">
+                      <svg className="ml-1 h-5 w-5 fill-current text-violet-600 dark:text-violet-400" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                  Getting Started
-                </span>
-                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">
-                  08:45
-                </span>
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3
-                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
-                  onClick={() =>
-                    setPlayingVideo(
-                      "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
-                    )
-                  }
-                >
-                  Insydz - Complete Navigation Guide
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
-                  This step-by-step guide helps you set up your account and
-                  explore powerful seller tools, all in one place. Built for
-                  Amazon and Flipkart sellers who want smarter growth with data.
-                </p>
-                {/* <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
-                  <span className="flex items-center gap-1">👁 6.1K views</span>
-                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                    <svg
-                      className="w-4 h-4 text-red-600 fill-current"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z" />
-                    </svg>{" "}
-                    YouTube
-                  </span>
-                </div> */}
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
-              <div
-                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('/insydz-market-visibility-thumbnail.png')",
-                }}
-                onClick={() =>
-                  setPlayingVideo("/videos/Insydz’s%20Market%20Visibility.mp4")
-                }
-              >
-                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                  <svg
-                    className="w-5 h-5 fill-current text-[#9a3412] ml-1"
-                    viewBox="0 0 24 24"
+                <div className="flex flex-grow flex-col gap-3 p-6">
+                  <h3
+                    className="cursor-pointer text-lg font-extrabold leading-snug hover:text-violet-600 dark:text-violet-400"
+                    onClick={() => setPlayingVideo(v.video)}
                   >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                    {v.title}
+                  </h3>
+                  <p className="flex-grow text-sm leading-relaxed text-[#5f5875] dark:text-gray-400">{v.desc}</p>
                 </div>
-                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                  Competitor Analysis
-                </span>
-                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">
-                  05:30
-                </span>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3
-                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
-                  onClick={() =>
-                    setPlayingVideo(
-                      "/videos/Insydz’s%20Market%20Visibility.mp4",
-                    )
-                  }
-                >
-                  Insydz’s Market Visibility
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
-                  Insydz's Market Visibility tool gives you total clarity over your category—revealing market gaps, keyword opportunities, and exactly how you can scale your sales.
-                </p>
-                {/* <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
-                  <span className="flex items-center gap-1">
-                    👁 11.8K views
-                  </span>
-                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                    <svg
-                      className="w-4 h-4 text-red-600 fill-current"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z" />
-                    </svg>{" "}
-                    YouTube
-                  </span>
-                </div> */}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Built For Section */}
-      <section
-        id=""
-        className="py-16 bg-gradient-to-br from-white-50 to-white-50 dark:from-gray-800 dark:to-gray-900"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-              Built for Every E-commerce Growth Team
+      <section className="bg-white dark:bg-gray-950 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>WHO IT IS FOR</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+              Built for every e-commerce growth team
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Whether you're a solo Amazon seller or managing a portfolio of
-              brands, Insydz is the marketplace analytics software that adapts
-              to your needs.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+              Whether you sell one product or manage a portfolio of brands, Insydz fits the way you work.
             </p>
           </div>
 
-          {/* Comparison Cards — each card links to its solution page */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {/* Amazon Sellers */}
-            <Link
-              href="/solutions/amazon-sellers"
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Amazon Seller</h3>
-                  </div>
-                </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Win Buy Box, run keyword research and optimize pricing with
-                    AI-powered intelligence
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                href: "/solutions/amazon-sellers",
+                icon: Trophy,
+                title: "Amazon sellers",
+                desc: "Win the Buy Box and grow sales on Amazon India.",
+              },
+              {
+                href: "/solutions/flipkart-sellers",
+                icon: Trophy,
+                title: "Flipkart sellers",
+                desc: "Your Flipkart command centre for daily decisions.",
+              },
+              {
+                href: "/solutions/ecommerce-agencies",
+                icon: Users,
+                title: "E-commerce agencies",
+                desc: "Manage many clients without the chaos.",
+              },
+              {
+                href: "/solutions/brand-managers",
+                icon: Presentation,
+                title: "Brand managers",
+                desc: "Make confident, data backed decisions.",
+              },
+            ].map((c, i) => (
+              <Link
+                key={i}
+                href={c.href}
+                className="flex flex-col gap-5 rounded-[24px] border border-fuchsia-200 bg-white p-7 shadow-[0_12px_40px_-12px_rgba(217,70,239,0.15)] transition-all hover:shadow-[0_20px_50px_-10px_rgba(217,70,239,0.25)] hover:-translate-y-1 dark:border-fuchsia-900/50 dark:bg-gray-900/50"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-fuchsia-500 to-pink-500 shadow-md shadow-pink-500/20">
+                    <c.icon className="h-6 w-6 text-white" />
                   </span>
-                </li>
-              </ul>
-            </Link>
-
-            {/* Flipkart Sellers */}
-            <Link
-              href="/solutions/flipkart-sellers"
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Flipkart Sellers</h3>
-                  </div>
+                  <h3 className="text-[20px] font-extrabold tracking-tight text-[#1a1033] dark:text-white leading-tight">
+                    {c.title}
+                  </h3>
                 </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Your Flipkart seller dashboard for competitor tracking,
-                    inventory alerts & reviews
-                  </span>
-                </li>
-              </ul>
-            </Link>
-
-            {/* E-commerce Agencies */}
-            <Link
-              href="/solutions/ecommerce-agencies"
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">E-commerce Agencies</h3>
-                  </div>
+                <div className="flex items-start gap-3 text-[15.5px] leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  <Check className="mt-[3px] h-[18px] w-[18px] shrink-0 text-emerald-500" strokeWidth={2.5} />
+                  <span>{c.desc}</span>
                 </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Manage multiple clients with clarity, prepare client reports
-                    in one click
-                  </span>
-                </li>
-              </ul>
-            </Link>
-
-            {/* Brand Managers */}
-            <Link
-              href="/solutions/brand-managers"
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Brand Managers</h3>
-                  </div>
-                </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Make confident data-backed decisions present real
-                    intelligence to leadership
-                  </span>
-                </li>
-              </ul>
-            </Link>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Compare Section */}
-      <section
-        id="Compare"
-        className="py-16 bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-900"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Why Indian Sellers Choose{" "}
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Insydz
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Discover how Insydz outperforms the competition across key
-              metrics, from real time listing intelligence to competitor
-              tracking, built specifically for Indian marketplaces.
-            </p>
-          </div>
-
-          {/* Key Advantages */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-16">
-            {[
-              {
-                icon: <Target className="w-8 h-8" />,
-                text: "Streamlined UX",
-                color: "from-blue-500 to-blue-600",
-              },
-              {
-                icon: <Zap className="w-8 h-8" />,
-                text: "Superior AI Intelligence",
-                color: "from-purple-500 to-purple-600",
-              },
-              {
-                icon: <DollarSign className="w-8 h-8" />,
-                text: "Exceptional Value",
-                color: "from-green-500 to-green-600",
-              },
-              {
-                icon: <Globe className="w-8 h-8" />,
-                text: "India-First Expertise",
-                color: "from-orange-500 to-orange-600",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg text-center transform hover:-translate-y-2 transition-all"
-              >
-                <div
-                  className={`w-16 h-16 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center mx-auto mb-4 text-white`}
-                >
-                  {item.icon}
-                </div>
-                <p className="font-semibold text-gray-800 dark:text-white">
-                  {item.text}
+      {/* Compare Section — matches the design's "Why Indian sellers choose Insydz" table layout */}
+      <section id="Compare" className="scroll-mt-20 bg-[#fdf2f8] dark:bg-pink-900/20 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.3fr] lg:items-start">
+            {/* Left column */}
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col items-start gap-3 text-left">
+                <Eyebrow>WHY INSYDZ</Eyebrow>
+                <h2 className="max-w-md text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+                  Why Indian sellers choose Insydz
+                </h2>
+                <p className="max-w-md text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  Global tools were built for the US market. Insydz is built for how India buys
+                  and sells.
                 </p>
               </div>
-            ))}
-          </div>
 
-          {/* Comparison Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {/* Insydz vs Helium 10 */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
+              <div className="grid grid-cols-2 gap-3">
+                {whyInsydz.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2.5 rounded-2xl border border-[#eee9f7] bg-white dark:bg-gray-950 p-3.5"
+                  >
+                    <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${item.bg}`}>
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
+                    </span>
+                    <span className="text-sm font-extrabold">{item.text}</span>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Insydz</h3>
-                    <p className="text-sm text-gray-500">vs Helium 10</p>
-                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <span className="text-sm font-extrabold">Detailed comparisons</span>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href="/compare/insydzvshelium"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Helium 10 <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/compare/insydzvsjunglescout"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Jungle Scout <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/compare/insydzvsvirallaunch"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Viral Launch <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
-              <ul className="space-y-4 mb-6">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Indian marketplace coverage Helium 10 can't match
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Premium features at a fraction of the cost
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    ₹ denominated pricing intelligence built for India
-                  </span>
-                </li>
-              </ul>
-              <Link
-                href="/compare/insydzvshelium"
-                className="w-full inline-block text-center border-2 border-purple-600 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-semibold py-2 rounded-lg"
-              >
-                Show More →
-              </Link>
             </div>
 
-            {/* Insydz vs Jungle Scout */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-blue-200 dark:border-blue-900 hover:shadow-2xl transition-all">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Insydz</h3>
-                    <p className="text-sm text-gray-500">vs Jungle Scout</p>
-                  </div>
-                </div>
+            {/* Right column — comparison table */}
+            <div className="overflow-hidden rounded-[24px] border border-[#e9e3f5] bg-white dark:bg-gray-950 shadow-[0_20px_50px_rgba(40,20,90,0.07)]">
+              <div className="grid grid-cols-[1.6fr_1fr_1fr] items-center gap-2 bg-[#f6f1ff] dark:bg-violet-900/20 px-6 py-5 text-sm font-extrabold">
+                <span className="text-[#5f5875] dark:text-gray-400">WHAT YOU GET</span>
+                <span className="flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <rect x="4" y="18" width="5" height="10" rx="1.5" fill="#7c3aed" />
+                    <rect x="13.5" y="12" width="5" height="16" rx="1.5" fill="#db2777" />
+                    <rect x="23" y="5" width="5" height="23" rx="1.5" fill="#7c3aed" />
+                  </svg>
+                  Insydz
+                </span>
+                <span className="text-[#5f5875] dark:text-gray-400">Global tools</span>
               </div>
-              <ul className="space-y-4 mb-6">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Amazon India + Flipkart in one dashboard
+              {compareRows.map((row, i) => (
+                <div
+                  key={i}
+                  className={`grid grid-cols-[1.6fr_1fr_1fr] items-center gap-2 px-6 py-4 text-[15px] ${i > 0 ? "border-t border-[#f0ebf8]" : ""
+                    }`}
+                >
+                  <span className="font-bold">{row.label}</span>
+                  <span className="flex items-center gap-2 font-extrabold text-[#15803d] dark:text-green-400">
+                    <Check className="h-4 w-4" />
+                    {row.insydz}
                   </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Real time competitive intelligence for Indian markets
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    AI insights that understand Indian buyer behaviour
-                  </span>
-                </li>
-              </ul>
-              <Link
-                href="/compare/insydzvsjunglescout"
-                className="w-full inline-block text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold py-2 rounded-lg"
-              >
-                Show More →
-              </Link>
-            </div>
-
-            {/* Insydz vs Viral Launch */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-green-200 dark:border-green-900 hover:shadow-2xl transition-all">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Insydz</h3>
-                    <p className="text-sm text-gray-500">vs Viral Launch</p>
-                  </div>
+                  <span className="text-[#5f5875] dark:text-gray-400">{row.global}</span>
                 </div>
+              ))}
+              <div className="flex flex-col gap-3 border-t border-[#f0ebf8] bg-[#fcfaff] dark:bg-gray-900 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm text-[#4b4560] dark:text-gray-300">
+                  Paid plans from <strong className="text-[#1a1033] dark:text-gray-50">₹1,999 per month</strong>
+                </span>
+                <PrimaryButton href="/login">
+                  Start your free trial <ArrowRight className="h-4 w-4" />
+                </PrimaryButton>
               </div>
-              <ul className="space-y-4 mb-6">
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Agency optimized workflows for Indian businesses
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Superior data precision for marketplaces
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Localized market intelligence designed for how Indian
-                    businesses scale
-                  </span>
-                </li>
-              </ul>
-              <Link
-                href="/compare/insydzvsvirallaunch"
-                className="w-full inline-block text-center border-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 font-semibold py-2 rounded-lg"
-              >
-                Show More →
-              </Link>
             </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <Link
-              href="/login"
-              className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-10 py-4 text-lg rounded-full shadow-xl"
-            >
-              Start Your Free Trial
-            </Link>
           </div>
         </div>
       </section>
 
       {/* Resources Section */}
-      <section id="Resources" className="py-16 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Accelerate Your Growth With{" "}
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Insydz
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Access premium resources built for Indian e-commerce sellers from
-              seller guides and success stories to video masterclasses and
-              strategic playbooks.
+      <section id="Resources" className="scroll-mt-20 bg-white dark:bg-gray-950 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 flex max-w-3xl flex-col items-center gap-5 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <Eyebrow>LEARN</Eyebrow>
+              <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
+                Learn Insydz in minutes
+              </h2>
+            </div>
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+              Free walkthroughs and playbooks from real sellers, including festive season prep for Diwali and Big Billion Days.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {/* Blog */}
-            <Link
-              href="/resources/expert-blog"
-              className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-blue-200 dark:border-blue-800 block flex flex-col h-full"
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                <BookOpen className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                Expert <br />
-                Blog
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                Cutting-edge strategies for Amazon India, Flipkart sellers
-                written by practitioners, not theorists
-              </p>
-              <span className="text-blue-600 dark:text-blue-400 font-semibold mt-auto">
-                Explore Articles →
-              </span>
-            </Link>
-
-            {/* Case Studies */}
-            <Link
-              href="/resources/case-studies"
-              className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-purple-200 dark:border-purple-800 block flex flex-col h-full"
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                Success <br />
-                Stories
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                Real numbers from real Indian sellers who used Insydz to solve
-                real marketplace problems
-              </p>
-              <span className="text-purple-600 dark:text-purple-400 font-semibold mt-auto">
-                View Case Studies →
-              </span>
-            </Link>
-
-            {/* Video Tutorials */}
-            <Link
-              href="/resources/videos"
-              className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-pink-200 dark:border-pink-800 block flex flex-col h-full"
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
-                <Video className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                Video Masterclasses
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                Step-by-step platform walkthroughs, seller workshops,
-                marketplace strategy sessions
-              </p>
-              <span className="text-pink-600 dark:text-pink-400 font-semibold mt-auto">
-                Start Learning →
-              </span>
-            </Link>
-
-            {/* E-commerce Guides */}
-            <Link
-              href="/resources/guides"
-              className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-green-200 dark:border-green-800 block flex flex-col h-full"
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
-                <BookOpen className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                Strategic Playbooks
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                In-depth growth frameworks for Diwali, Independence Day & GST
-                deadline sales prep, Buy Box recovery, new product launches, and
-                competitive repositioning
-              </p>
-              <span className="text-green-600 dark:text-green-400 font-semibold mt-auto">
-                Access Guides →
-              </span>
-            </Link>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                href: "/resources/expert-blog",
+                icon: BookOpen,
+                title: "Expert blog",
+                desc: "Strategies for Amazon India and Flipkart.",
+              },
+              {
+                href: "/resources/case-studies",
+                icon: FileText,
+                title: "Success stories",
+                desc: "Real numbers from Indian sellers.",
+              },
+              {
+                href: "/resources/videos",
+                icon: Video,
+                title: "Video masterclasses",
+                desc: "Step-by-step platform walkthroughs, seller workshops, marketplace strategy sessions.",
+              },
+              {
+                href: "/resources/guides",
+                icon: BookOpen,
+                title: "Strategic playbooks",
+                desc: "Festive prep, Buy Box recovery and more.",
+              },
+            ].map((c, i) => (
+              <Link
+                key={i}
+                href={c.href}
+                className="flex flex-col gap-5 rounded-[24px] border border-fuchsia-200 bg-white p-7 shadow-[0_12px_40px_-12px_rgba(217,70,239,0.15)] transition-all hover:shadow-[0_20px_50px_-10px_rgba(217,70,239,0.25)] hover:-translate-y-1 dark:border-fuchsia-900/50 dark:bg-gray-900/50"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-fuchsia-500 to-pink-500 shadow-md shadow-pink-500/20">
+                    <c.icon className="h-6 w-6 text-white" />
+                  </span>
+                  <h3 className="text-[20px] font-extrabold tracking-tight text-[#1a1033] dark:text-white leading-tight">
+                    {c.title}
+                  </h3>
+                </div>
+                <div className="flex items-start gap-3 text-[15.5px] leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  <Check className="mt-[3px] h-[18px] w-[18px] shrink-0 text-emerald-500" strokeWidth={2.5} />
+                  <span>{c.desc}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="About" className="py-16 bg-background dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              About{" "}
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Insydz
-              </span>
+      <section id="About" className="scroll-mt-20 bg-[#f6f1ff] dark:bg-gray-800/50 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>ABOUT INSYDZ</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+              About Insydz
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              We're democratizing ecommerce intelligence for the Indian market,
-              building tools that empower the next generation of digital
-              entrepreneurs.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+              We&apos;re democratizing e-commerce intelligence for the Indian market, building
+              tools that empower the next generation of digital entrepreneurs.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-purple-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Seller Focused
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Every feature we build starts with a conversation with a real
-                seller navigating the Indian marketplace landscape.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Presentation className="w-10 h-10 text-pink-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Data Precision
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                We believe in raw data accuracy. Our proprietary engine cleans
-                and processes millions of data points specifically for
-                marketplaces.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-10 h-10 text-blue-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                AI Driven
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Beyond just tracking, we provide AI recommendations that help
-                you act on data before your competitors do.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Indicators Section - Full Width */}
-      <section className="py-16 bg-[#FDF4FF] dark:bg-gray-900/50 w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
-              Building India's Most Trusted{" "}
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Seller Analytics Platform
-              </span>
-            </h2>
-            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
-              Supporting data driven decisions for Indian sellers across every
-              marketplace
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {[
-              { title: "Early", subtitle: "Product Stage" },
-              { title: "India", subtitle: "Primary Market" },
-              { title: "Multiple", subtitle: "Marketplaces Supported" },
-              { title: "Growing", subtitle: "Seller Adoption" },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-50 dark:border-gray-800 flex flex-col items-center justify-center text-center transition-all hover:shadow-md"
-              >
-                <div className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                  {stat.title}
+              {
+                icon: Users,
+                bg: "bg-violet-100 dark:bg-violet-900/40",
+                color: "text-violet-700 dark:text-violet-300",
+                title: "Seller focused",
+                desc: "Every feature we build starts with a conversation with a real seller navigating the Indian marketplace landscape.",
+              },
+              {
+                icon: Presentation,
+                bg: "bg-[#fce7f3] dark:bg-pink-900/40",
+                color: "text-[#9d174d] dark:text-pink-400",
+                title: "Data precision",
+                desc: "We believe in raw data accuracy. Our proprietary engine cleans and processes millions of data points for marketplaces.",
+              },
+              {
+                icon: Zap,
+                bg: "bg-[#e3edff] dark:bg-blue-900/40",
+                color: "text-[#1e40af] dark:text-blue-400",
+                title: "AI driven",
+                desc: "Beyond just tracking, we provide AI recommendations that help you act on data before your competitors do.",
+              },
+            ].map((c, i) => (
+              <div key={i} className="flex flex-col items-center gap-4 rounded-[24px] bg-white dark:bg-gray-950 p-8 text-center">
+                <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${c.bg}`}>
+                  <c.icon className={`h-8 w-8 ${c.color}`} />
                 </div>
-                <div className="text-gray-500 dark:text-gray-400 font-medium text-sm md:text-base">
-                  {stat.subtitle}
-                </div>
+                <h3 className="text-lg font-extrabold">{c.title}</h3>
+                <p className="text-sm leading-relaxed text-[#4b4560] dark:text-gray-300">{c.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section
-        id="Testimonials"
-        className="py-16 bg-slate-50/50 dark:bg-gray-900/30"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6">
-              Our Trusted{" "}
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Clients
-              </span>
+
+
+      {/* Testimonials Section — the 3 seller stories from the design, star ratings + dark middle card */}
+      <section id="Testimonials" className="scroll-mt-20 bg-[#fcfaff] dark:bg-gray-900 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>SELLER STORIES</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+              Sellers are growing with Insydz
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto font-medium">
-              Our mission is to drive progress and enhance the lives of our
-              customers by delivering superior products and services that exceed
-              expectations.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+              Real results from Indian sellers and agencies on Amazon and Flipkart.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-10">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {testimonials.map((t, i) => (
-              <div
+              <figure
                 key={i}
-                className="bg-white dark:bg-gray-800 p-8 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 z-10"
+                className={`flex flex-col gap-4 rounded-[24px] p-7 ${t.dark
+                  ? "bg-[#1a1033] text-white"
+                  : "border border-[#eee9f7] bg-white dark:bg-gray-950 text-[#1a1033] dark:text-gray-50"
+                  }`}
               >
-                <div className="flex justify-between items-start mb-8">
-                  <div
-                    className={`text-2xl font-black tracking-tighter uppercase ${t.logoColor || "text-gray-900 dark:text-white"}`}
-                  >
-                    {t.logo}
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/50 px-3 py-1 rounded-full">
-                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                      {t.rating}
-                    </span>
-                    <Star className="w-4 h-4 text-green-500 fill-green-500" />
-                  </div>
+                <div className="flex items-center justify-between">
+                  <StarRow />
+                  <span className={`text-xs font-bold ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>
+                    {t.tag}
+                  </span>
                 </div>
 
-                <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-8 font-medium italic">
-                  "{t.text}"
-                </p>
-
-                <div>
-                  <h4 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {t.author}
-                  </h4>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                    {t.handle}
-                  </p>
+                <div className={`text-[32px] font-extrabold tracking-[-0.02em] sm:text-4xl ${t.dark ? "text-[#c4b5fd]" : "text-violet-600 dark:text-violet-400"}`}>
+                  {t.stat}
                 </div>
-              </div>
+
+                <blockquote className={`flex-grow text-[15px] leading-relaxed ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+
+                <figcaption className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-extrabold ${t.avatarBg} ${t.avatarColor}`}>
+                    {t.avatar}
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-[15px] font-extrabold">{t.author}</span>
+                    <span className={`text-[13px] ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>{t.role}</span>
+                  </span>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Subscription Plans Section */}
-
-      <section
-        id="Pricing"
-        className="py-16 bg-white dark:bg-gray-900 relative"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-black mb-6">
-              <span className="bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#EC4899] bg-clip-text text-transparent">
-                Subscription Plans
-              </span>
+      {/* Pricing Section */}
+      <section id="Pricing" className="scroll-mt-20 bg-white dark:bg-gray-950 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-16 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <Eyebrow>PRICING</Eyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
+              Simple pricing that grows with you
             </h2>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Subscription Plans That Grow With Your Business
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              Transform raw marketplace data into actionable insights. Cancel
-              anytime.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+              Start free. Upgrade only when you need more. Cancel anytime.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
-            {/* Free Plan */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
-              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-8">
-                <Zap className="w-8 h-8 text-blue-500" />
+          <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {/* Free */}
+            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e3edff] dark:bg-blue-900/40">
+                <Zap className="h-5 w-5 text-[#1e40af] dark:text-blue-400" />
+              </span>
+              <span className="text-lg font-extrabold">Free</span>
+              <div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹0</span>
+                  <span className="text-sm text-[#8a849c]">/month</span>
+                </div>
+                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Perfect for getting started</p>
               </div>
-              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Free
-              </h4>
-              <div className="flex items-baseline mb-3">
-                <span className="text-3xl font-black text-gray-900 dark:text-white">
-                  ₹0
-                </span>
-                <span className="text-gray-400 text-base ml-1">/month</span>
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">
-                Perfect for getting started
-              </p>
-              <ul className="space-y-4 mb-6 text-left w-full">
+              <SecondaryButton onClick={handleGetStarted} className="w-full">
+                Get started free
+              </SecondaryButton>
+              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
                   "Basic dashboard access",
-                  "Up to 25 products tracking",
+                  "Track up to 25 products",
                   "Top 5 products filter",
-                  "5 AI chat messages/month",
+                  "5 AI chat messages a month",
                   "5 notifications",
                   "Weekly reports",
                 ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium"
-                  >
-                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={handleGetStarted}
-                className="w-full py-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all mt-auto"
-              >
-                Get Started Free
-              </button>
             </div>
 
-            {/* Basic Plan */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border-2 border-[#D946EF] shadow-[0_30px_60px_rgba(217,70,239,0.15)] flex flex-col items-center text-center transform lg:scale-105 z-10 transition-all hover:border-[#8B5CF6] hover:shadow-[0_40px_80px_rgba(217,70,239,0.2)]">
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">
-                Most Popular
+            {/* Basic — Most Popular */}
+            <div className="relative flex flex-col gap-5 rounded-[24px] border-2 border-violet-600 p-8 shadow-[0_24px_60px_rgba(124,58,237,0.18)]">
+              <span className="absolute -top-[15px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-4 py-1.5 text-xs font-extrabold text-white">
+                MOST POPULAR
+              </span>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/40">
+                <Crown className="h-5 w-5 text-violet-700 dark:text-violet-300" />
+              </span>
+              <span className="text-lg font-extrabold">Basic</span>
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹1,999</span>
+                  <span className="text-sm text-[#8a849c]">/month</span>
+                  <span className="text-sm text-[#8a849c] line-through">₹3,999</span>
+                </div>
+                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Ideal for growing businesses</p>
               </div>
-              <div className="w-16 h-16 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mb-8">
-                <Crown className="w-8 h-8 text-purple-500" />
-              </div>
-              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Basic
-              </h4>
-              <div className="flex items-baseline mb-2">
-                <span className="text-3xl font-black text-gray-900 dark:text-white">
-                  ₹1,999
-                </span>
-                <span className="ml-2 text-xs font-medium">
-                  <span className="text-gray-400 line-through">₹3,999</span>
-                  <span className="text-gray-400">/month</span>
-                </span>
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">
-                Ideal for growing businesses
-              </p>
-              <ul className="space-y-4 mb-12 text-left w-full">
-                {[
-                  "All Free plan features",
-                  "Up to 500 products tracking",
-                  "Top 20 products filter",
-                  "20 AI chat messages/month",
-                  "15 notifications",
-                  "AI Chart Summaries",
-                  "Basic competitor alerts",
-                  "Daily reports",
-                  "Email support",
-                ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium"
-                  >
-                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handlePlanSelect("basic")}
-                className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] rounded-xl font-bold text-white shadow-xl shadow-purple-500/20 hover:opacity-90 transition-opacity mt-auto"
-              >
+              <PrimaryButton onClick={() => handlePlanSelect("basic")} className="w-full">
                 Upgrade to Basic
-              </button>
-            </div>
-
-            {/* Premium Plan */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
-              <div className="w-16 h-16 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl flex items-center justify-center mb-8">
-                <Crown className="w-8 h-8 text-yellow-500" />
-              </div>
-              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Premium
-              </h4>
-              <div className="flex items-baseline mb-2">
-                <span className="text-3xl font-black text-gray-900 dark:text-white">
-                  ₹2,999
-                </span>
-                <span className="ml-2 text-xs font-medium">
-                  <span className="text-gray-400 line-through">₹7,999</span>
-                  <span className="text-gray-400">/month</span>
-                </span>
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">
-                For serious professionals
-              </p>
-              <ul className="space-y-4 mb-12 text-left w-full">
+              </PrimaryButton>
+              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
-                  "All Basic plan features",
-                  "Unlimited product tracking",
-                  "Top 100 products filter",
-                  "Unlimited AI chat",
-                  "Unlimited notifications",
-                  "Advanced AI chatbot",
-                  "Real-time data & alerts",
-                  "Priority support",
-                  "Advanced analytics",
+                  "Everything in Free",
+                  "Track up to 500 products",
+                  "Top 20 products filter",
+                  "20 AI chat messages a month",
+                  "15 notifications",
+                  "AI chart summaries",
+                  "Basic competitor alerts",
+                  "Daily reports and email support",
                 ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium"
-                  >
-                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Premium */}
+            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fef3c7] dark:bg-amber-900/20">
+                <Crown className="h-5 w-5 text-[#92400e]" />
+              </span>
+              <span className="text-lg font-extrabold">Premium</span>
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹2,999</span>
+                  <span className="text-sm text-[#8a849c]">/month</span>
+                  <span className="text-sm text-[#8a849c] line-through">₹7,999</span>
+                </div>
+                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">For serious professionals</p>
+              </div>
               <button
                 onClick={() => handlePlanSelect("premium")}
-                className="w-full py-4 bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl font-bold text-white shadow-xl shadow-orange-500/20 hover:opacity-90 transition-opacity mt-auto"
+                className="w-full rounded-full bg-[#1a1033] px-6 py-[15px] text-[15px] font-extrabold text-white transition-opacity hover:opacity-90"
               >
                 Upgrade to Premium
               </button>
-            </div>
-
-            {/* Enterprise Plan */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
-              <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mb-8">
-                <Building2 className="w-8 h-8 text-indigo-500" />
-              </div>
-              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Enterprise
-              </h4>
-              <div className="mb-4">
-                <span className="text-xl font-black bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] bg-clip-text text-transparent">
-                  Custom Pricing
-                </span>
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">
-                Tailored for SMBs & agencies
-              </p>
-              <ul className="space-y-4 mb-12 text-left w-full">
+              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
-                  "All Premium plan features",
-                  "White-label options",
-                  "Premium support",
+                  "Everything in Basic",
+                  "Unlimited product tracking",
+                  "Top 100 products filter",
+                  "Unlimited AI chat and notifications",
+                  "Advanced AI chatbot",
+                  "Real-time data and alerts",
+                  "Priority support",
+                  "Advanced analytics",
                 ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium"
-                  >
-                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={handleGetStarted}
-                className="w-full py-4 border-2 border-gray-100 dark:border-gray-700 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all mt-auto"
-              >
-                Contact Sales
-              </button>
+            </div>
+
+            {/* Enterprise */}
+            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f3f0fa] dark:bg-violet-900/20">
+                <Building2 className="h-5 w-5 text-[#3b3552] dark:text-gray-300" />
+              </span>
+              <span className="text-lg font-extrabold">Enterprise</span>
+              <div>
+                <div className="text-3xl font-extrabold tracking-[-0.02em]">Custom</div>
+                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Tailored for SMBs and agencies</p>
+              </div>
+              <SecondaryButton href="/about/contact-us" className="w-full">
+                Contact sales
+              </SecondaryButton>
+              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
+                {["Everything in Premium", "White label options", "Premium support", "Multiple client accounts"].map(
+                  (item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                      <span>{item}</span>
+                    </li>
+                  ),
+                )}
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Final CTA Section - Full Width */}
-      <section className="py-16 bg-gradient-to-r from-purple-900 to-pink-900 relative overflow-hidden shadow-2xl">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full -ml-36 -mb-36 blur-2xl"></div>
+      {/* FAQ Section */}
+      <section className="bg-[#fcfaff] dark:bg-gray-900 py-16 lg:py-20">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+          <div className="flex flex-col items-start gap-6 text-left">
+            <div className="flex flex-col items-start gap-3">
+              <Eyebrow>FAQ</Eyebrow>
+              <h2 className="max-w-sm text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl">
+                Questions sellers ask before starting
+              </h2>
+              <p className="max-w-sm text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+                Short, honest answers. Still unsure? Talk to our team.
+              </p>
+            </div>
+            <CustomBookDemoModal
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-8 py-4 text-[15px] font-extrabold text-white shadow-[0_14px_30px_rgba(124,58,237,0.3)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(124,58,237,0.38)]"
+              text={<>Book a demo <ArrowRight className="h-4 w-4" /></>}
+            />
+          </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white relative z-10">
-          <h3 className="text-4xl md:text-5xl font-black mb-8">
-            Ready to dominate the marketplace?
-          </h3>
-          <p className="text-xl md:text-2xl text-purple-100 mb-12 max-w-3xl mx-auto font-medium">
-            Join thousands of Indian sellers who use Insydz to grow their
-            revenue and profit every single day.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Link
-              href="/login"
-              className="bg-white text-purple-900 font-bold px-12 py-5 rounded-full shadow-2xl hover:bg-purple-50 transition-all hover:scale-105"
-            >
-              Create Free Account
-            </Link>
-            <Link
-              href="/about/our-vision"
-              className="border-2 border-white/40 hover:border-white text-white font-bold px-12 py-5 rounded-full transition-all hover:bg-white/5"
-            >
-              Our Mission
-            </Link>
+          <div className="border-t border-[#eee9f7]">
+            {faqs.map((f, i) => (
+              <details key={i} className="group border-b border-[#eee9f7] py-5" open={i === 0}>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-extrabold [&::-webkit-details-marker]:hidden">
+                  {f.q}
+                  <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f3effd] dark:bg-violet-900/20 text-xl font-bold text-violet-600 dark:text-violet-400 transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3.5 pr-12 text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="bg-white dark:bg-gray-950 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-gradient-to-br from-[#3b0f8a] via-[#1a1033] to-[#5b1265] px-8 py-16 sm:px-16">
+          <div className="pointer-events-none absolute -right-32 -top-40 h-[420px] w-[420px] rounded-full border border-white/15" />
+          <div className="pointer-events-none absolute -right-10 -top-20 h-72 w-72 rounded-full bg-pink-600/20" />
+
+          <div className="relative z-10 flex flex-col items-start gap-8 text-white lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-6">
+              <h3 className="max-w-xl text-3xl font-medium leading-[1.15] tracking-[-0.02em] sm:text-4xl lg:text-[44px]">
+                Growing on Amazon and Flipkart has{" "}
+                <strong className="font-extrabold">never been easier.</strong>
+              </h3>
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
+                {["Cut wasted ad spend", "Find keywords you are missing", "Beat competitor prices"].map((t, i) => (
+                  <span key={i} className="flex items-center gap-2.5 text-[15px] font-semibold text-violet-100">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-pink-600">
+                      <Check className="h-3.5 w-3.5 text-white" />
+                    </span>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-shrink-0 flex-col gap-3">
+              <Link
+                href="/login"
+                className="rounded-full bg-white dark:bg-gray-950 px-9 py-4 text-center text-[17px] font-extrabold text-[#1a1033] dark:text-gray-50 shadow-2xl transition-transform hover:-translate-y-0.5"
+              >
+                Create free account
+              </Link>
+              <CustomBookDemoModal
+                className="rounded-full border border-white/40 px-8 py-3.5 text-center text-[15px] font-bold text-white transition-colors hover:bg-white hover:text-[#1a1033] dark:hover:text-gray-50 dark:hover:bg-gray-950/5"
+                text="Book a demo"
+              />
+              <span className="text-center text-xs text-[#c9c2dd]">
+                Free plan. No credit card needed.
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -1349,66 +1642,20 @@ export default function LandingContent() {
 
       {/* Video Modal Player Overlay */}
       {playingVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md transition-all duration-300">
-          <div className="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 animate-in fade-in zoom-in-95 duration-200">
-            {/* Close button */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-[24px] border border-white/10 bg-black shadow-2xl">
             <button
               onClick={() => setPlayingVideo(null)}
-              className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-2.5 backdrop-blur-md transition-colors"
+              className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2.5 text-white backdrop-blur-md hover:bg-black/80"
             >
-              <X className="w-6 h-6" />
+              <X className="h-6 w-6" />
             </button>
-            {/* Video element */}
             <div className="aspect-video w-full">
-              <video
-                src={playingVideo}
-                className="w-full h-full object-contain"
-                controls
-                autoPlay
-              />
+              <video src={playingVideo} className="h-full w-full object-contain" controls autoPlay />
             </div>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
     </div>
   );
 }
