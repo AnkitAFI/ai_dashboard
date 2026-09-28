@@ -288,7 +288,9 @@ export default function ProfitabilityDashboard() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
                 <CardContent className="p-6">
                   <p className="text-sm font-medium text-muted-foreground mb-1">Amazon Fees</p>
-                  <h3 className="text-3xl font-bold text-red-500">-₹{summary.amazon_fees.toLocaleString()}</h3>
+                  <h3 className="text-3xl font-bold text-red-500">
+                    {summary.amazon_fees === 0 ? "₹0" : `-₹${Math.abs(summary.amazon_fees).toLocaleString()}`}
+                  </h3>
                 </CardContent>
               </Card>
 
@@ -296,7 +298,9 @@ export default function ProfitabilityDashboard() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
                 <CardContent className="p-6">
                   <p className="text-sm font-medium text-muted-foreground mb-1">Total COGS</p>
-                  <h3 className="text-3xl font-bold text-amber-500">-₹{summary.total_cogs.toLocaleString()}</h3>
+                  <h3 className="text-3xl font-bold text-amber-500">
+                    {summary.total_cogs === 0 ? "₹0" : `-₹${Math.abs(summary.total_cogs).toLocaleString()}`}
+                  </h3>
                 </CardContent>
               </Card>
 

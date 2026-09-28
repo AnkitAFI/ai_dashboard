@@ -237,6 +237,22 @@ export default function ReviewAutomatorPage() {
             </Button>
           </CardContent>
         </Card>
+      ) : isPremiumRequired ? (
+        <Card className={`mt-8 rounded-2xl border ${isDark ? 'bg-gradient-to-br from-slate-900 to-indigo-950/30 border-indigo-900/50' : 'bg-gradient-to-br from-white to-indigo-50/50 border-indigo-100'}`}>
+          <CardContent className="flex flex-col items-center justify-center py-20 px-4 text-center">
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-lg ${isDark ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20' : 'bg-gradient-to-br from-amber-100 to-orange-100'}`}>
+              <Crown className={`w-10 h-10 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+            </div>
+            <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500">Enterprise Review Automator</h2>
+            <p className="text-muted-foreground max-w-lg mb-8 text-lg">
+              The <b>Review Automator</b> tool is an exclusive feature for our Premium and Enterprise members. 
+              Upgrade your plan to automatically and securely request reviews from eligible orders.
+            </p>
+            <Button onClick={() => window.location.href = '/subscription'} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+              Upgrade to Premium
+            </Button>
+          </CardContent>
+        </Card>
       ) : activeAccountObj && (activeAccountObj.sync_status === "PENDING" || activeAccountObj.sync_status === "SYNCING") ? (
         <SyncPendingBanner
           connectedAt={activeAccountObj.connected_at}
@@ -265,22 +281,6 @@ export default function ReviewAutomatorPage() {
             </p>
             <Button onClick={() => window.location.href = '/seller/store'} size="lg" className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-full">
               Reconnect Account
-            </Button>
-          </CardContent>
-        </Card>
-      ) : isPremiumRequired ? (
-        <Card className={`mt-8 rounded-2xl border ${isDark ? 'bg-gradient-to-br from-slate-900 to-indigo-950/30 border-indigo-900/50' : 'bg-gradient-to-br from-white to-indigo-50/50 border-indigo-100'}`}>
-          <CardContent className="flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-lg ${isDark ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20' : 'bg-gradient-to-br from-amber-100 to-orange-100'}`}>
-              <Crown className={`w-10 h-10 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
-            </div>
-            <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500">Enterprise Review Automator</h2>
-            <p className="text-muted-foreground max-w-lg mb-8 text-lg">
-              The <b>Review Automator</b> tool is an exclusive feature for our Premium and Enterprise members. 
-              Upgrade your plan to automatically and securely request reviews from eligible orders.
-            </p>
-            <Button onClick={() => window.location.href = '/subscription'} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-              Upgrade to Premium
             </Button>
           </CardContent>
         </Card>
