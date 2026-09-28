@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -87,72 +88,50 @@ const heroBadges = [
   },
 ];
 
+// Matches the 3 seller stories shown in the design (star rating, marketplace tag,
+// headline stat, quote, avatar + role) — dark card in the middle like the mockup.
 const testimonials = [
   {
-    logo: "🛒",
-    logoColor: "text-orange-600 dark:text-orange-400",
-    logoBg: "bg-orange-50 dark:bg-orange-900/20",
-    rating: "4.9",
-    text: "Insydz helped me identify which products were quietly losing margin. Within two weeks I restructured my pricing and saw a 22% improvement in net profit. I didn't need to guess anymore — the data was right there.",
+    stat: "+22% net profit",
+    tag: "Amazon",
+    tagBg: "bg-[#fff1e0] dark:bg-orange-900/40",
+    tagColor: "text-[#9a3412] dark:text-orange-400",
+    quote:
+      "Insydz helped me find which products were quietly losing margin. Within two weeks I fixed my pricing. I did not need to guess anymore.",
     author: "Rahul Gupta",
-    handle: "Electronics · 3 yrs on Amazon",
-    role: "Amazon Seller · Delhi",
-    badge: "Amazon India",
+    role: "Electronics, 3 years on Amazon",
+    avatar: "RG",
+    avatarBg: "bg-violet-100 dark:bg-violet-900/40",
+    avatarColor: "text-violet-700 dark:text-violet-300",
+    dark: false,
   },
   {
-    logo: "🏷️",
-    logoColor: "text-pink-600 dark:text-pink-400",
-    logoBg: "bg-pink-50 dark:bg-pink-900/20",
-    rating: "5.0",
-    text: "Competitor tracking on Insydz is a game changer. I used to spend hours manually checking prices — now it's all there every morning. Big Billion Days prep was so much smoother this year because of the alerts.",
+    stat: "Hours saved daily",
+    tag: "Flipkart",
+    tagBg: "bg-[#e3edff] dark:bg-blue-900/40",
+    tagColor: "text-[#c9c2dd]",
+    quote:
+      "Competitor tracking is a game changer. I used to check prices by hand for hours. Now it is all there every morning, and Big Billion Days prep was much smoother.",
     author: "Priya Sharma",
-    handle: "Fashion & Apparel · 5 yrs on Flipkart",
-    role: "Flipkart Seller · Mumbai",
-    badge: "Flipkart",
+    role: "Fashion and apparel, 5 years on Flipkart",
+    avatar: "PS",
+    avatarBg: "bg-[#fce7f3]",
+    avatarColor: "text-[#9d174d]",
+    dark: true,
   },
   {
-    logo: "📊",
-    logoColor: "text-blue-600 dark:text-blue-400",
-    logoBg: "bg-blue-50 dark:bg-blue-900/20",
-    rating: "4.8",
-    text: "Managing 4 brands across Amazon and Flipkart was a nightmare before Insydz. Now I have one dashboard and my clients get reports they can actually act on. It has genuinely changed how I run my agency.",
+    stat: "4 brands, 1 dashboard",
+    tag: "Agency",
+    tagBg: "bg-[#f3effd] dark:bg-violet-900/20",
+    tagColor: "text-[#4b4560] dark:text-gray-300",
+    quote:
+      "Managing four brands across Amazon and Flipkart was hard. Now I have one dashboard and my clients get reports they can actually act on.",
     author: "Aarav Kumar",
-    handle: "Multi-brand Agency · Bengaluru",
-    role: "Brand Manager · Bengaluru",
-    badge: "Amazon + Flipkart",
-  },
-  {
-    logo: "🔍",
-    logoColor: "text-violet-600 dark:text-violet-400",
-    logoBg: "bg-violet-50 dark:bg-violet-900/20",
-    rating: "4.7",
-    text: "The AI keyword suggestions took my listings from page 4 to page 1 within a month. I was skeptical at first but the data doesn't lie — my organic sales doubled and my ad spend dropped 30%.",
-    author: "Sneha Mehta",
-    handle: "Home & Kitchen · 2 yrs on Amazon",
-    role: "Amazon Seller · Pune",
-    badge: "Amazon India",
-  },
-  {
-    logo: "🏆",
-    logoColor: "text-amber-600 dark:text-amber-400",
-    logoBg: "bg-amber-50 dark:bg-amber-900/20",
-    rating: "4.9",
-    text: "Finally a tool built for Indian marketplaces, not just adapted from western tools. The Flipkart-specific insights are accurate and the support team actually understands our local market challenges.",
-    author: "Vikram Reddy",
-    handle: "Sports & Fitness · 4 yrs on Flipkart",
-    role: "Flipkart Seller · Hyderabad",
-    badge: "Flipkart",
-  },
-  {
-    logo: "🚀",
-    logoColor: "text-pink-600 dark:text-pink-400",
-    logoBg: "bg-pink-50 dark:bg-pink-900/20",
-    rating: "4.8",
-    text: "We onboarded 12 new clients after showing them Insydz reports during pitches. The data precision and India-specific market intelligence gives us an edge no other tool provides. Our clients love the dashboards.",
-    author: "Nidhi Joshi",
-    handle: "E-commerce Agency · 12 clients",
-    role: "E-commerce Agency · Ahmedabad",
-    badge: "Amazon + Flipkart",
+    role: "Multi brand agency, Bengaluru",
+    avatar: "AK",
+    avatarBg: "bg-[#dcfce7]",
+    avatarColor: "text-[#166534]",
+    dark: false,
   },
 ];
 
@@ -162,42 +141,55 @@ const featureTabs = [
     label: "Ad Automation",
     href: "/solutions/amazon-advertising",
     icon: Megaphone,
-    heading: "Stop babysitting bids — let automation cut wasted spend",
+    eyebrow: "Amazon PPC automation",
+    heading: "Automate your Amazon ads and cut wasted ad spend",
     description:
-      "Rules-based and AI bidding adjusts your campaigns every day, so ACoS comes down without you staring at a dashboard.",
+      "Ad Automation manages your Amazon Sponsored Products campaigns for you. It adjusts bids and budgets to match your ACoS and ROAS goals, so more of your ad spend turns into sales.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "Automated bid adjustments by SKU",
-      "Dayparting for peak conversion hours",
-      "Wasted spend alerts before they add up",
+      "Find and pause keywords that spend money but bring no sales",
+      "Set automatic bid and budget rules for each campaign",
+      "Track ACoS, ROAS and ad spend daily in one dashboard",
+      "Move budget to the campaigns that sell the most",
     ],
-    tools: ["Bid automation", "Campaign rules", "Spend alerts"],
-    stats: [
-      { label: "ACoS", value: "18.4%", change: "-3.2 pts" },
-      { label: "Ad spend", value: "₹42,300", change: "-11%" },
-      { label: "ROAS", value: "4.6x", change: "+0.8x" },
+    bestFor: "Sellers who run Amazon PPC ads and want a lower ACoS without daily manual work.",
+    tools: ["Bid automation", "Budget rules", "ACoS tracking"],
+    tableTitle: "Campaign performance",
+    tableHeaders: ["CAMPAIGN", "SPEND", "ACOS", "STATUS"],
+    tableRows: [
+      { col1: "Kurti sets, exact", col2: "₹18,400", col3: "14.2%", col4: "Healthy", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Bottles, broad", col2: "₹12,900", col3: "48.0%", col4: "Overspending", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Yoga mats, auto", col2: "₹7,300", col3: "22.6%", col4: "Healthy", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Bedsheets, phrase", col2: "₹5,100", col3: "31.4%", col4: "Watch", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
     ],
-    tip: "Pause \"yoga mat cheap\" — CPC is up 40% with no conversions this week.",
+    tip: "Pause 6 keywords in \"Bottles, broad\" to save about ₹4,200 a week.",
   },
   {
     key: "keywords",
     label: "Keyword Research",
     href: "/features/keyword-rank-tracking-feature",
     icon: Search,
-    heading: "Find the keywords your buyers actually search",
+    eyebrow: "Amazon and Flipkart keyword research",
+    heading: "Find high search volume keywords your buyers actually use",
     description:
-      "See search volume, track your rank every day and spot the terms your competitors win that you are missing.",
+      "Keyword Research shows what shoppers search for on Amazon India and Flipkart, how many times a month they search it and where your product ranks. Use it to choose the right keywords for your listings and ads.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "Daily rank tracking on Amazon India and Flipkart",
-      "Share of Voice for your category",
-      "AI keyword suggestions for your listings",
+      "See monthly search volume for any keyword",
+      "Track your keyword rank daily on Amazon India and Flipkart",
+      "Find keywords your competitors rank for that you are missing",
+      "Get AI keyword suggestions for titles, bullet points and ads",
     ],
+    bestFor: "Sellers launching new products or trying to reach page one of search results.",
     tools: ["Keyword research", "Rank tracking", "Share of Voice"],
-    table: [
-      { keyword: "cotton kurti for women", searches: "48,200", rank: "#4", change: "Up 7", trend: "up" },
-      { keyword: "steel water bottle 1l", searches: "31,900", rank: "#2", change: "Up 3", trend: "up" },
-      { keyword: "yoga mat anti slip", searches: "22,400", rank: "#11", change: "Down 5", trend: "down" },
-      { keyword: "bedsheet double bed", searches: "19,700", rank: "#6", change: "Same", trend: "flat" },
-      { keyword: "lunch box for office", searches: "14,300", rank: "#9", change: "Up 2", trend: "up" },
+    tableTitle: "Keyword tracker",
+    tableHeaders: ["KEYWORD", "SEARCHES", "YOUR RANK", "CHANGE"],
+    tableRows: [
+      { col1: "cotton kurti for women", col2: "48,200", col3: "#4", col4: "Up 7", trend: "up" },
+      { col1: "steel water bottle 1l", col2: "31,900", col3: "#2", col4: "Up 3", trend: "up" },
+      { col1: "yoga mat anti slip", col2: "22,400", col3: "#11", col4: "Down 5", trend: "down" },
+      { col1: "bedsheet double bed", col2: "19,700", col3: "#6", col4: "Same", trend: "flat" },
+      { col1: "lunch box for office", col2: "14,300", col3: "#9", col4: "Up 2", trend: "up" },
     ],
     tip: "Add \"anti slip yoga mat 6mm\" to your title to recover lost rank.",
   },
@@ -206,85 +198,130 @@ const featureTabs = [
     label: "Competitor Analysis",
     href: "/features/competitor-price-tracking-feature",
     icon: Users,
-    heading: "Know what competitors do before your customers do",
+    eyebrow: "Competitor tracking",
+    heading: "Track competitor prices, reviews and rankings every day",
     description:
-      "Track prices, stock and reviews on the sellers you compete with, on both Amazon and Flipkart.",
+      "Competitor Analysis watches the sellers you compete with on Amazon and Flipkart. See every price change, new listing and review trend, and find the market gaps where you can grow.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "Daily competitor price tracking",
-      "Stock-out and new listing alerts",
-      "Review and rating trend tracking",
+      "Monitor competitor prices and Buy Box changes daily",
+      "Compare ratings, reviews and search rankings side by side",
+      "Find new product opportunities with Opportunity Finder",
+      "Measure your category Share of Voice with Market Visibility",
     ],
-    tools: ["Price tracking", "Stock alerts", "Review trends"],
-    stats: [
-      { label: "Sellers tracked", value: "12", change: "+2 this month" },
-      { label: "Price undercuts", value: "3", change: "this week" },
-      { label: "New listings", value: "5", change: "in your category" },
+    bestFor: "Sellers in crowded categories where competitors change prices often.",
+    tools: ["Opportunity Finder", "Market Visibility", "Price tracking"],
+    tableTitle: "Competitors on your top product",
+    tableHeaders: ["SELLER", "PRICE", "RATING", "CHANGE"],
+    tableRows: [
+      { col1: "Seller A", col2: "₹509", col3: "4.2", col4: "Price cut ₹40", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Seller B", col2: "₹549", col3: "4.4", col4: "No change", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Seller C", col2: "₹575", col3: "3.9", col4: "New listing", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "You", col2: "₹549", col3: "4.5", col4: "Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
     ],
-    tip: "3 competitors dropped price on \"steel water bottle 1l\" this week.",
+    tip: "Seller A cut prices this morning. Match at ₹519 to keep the Buy Box.",
   },
   {
     key: "price",
     label: "Price Optimization",
     href: "/features/price-optimization-feature",
     icon: Tag,
-    heading: "Price to win the Buy Box without giving away margin",
+    eyebrow: "Buy Box pricing",
+    heading: "Set the right price to win the Buy Box and protect your profit",
     description:
-      "AI suggested prices balance Buy Box share against your target margin, updated as the market moves.",
+      "Price Optimization suggests the best selling price for each product. It checks competitor prices, demand and your margin, so you win the Buy Box without selling at a loss.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "AI price suggestions by product",
-      "Buy Box win-rate tracking",
-      "Margin guardrails you control",
+      "Get a suggested price for every product",
+      "Check your profit margin before you change a price",
+      "Track Buy Box wins and losses for each listing",
+      "Spot products where you can safely raise your price",
     ],
-    tools: ["Price suggestions", "Buy Box tracking", "Margin rules"],
-    stats: [
-      { label: "Suggested price", value: "₹549", change: "vs ₹579 now" },
-      { label: "Buy Box share", value: "92%", change: "+4 pts" },
-      { label: "Margin", value: "24%", change: "protected" },
+    bestFor: "Sellers who share listings with other sellers or face frequent price wars.",
+    tools: ["Price suggestions", "Margin guard", "Buy Box tracking"],
+    tableTitle: "Price suggestions",
+    tableHeaders: ["PRODUCT", "NOW", "SUGGESTED", "IMPACT"],
+    tableRows: [
+      { col1: "Steel bottle, 1 litre", col2: "₹589", col3: "₹549", col4: "Win Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Cotton kurti set", col2: "₹799", col3: "₹829", col4: "+₹30 margin", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Yoga mat 6mm", col2: "₹699", col3: "₹699", col4: "Keep price", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Lunch box, steel", col2: "₹449", col3: "₹429", col4: "Win Buy Box", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
     ],
-    tip: "Suggested price ₹549 keeps Buy Box share above 90%.",
+    tip: "You can raise the kurti set to ₹829 and still be the lowest priced seller in its category.",
   },
   {
     key: "listing",
     label: "Listing Optimization",
     href: "/features/product-research-feature",
     icon: FileCheck2,
-    heading: "Turn listings into your best converting asset",
+    eyebrow: "Product listing optimization",
+    heading: "Optimize product listings to rank higher and sell more",
     description:
-      "Score every listing against what's ranking, and get specific fixes for title, bullets and images.",
+      "Listing Optimization gives every product listing a quality score and shows exactly what to fix in your titles, bullet points, images and keywords. Better listings rank higher in search and turn more visitors into buyers.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "Listing health score out of 100",
-      "Title and bullet point suggestions",
-      "A+ content recommendations",
+      "Get a listing score from 0 to 100 for every product",
+      "Get keyword rich title and bullet point suggestions",
+      "Find missing keywords, images and product details",
+      "See your score improve after each fix",
     ],
-    tools: ["Listing score", "Content suggestions", "A+ content"],
-    stats: [
-      { label: "Listing score", value: "92/100", change: "+6 pts" },
-      { label: "Titles flagged", value: "2", change: "need fixes" },
-      { label: "A+ content", value: "Live", change: "on 18 SKUs" },
+    bestFor: "Sellers with many products who need to know which listings to fix first.",
+    tools: ["Listing score", "Content suggestions", "Keyword gaps"],
+    tableTitle: "Listing health",
+    tableHeaders: ["PRODUCT", "SCORE", "ISSUE", "FIX"],
+    tableRows: [
+      { col1: "Cotton kurti set", col2: "92", col3: "None", col4: "Done", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Yoga mat 6mm", col2: "64", col3: "Short title", col4: "Fix now", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Steel bottle, 1 litre", col2: "78", col3: "3 images", col4: "Add 2", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
+      { col1: "Bedsheet, double", col2: "71", col3: "Weak bullets", col4: "Fix now", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
     ],
-    tip: "Add 2 more lifestyle images to lift conversion by an estimated 6%.",
+    tip: "Two quick fixes on the yoga mat listing could lift its score to 85.",
   },
   {
     key: "alerts",
     label: "Smart Alerts",
     href: "/features/whatsapp-alerts-feature",
     icon: Bell,
-    heading: "Know the moment something needs your attention",
+    eyebrow: "Real time seller alerts",
+    heading: "Get instant WhatsApp alerts before problems cost you sales",
     description:
-      "Price drops, Buy Box losses and rank changes land straight on WhatsApp, 24/7.",
+      "Smart Alerts watch your Amazon and Flipkart store around the clock. When a competitor cuts prices, you lose the Buy Box or a keyword rank drops, you get an alert on WhatsApp and in your dashboard.",
+    bulletsHeading: "What you can do",
     bullets: [
-      "Real-time WhatsApp notifications",
-      "Buy Box loss alerts",
-      "Price and rank change alerts",
+      "Price drop alerts when competitors change their prices",
+      "Buy Box loss alerts for every listing",
+      "Keyword rank change and low stock alerts",
+      "All alerts sorted by priority, so you fix the most urgent first",
     ],
+    bestFor: "Busy sellers who cannot check their dashboard all day.",
     tools: ["WhatsApp alerts", "Buy Box alerts", "Rank alerts"],
-    stats: [
-      { label: "Alerts today", value: "5", change: "3 need action" },
-      { label: "Buy Box losses", value: "1", change: "12 min ago" },
-      { label: "Response time", value: "24/7", change: "on WhatsApp" },
+    tableTitle: "Today's alerts",
+    tableHeaders: ["ALERT", "PRODUCT", "TIME", "PRIORITY"],
+    tableRows: [
+      { col1: "Buy Box lost", col2: "Steel bottle", col3: "11:02", col4: "High", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Price drop by rival", col2: "Kurti set", col3: "09:41", col4: "High", statusClass: "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]" },
+      { col1: "Rank improved", col2: "Yoga mat", col3: "08:15", col4: "Info", statusClass: "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400" },
+      { col1: "Low stock", col2: "Lunch box", col3: "07:30", col4: "Medium", statusClass: "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300" },
     ],
-    tip: "You lost the Buy Box on \"cotton kurti for women\" 12 minutes ago.",
+    tip: "You have 2 high priority alerts. Both can be fixed with a price change.",
   },
+];
+
+// Rows for the "What you get" comparison table in the Compare section.
+const compareRows = [
+  { label: "Amazon India marketplace coverage", insydz: "Full", global: "Often limited" },
+  { label: "Flipkart data in the same dashboard", insydz: "Included", global: "Usually not available" },
+  { label: "Pricing in Indian rupees", insydz: "From ₹0", global: "Usually billed in USD" },
+  { label: "Festive season and Indian buyer trends", insydz: "Built in", global: "Not India focused" },
+  { label: "Agency workflows for Indian businesses", insydz: "Included", global: "Varies by plan" },
+  { label: "Support that knows Indian marketplaces", insydz: "Yes", global: "Global support teams" },
+];
+
+const whyInsydz = [
+  { icon: Globe, text: "India first expertise", bg: "bg-violet-100 dark:bg-violet-900/40", color: "text-violet-700 dark:text-violet-300" },
+  { icon: Sparkles, text: "Superior AI insights", bg: "bg-[#fce7f3] dark:bg-pink-900/40", color: "text-[#9d174d] dark:text-pink-400" },
+  { icon: ShieldCheck, text: "Exceptional value", bg: "bg-[#dcfce7] dark:bg-green-900/40", color: "text-[#166534] dark:text-green-400" },
+  { icon: BarChart3, text: "Streamlined, simple UX", bg: "bg-[#e3edff] dark:bg-blue-900/40", color: "text-[#1e40af] dark:text-blue-400" },
 ];
 
 const faqs = [
@@ -359,8 +396,18 @@ function FloatingBadge({
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <span className="text-[13px] font-extrabold tracking-[0.1em] text-violet-600 dark:text-violet-400">
+    <span className="text-base font-extrabold tracking-[0.1em] text-violet-600 dark:text-violet-400 sm:text-lg">
       {children}
+    </span>
+  );
+}
+
+function StarRow() {
+  return (
+    <span className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" />
+      ))}
     </span>
   );
 }
@@ -420,7 +467,8 @@ function SecondaryButton({
 export default function LandingContent() {
   const router = useRouter();
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
-  const [activeFeatureTab, setActiveFeatureTab] = useState(featureTabs[0].key);
+  // Default to "Ad Automation" as it is the first tab.
+  const [activeFeatureTab, setActiveFeatureTab] = useState("ads");
   const activeTab = featureTabs.find((t) => t.key === activeFeatureTab) ?? featureTabs[0];
 
   const handleGetStarted = () => {
@@ -453,13 +501,13 @@ export default function LandingContent() {
           <div className="flex flex-col items-center gap-6 text-center">
             <Link
               href="/login"
-              className="mx-auto inline-flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full border border-[#e4dcf5] dark:border-gray-800 bg-white dark:bg-gray-950 py-1.5 pl-1.5 pr-4 text-xs font-semibold text-[#3b3552] dark:text-gray-300 shadow-[0_4px_14px_rgba(76,29,149,0.06)] sm:gap-3 sm:text-sm"
+              className="mx-auto inline-flex max-w-full items-center justify-center gap-2 rounded-full border border-[#e4dcf5] dark:border-gray-800 bg-white dark:bg-gray-950 py-1.5 pl-1.5 pr-4 text-xs font-semibold text-[#3b3552] dark:text-gray-300 shadow-[0_4px_14px_rgba(76,29,149,0.06)] sm:gap-3 sm:text-sm"
             >
-              <span className="rounded-full bg-violet-100 dark:bg-violet-900/40 px-2.5 py-1 text-[11px] font-extrabold text-violet-700 dark:text-violet-300">
+              <span className="shrink-0 rounded-full bg-violet-100 dark:bg-violet-900/40 px-2.5 py-1 text-[11px] font-extrabold text-violet-700 dark:text-violet-300">
                 ALL IN ONE
               </span>
-              <span>Run your Amazon & Flipkart business from one place</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span className="truncate">Run Your Amazon & Flipkart Business<span className="hidden sm:inline"> from One Place</span></span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0" />
             </Link>
 
             <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-[-0.03em] text-[#1a1033] dark:text-gray-50 sm:text-5xl lg:text-[56px]">
@@ -502,6 +550,10 @@ export default function LandingContent() {
                 Start free
                 <ArrowRight className="h-4 w-4" />
               </PrimaryButton>
+              <CustomBookDemoModal
+                className="inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#d9cff0] dark:border-gray-700 bg-white dark:bg-gray-950 px-7 py-[15px] text-[15px] font-bold text-[#1a1033] dark:text-gray-50 transition-colors hover:bg-[#faf8fe] dark:bg-gray-900"
+                text="Book a demo"
+              />
               <Link
                 href="/login"
                 className="text-[15px] font-bold text-[#1a1033] dark:text-gray-50 underline decoration-[#d9cff0] decoration-2 underline-offset-4 sm:hidden"
@@ -509,10 +561,6 @@ export default function LandingContent() {
                 Log in
               </Link>
             </div>
-
-            <p className="text-sm font-semibold text-[#4b4560] dark:text-gray-300">
-              ⚡ Get instant WhatsApp alerts for price drops, Buy Box losses &amp; keyword rank changes
-            </p>
 
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-center text-sm font-semibold text-[#5f5875] dark:text-gray-400">
               <span className="flex items-center gap-2">
@@ -751,59 +799,14 @@ export default function LandingContent() {
       </section>
 
 
-      {/* Trust bar */}
-      <section className="border-y border-[#eee9f7] bg-white dark:bg-gray-950 py-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-4 sm:px-6 md:grid-cols-3 lg:px-8">
-          <div className="flex flex-col gap-3">
-            <span className="text-xs font-extrabold tracking-[0.08em] text-[#5f5875] dark:text-gray-400">
-              WORKS WITH
-            </span>
-            <div className="flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-3.5 py-2 text-sm font-bold text-[#9a3412] dark:text-orange-400">
-                Amazon India
-              </span>
-              <span className="rounded-full bg-[#e3edff] dark:bg-blue-900/40 px-3.5 py-2 text-sm font-bold text-[#1e40af] dark:text-blue-400">
-                Flipkart
-              </span>
-              <span className="rounded-full bg-[#dcfce7] dark:bg-green-900/40 px-3.5 py-2 text-sm font-bold text-[#166534] dark:text-green-400">
-                WhatsApp
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-center gap-10">
-            <div>
-              <div className="text-2xl font-extrabold tracking-[-0.02em]">5,000+</div>
-              <div className="text-[13px] font-semibold text-[#5f5875] dark:text-gray-400">sellers trust Insydz</div>
-            </div>
-            <div>
-              <div className="text-2xl font-extrabold tracking-[-0.02em]">2.5L+</div>
-              <div className="text-[13px] font-semibold text-[#5f5875] dark:text-gray-400">reviews analysed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-extrabold tracking-[-0.02em]">24/7</div>
-              <div className="text-[13px] font-semibold text-[#5f5875] dark:text-gray-400">live market data</div>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 dark:bg-green-900/20 px-4 py-4">
-            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/40">
-              <ShieldCheck className="h-5 w-5 text-green-700 dark:text-green-300" />
-            </span>
-            <span>
-              <span className="block text-sm font-extrabold">Your data stays private</span>
-              <span className="text-[13px] leading-relaxed text-[#4b4560] dark:text-gray-300">
-                We follow Amazon&apos;s Acceptable Use Policy and never share or pool private seller data.
-              </span>
-            </span>
-          </div>
-        </div>
-      </section>
+
 
       {/* How It Works Section */}
       <section className="bg-white dark:bg-gray-950 py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>HOW IT WORKS</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
               Up and running in three simple steps
             </h2>
             <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
@@ -861,10 +864,10 @@ export default function LandingContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-10 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>FEATURES</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
               Every selling task, one platform
             </h2>
-            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
               Six connected tools that cover your whole Amazon and Flipkart business, from ads to listings.
             </p>
           </div>
@@ -886,11 +889,22 @@ export default function LandingContent() {
 
           <div className="grid grid-cols-1 items-center gap-10 rounded-[28px] border border-[#e9e3f5] bg-white dark:bg-gray-950 p-8 shadow-[0_20px_50px_rgba(40,20,90,0.06)] lg:grid-cols-2 lg:p-12">
             <div className="flex flex-col gap-5">
+              {activeTab.eyebrow && (
+                <span className="w-fit rounded-full bg-[#f3effd] dark:bg-violet-900/20 px-3 py-1 text-[11px] font-extrabold tracking-[0.05em] text-[#3b3552] dark:text-gray-300">
+                  {activeTab.eyebrow}
+                </span>
+              )}
               <h3 className="text-2xl font-extrabold leading-[1.15] tracking-[-0.02em] sm:text-3xl">
                 {activeTab.heading}
               </h3>
               <p className="text-[17px] leading-relaxed text-[#4b4560] dark:text-gray-300">{activeTab.description}</p>
+              
               <div className="flex flex-col gap-2.5">
+                {activeTab.bulletsHeading && (
+                  <div className="text-[15px] font-extrabold text-[#1a1033] dark:text-white">
+                    {activeTab.bulletsHeading}
+                  </div>
+                )}
                 {activeTab.bullets.map((b, i) => (
                   <div key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
@@ -898,6 +912,16 @@ export default function LandingContent() {
                   </div>
                 ))}
               </div>
+
+              {activeTab.bestFor && (
+                <div className="flex items-start gap-3 rounded-[16px] border border-[#eee9f7] bg-[#faf8fe] p-4 text-[14px] leading-relaxed dark:border-gray-800 dark:bg-gray-900">
+                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
+                  <p className="text-[#4b4560] dark:text-gray-300">
+                    <strong className="text-[#1a1033] dark:text-white">Best for:</strong> {activeTab.bestFor}
+                  </p>
+                </div>
+              )}
+
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <span className="mr-1 text-sm font-extrabold">Tools:</span>
                 {activeTab.tools.map((tool, i) => (
@@ -914,52 +938,48 @@ export default function LandingContent() {
 
             {/* Diagram */}
             <div className="overflow-hidden rounded-[20px] border border-[#eee9f7] bg-[#faf8fe] dark:bg-gray-900">
-              {activeTab.table ? (
                 <div className="overflow-x-auto">
                   <div className="flex items-center justify-between px-5 py-4">
-                    <span className="whitespace-nowrap text-sm font-extrabold">Keyword tracker</span>
-                    <span className="whitespace-nowrap rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-3 py-1 text-xs font-bold text-[#9a3412] dark:text-orange-400">
-                      Amazon India
-                    </span>
+                    <span className="whitespace-nowrap text-sm font-extrabold">{activeTab.tableTitle}</span>
+                    {activeTab.key === 'alerts' ? (
+                      <span className="whitespace-nowrap rounded-full bg-[#dcfce7] dark:bg-green-900/40 px-3 py-1 text-xs font-bold text-[#166534] dark:text-green-400">
+                        WhatsApp
+                      </span>
+                    ) : (
+                      <span className="whitespace-nowrap rounded-full bg-[#fff1e0] dark:bg-orange-900/40 px-3 py-1 text-xs font-bold text-[#9a3412] dark:text-orange-400">
+                        Amazon India
+                      </span>
+                    )}
                   </div>
-                  <div className="grid min-w-[480px] grid-cols-[2.2fr_1fr_1fr_1fr] gap-2 bg-[#f3effd] dark:bg-violet-900/20 px-5 py-2.5 text-[11px] font-extrabold tracking-[0.05em] text-[#5f5875] dark:text-gray-400">
-                    <span>KEYWORD</span>
-                    <span>SEARCHES</span>
-                    <span>YOUR RANK</span>
-                    <span>CHANGE</span>
+                  <div className="grid min-w-[480px] grid-cols-[2.2fr_1fr_1fr_1fr] gap-2 bg-[#f3effd] dark:bg-violet-900/20 px-5 py-2.5 text-[11px] font-extrabold tracking-[0.05em] uppercase text-[#5f5875] dark:text-gray-400">
+                    {activeTab.tableHeaders.map((header, i) => (
+                      <span key={i}>{header}</span>
+                    ))}
                   </div>
-                  {activeTab.table.map((row, i) => (
+                  {activeTab.tableRows.map((row: any, i) => (
                     <div
                       key={i}
                       className="grid min-w-[480px] grid-cols-[2.2fr_1fr_1fr_1fr] items-center gap-2 border-t border-[#f0ebf8] px-5 py-3 text-sm"
                     >
-                      <span className="whitespace-nowrap font-bold">{row.keyword}</span>
-                      <span className="whitespace-nowrap">{row.searches}</span>
-                      <span className="whitespace-nowrap font-extrabold">{row.rank}</span>
+                      <span className="whitespace-nowrap font-bold">{row.col1}</span>
+                      <span className="whitespace-nowrap">{row.col2}</span>
+                      <span className="whitespace-nowrap font-extrabold">{row.col3}</span>
                       <span
-                        className={`w-fit justify-self-start whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-extrabold ${row.trend === "up"
-                          ? "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400"
-                          : row.trend === "down"
-                            ? "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]"
-                            : "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300"
-                          }`}
+                        className={`w-fit justify-self-start whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-extrabold ${
+                          row.statusClass 
+                            ? row.statusClass 
+                            : row.trend === "up"
+                              ? "bg-[#dcfce7] dark:bg-green-900/40 text-[#166534] dark:text-green-400"
+                              : row.trend === "down"
+                                ? "bg-[#fee2e2] dark:bg-red-900/20 text-[#b91c1c]"
+                                : "bg-[#f3f0fa] dark:bg-violet-900/20 text-[#3b3552] dark:text-gray-300"
+                        }`}
                       >
-                        {row.change}
+                        {row.col4}
                       </span>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-3">
-                  {activeTab.stats?.map((s, i) => (
-                    <div key={i} className="rounded-2xl border border-[#eee9f7] bg-white dark:bg-gray-950 p-4">
-                      <div className="text-xs font-semibold text-[#5f5875] dark:text-gray-400">{s.label}</div>
-                      <div className="text-xl font-extrabold">{s.value}</div>
-                      <div className="text-xs font-bold text-[#15803d] dark:text-green-400">{s.change}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
 
               <div className="m-5 flex items-center gap-3 rounded-2xl bg-[#1a1033] px-4 py-3.5 text-white">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white dark:bg-gray-950/10">
@@ -980,12 +1000,11 @@ export default function LandingContent() {
           <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col items-start gap-3 text-left">
               <Eyebrow>VIDEO MASTERCLASSES</Eyebrow>
-              <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl">
+              <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl">
                 Video guides
               </h2>
-              <p className="max-w-2xl text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
-                Free walkthroughs and playbooks from real sellers, including festive season prep
-                for Diwali and Big Billion Days.
+              <p className="max-w-2xl text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+                Free walkthroughs and playbooks from real sellers, including festive season prep for Diwali and Big Billion Days.
               </p>
             </div>
             <SecondaryButton href="/resources/video-guides" className="self-start md:self-auto">
@@ -1064,12 +1083,11 @@ export default function LandingContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>WHO IT IS FOR</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
               Built for every e-commerce growth team
             </h2>
-            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
-              Whether you sell one product or manage a portfolio of brands, Insydz fits the way
-              you work.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+              Whether you sell one product or manage a portfolio of brands, Insydz fits the way you work.
             </p>
           </div>
 
@@ -1078,32 +1096,24 @@ export default function LandingContent() {
               {
                 href: "/solutions/amazon-sellers",
                 icon: Trophy,
-                bg: "bg-[#fff1e0] dark:bg-orange-900/40",
-                color: "text-[#9a3412] dark:text-orange-400",
                 title: "Amazon sellers",
                 desc: "Win the Buy Box and grow sales on Amazon India.",
               },
               {
                 href: "/solutions/flipkart-sellers",
                 icon: Trophy,
-                bg: "bg-[#e3edff] dark:bg-blue-900/40",
-                color: "text-[#1e40af] dark:text-blue-400",
                 title: "Flipkart sellers",
                 desc: "Your Flipkart command centre for daily decisions.",
               },
               {
                 href: "/solutions/ecommerce-agencies",
                 icon: Users,
-                bg: "bg-violet-100 dark:bg-violet-900/40",
-                color: "text-violet-700 dark:text-violet-300",
                 title: "E-commerce agencies",
                 desc: "Manage many clients without the chaos.",
               },
               {
                 href: "/solutions/brand-managers",
                 icon: Presentation,
-                bg: "bg-[#dcfce7] dark:bg-green-900/40",
-                color: "text-[#166534] dark:text-green-400",
                 title: "Brand managers",
                 desc: "Make confident, data backed decisions.",
               },
@@ -1111,126 +1121,119 @@ export default function LandingContent() {
               <Link
                 key={i}
                 href={c.href}
-                className="flex flex-col gap-4 rounded-[24px] border border-[#eee9f7] p-7 transition-shadow hover:shadow-[0_12px_30px_rgba(40,20,90,0.06)]"
+                className="flex flex-col gap-5 rounded-[24px] border border-fuchsia-200 bg-white p-7 shadow-[0_12px_40px_-12px_rgba(217,70,239,0.15)] transition-all hover:shadow-[0_20px_50px_-10px_rgba(217,70,239,0.25)] hover:-translate-y-1 dark:border-fuchsia-900/50 dark:bg-gray-900/50"
               >
-                <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${c.bg}`}>
-                  <c.icon className={`h-6 w-6 ${c.color}`} />
-                </span>
-                <h3 className="text-lg font-extrabold">{c.title}</h3>
-                <div className="flex items-start gap-2 text-sm leading-relaxed text-[#4b4560] dark:text-gray-300">
-                  <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                <div className="flex items-center gap-4">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-fuchsia-500 to-pink-500 shadow-md shadow-pink-500/20">
+                    <c.icon className="h-6 w-6 text-white" />
+                  </span>
+                  <h3 className="text-[20px] font-extrabold tracking-tight text-[#1a1033] dark:text-white leading-tight">
+                    {c.title}
+                  </h3>
+                </div>
+                <div className="flex items-start gap-3 text-[15.5px] leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  <Check className="mt-[3px] h-[18px] w-[18px] shrink-0 text-emerald-500" strokeWidth={2.5} />
                   <span>{c.desc}</span>
                 </div>
-                <span className="mt-auto flex items-center gap-1.5 text-sm font-extrabold text-[#1a1033] dark:text-gray-50">
-                  See how it helps <ArrowRight className="h-4 w-4" />
-                </span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Compare Section */}
+      {/* Compare Section — matches the design's "Why Indian sellers choose Insydz" table layout */}
       <section id="Compare" className="scroll-mt-20 bg-[#fdf2f8] dark:bg-pink-900/20 py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
-            <Eyebrow>WHY INSYDZ</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
-              Why Indian sellers choose Insydz
-            </h2>
-            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
-              Global tools were built for the US market. Insydz is built for how India buys and sells.
-            </p>
-          </div>
-
-          <div className="mb-14 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
-            {[
-              { icon: Target, text: "Streamlined, simple UX", bg: "bg-[#e3edff] dark:bg-blue-900/40", color: "text-[#1e40af] dark:text-blue-400" },
-              { icon: Zap, text: "Superior AI insights", bg: "bg-violet-100 dark:bg-violet-900/40", color: "text-violet-700 dark:text-violet-300" },
-              { icon: DollarSign, text: "Exceptional value", bg: "bg-[#dcfce7] dark:bg-green-900/40", color: "text-[#166534] dark:text-green-400" },
-              { icon: Globe, text: "India first expertise", bg: "bg-[#fff1e0] dark:bg-orange-900/40", color: "text-[#9a3412] dark:text-orange-400" },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center gap-3 rounded-[20px] border border-[#eee9f7] bg-white dark:bg-gray-950 p-6 text-center"
-              >
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${item.bg}`}>
-                  <item.icon className={`h-6 w-6 ${item.color}`} />
-                </div>
-                <p className="text-sm font-bold">{item.text}</p>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.3fr] lg:items-start">
+            {/* Left column */}
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col items-start gap-3 text-left">
+                <Eyebrow>WHY INSYDZ</Eyebrow>
+                <h2 className="max-w-md text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+                  Why Indian sellers choose Insydz
+                </h2>
+                <p className="max-w-md text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  Global tools were built for the US market. Insydz is built for how India buys
+                  and sells.
+                </p>
               </div>
-            ))}
-          </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[
-              {
-                href: "/compare/insydzvshelium",
-                vs: "vs Helium 10",
-                bg: "bg-[#fff1e0] dark:bg-orange-900/40",
-                color: "text-[#9a3412] dark:text-orange-400",
-                border: "border-[#f2ddb8]",
-                points: [
-                  "Indian marketplace coverage Helium 10 can't match",
-                  "Premium features at a fraction of the cost",
-                  "₹ denominated pricing intelligence built for India",
-                ],
-              },
-              {
-                href: "/compare/insydzvsjunglescout",
-                vs: "vs Jungle Scout",
-                bg: "bg-[#e3edff] dark:bg-blue-900/40",
-                color: "text-[#1e40af] dark:text-blue-400",
-                border: "border-[#c9dbfb]",
-                points: [
-                  "Amazon India + Flipkart in one dashboard",
-                  "Real-time competitive intelligence for Indian markets",
-                  "AI insights that understand Indian buyer behaviour",
-                ],
-              },
-              {
-                href: "/compare/insydzvsvirallaunch",
-                vs: "vs Viral Launch",
-                bg: "bg-[#dcfce7] dark:bg-green-900/40",
-                color: "text-[#166534] dark:text-green-400",
-                border: "border-[#bcecc7]",
-                points: [
-                  "Agency-optimized workflows for Indian businesses",
-                  "Superior data precision for marketplaces",
-                  "Localized market intelligence built for how Indian businesses scale",
-                ],
-              },
-            ].map((c, i) => (
-              <div
-                key={i}
-                className={`flex flex-col gap-5 rounded-[24px] border-2 ${c.border} bg-white dark:bg-gray-950 p-8`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${c.bg}`}>
-                    <Trophy className={`h-6 w-6 ${c.color}`} />
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-extrabold">Insydz</h3>
-                    <p className="text-sm text-[#5f5875] dark:text-gray-400">{c.vs}</p>
+              <div className="grid grid-cols-2 gap-3">
+                {whyInsydz.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2.5 rounded-2xl border border-[#eee9f7] bg-white dark:bg-gray-950 p-3.5"
+                  >
+                    <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${item.bg}`}>
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
+                    </span>
+                    <span className="text-sm font-extrabold">{item.text}</span>
                   </div>
-                </div>
-                <ul className="flex flex-1 flex-col gap-3">
-                  {c.points.map((p, j) => (
-                    <li key={j} className="flex items-start gap-2.5 text-sm leading-relaxed text-[#4b4560] dark:text-gray-300">
-                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-                <SecondaryButton href={c.href} className="w-full">
-                  Show more <ArrowRight className="h-4 w-4" />
-                </SecondaryButton>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="mt-12 text-center">
-            <PrimaryButton href="/login">Start your free trial</PrimaryButton>
+              <div className="flex flex-col gap-2.5">
+                <span className="text-sm font-extrabold">Detailed comparisons</span>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href="/compare/insydzvshelium"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Helium 10 <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/compare/insydzvsjunglescout"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Jungle Scout <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/compare/insydzvsvirallaunch"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#d9cff0] bg-white dark:bg-gray-950 px-4 py-2.5 text-sm font-bold"
+                  >
+                    vs Viral Launch <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Right column — comparison table */}
+            <div className="overflow-hidden rounded-[24px] border border-[#e9e3f5] bg-white dark:bg-gray-950 shadow-[0_20px_50px_rgba(40,20,90,0.07)]">
+              <div className="grid grid-cols-[1.6fr_1fr_1fr] items-center gap-2 bg-[#f6f1ff] dark:bg-violet-900/20 px-6 py-5 text-sm font-extrabold">
+                <span className="text-[#5f5875] dark:text-gray-400">WHAT YOU GET</span>
+                <span className="flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <rect x="4" y="18" width="5" height="10" rx="1.5" fill="#7c3aed" />
+                    <rect x="13.5" y="12" width="5" height="16" rx="1.5" fill="#db2777" />
+                    <rect x="23" y="5" width="5" height="23" rx="1.5" fill="#7c3aed" />
+                  </svg>
+                  Insydz
+                </span>
+                <span className="text-[#5f5875] dark:text-gray-400">Global tools</span>
+              </div>
+              {compareRows.map((row, i) => (
+                <div
+                  key={i}
+                  className={`grid grid-cols-[1.6fr_1fr_1fr] items-center gap-2 px-6 py-4 text-[15px] ${i > 0 ? "border-t border-[#f0ebf8]" : ""
+                    }`}
+                >
+                  <span className="font-bold">{row.label}</span>
+                  <span className="flex items-center gap-2 font-extrabold text-[#15803d] dark:text-green-400">
+                    <Check className="h-4 w-4" />
+                    {row.insydz}
+                  </span>
+                  <span className="text-[#5f5875] dark:text-gray-400">{row.global}</span>
+                </div>
+              ))}
+              <div className="flex flex-col gap-3 border-t border-[#f0ebf8] bg-[#fcfaff] dark:bg-gray-900 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm text-[#4b4560] dark:text-gray-300">
+                  Paid plans from <strong className="text-[#1a1033] dark:text-gray-50">₹1,999 per month</strong>
+                </span>
+                <PrimaryButton href="/login">
+                  Start your free trial <ArrowRight className="h-4 w-4" />
+                </PrimaryButton>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1241,13 +1244,12 @@ export default function LandingContent() {
           <div className="mx-auto mb-14 flex max-w-3xl flex-col items-center gap-5 text-center">
             <div className="flex flex-col items-center gap-2">
               <Eyebrow>LEARN</Eyebrow>
-              <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
+              <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
                 Learn Insydz in minutes
               </h2>
             </div>
-            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
-              Free walkthroughs and playbooks from real sellers, including festive season prep
-              for Diwali and Big Billion Days.
+            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300 lg:whitespace-nowrap">
+              Free walkthroughs and playbooks from real sellers, including festive season prep for Diwali and Big Billion Days.
             </p>
           </div>
 
@@ -1256,53 +1258,45 @@ export default function LandingContent() {
               {
                 href: "/resources/expert-blog",
                 icon: BookOpen,
-                bg: "bg-[#e3edff] dark:bg-blue-900/40",
-                color: "text-[#1e40af] dark:text-blue-400",
                 title: "Expert blog",
                 desc: "Strategies for Amazon India and Flipkart.",
-                cta: "Read",
               },
               {
                 href: "/resources/case-studies",
                 icon: FileText,
-                bg: "bg-violet-100 dark:bg-violet-900/40",
-                color: "text-violet-700 dark:text-violet-300",
                 title: "Success stories",
                 desc: "Real numbers from Indian sellers.",
-                cta: "View",
               },
               {
                 href: "/resources/videos",
                 icon: Video,
-                bg: "bg-[#fce7f3] dark:bg-pink-900/40",
-                color: "text-[#9d174d] dark:text-pink-400",
                 title: "Video masterclasses",
                 desc: "Step-by-step platform walkthroughs, seller workshops, marketplace strategy sessions.",
-                cta: "Start learning",
               },
               {
                 href: "/resources/guides",
                 icon: BookOpen,
-                bg: "bg-[#dcfce7] dark:bg-green-900/40",
-                color: "text-[#166534] dark:text-green-400",
                 title: "Strategic playbooks",
                 desc: "Festive prep, Buy Box recovery and more.",
-                cta: "Get",
               },
             ].map((c, i) => (
               <Link
                 key={i}
                 href={c.href}
-                className="flex h-full flex-col gap-4 rounded-[24px] border border-[#eee9f7] p-7 shadow-[0_10px_30px_rgba(40,20,90,0.04)] transition-shadow hover:shadow-[0_16px_40px_rgba(40,20,90,0.08)]"
+                className="flex flex-col gap-5 rounded-[24px] border border-fuchsia-200 bg-white p-7 shadow-[0_12px_40px_-12px_rgba(217,70,239,0.15)] transition-all hover:shadow-[0_20px_50px_-10px_rgba(217,70,239,0.25)] hover:-translate-y-1 dark:border-fuchsia-900/50 dark:bg-gray-900/50"
               >
-                <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${c.bg}`}>
-                  <c.icon className={`h-6 w-6 ${c.color}`} />
-                </span>
-                <h3 className="text-lg font-extrabold">{c.title}</h3>
-                <p className="flex-grow text-sm leading-relaxed text-[#4b4560] dark:text-gray-300">{c.desc}</p>
-                <span className={`mt-auto flex items-center gap-1.5 text-sm font-extrabold ${c.color}`}>
-                  {c.cta} <ArrowRight className="h-4 w-4" />
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-fuchsia-500 to-pink-500 shadow-md shadow-pink-500/20">
+                    <c.icon className="h-6 w-6 text-white" />
+                  </span>
+                  <h3 className="text-[20px] font-extrabold tracking-tight text-[#1a1033] dark:text-white leading-tight">
+                    {c.title}
+                  </h3>
+                </div>
+                <div className="flex items-start gap-3 text-[15.5px] leading-relaxed text-[#4b4560] dark:text-gray-300">
+                  <Check className="mt-[3px] h-[18px] w-[18px] shrink-0 text-emerald-500" strokeWidth={2.5} />
+                  <span>{c.desc}</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -1314,7 +1308,7 @@ export default function LandingContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>ABOUT INSYDZ</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
               About Insydz
             </h2>
             <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
@@ -1359,46 +1353,14 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* Trust Indicators Section */}
-      <section className="bg-white dark:bg-gray-950 py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
-            <Eyebrow>WHERE WE ARE</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
-              Building India&apos;s most trusted seller analytics platform
-            </h2>
-            <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
-              Supporting data-driven decisions for Indian sellers across every marketplace.
-            </p>
-          </div>
 
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-5 sm:grid-cols-2">
-            {[
-              { title: "Early", subtitle: "Product stage" },
-              { title: "India", subtitle: "Primary market" },
-              { title: "Multiple", subtitle: "Marketplaces supported" },
-              { title: "Growing", subtitle: "Seller adoption" },
-            ].map((stat, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center justify-center rounded-[24px] border border-[#eee9f7] p-8 text-center"
-              >
-                <div className="mb-2 bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-3xl font-extrabold tracking-[-0.02em] text-transparent">
-                  {stat.title}
-                </div>
-                <div className="text-sm font-semibold text-[#5f5875] dark:text-gray-400">{stat.subtitle}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section — the 3 seller stories from the design, star ratings + dark middle card */}
       <section id="Testimonials" className="scroll-mt-20 bg-[#fcfaff] dark:bg-gray-900 py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>SELLER STORIES</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
               Sellers are growing with Insydz
             </h2>
             <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
@@ -1406,31 +1368,40 @@ export default function LandingContent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {testimonials.map((t, i) => (
-              <div
+              <figure
                 key={i}
-                className="flex h-full flex-col justify-between rounded-[24px] border border-[#eee9f7] bg-white dark:bg-gray-950 p-7 shadow-[0_10px_30px_rgba(40,20,90,0.04)]"
+                className={`flex flex-col gap-4 rounded-[24px] p-7 ${t.dark
+                  ? "bg-[#1a1033] text-white"
+                  : "border border-[#eee9f7] bg-white dark:bg-gray-950 text-[#1a1033] dark:text-gray-50"
+                  }`}
               >
-                <div className="mb-6 flex items-start justify-between">
-                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl text-xl ${t.logoBg}`}>
-                    {t.logo}
-                  </span>
-                  <span className="flex items-center gap-2 rounded-full bg-[#f3effd] dark:bg-violet-900/20 px-3 py-1">
-                    <span className="text-sm font-bold text-[#3b3552] dark:text-gray-300">{t.rating}</span>
-                    <Star className="h-3.5 w-3.5 fill-green-500 text-green-500" />
+                <div className="flex items-center justify-between">
+                  <StarRow />
+                  <span className={`text-xs font-bold ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>
+                    {t.tag}
                   </span>
                 </div>
 
-                <p className="mb-6 flex-grow text-[15px] italic leading-relaxed text-[#4b4560] dark:text-gray-300">
-                  &ldquo;{t.text}&rdquo;
-                </p>
-
-                <div>
-                  <h4 className="text-base font-extrabold">{t.author}</h4>
-                  <p className="text-sm font-medium text-[#5f5875] dark:text-gray-400">{t.handle}</p>
+                <div className={`text-[32px] font-extrabold tracking-[-0.02em] sm:text-4xl ${t.dark ? "text-[#c4b5fd]" : "text-violet-600 dark:text-violet-400"}`}>
+                  {t.stat}
                 </div>
-              </div>
+
+                <blockquote className={`flex-grow text-[15px] leading-relaxed ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+
+                <figcaption className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-extrabold ${t.avatarBg} ${t.avatarColor}`}>
+                    {t.avatar}
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-[15px] font-extrabold">{t.author}</span>
+                    <span className={`text-[13px] ${t.dark ? "text-[#c9c2dd]" : "text-[#4b4560] dark:text-gray-300"}`}>{t.role}</span>
+                  </span>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
@@ -1441,7 +1412,7 @@ export default function LandingContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-16 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>PRICING</Eyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl lg:text-[44px]">
+            <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
               Simple pricing that grows with you
             </h2>
             <p className="text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
@@ -1571,7 +1542,7 @@ export default function LandingContent() {
                 <div className="text-3xl font-extrabold tracking-[-0.02em]">Custom</div>
                 <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Tailored for SMBs and agencies</p>
               </div>
-              <SecondaryButton onClick={handleGetStarted} className="w-full">
+              <SecondaryButton href="/about/contact-us" className="w-full">
                 Contact sales
               </SecondaryButton>
               <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
@@ -1595,7 +1566,7 @@ export default function LandingContent() {
           <div className="flex flex-col items-start gap-6 text-left">
             <div className="flex flex-col items-start gap-3">
               <Eyebrow>FAQ</Eyebrow>
-              <h2 className="max-w-sm text-3xl font-extrabold leading-[1.12] tracking-[-0.03em] sm:text-4xl">
+              <h2 className="max-w-sm text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl">
                 Questions sellers ask before starting
               </h2>
               <p className="max-w-sm text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">

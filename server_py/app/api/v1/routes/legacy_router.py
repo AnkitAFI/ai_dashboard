@@ -19137,6 +19137,17 @@ async def sitemap():
         "/about/our-vision",
         "/about/careers",
         "/about/contact-us",
+        "/seller-dashboard",
+        "/solutions/amazon-advertising",
+        "/resources/expert-blog/agency-client-reporting-automation",
+        "/resources/expert-blog/amazon-great-freedom-festival-2026-seller-guide",
+        "/resources/expert-blog/amazon-repricing-strategy-india-2026",
+        "/resources/expert-blog/analyze-amazon-reviews-india-content",
+        "/resources/expert-blog/best-amazon-seller-tools-india-2026",
+        "/resources/expert-blog/prime-day-india-2026-seller-questions",
+        "/resources/expert-blog/raksha-bandhan-2026-seller-guide",
+        "/resources/expert-blog/switch-excel-ai-amazon-india",
+        "/resources/expert-blog/top-amazon-india-sellers-habits",
     ]
     
     xml = ['<?xml version="1.0" encoding="UTF-8"?>']

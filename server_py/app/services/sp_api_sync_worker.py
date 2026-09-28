@@ -60,7 +60,7 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
     updated_at_naive = cred.updated_at.replace(tzinfo=None) if cred.updated_at.tzinfo else cred.updated_at
     created_at_naive = cred.created_at.replace(tzinfo=None) if cred.created_at.tzinfo else cred.created_at
     
-    if updated_at_naive == created_at_naive: # Assuming first sync
+    if cred.sync_status == "PENDING": # First sync
         created_after = datetime.utcnow() - timedelta(days=30)
     else:
         created_after = updated_at_naive
@@ -79,69 +79,88 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
         orders_api = Orders(credentials=credentials, marketplace=Marketplaces.IN)
         finances_api = Finances(credentials=credentials, marketplace=Marketplaces.IN)
         
-        # 1. Fetch Orders (Max 1 request per min per selling partner based on SP-API burst limits, but we sync every few hours)
-        res = await execute_sp_api_with_backoff(orders_api.get_orders, CreatedAfter=created_after.isoformat())
-        orders_data = res.payload.get('Orders', [])
+        next_token = None
+        has_next = True
         
-        for order_data in orders_data:
-            amazon_order_id = order_data.get('AmazonOrderId')
-            purchase_date = order_data.get('PurchaseDate')
-            order_status = order_data.get('OrderStatus')
-            order_total = order_data.get('OrderTotal', {})
-            amount = float(order_total.get('Amount', 0.0))
-            currency = order_total.get('CurrencyCode', 'INR')
-            
-            # Fetch Order Items for ASIN and Qty
-            # getOrderItems rate: 0.5 req/sec → must wait 2.0s between calls
-            await asyncio.sleep(ORDER_ITEMS_DELAY)
-            items_res = await execute_sp_api_with_backoff(orders_api.get_order_items, amazon_order_id)
-            items = items_res.payload.get('OrderItems', [])
-            
-            for item in items:
-                asin = item.get('ASIN')
-                qty = item.get('QuantityOrdered', 1)
+        # 1. Fetch Orders with Pagination (Max 100 per page)
+        while has_next:
+            if next_token:
+                res = await execute_sp_api_with_backoff(orders_api.get_orders, NextToken=next_token)
+            else:
+                res = await execute_sp_api_with_backoff(orders_api.get_orders, CreatedAfter=created_after.isoformat())
                 
-                # UPSERT Order Data — ON CONFLICT uses (user_id, amazon_order_id, asin)
-                # to match the uix_sp_order_user_asin unique constraint (user-scoped).
-                upsert_order = text("""
-                    INSERT INTO amazon_sp_api_orders (user_id, selling_partner_id, amazon_order_id, purchase_date, order_status, asin, quantity, item_price, currency)
-                    VALUES (:user_id, :sp_id, :order_id, :p_date, :status, :asin, :qty, :price, :currency)
-                    ON CONFLICT (user_id, amazon_order_id, asin) 
-                    DO UPDATE SET 
-                        order_status = EXCLUDED.order_status,
-                        updated_at = NOW();
-                """)
-                db.execute(upsert_order, {
-                    "user_id": cred.user_id, "sp_id": cred.selling_partner_id, "order_id": amazon_order_id,
-                    "p_date": purchase_date, "status": order_status, "asin": asin, "qty": qty, 
-                    "price": amount, "currency": currency
-                })
+            orders_data = res.payload.get('Orders', [])
+            next_token = res.payload.get('NextToken')
+            has_next = bool(next_token)
             
-            # 2. Fetch Financial Events (Fees)
-            # listFinancialEventsForOrder rate: 0.5 req/sec → must wait 2.0s between calls (using 2.5 for buffer)
-            await asyncio.sleep(FINANCES_DELAY)
-            fin_res = await execute_sp_api_with_backoff(finances_api.get_financial_events_for_order, amazon_order_id)
-            fin_events = fin_res.payload.get('FinancialEvents', {})
+            logger.info(f"Fetched {len(orders_data)} orders for SP-ID: {cred.selling_partner_id} (Has More Pages: {has_next})")
             
-            # Aggregate all fee types for this order
-            total_fees = 0.0
-            for fee_list in fin_events.values():
-                if isinstance(fee_list, list):
-                    for fee in fee_list:
-                        charge = fee.get('ChargeComponent', {}).get('ChargeAmount', {})
-                        total_fees += float(charge.get('CurrencyAmount', 0.0))
-            
-            if total_fees != 0:
-                upsert_finance = text("""
-                    INSERT INTO amazon_sp_api_financial_events (user_id, selling_partner_id, amazon_order_id, posted_date, amount, currency)
-                    VALUES (:user_id, :sp_id, :order_id, :p_date, :amt, :currency)
-                    ON CONFLICT (amazon_order_id, event_type) 
-                    DO UPDATE SET amount = EXCLUDED.amount, updated_at = NOW();
-                """)
-                db.execute(upsert_finance, {
-                    "user_id": cred.user_id, "sp_id": cred.selling_partner_id, "order_id": amazon_order_id,
-                    "p_date": purchase_date, "amt": total_fees, "currency": currency
-                })
+            for order_data in orders_data:
+                amazon_order_id = order_data.get('AmazonOrderId')
+                purchase_date = order_data.get('PurchaseDate')
+                order_status = order_data.get('OrderStatus')
+                order_total = order_data.get('OrderTotal', {})
+                amount = float(order_total.get('Amount', 0.0))
+                currency = order_total.get('CurrencyCode', 'INR')
+                
+                # Fetch Order Items for ASIN and Qty
+                # getOrderItems rate: 0.5 req/sec → must wait 2.0s between calls
+                await asyncio.sleep(ORDER_ITEMS_DELAY)
+                items_res = await execute_sp_api_with_backoff(orders_api.get_order_items, amazon_order_id)
+                items = items_res.payload.get('OrderItems', [])
+                
+                for item in items:
+                    asin = item.get('ASIN')
+                    qty = item.get('QuantityOrdered', 1)
+                    
+                    # UPSERT Order Data
+                    upsert_order = text("""
+                        INSERT INTO amazon_sp_api_orders (user_id, selling_partner_id, amazon_order_id, purchase_date, order_status, asin, quantity, item_price, currency)
+                        VALUES (:user_id, :sp_id, :order_id, :p_date, :status, :asin, :qty, :price, :currency)
+                        ON CONFLICT (user_id, amazon_order_id, asin) 
+                        DO UPDATE SET 
+                            order_status = EXCLUDED.order_status,
+                            updated_at = NOW();
+                    """)
+                    db.execute(upsert_order, {
+                        "user_id": cred.user_id, "sp_id": cred.selling_partner_id, "order_id": amazon_order_id,
+                        "p_date": purchase_date, "status": order_status, "asin": asin, "qty": qty, 
+                        "price": amount, "currency": currency
+                    })
+                
+                # 2. Fetch Financial Events (Fees)
+                # listFinancialEventsForOrder rate: 0.5 req/sec → must wait 2.0s between calls (using 2.5 for buffer)
+                await asyncio.sleep(FINANCES_DELAY)
+                fin_res = await execute_sp_api_with_backoff(finances_api.get_financial_events_for_order, amazon_order_id)
+                fin_events = fin_res.payload.get('FinancialEvents', {})
+                
+                # Recursively extract all Amazon Fees from the complex API response
+                def extract_all_fees(data):
+                    extracted_total = 0.0
+                    if isinstance(data, dict):
+                        # SP-API stores fees under 'FeeAmount' -> 'CurrencyAmount'
+                        if 'FeeAmount' in data and 'CurrencyAmount' in data['FeeAmount']:
+                            extracted_total += float(data['FeeAmount']['CurrencyAmount'])
+                        for value in data.values():
+                            extracted_total += extract_all_fees(value)
+                    elif isinstance(data, list):
+                        for item in data:
+                            extracted_total += extract_all_fees(item)
+                    return extracted_total
+                    
+                total_fees = extract_all_fees(fin_events)
+                
+                if total_fees != 0:
+                    upsert_finance = text("""
+                        INSERT INTO amazon_sp_api_financial_events (user_id, selling_partner_id, amazon_order_id, event_type, posted_date, amount, currency)
+                        VALUES (:user_id, :sp_id, :order_id, :event_type, :p_date, :amt, :currency)
+                        ON CONFLICT (amazon_order_id, event_type) 
+                        DO UPDATE SET amount = EXCLUDED.amount, updated_at = NOW();
+                    """)
+                    db.execute(upsert_finance, {
+                        "user_id": cred.user_id, "sp_id": cred.selling_partner_id, "order_id": amazon_order_id,
+                        "event_type": "TotalAmazonFees", "p_date": purchase_date, "amt": total_fees, "currency": currency
+                    })
                 
     except SellingApiException as e:
         logger.error(f"Amazon SP-API Exception for {cred.selling_partner_id}: {e}")
