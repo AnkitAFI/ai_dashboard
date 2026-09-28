@@ -151,15 +151,16 @@ async def sync_orders_for_account(db: Session, cred: AmazonSPAPICredential):
                 total_fees = extract_all_fees(fin_events)
                 
                 if total_fees != 0:
-                    upsert_finance = text("""
-                        INSERT INTO amazon_sp_api_financial_events (user_id, selling_partner_id, amazon_order_id, event_type, posted_date, amount, currency)
-                        VALUES (:user_id, :sp_id, :order_id, :event_type, :p_date, :amt, :currency)
-                        ON CONFLICT (amazon_order_id, event_type) 
-                        DO UPDATE SET amount = EXCLUDED.amount, updated_at = NOW();
+                    # Clean up any existing fees for this order to prevent duplicates (since there is no unique constraint)
+                    db.execute(text("DELETE FROM amazon_sp_api_financial_events WHERE amazon_order_id = :order_id"), {"order_id": amazon_order_id})
+                    
+                    insert_finance = text("""
+                        INSERT INTO amazon_sp_api_financial_events (user_id, selling_partner_id, amazon_order_id, transaction_type, fee_type, posted_date, amount, currency)
+                        VALUES (:user_id, :sp_id, :order_id, :transaction_type, :fee_type, :p_date, :amt, :currency)
                     """)
-                    db.execute(upsert_finance, {
+                    db.execute(insert_finance, {
                         "user_id": cred.user_id, "sp_id": cred.selling_partner_id, "order_id": amazon_order_id,
-                        "event_type": "TotalAmazonFees", "p_date": purchase_date, "amt": total_fees, "currency": currency
+                        "transaction_type": "ShipmentEvent", "fee_type": "TotalAmazonFees", "p_date": purchase_date, "amt": total_fees, "currency": currency
                     })
                 
     except SellingApiException as e:
