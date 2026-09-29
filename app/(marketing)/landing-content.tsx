@@ -1,9 +1,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { CustomBookDemoModal } from "@/components/ui/custom-book-demo-modal";
 import {
   X,
@@ -360,7 +361,7 @@ function FloatingBadge({
   subtitleColor = "text-[#5f5875] dark:text-gray-400",
   dark = false,
   rotate = 0,
-  delay = 0,
+  delay = 0, // Ignored now to perfectly sync all floating elements
 }: {
   icon: React.ElementType;
   title: string;
@@ -373,13 +374,17 @@ function FloatingBadge({
   delay?: number;
 }) {
   return (
-    <div
-      className={`animate-float flex items-center gap-3 rounded-2xl p-4 shadow-[0_18px_36px_rgba(40,20,90,0.12)] ${dark ? "bg-[#1a1033]" : "bg-white dark:bg-gray-950"
-        }`}
-      style={{ 
-        "--rotate": `${rotate}deg`,
-        animationDelay: `${delay}s`
-      } as React.CSSProperties}
+    <motion.div
+      initial={{ y: 0, rotate }}
+      animate={{ y: [0, -8, 0], rotate }}
+      transition={{
+        y: {
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+      }}
+      className={`flex items-center gap-3 rounded-2xl p-4 shadow-[0_18px_36px_rgba(40,20,90,0.12)] ${dark ? "bg-[#1a1033]" : "bg-white dark:bg-gray-950"}`}
     >
       <span
         className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${dark ? "bg-white dark:bg-gray-950/10" : iconBg
@@ -395,7 +400,7 @@ function FloatingBadge({
           {subtitle}
         </span>
       </span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -469,6 +474,142 @@ function SecondaryButton({
   );
 }
 
+function Step1Animation() {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStage((prev) => (prev + 1) % 3);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative mt-2 flex h-[72px] items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner">
+      <div className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition-all duration-300 ${stage === 2 ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" : stage === 1 ? "bg-violet-600 text-white scale-[1.03]" : "bg-white dark:bg-gray-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700"}`}>
+        {stage === 2 ? <Check className="h-4 w-4" strokeWidth={3} /> : <Link2 className="h-4 w-4" />}
+        {stage === 2 ? "Connected" : "Connect Amazon"}
+      </div>
+      
+      {/* Fake cursor */}
+      <div 
+        className="absolute transition-all duration-500 ease-out z-10" 
+        style={{
+          top: stage === 0 ? "50px" : "34px",
+          left: stage === 0 ? "70%" : "55%",
+          opacity: stage === 0 ? 0 : 1,
+          transform: stage === 1 ? "scale(0.85)" : "scale(1)"
+        }}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-800 dark:text-white drop-shadow-md">
+           <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" fill="black" stroke="white"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function Step2Animation() {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStage((prev) => (prev + 1) % 5);
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative mt-2 flex h-[90px] w-full items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 p-2 overflow-hidden shadow-inner">
+      {/* Mini dashboard wireframe */}
+      <div className="flex h-full w-[150px] flex-col gap-2 rounded-xl bg-white dark:bg-gray-900 p-2.5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-2">
+          <div className="h-3 w-3 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <div className="h-2 w-12 rounded-full bg-slate-100 dark:bg-slate-800" />
+        </div>
+        <div className="flex flex-1 items-end gap-1.5 px-1">
+          <div className={`w-full rounded-t-[4px] bg-blue-300 dark:bg-blue-600 transition-all duration-500 ease-out ${stage >= 1 ? "h-4" : "h-0"}`} />
+          <div className={`w-full rounded-t-[4px] bg-violet-400 dark:bg-violet-600 transition-all duration-500 ease-out ${stage >= 2 ? "h-8" : "h-0"}`} />
+          <div className={`w-full rounded-t-[4px] bg-pink-400 dark:bg-pink-600 transition-all duration-500 ease-out ${stage >= 3 ? "h-6" : "h-0"}`} />
+          <div className={`w-full rounded-t-[4px] bg-emerald-400 dark:bg-emerald-600 transition-all duration-500 ease-out ${stage >= 4 ? "h-10" : "h-0"}`} />
+        </div>
+      </div>
+      
+      {/* Floating AI suggestion popup */}
+      <div className={`absolute top-3 right-3 flex items-center gap-1.5 rounded-lg bg-white dark:bg-gray-800 p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-violet-100 dark:border-violet-900/50 transition-all duration-500 ${stage >= 3 ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-90"}`}>
+        <Sparkles className="h-3 w-3 text-violet-500" />
+        <div className="flex flex-col gap-1">
+          <div className="h-1 w-10 rounded-full bg-slate-200 dark:bg-slate-600" />
+          <div className="h-1 w-6 rounded-full bg-slate-200 dark:bg-slate-600" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Step3Animation() {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStage((prev) => (prev + 1) % 3);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const items = [
+    {
+      icon: TrendingUp,
+      title: "Sales up",
+      value: "22%",
+      colorClass: "text-green-600 dark:text-green-400",
+      bgClass: "bg-green-100 dark:bg-green-900/40",
+      borderClass: "border-green-200 dark:border-green-800"
+    },
+    {
+      icon: Target,
+      title: "ACoS optimized",
+      value: "14.2%",
+      colorClass: "text-blue-600 dark:text-blue-400",
+      bgClass: "bg-blue-100 dark:bg-blue-900/40",
+      borderClass: "border-blue-200 dark:border-blue-800"
+    },
+    {
+      icon: Trophy,
+      title: "Buy Box won",
+      value: "₹549",
+      colorClass: "text-violet-600 dark:text-violet-400",
+      bgClass: "bg-violet-100 dark:bg-violet-900/40",
+      borderClass: "border-violet-200 dark:border-violet-800"
+    }
+  ];
+
+  const CurrentIcon = items[stage].icon;
+
+  return (
+    <div className="relative mt-2 flex h-[85px] w-full items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner p-2">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={stage}
+          initial={{ opacity: 0, y: 15, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -15, scale: 0.95 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="absolute flex w-[90%] max-w-[220px] items-center justify-between rounded-xl px-4 py-2.5 border bg-white dark:bg-gray-900 shadow-[0_8px_16px_rgba(40,20,90,0.04)] border-slate-100 dark:border-slate-800"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${items[stage].bgClass} ${items[stage].colorClass} ${items[stage].borderClass}`}>
+              <CurrentIcon className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </div>
+            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-300">{items[stage].title}</span>
+          </div>
+          <span className={`text-[12px] font-extrabold ${items[stage].colorClass}`}>{items[stage].value}</span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function LandingContent() {
   const router = useRouter();
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
@@ -515,7 +656,7 @@ export default function LandingContent() {
               <ArrowRight className="h-3.5 w-3.5 shrink-0" />
             </Link>
 
-            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-[-0.03em] text-[#1a1033] dark:text-gray-50 sm:text-5xl lg:text-[56px]">
+            <h1 className="max-w-4xl text-5xl font-extrabold leading-[1.1] tracking-[-0.03em] text-[#1a1033] dark:text-gray-50 sm:text-6xl lg:text-[68px]">
               One platform to{" "}
               <span className="relative inline-block">
                 grow faster
@@ -545,7 +686,7 @@ export default function LandingContent() {
               </span>
             </h1>
 
-            <p className="max-w-xl text-lg leading-relaxed text-[#4b4560] dark:text-gray-300">
+            <p className="max-w-2xl text-lg font-medium leading-relaxed text-[#4b4560] dark:text-gray-300">
               Ad automation, keyword research, competitor analysis, price and listing
               optimization. Every everyday selling task, in one simple dashboard.
             </p>
@@ -567,16 +708,16 @@ export default function LandingContent() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-center text-sm font-semibold text-[#5f5875] dark:text-gray-400">
-              <span className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-3 text-center text-[15px] font-semibold text-[#5f5875] dark:text-gray-400">
+              <span className="flex items-center gap-2.5">
                 <span className="flex">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-violet-100 dark:bg-violet-900/40 text-[10px] font-extrabold text-violet-700 dark:text-violet-300">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-violet-100 dark:bg-violet-900/40 text-xs font-extrabold text-violet-700 dark:text-violet-300">
                     RK
                   </span>
-                  <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-pink-100 dark:bg-pink-900/40 text-[10px] font-extrabold text-pink-700 dark:text-pink-300">
+                  <span className="-ml-2.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-pink-100 dark:bg-pink-900/40 text-xs font-extrabold text-pink-700 dark:text-pink-300">
                     AS
                   </span>
-                  <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-100 dark:bg-green-900/40 text-[10px] font-extrabold text-green-700 dark:text-green-300">
+                  <span className="-ml-2.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-green-100 dark:bg-green-900/40 text-xs font-extrabold text-green-700 dark:text-green-300">
                     PM
                   </span>
                 </span>
@@ -834,6 +975,7 @@ export default function LandingContent() {
                 num: "01",
                 title: "Connect your Amazon account",
                 desc: "Sign up free and link your Amazon seller account securely. Add the Flipkart products you want to track.",
+                animation: Step1Animation,
               },
               {
                 icon: BarChart3,
@@ -842,6 +984,7 @@ export default function LandingContent() {
                 num: "02",
                 title: "See everything in one place",
                 desc: "Sales, ads, keywords and competitor moves come together in one dashboard, with AI suggestions on what to do next.",
+                animation: Step2Animation,
               },
               {
                 icon: TrendingUp,
@@ -850,6 +993,7 @@ export default function LandingContent() {
                 num: "03",
                 title: "Act and grow your sales",
                 desc: "Fix prices, improve listings and cut wasted ad spend. Get an alert the moment something important changes.",
+                animation: Step3Animation,
               },
             ].map((s, i) => (
               <div
@@ -863,7 +1007,8 @@ export default function LandingContent() {
                   <span className="text-4xl font-extrabold tracking-[-0.03em] text-[#ece4fb]">{s.num}</span>
                 </div>
                 <h3 className="text-lg font-extrabold">{s.title}</h3>
-                <p className="text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300">{s.desc}</p>
+                <p className="text-[15px] leading-relaxed text-[#4b4560] dark:text-gray-300 flex-grow">{s.desc}</p>
+                {s.animation && <s.animation />}
               </div>
             ))}
           </div>
