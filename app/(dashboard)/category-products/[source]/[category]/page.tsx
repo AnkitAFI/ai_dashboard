@@ -225,7 +225,7 @@ export default function CategoryProducts() {
             <button
               type="button"
               onClick={handleClearSearch}
-              className="mt-5 px-5 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-semibold rounded-xl hover:from-blue-600 hover:to-cyan-600 transition shadow-md"
+              className="mt-5 px-5 py-2 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 dark:from-sky-700 dark:to-blue-700 dark:hover:from-sky-600 dark:hover:to-blue-600 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer"
             >
               Clear Search Query
             </button>

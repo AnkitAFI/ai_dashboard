@@ -248,7 +248,7 @@ export default function Sales() {
       "py-3 px-4 text-right transition-colors",
       isSorted
         ? isDark
-          ? "bg-blue-950/20 font-bold"
+          ? "bg-slate-800/40 font-semibold"
           : "bg-blue-50/50 font-bold"
         : ""
     );
@@ -256,28 +256,28 @@ export default function Sales() {
     switch (field) {
       case "price":
         return (
-          <td key={field} className={cn(baseCellClass, "text-emerald-600 dark:text-emerald-450 font-semibold")}>
-            <IndianRupee className="inline w-4 h-4" />
+          <td key={field} className={cn(baseCellClass, "text-emerald-600 dark:text-emerald-400/80 font-medium")}>
+            <IndianRupee className="inline w-3.5 h-3.5" />
             {getProductPrice(p).toFixed(2)}
           </td>
         );
       case "rating":
         return (
-          <td key={field} className={cn(baseCellClass, "text-yellow-500 font-medium")}>
-            <Star className="inline w-4 h-4 mr-1" />
+          <td key={field} className={cn(baseCellClass, "text-slate-700 dark:text-slate-300 font-medium")}>
+            <Star className="inline w-3.5 h-3.5 mr-1 text-amber-400/80" />
             {(p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0).toFixed(1)}
           </td>
         );
       case "reviews":
         return (
-          <td key={field} className={cn(baseCellClass, isDark ? "text-blue-400 font-semibold" : "text-blue-600 font-semibold")}>
+          <td key={field} className={cn(baseCellClass, isDark ? "text-slate-300 font-medium" : "text-blue-600 font-semibold")}>
             {(p.reviews ?? p.total_reviews ?? p.total_ratings ?? p.product_num_ratings ?? p.product_rating_count ?? 0).toLocaleString()}
           </td>
         );
       case "sales":
         return (
-          <td key={field} className={cn(baseCellClass, isDark ? "text-purple-400 font-semibold" : "text-purple-600 font-semibold")}>
-            <TrendingUp className="inline w-4 h-4 mr-1" />
+          <td key={field} className={cn(baseCellClass, isDark ? "text-purple-300/80 font-medium" : "text-purple-600 font-semibold")}>
+            <TrendingUp className="inline w-3.5 h-3.5 mr-1 text-purple-400/80" />
             {formatSalesDisplay(p)}
           </td>
         );
@@ -414,9 +414,11 @@ export default function Sales() {
               className={cn(
                 "flex items-center gap-2",
                 sortField === field
-                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  ? isDark
+                    ? "bg-sky-700/90 hover:bg-sky-600 text-white border-sky-500/40 shadow-xs"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
                   : isDark
-                    ? "text-slate-300 border-slate-700 hover:bg-slate-800"
+                    ? "text-slate-300 border-slate-800 hover:bg-slate-800/60 bg-slate-900/60"
                     : "text-slate-700 border-slate-300 hover:bg-slate-100"
               )}
               onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
@@ -436,8 +438,8 @@ export default function Sales() {
         "shadow-sm rounded-2xl overflow-hidden border",
         isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200"
       )}>
-        <CardHeader className="py-3 px-4 border-b border-slate-100 dark:border-slate-800">
-          <CardTitle className={cn("text-base font-semibold", isDark ? "text-slate-200" : "text-slate-700")}>
+        <CardHeader className="py-2.5 px-4 border-b border-slate-100 dark:border-slate-800">
+          <CardTitle className={cn("text-xs font-semibold uppercase tracking-wider", isDark ? "text-slate-400" : "text-slate-500")}>
             {t('sales.showingPage', 'Showing Page')} {currentPage} {t('sales.of', 'of')} {totalPages} — {t('sales.sortedBy', 'Sorted by')}{" "}
             {t(`sales.sort_${sortField}`, sortField.charAt(0).toUpperCase() + sortField.slice(1))}{" "}
             ({sortOrder === "asc" ? t('sales.lowToHigh', 'Low → High') : t('sales.highToLow', 'High → Low')})
@@ -448,12 +450,12 @@ export default function Sales() {
           <table className={cn("w-full text-sm", isDark ? "text-slate-300" : "text-slate-700")}>
             <thead className={cn(
               "uppercase text-xs font-semibold",
-              isDark ? "bg-slate-800/80 text-slate-200" : "bg-slate-100 text-slate-700"
+              isDark ? "bg-slate-800/80 text-slate-400" : "bg-slate-100 text-slate-700"
             )}>
               <tr>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>#</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.product', 'Product')}</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.category', 'Category')}</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700 text-slate-400" : "bg-slate-100 border-slate-200")}>#</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700 text-slate-400" : "bg-slate-100 border-slate-200")}>{t('sales.product', 'Product')}</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700 text-slate-400" : "bg-slate-100 border-slate-200")}>{t('sales.category', 'Category')}</th>
                 {getMetricColumns().map((field) => {
                   const isSorted = sortField === field;
                   return (
@@ -464,7 +466,7 @@ export default function Sales() {
                         "py-3 px-4 text-right border-b cursor-pointer select-none transition-colors",
                         isSorted
                           ? isDark
-                            ? "bg-blue-950/40 text-blue-400 font-bold border-blue-500/40"
+                            ? "bg-slate-800/80 text-sky-300 font-bold border-slate-700"
                             : "bg-blue-50 text-blue-700 font-bold border-blue-300"
                           : isDark
                             ? "bg-slate-800/80 border-slate-700 hover:bg-slate-750"
@@ -505,8 +507,8 @@ export default function Sales() {
                     <div className="flex flex-col gap-1">
                       <span
                         className={cn(
-                          "font-semibold line-clamp-2 transition-colors hover:text-blue-500",
-                          isDark ? "text-slate-100" : "text-slate-800"
+                          "font-medium line-clamp-2 transition-colors hover:text-blue-500 dark:hover:text-sky-400",
+                          isDark ? "text-slate-300" : "text-slate-800"
                         )}
                         title={p.title || p.product_title}
                       >

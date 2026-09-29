@@ -3,10 +3,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { API_BASE_URL } from "@/lib/config";
 import MetricsCards from "@/components/dashboard/metrics-cards";
+import ExplorerKpiCards from "@/components/dashboard/explorer-kpi-cards";
+import FastSellingProductsCard from "@/components/dashboard/fast-selling-products-card";
+import BestOpportunityCategoriesCard from "@/components/dashboard/best-opportunity-categories-card";
 import ChartsGrid from "@/components/dashboard/charts-grid";
 import ProductRankings from "@/components/dashboard/product-rankings";
 import AIRecommendations from "@/components/dashboard/ai-recommendations";
 import SellerDashboardView from "@/components/dashboard/seller-dashboard-view";
+import ExplorerHeroBanner from "@/components/dashboard/explorer-hero-banner";
+import GuidedJourneyBar from "@/components/dashboard/guided-journey-bar";
 import {
   TrendingDown,
   TrendingUp,
@@ -218,9 +223,9 @@ function DashboardContent() {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full min-w-0">
+    <div className="w-full max-w-full min-w-0">
       {/* Mobile-only Laptop/Desktop Recommendation Banner */}
-      <div className="block md:hidden bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/60 dark:via-yellow-950/40 dark:to-orange-950/40 border border-amber-300 dark:border-amber-700/80 rounded-xl p-3.5 shadow-sm">
+      <div className="block md:hidden mb-4 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/60 dark:via-yellow-950/40 dark:to-orange-950/40 border border-amber-300 dark:border-amber-700/80 rounded-xl p-3.5 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-amber-500/15 dark:bg-amber-400/20 text-amber-700 dark:text-amber-300 rounded-lg shrink-0 border border-amber-300/50 dark:border-amber-700/50">
             <Monitor className="w-5 h-5" />
@@ -239,12 +244,20 @@ function DashboardContent() {
       {sidebarMode === "seller" && user?.seller_id ? (
         <SellerDashboardView />
       ) : (
-        <>
-          <MetricsCards selectedSource={selectedSource} />
+        <div className="flex flex-col gap-4 sm:gap-5">
+          <ExplorerHeroBanner selectedSource={selectedSource} />
+          <ExplorerKpiCards selectedSource={selectedSource} />
+          
+          {/* Middle Grid: Fast-Selling Products & Best Opportunity Categories */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 min-w-0">
+            <FastSellingProductsCard selectedSource={selectedSource} />
+            <BestOpportunityCategoriesCard selectedSource={selectedSource} />
+          </div>
+
           <ChartsGrid selectedSource={selectedSource} />
           <AIRecommendations selectedSource={selectedSource} />
           <ProductRankings selectedSource={selectedSource} />
-        </>
+        </div>
       )}
 
       <OnboardingModal
