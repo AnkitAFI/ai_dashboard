@@ -432,6 +432,14 @@ export default function Settings() {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // --- Mobile number change OTP flow ---
+  const [mobileChangeMode, setMobileChangeMode] = useState<"view" | "edit" | "otp">("view");
+  const [newMobileInput, setNewMobileInput] = useState("");
+  const [mobileOtpCode, setMobileOtpCode] = useState("");
+  const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
+  const [isVerifyingMobileOtp, setIsVerifyingMobileOtp] = useState(false);
+  const [mobileOtpCooldown, setMobileOtpCooldown] = useState(0);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessions, setSessions] = useState<any[]>([]);
@@ -743,17 +751,6 @@ export default function Settings() {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!profileData.mobileNumber) {
-      toast({ title: "Mobile number required", description: "Please enter your mobile number.", variant: "destructive" });
-      return;
-    }
-
-    const mobileRegex = /^[6-9]\d{9}$/;
-    if (!mobileRegex.test(profileData.mobileNumber.replace(/\s+/g, ""))) {
-      toast({ title: "Invalid mobile number", description: "Enter a valid 10-digit Indian mobile number.", variant: "destructive" });
-      return;
-    }
-
     if (!user?.id) {
       toast({ title: "Authentication required", description: "Please login again to update your profile", variant: "destructive" });
       return;
@@ -771,7 +768,6 @@ export default function Settings() {
           last_name: profileData.lastName,
           business_name: profileData.businessName,
           location: profileData.location,
-          mobile_number: profileData.mobileNumber.replace(/\s+/g, ""),
         }),
       });
 
@@ -787,6 +783,73 @@ export default function Settings() {
       toast({ title: "Couldn't save changes", description: "Please try again — previous settings are intact.", variant: "destructive" });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSendMobileOtp = async () => {
+    const mobile = newMobileInput.replace(/\s+/g, "");
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(mobile)) {
+      toast({ title: "Invalid number", description: "Enter a valid 10-digit Indian mobile number.", variant: "destructive" });
+      return;
+    }
+    if (mobile === (profileData.mobileNumber || "").replace(/\s+/g, "")) {
+      toast({ title: "Same number", description: "This is already your current mobile number. Enter a different one.", variant: "destructive" });
+      return;
+    }
+    setIsSendingMobileOtp(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mobile/send-otp`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_number: mobile }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(sanitizeApiError(err.detail, "Failed to send OTP"));
+      }
+      setMobileChangeMode("otp");
+      setMobileOtpCode("");
+      // Start 60-second cooldown
+      setMobileOtpCooldown(60);
+      const interval = setInterval(() => {
+        setMobileOtpCooldown(prev => {
+          if (prev <= 1) { clearInterval(interval); return 0; }
+          return prev - 1;
+        });
+      }, 1000);
+      toast({ title: "OTP Sent", description: `A 6-digit code was sent to +91 ${mobile}` });
+    } catch (error: any) {
+      toast({ title: "Failed to send OTP", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSendingMobileOtp(false);
+    }
+  };
+
+  const handleVerifyMobileOtp = async () => {
+    if (mobileOtpCode.length !== 6) return;
+    setIsVerifyingMobileOtp(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mobile/verify-otp`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_number: newMobileInput.replace(/\s+/g, ""), otp: mobileOtpCode }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(sanitizeApiError(err.detail, "OTP verification failed"));
+      }
+      await refreshUser();
+      setMobileChangeMode("view");
+      setNewMobileInput("");
+      setMobileOtpCode("");
+      toast({ title: "Number Updated!", description: "Your mobile number has been verified and saved." });
+    } catch (error: any) {
+      toast({ title: "Verification Failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsVerifyingMobileOtp(false);
     }
   };
 
@@ -883,22 +946,124 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* Mobile Number */}
+          {/* Mobile Number — OTP-verified change flow */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="mobileNumber">{t('settings.mobileNumber', 'Mobile Number *')}</Label>
-              <div className="flex gap-2">
-                <span className="flex items-center px-3 border rounded-md bg-muted text-muted-foreground text-sm">+91</span>
-                <Input
-                  id="mobileNumber"
-                  type="tel"
-                  value={profileData.mobileNumber}
-                  onChange={handleInputChange("mobileNumber")}
-                  placeholder="98765 43210"
-                  maxLength={10}
-                  className="flex-1"
-                />
-              </div>
+              <Label htmlFor="mobileNumber">{t('settings.mobileNumber', 'Mobile Number')}</Label>
+
+              {/* VIEW mode — show current number + Change button */}
+              {mobileChangeMode === "view" && (
+                <div className="flex gap-2 items-center mt-1">
+                  <div className="flex gap-2 flex-1">
+                    <span className="flex items-center px-3 border rounded-md bg-muted text-muted-foreground text-sm">+91</span>
+                    <Input
+                      id="mobileNumber"
+                      type="tel"
+                      value={profileData.mobileNumber || ""}
+                      disabled
+                      className="flex-1 bg-muted"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setNewMobileInput("");
+                      setMobileChangeMode("edit");
+                    }}
+                  >
+                    Change
+                  </Button>
+                </div>
+              )}
+
+              {/* EDIT mode — enter new number + Send OTP */}
+              {mobileChangeMode === "edit" && (
+                <div className="space-y-2 mt-1">
+                  <div className="flex gap-2">
+                    <span className="flex items-center px-3 border rounded-md bg-muted text-muted-foreground text-sm">+91</span>
+                    <Input
+                      type="tel"
+                      value={newMobileInput}
+                      onChange={e => setNewMobileInput(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="New 10-digit number"
+                      maxLength={10}
+                      className="flex-1"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleSendMobileOtp}
+                      disabled={isSendingMobileOtp || newMobileInput.length < 10}
+                    >
+                      {isSendingMobileOtp ? "Sending..." : "Send OTP"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setMobileChangeMode("view"); setNewMobileInput(""); }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* OTP mode — enter 6-digit code */}
+              {mobileChangeMode === "otp" && (
+                <div className="space-y-3 mt-1">
+                  <p className="text-xs text-muted-foreground">
+                    Enter the 6-digit OTP sent to <span className="font-medium text-foreground">+91 {newMobileInput}</span>
+                  </p>
+                  <InputOTP
+                    maxLength={6}
+                    value={mobileOtpCode}
+                    onChange={setMobileOtpCode}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleVerifyMobileOtp}
+                      disabled={isVerifyingMobileOtp || mobileOtpCode.length !== 6}
+                    >
+                      {isVerifyingMobileOtp ? "Verifying..." : "Verify & Save"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSendMobileOtp}
+                      disabled={isSendingMobileOtp || mobileOtpCooldown > 0}
+                    >
+                      {mobileOtpCooldown > 0 ? `Resend in ${mobileOtpCooldown}s` : "Resend OTP"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setMobileChangeMode("view"); setNewMobileInput(""); setMobileOtpCode(""); }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <p className="text-xs text-muted-foreground mt-1">{t('settings.mobileNote', '10-digit Indian mobile number')}</p>
             </div>
           </div>

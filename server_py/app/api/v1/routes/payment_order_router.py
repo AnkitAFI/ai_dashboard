@@ -195,6 +195,40 @@ def _prorated_upgrade_price(current_order: "PaymentOrder", new_plan_id: str) -> 
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# AUDIT LOG HELPER
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _log_subscription_event(
+    db: Session,
+    user_id: int,
+    action: str,
+    resource_id: str,
+) -> None:
+    """
+    Write a structured row to audit_logs for every subscription lifecycle event.
+    Never raises — a logging failure must never break the main transaction.
+    Call AFTER db.commit() so the flush doesn't interfere.
+    """
+    try:
+        from app.models.schema_v2 import AuditLog
+        log_entry = AuditLog(
+            actor_user_id=user_id,
+            action=action,
+            resource_type="subscription",
+            resource_id=str(resource_id)[:100],
+        )
+        db.add(log_entry)
+        db.commit()
+        logger.info("SUB_EVENT user=%s action=%s resource=%s", user_id, action, resource_id)
+    except Exception as exc:
+        logger.warning("audit_log write failed (non-fatal): %s", exc)
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # EMAIL
 # ═════════════════════════════════════════════════════════════════════════════
 
@@ -774,7 +808,10 @@ def verify_subscription(
     existing_order = db.query(PaymentOrder).filter(PaymentOrder.razorpay_payment_id == data.razorpay_payment_id).first()
     if existing_order:
         return {"success": True, "message": "Subscription verified."}
-        
+
+    # Capture old tier BEFORE _sync_user overwrites it — needed for upgrade detection
+    _old_tier_vs = current_user.subscription_tier or "free"
+
     try:
         sub_entity = rzp_client.subscription.fetch(data.razorpay_subscription_id)
         pay_entity = rzp_client.payment.fetch(data.razorpay_payment_id)
@@ -861,6 +898,13 @@ def verify_subscription(
         db.commit()
         
         _sync_user(current_user, db_order, db)
+
+        # ── AUDIT LOG ──────────────────────────────────────────────────────────
+        _sub_action = "subscription.upgraded" if _old_tier_vs not in ("free", data.plan_id) else "subscription.activated"
+        _log_subscription_event(
+            db, current_user.id, _sub_action,
+            f"plan:{data.plan_id}|from:{_old_tier_vs}|pay:{data.razorpay_payment_id}|sub:{data.razorpay_subscription_id}"
+        )
     except Exception as e:
         db.rollback()
         print(f"⚠️ Verify endpoint DB error: {e}")
@@ -924,6 +968,9 @@ def verify_payment(
         db.commit()
         raise HTTPException(400, "Invalid payment signature")
 
+    # Capture old tier BEFORE _sync_user overwrites it
+    _old_tier_vp = current_user.subscription_tier or "free"
+
     try:
         expiry                    = _expiry()
         order.status              = "paid"
@@ -947,6 +994,13 @@ def verify_payment(
         db.rollback()
         logger.error("verify_payment DB error activating plan: %s", e, exc_info=True)
         raise HTTPException(500, "Failed to activate plan. Please contact support if the issue persists.")
+
+    # ── AUDIT LOG ──────────────────────────────────────────────────────────────
+    _sub_action_vp = "subscription.upgraded" if _old_tier_vp not in ("free", data.plan_id) else "subscription.activated"
+    _log_subscription_event(
+        db, current_user.id, _sub_action_vp,
+        f"plan:{data.plan_id}|from:{_old_tier_vp}|pay:{data.razorpay_payment_id}|order:{order.id}"
+    )
 
     _email_payment_confirmed(
         email=order.billing_email or current_user.email,
@@ -1297,6 +1351,12 @@ async def razorpay_webhook(
         _sync_user(user, new_order, db)
         
         db.commit()
+
+        # ── AUDIT LOG ──────────────────────────────────────────────────────
+        _log_subscription_event(
+            db, user_id, "subscription.renewed",
+            f"plan:{plan_id}|sub:{rzp_sub_id}|pay:{rzp_pay_id}"
+        )
         
         # Email receipt
         _email_payment_confirmed(
@@ -1324,9 +1384,17 @@ async def razorpay_webhook(
             # We don't revoke access immediately, they paid for the month.
             # We just clear the ID so the system knows it won't auto-renew.
             # Next month, the cron job will downgrade them naturally.
+            _cancelled_user_id = user_sub.user_id
+            _cancelled_tier    = user_sub.subscription_tier or "unknown"
             user_sub.razorpay_subscription_id = None
             db.commit()
             print(f"⚠️ Webhook: Subscription {rzp_sub_id} cancelled/halted. Will not auto-renew.")
+            # ── AUDIT LOG ────────────────────────────────────────────────
+            _log_action = "subscription.halted" if event == "subscription.halted" else "subscription.cancelled"
+            _log_subscription_event(
+                db, _cancelled_user_id, _log_action,
+                f"plan:{_cancelled_tier}|sub:{rzp_sub_id}|event:{event}"
+            )
         return {"status": "ok"}
 
     # ─── EXISTING ONE-TIME ORDER EVENTS ─────────────────────────────────────
@@ -1368,6 +1436,11 @@ async def razorpay_webhook(
     elif event == "payment.failed" and order.status != "paid":
         order.status = "failed"
         db.commit()
+        # ── AUDIT LOG ────────────────────────────────────────────────────
+        _log_subscription_event(
+            db, order.user_id, "payment.failed",
+            f"order:{order.id}|plan:{order.plan_id}|rzp:{entity.get('id', '')}"
+        )
 
     return {"status": "ok"}
 
@@ -1387,6 +1460,10 @@ def cancel_subscription(
     if not user_sub or not user_sub.razorpay_subscription_id:
         raise HTTPException(400, "No active subscription found")
         
+    _cancel_sub_id  = user_sub.razorpay_subscription_id
+    _cancel_tier    = user_sub.subscription_tier or current_user.subscription_tier or "unknown"
+    _cancel_expires = str(user_sub.subscription_expires_at or current_user.subscription_expires_at or "")
+
     try:
         rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 1})
     except Exception as e:
@@ -1395,6 +1472,12 @@ def cancel_subscription(
         
     user_sub.razorpay_subscription_id = None
     db.commit()
+
+    # ── AUDIT LOG ──────────────────────────────────────────────────────────────
+    _log_subscription_event(
+        db, current_user.id, "subscription.cancelled",
+        f"plan:{_cancel_tier}|sub:{_cancel_sub_id}|access_until:{_cancel_expires[:10]}"
+    )
     
     return {"success": True, "message": "Subscription cancelled successfully. You will not be charged again."}
 
@@ -1434,6 +1517,7 @@ def subscription_status(
 
     if not active and tier != "free" and expires_at and now > expires_at:
         is_expired = True
+        _expired_from_tier = tier
         try:
             current_user.subscription_tier       = "free"
             current_user.subscription_expires_at = None
@@ -1444,6 +1528,11 @@ def subscription_status(
             db.rollback()
         tier = "free"
         print(f"⚠️  Expired: user {user_id} → free")
+        # ── AUDIT LOG ────────────────────────────────────────────────────
+        _log_subscription_event(
+            db, user_id, "subscription.expired",
+            f"from:{_expired_from_tier}|expired_at:{str(expires_at)[:19]}"
+        )
 
     days_remaining = None
     if expires_at and not is_expired and active:
@@ -1457,3 +1546,57 @@ def subscription_status(
         "expires_at":        str(expires_at) if expires_at else None,
         "days_remaining":    days_remaining,
     }
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 8 — SUBSCRIPTION ACTIVITY LOG  (GET)
+# ═════════════════════════════════════════════════════════════════════════════
+
+# Human-readable labels for each action stored in audit_logs
+_ACTION_LABELS: dict[str, dict] = {
+    "subscription.activated": {"label": "Subscribed",          "color": "green"},
+    "subscription.upgraded":  {"label": "Plan Upgraded",       "color": "blue"},
+    "subscription.renewed":   {"label": "Auto-Renewed",        "color": "green"},
+    "subscription.cancelled": {"label": "Auto-Renewal Cancelled", "color": "amber"},
+    "subscription.halted":    {"label": "Payment Halted",      "color": "red"},
+    "subscription.expired":   {"label": "Plan Expired",        "color": "slate"},
+    "payment.failed":         {"label": "Payment Failed",      "color": "red"},
+}
+
+@router.get("/activity/{user_id}")
+def subscription_activity(
+    user_id:      int,
+    current_user: User    = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    """
+    Returns the last 50 subscription lifecycle events for the user,
+    pulled from audit_logs. Used by the frontend activity feed.
+    """
+    if current_user.id != user_id:
+        raise HTTPException(403, "Not authorised")
+
+    from app.models.schema_v2 import AuditLog
+    logs = (
+        db.query(AuditLog)
+        .filter(
+            AuditLog.actor_user_id == user_id,
+            AuditLog.resource_type == "subscription",
+        )
+        .order_by(AuditLog.created_at.desc())
+        .limit(50)
+        .all()
+    )
+
+    result = []
+    for log in logs:
+        meta = _ACTION_LABELS.get(log.action, {"label": log.action, "color": "slate"})
+        result.append({
+            "id":          log.id,
+            "action":      log.action,
+            "label":       meta["label"],
+            "color":       meta["color"],
+            "resource_id": log.resource_id,
+            "created_at":  str(log.created_at),
+        })
+    return result
