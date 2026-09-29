@@ -93,7 +93,7 @@
 @layer components {
   /* Page Titles: 28-32px / Bold 700 / Solid dark navy or near-black */
   .page-title {
-    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-100 text-left tracking-tight leading-tight;
+    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-200 text-left tracking-tight leading-tight;
   }
   
   /* Page Subtitle: 14-16px / Regular 400 */
@@ -103,12 +103,12 @@
 
   /* Section Headings: 18-20px / Semibold 600 */
   .section-heading {
-    @apply text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight;
+    @apply text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-200 tracking-tight;
   }
 
   /* Card Metrics: 28-32px / Bold 700 / Tabular digits */
   .card-metric {
-    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-100 leading-none;
+    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-200 leading-none;
     font-variant-numeric: tabular-nums;
   }
 

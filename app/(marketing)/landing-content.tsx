@@ -126,10 +126,12 @@ export default function LandingContent() {
 
               {/* Heading */}
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-gray-900 dark:text-white">
-                <span className="block mb-1 text-gray-900">Everything You Need to</span>
+                <span className="block mb-1 text-gray-900">
+                  Everything You Need to
+                </span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
-                  Sell & Grow on <br className="hidden sm:inline" />{" "}
-                  Amazon and Flipkart
+                  Sell & Grow on <br className="hidden sm:inline" /> Amazon and
+                  Flipkart
                 </span>
               </h2>
 
@@ -143,9 +145,9 @@ export default function LandingContent() {
                   for Amazon and Flipkart sellers. It simplifies your everyday
                   selling tasks with tools for ad automation, keyword research,
                   competitor analysis, price optimization, listing optimization,
-                  and more. Connect your Amazon seller account and access Flipkart
-                  data and insights in one place, helping you make smarter decisions
-                  and grow your online sales.
+                  and more. Connect your Amazon seller account and access
+                  Flipkart data and insights in one place, helping you make
+                  smarter decisions and grow your online sales.
                 </p>
               </div>
 
@@ -343,7 +345,7 @@ export default function LandingContent() {
                 className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
                 style={{
                   backgroundImage:
-                    "url('/insydz-opportunity-finder-thumbnail.png')",
+                    "url('/images/landing/thumbnails/thumb-opportunity-finder.webp')",
                 }}
                 onClick={() =>
                   setPlayingVideo(
@@ -406,7 +408,7 @@ export default function LandingContent() {
                 className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
                 style={{
                   backgroundImage:
-                    "url('/insydz-complete-navigation-guide-thumbnail.png')",
+                    "url('/images/landing/thumbnails/thumb-navigation-guide.webp')",
                 }}
                 onClick={() =>
                   setPlayingVideo(
@@ -466,7 +468,7 @@ export default function LandingContent() {
                 className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
                 style={{
                   backgroundImage:
-                    "url('/insydz-market-visibility-thumbnail.png')",
+                    "url('/images/landing/thumbnails/thumb-market-visibility.webp')",
                 }}
                 onClick={() =>
                   setPlayingVideo("/videos/Insydz’s%20Market%20Visibility.mp4")
@@ -499,7 +501,9 @@ export default function LandingContent() {
                   Insydz’s Market Visibility
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
-                  Insydz's Market Visibility tool gives you total clarity over your category—revealing market gaps, keyword opportunities, and exactly how you can scale your sales.
+                  Insydz's Market Visibility tool gives you total clarity over
+                  your category—revealing market gaps, keyword opportunities,
+                  and exactly how you can scale your sales.
                 </p>
                 {/* <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
                   <span className="flex items-center gap-1">

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Sparkles, Building2, MapPin, Layers, X } from "lucide-react";
+import { Sparkles, Building2, MapPin, Layers } from "lucide-react";
 
 interface CompleteProfileModalProps {
   isOpen: boolean;
@@ -125,25 +125,17 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="sm:max-w-[540px] p-0 overflow-hidden bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-slate-800 shadow-2xl rounded-2xl">
         {/* Top Header Banner */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-6 text-white">
-          <button
-            onClick={onClose}
-            type="button"
-            className="absolute top-4 right-4 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 border-b border-blue-500/20 dark:border-slate-800 px-6 py-6 text-white">
           <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4 text-blue-200" />
-            <span className="text-[11px] font-semibold tracking-wider uppercase text-blue-100">
+            <Sparkles className="w-4 h-4 text-blue-200 dark:text-sky-400" />
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-blue-100 dark:text-sky-400">
               Welcome to Insydz
             </span>
           </div>
           <DialogTitle className="text-xl font-bold text-white tracking-tight">
             Complete Your Profile
           </DialogTitle>
-          <DialogDescription className="text-xs text-blue-100/90 mt-1">
+          <DialogDescription className="text-xs text-blue-100/90 dark:text-slate-400 mt-1">
             Tell us about your business so we can tailor market intelligence and insights for you.
           </DialogDescription>
         </div>
@@ -153,7 +145,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
           {/* Business Name (Optional) */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <Building2 className="w-4 h-4 text-blue-600 dark:text-sky-400" />
               <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
                 Business Name{" "}
                 <span className="text-gray-400 dark:text-slate-500 font-normal">
@@ -173,7 +165,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
           {/* Location * */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <MapPin className="w-4 h-4 text-blue-600 dark:text-sky-400" />
               <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
                 Location <span className="text-red-500">*</span>
               </Label>
@@ -200,7 +192,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <Layers className="w-4 h-4 text-blue-600 dark:text-sky-400" />
                 <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
                   Business Interests <span className="text-red-500">*</span>
                 </Label>
@@ -219,7 +211,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
                       checked={selectedInterests.includes(interest.id)}
                       onCheckedChange={() => handleInterestToggle(interest.id)}
                       disabled={isLoading}
-                      className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                      className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-sky-600 data-[state=checked]:border-blue-600 dark:data-[state=checked]:border-sky-600"
                     />
                     <Label
                       htmlFor={`modal-${interest.id}`}
@@ -232,7 +224,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
               </div>
             </div>
             {selectedInterests.length > 0 && (
-              <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
+              <p className="text-xs font-medium text-blue-600 dark:text-sky-400">
                 ✓ {selectedInterests.length} category selected
               </p>
             )}
@@ -251,7 +243,7 @@ export default function CompleteProfileModal({ isOpen, onClose }: CompleteProfil
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 h-11 rounded-xl font-bold text-white text-xs transition-all duration-200 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 shadow-md shadow-blue-600/20 cursor-pointer"
+              className="px-6 h-11 rounded-xl font-bold text-white text-xs transition-all duration-200 bg-blue-600 hover:bg-blue-700 dark:bg-sky-700 dark:hover:bg-sky-600 dark:border dark:border-sky-500/40 disabled:opacity-60 shadow-md shadow-blue-600/20 dark:shadow-none cursor-pointer"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
