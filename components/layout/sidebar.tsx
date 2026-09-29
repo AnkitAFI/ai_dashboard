@@ -405,12 +405,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
           <div className="px-4 py-3">
             <div
               id="tour-mode-switcher"
-              className="relative p-1 rounded-full flex items-center"
-              style={{
-                background:
-                  "linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)",
-                boxShadow: "0 2px 10px rgba(0, 198, 255, 0.3)",
-              }}
+              className="relative p-1 rounded-full flex items-center bg-gradient-to-r from-[#00C6FF] via-[#0099FF] to-[#00D4AA] dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 dark:border dark:border-slate-700/80 shadow-md dark:shadow-inner transition-all"
             >
               <button
                 onClick={() => {
@@ -418,10 +413,10 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   router.push("/dashboard");
                 }}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
+                  "flex-1 flex items-center justify-center py-2 px-3.5 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
                   mode === "explorer"
-                    ? "bg-white text-[#003366] shadow-lg"
-                    : "bg-transparent text-white hover:text-white/90",
+                    ? "bg-white text-[#003366] dark:bg-sky-600 dark:text-white shadow-md dark:shadow-sky-600/30"
+                    : "bg-transparent text-white dark:text-slate-400 hover:text-white dark:hover:text-slate-200",
                 )}
                 data-track-id="sidebar_mode_explorer_btn"
                 data-filter-value="explorer"
@@ -435,10 +430,10 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   router.push("/seller/store");
                 }}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
+                  "flex-1 flex items-center justify-center py-2 px-3.5 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
                   mode === "seller"
-                    ? "bg-white text-[#003366] shadow-lg"
-                    : "bg-transparent text-white hover:text-white/90",
+                    ? "bg-white text-[#003366] dark:bg-sky-600 dark:text-white shadow-md dark:shadow-sky-600/30"
+                    : "bg-transparent text-white dark:text-slate-400 hover:text-white dark:hover:text-slate-200",
                 )}
                 data-track-id="sidebar_mode_seller_btn"
                 data-filter-value="seller"
@@ -491,7 +486,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group px-3 py-2 h-auto min-h-[40px]",
                             isCollapsed && "justify-center px-2",
                             isActive(item.href)
-                              ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
+                              ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] dark:from-sky-700 dark:to-blue-700 dark:border dark:border-sky-500/40 text-white dark:text-white shadow-md dark:shadow-sky-700/25"
                               : "text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60",
                             item.disabled && "opacity-50 grayscale select-none",
                           )}
@@ -516,7 +511,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                                     item.badge === "AI"
                                       ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/60 dark:text-purple-200 dark:border-purple-700"
                                       : item.badge === "NEW"
-                                        ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/60 dark:text-blue-200 dark:border-blue-700"
+                                        ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-800/60"
                                         : "bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700",
                                   )}
                                 >
@@ -545,7 +540,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
           >
             <Link
               href="/settings"
-              className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform"
+              className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] dark:from-sky-700 dark:to-blue-700 text-white shadow-sm hover:scale-105 transition-transform"
             >
               <Settings className="h-4 w-4" />
             </Link>

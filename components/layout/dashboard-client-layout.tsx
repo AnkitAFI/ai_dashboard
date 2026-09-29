@@ -96,7 +96,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        <main className={`flex-1 min-w-0 max-w-full ${hasCustomHeader ? "p-0" : "px-3 sm:px-6"}`}>
+        <main className={`flex-1 min-w-0 max-w-full ${hasCustomHeader ? "p-0" : "px-4 sm:px-6 lg:px-8 py-2 sm:py-4"}`}>
           {!hasCustomHeader && showFilters && (
             <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
               <FiltersPanel />

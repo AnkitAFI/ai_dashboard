@@ -6,8 +6,6 @@ import { API_BASE_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-react";
@@ -33,24 +31,6 @@ interface FilterState {
   topN: number;
 }
 
-const DATE_RANGES = [
-  { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "90d", label: "Last 3 months" },
-  { value: "1y", label: "Last year" },
-  { value: "all", label: "All time" },
-];
-
-const SORT_OPTIONS = [
-  { value: "sales_desc", label: "Sales (High to Low)" },
-  { value: "sales_asc", label: "Sales (Low to High)" },
-  { value: "profit_desc", label: "Profit Margin (High to Low)" },
-  { value: "profit_asc", label: "Profit Margin (Low to High)" },
-  { value: "rating_desc", label: "Rating (High to Low)" },
-  { value: "price_desc", label: "Price (High to Low)" },
-  { value: "price_asc", label: "Price (Low to High)" },
-  { value: "trending", label: "Trending" },
-];
 
 const TOP_N_OPTIONS = [
   { value: 5, label: "Top 5" },
@@ -221,7 +201,7 @@ export default function FiltersPanel() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-0 max-w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 min-w-0 max-w-full items-end">
             {/* Table Selector */}
             <div className="space-y-2">
               <Label>{t('filters.dataSource', 'Data Source')}</Label>
@@ -253,26 +233,7 @@ export default function FiltersPanel() {
               </Select>
             </div>
 
-            {/* Price Range */}
-            <div className="space-y-2">
-              <Label>{t('filters.priceRange', 'Price Range')}</Label>
-              <div className="px-2">
-                <Slider
-                  value={localFilters.priceRange}
-                  onValueChange={(v) => updateLocalFilter("priceRange", v as [number, number])}
-                  min={0}
-                  max={100000}
-                  step={1000}
-                  className="w-full"
-                  data-track-id="filters_price_slider"
-                  data-filter-value={JSON.stringify(localFilters.priceRange)}
-                />
-                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>{formatPrice(localFilters.priceRange[0])}</span>
-                  <span>{formatPrice(localFilters.priceRange[1])}</span>
-                </div>
-              </div>
-            </div>
+
 
             {/* Rating */}
             <div className="space-y-2">
@@ -292,39 +253,7 @@ export default function FiltersPanel() {
               </Select>
             </div>
 
-            {/* Date Range */}
-            <div className="space-y-2">
-              <Label>{t('filters.dateRange', 'Date Range')}</Label>
-              <Select value={localFilters.dateRange} onValueChange={(v) => updateLocalFilter("dateRange", v)}>
-                <SelectTrigger className="w-full" data-track-id="filters_daterange_select" data-filter-value={localFilters.dateRange}>
-                  <SelectValue placeholder={t('filters.selectDate', 'Select date range')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {DATE_RANGES.map((range) => (
-                    <SelectItem key={range.value} value={range.value} data-track-id="filters_daterange_option" data-filter-value={range.value}>
-                      {range.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
-            {/* Sort By */}
-            <div className="space-y-2">
-              <Label>{t('filters.sortBy', 'Sort By')}</Label>
-              <Select value={localFilters.sortBy} onValueChange={(v) => updateLocalFilter("sortBy", v)}>
-                <SelectTrigger className="w-full" data-track-id="filters_sortby_select" data-filter-value={localFilters.sortBy}>
-                  <SelectValue placeholder={t('filters.sortByOption', 'Sort by')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value} data-track-id="filters_sortby_option" data-filter-value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
             {/* Top N Products - WITH SUBSCRIPTION LIMITS */}
             <div className="space-y-2">
@@ -376,73 +305,13 @@ export default function FiltersPanel() {
                 </SelectContent>
               </Select>
 
-              {/* Current selection display */}
-              <div className="text-xs text-muted-foreground">
-                Currently: Top {localFilters.topN} products
-              </div>
+
             </div>
           </div>
 
-          {/* Subscription Upgrade Prompt */}
-          {limits.maxTopN < 100 && (
-            <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-purple-50 border-2 border-purple-200 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <Crown className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-purple-900 mb-1">
-                    🚀 Unlock More Data Insights
-                  </p>
-                  <p className="text-xs text-purple-700 mb-2">
-                    {currentTier === "free"
-                      ? "Upgrade to Basic for Top 20 products or Premium for Top 100"
-                      : currentTier === "basic"
-                        ? "Upgrade to Premium for Top 100 products + real-time alerts"
-                        : "Upgrade to Enterprise for unlimited products"}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-purple-600 hover:bg-purple-700 text-xs h-7"
-                      onClick={() => window.location.href = "/subscription"}
-                      data-track-id="filters_upgrade_view_plans_btn"
-                    >
-                      <Crown className="w-3 h-3 mr-1" />
-                      View Plans
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs h-7 border-purple-300 text-purple-700 hover:bg-purple-50"
-                      onClick={() => setShowUpgradeDialog(true)}
-                      data-track-id="filters_upgrade_learn_more_btn"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* Advanced Options */}
-          <Separator />
-          <div className="space-y-4">
-            <Label className="text-sm font-medium">Advanced Options</Label>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-sm">Show Trending Products Only</Label>
-                <p className="text-xs text-muted-foreground">
-                  Filter to display only products that are currently trending
-                </p>
-              </div>
-              <Switch
-                checked={localFilters.showTrendingOnly}
-                onCheckedChange={(checked) => updateLocalFilter("showTrendingOnly", checked)}
-                data-track-id="filters_show_trending_only_switch"
-                data-filter-value={localFilters.showTrendingOnly ? "on" : "off"}
-              />
-            </div>
-          </div>
+
+
 
           {/* Apply & Clear Buttons */}
           <div className="flex gap-2 pt-4">

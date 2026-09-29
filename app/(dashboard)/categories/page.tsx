@@ -145,7 +145,7 @@ export default function Categories() {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-semibold rounded-xl hover:from-blue-600 hover:to-cyan-600 transition shadow-md"
+              className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 dark:from-sky-700 dark:to-blue-700 dark:hover:from-sky-600 dark:hover:to-blue-600 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer"
             >
               Clear Search
             </button>
@@ -165,20 +165,20 @@ export default function Categories() {
               >
                 {/* Marketplace Badge */}
                 {cat.source === "flipkart" ? (
-                  <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/35 text-blue-600 dark:text-blue-400 border border-blue-300 dark:border-blue-800/55 tracking-wide shadow-sm">
+                  <span className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-slate-800/80 text-blue-600 dark:text-sky-300/80 border border-blue-200 dark:border-slate-700/80 tracking-wide">
                     Flipkart
                   </span>
                 ) : cat.source === "amazon" ? (
-                  <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 dark:bg-orange-950/35 text-orange-500 dark:text-orange-400 border border-orange-300 dark:border-orange-800/55 tracking-wide shadow-sm">
+                  <span className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-50 dark:bg-slate-800/80 text-orange-600 dark:text-amber-300/80 border border-orange-200 dark:border-slate-700/80 tracking-wide">
                     Amazon
                   </span>
                 ) : null}
 
                 <CardHeader className="flex flex-col items-center text-center space-y-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 dark:from-cyan-950/20 dark:to-blue-900/30 rounded-xl flex items-center justify-center">
-                    <CategoryIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  <div className="w-11 h-11 bg-gradient-to-br from-cyan-100 to-blue-50 dark:from-slate-800 dark:to-slate-800/80 rounded-xl flex items-center justify-center border border-transparent dark:border-slate-700/50">
+                    <CategoryIcon className="h-5 w-5 text-blue-600 dark:text-sky-400/80" />
                   </div>
-                  <CardTitle className={cn("text-lg font-semibold", isDark ? "text-slate-100" : "text-slate-800")}>
+                  <CardTitle className={cn("text-base font-bold", isDark ? "text-slate-100" : "text-slate-800")}>
                     {cat.category}
                   </CardTitle>
                   <CardDescription className={isDark ? "text-slate-400" : "text-slate-500"}>
@@ -186,16 +186,17 @@ export default function Categories() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="flex flex-col gap-3 mt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-emerald-600 dark:text-emerald-450 font-semibold">
-                      ₹{cat.avg_price ? cat.avg_price.toFixed(2) : "N/A"} avg. price
+                <CardContent className="flex flex-col gap-2.5 mt-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-emerald-600 dark:text-emerald-400/80 font-medium">
+                      ₹{cat.avg_price ? cat.avg_price.toFixed(2) : "N/A"}{" "}
+                      <span className="text-slate-500 dark:text-slate-400 text-[11px] font-normal">avg. price</span>
                     </span>
-                    <span className="flex items-center gap-1 text-yellow-500 font-medium">
-                      <Star className="h-4 w-4" /> {cat.avg_rating?.toFixed(1) ?? "N/A"}
+                    <span className="flex items-center gap-1 text-slate-700 dark:text-slate-300 font-medium">
+                      <Star className="h-3.5 w-3.5 text-amber-400/80" /> {cat.avg_rating?.toFixed(1) ?? "N/A"}
                     </span>
                   </div>
-                  <div className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>
+                  <div className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>
                     Total Reviews: {cat.total_reviews?.toLocaleString() ?? 0}
                   </div>
 
@@ -209,9 +210,9 @@ export default function Categories() {
                     }
                     data-track-id="view_products_btn"
                     data-filter-value={cat.category}
-                    className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all font-semibold"
+                    className="flex items-center justify-center mt-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700/80 dark:border dark:border-slate-700/80 text-white dark:text-sky-300 rounded-xl py-2 shadow-xs transition-all font-semibold text-xs cursor-pointer"
                   >
-                    View Products <ChevronRight className="ml-2 h-5 w-5" />
+                    View Products <ChevronRight className="ml-1.5 h-4 w-4" />
                   </button>
                 </CardContent>
               </Card>

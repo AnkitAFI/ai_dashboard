@@ -12,7 +12,7 @@ const VIDEOS = [
     category: "Getting Started",
     gradient: "g-blue",
     videoUrl: "/videos/Insydz%20Introduction.mp4",
-    thumbnail: "/insydz-introduction-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-introduction.webp",
   },
   {
     id: 1,
@@ -22,7 +22,7 @@ const VIDEOS = [
     category: "Getting Started",
     gradient: "g-pink",
     videoUrl: "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
-    thumbnail: "/insydz-complete-navigation-guide-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-navigation-guide.webp",
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ const VIDEOS = [
     category: "Product Research",
     gradient: "g-teal",
     videoUrl: "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
-    thumbnail: "/insydz-opportunity-finder-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-opportunity-finder.webp",
   },
   {
     id: 3,
@@ -43,7 +43,7 @@ const VIDEOS = [
     category: "Competitor Analysis",
     gradient: "g-purple",
     videoUrl: "/videos/Insydz%E2%80%99s%20Market%20Visibility.mp4",
-    thumbnail: "/insydz-market-visibility-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-market-visibility.webp",
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const VIDEOS = [
     category: "Price Tracking",
     gradient: "g-teal",
     videoUrl: "/videos/Seller-Price-Comparison.mp4",
-    thumbnail: "/insydz-seller-price-comparison-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-seller-price-comparison.webp",
   },
   {
     id: 5,
@@ -63,7 +63,7 @@ const VIDEOS = [
     category: "Review Intelligence",
     gradient: "g-orange",
     videoUrl: "/videos/Insydz%20Review%20Comp.mp4",
-    thumbnail: "/insydz-review-comparison-thumbnail.png",
+    thumbnail: "/images/landing/thumbnails/thumb-review-comparison.webp",
   },
 ];
 
@@ -463,7 +463,7 @@ export default function VideoGuidesContent() {
           <div
             className="featured-thumb"
             style={{
-              backgroundImage: `url('/insydz-introduction-thumbnail.png')`,
+              backgroundImage: `url('/images/landing/thumbnails/thumb-introduction.webp')`,
             }}
             onClick={() =>
               window.open("/videos/Insydz%20Introduction.mp4", "_blank")

@@ -93,7 +93,7 @@
 @layer components {
   /* Page Titles: 28-32px / Bold 700 / Solid dark navy or near-black */
   .page-title {
-    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-100 text-left tracking-tight leading-tight;
+    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-200 text-left tracking-tight leading-tight;
   }
   
   /* Page Subtitle: 14-16px / Regular 400 */
@@ -103,12 +103,12 @@
 
   /* Section Headings: 18-20px / Semibold 600 */
   .section-heading {
-    @apply text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight;
+    @apply text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-200 tracking-tight;
   }
 
   /* Card Metrics: 28-32px / Bold 700 / Tabular digits */
   .card-metric {
-    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-100 leading-none;
+    @apply text-2xl sm:text-3xl md:text-[30px] font-bold text-slate-900 dark:text-slate-200 leading-none;
     font-variant-numeric: tabular-nums;
   }
 
@@ -243,6 +243,19 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(var(--rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-15px) rotate(var(--rotate, 0deg));
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* ===== Table & Cards ===== */

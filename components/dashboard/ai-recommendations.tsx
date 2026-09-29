@@ -4,11 +4,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Bot, Lightbulb, RefreshCw, Target, TrendingUp,
-  Lock, Crown, AlertCircle, ShieldAlert, Zap, BarChart2,
+  Bot,
+  Lightbulb,
+  RefreshCw,
+  Target,
+  TrendingUp,
+  Lock,
+  Crown,
+  AlertCircle,
+  ShieldAlert,
+  Zap,
+  BarChart2,
 } from "lucide-react";
 import { useFilters } from "@/components/dashboard/filters-context";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import {
+  useSubscriptionLimits,
+  UNLIMITED,
+} from "@/hooks/use-subscription-limits";
 import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
 import { API_BASE_URL } from "@/lib/config";
 
@@ -44,16 +56,35 @@ function MomentumRing({ score, label }: { score: number; label: string }) {
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const progress = (score / 100) * circumference;
-  const color = score >= 70 ? "#22c55e" : score >= 50 ? "#f59e0b" : score >= 30 ? "#3b82f6" : "#94a3b8";
+  const color =
+    score >= 70
+      ? "#22c55e"
+      : score >= 50
+        ? "#f59e0b"
+        : score >= 30
+          ? "#3b82f6"
+          : "#94a3b8";
 
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative w-16 h-16">
         <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r={radius} fill="none" stroke="#e5e7eb" strokeWidth="5" />
           <circle
-            cx="36" cy="36" r={radius}
-            fill="none" stroke={color} strokeWidth="5"
+            cx="36"
+            cy="36"
+            r={radius}
+            fill="none"
+            stroke="currentColor"
+            className="text-gray-200 dark:text-slate-800"
+            strokeWidth="5"
+          />
+          <circle
+            cx="36"
+            cy="36"
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth="5"
             strokeDasharray={circumference}
             strokeDashoffset={circumference - progress}
             strokeLinecap="round"
@@ -61,10 +92,14 @@ function MomentumRing({ score, label }: { score: number; label: string }) {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold text-gray-800">{score}</span>
+          <span className="text-sm font-bold text-gray-800 dark:text-slate-100">
+            {score}
+          </span>
         </div>
       </div>
-      <span className="text-[10px] font-medium text-gray-500 mt-1 text-center leading-tight">{label}</span>
+      <span className="text-[10px] font-medium text-gray-500 dark:text-slate-400 mt-1 text-center leading-tight">
+        {label}
+      </span>
     </div>
   );
 }
@@ -73,7 +108,12 @@ function MomentumRing({ score, label }: { score: number; label: string }) {
 // RECOMMENDATION CARD  (original structure preserved)
 // ─────────────────────────────────────────────
 
-function RecommendationCard({ icon, title, description, gradient }: RecommendationCardProps) {
+function RecommendationCard({
+  icon,
+  title,
+  description,
+  gradient,
+}: RecommendationCardProps) {
   return (
     <div className={`bg-gradient-to-br ${gradient} rounded-lg p-4 text-white`}>
       <div className="flex items-center mb-2">
@@ -92,18 +132,38 @@ function RecommendationCard({ icon, title, description, gradient }: Recommendati
 function MicroInsight({ text, index }: { text: string; index: number }) {
   // Render **bold** markdown
   const parts = text.split(/\*\*(.*?)\*\*/g);
-  const colors = ["text-violet-600", "text-blue-600", "text-emerald-600"];
-  const bgColors = ["bg-violet-50", "bg-blue-50", "bg-emerald-50"];
-  const borderColors = ["border-violet-200", "border-blue-200", "border-emerald-200"];
+  const colors = [
+    "text-violet-600 dark:text-violet-400",
+    "text-blue-600 dark:text-blue-400",
+    "text-emerald-600 dark:text-emerald-400",
+  ];
+  const bgColors = [
+    "bg-violet-50 dark:bg-violet-950/30",
+    "bg-blue-50 dark:bg-blue-950/30",
+    "bg-emerald-50 dark:bg-emerald-950/30",
+  ];
+  const borderColors = [
+    "border-violet-200 dark:border-violet-800/40",
+    "border-blue-200 dark:border-blue-800/40",
+    "border-emerald-200 dark:border-emerald-800/40",
+  ];
 
   return (
-    <div className={`flex items-start gap-2 p-2.5 rounded-lg border ${bgColors[index]} ${borderColors[index]}`}>
-      <span className={`text-xs font-bold mt-0.5 shrink-0 ${colors[index]}`}>#{index + 1}</span>
-      <p className="text-xs text-gray-700 leading-relaxed">
+    <div
+      className={`flex items-start gap-2 p-2.5 rounded-lg border ${bgColors[index]} ${borderColors[index]}`}
+    >
+      <span className={`text-xs font-bold mt-0.5 shrink-0 ${colors[index]}`}>
+        #{index + 1}
+      </span>
+      <p className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">
         {parts.map((part, i) =>
-          i % 2 === 1
-            ? <strong key={i} className="text-gray-900">{part}</strong>
-            : part
+          i % 2 === 1 ? (
+            <strong key={i} className="text-gray-900 dark:text-slate-100">
+              {part}
+            </strong>
+          ) : (
+            part
+          ),
         )}
       </p>
     </div>
@@ -116,16 +176,25 @@ function MicroInsight({ text, index }: { text: string; index: number }) {
 
 const BASE_URL = API_BASE_URL;
 
-export default function AIRecommendations({ selectedSource }: { selectedSource: string }) {
+export default function AIRecommendations({
+  selectedSource,
+}: {
+  selectedSource: string;
+}) {
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
-  const { trackAIChatUsage, canUseAIFeature, getAIUsage } = useSubscriptionSync();
+  const { trackAIChatUsage, canUseAIFeature, getAIUsage } =
+    useSubscriptionSync();
 
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
 
   const [data, setData] = useState<IntelligenceData | null>(null);
   const [loading, setLoading] = useState(hasAIRecommendations);
-  const [aiUsage, setAiUsage] = useState<{ used: number; limit: number; month: string } | null>(null);
+  const [aiUsage, setAiUsage] = useState<{
+    used: number;
+    limit: number;
+    month: string;
+  } | null>(null);
   const [usageLimitReached, setUsageLimitReached] = useState(false);
 
   // Abort controller to cancel in-flight requests on filter change
@@ -162,9 +231,10 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
       flipkart: "flipkart",
       amazon: "amazon",
       rapidapi_amazon_products: "amazon",
-      both: "flipkart",   // fallback for "both"
+      both: "flipkart", // fallback for "both"
     };
-    const mappedSource = sourceMap[filters.table || selectedSource] || "flipkart";
+    const mappedSource =
+      sourceMap[filters.table || selectedSource] || "flipkart";
 
     try {
       const res = await fetch(`${BASE_URL}/ai/intelligence`, {
@@ -184,17 +254,22 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
         await trackAIChatUsage();
         const updatedUsage = await getAIUsage();
         setAiUsage(updatedUsage);
-        if (updatedUsage.limit < UNLIMITED && updatedUsage.used >= updatedUsage.limit) {
+        if (
+          updatedUsage.limit < UNLIMITED &&
+          updatedUsage.used >= updatedUsage.limit
+        ) {
           setUsageLimitReached(true);
         }
       }
-
     } catch (err: any) {
-      if (err.name === "AbortError") return;   // cancelled — don't update state
+      if (err.name === "AbortError") return; // cancelled — don't update state
       console.error("Intelligence fetch error:", err);
 
       // Graceful fallback — set minimal data so the UI doesn't crash
-      const cat = filters.category && filters.category !== "All Categories" ? filters.category : "the selected market";
+      const cat =
+        filters.category && filters.category !== "All Categories"
+          ? filters.category
+          : "the selected market";
       const src = mappedSource === "amazon" ? "Amazon" : "Flipkart";
       setData({
         market_pulse: `${src} data for ${cat} is being analysed. Try refreshing.`,
@@ -223,44 +298,69 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
 
   // ── Derived display values ──
   const displaySource =
-    (filters.table || selectedSource) === "both" ? "Both Platforms" :
-      (filters.table || selectedSource) === "amazon" ? "Amazon" : "Flipkart";
+    (filters.table || selectedSource) === "both"
+      ? "Both Platforms"
+      : (filters.table || selectedSource) === "amazon"
+        ? "Amazon"
+        : "Flipkart";
 
   const cardStyles = [
-    { icon: <Target className="h-5 w-5" />, gradient: "from-green-500 to-emerald-600", title: "Key Opportunity" },
-    { icon: <TrendingUp className="h-5 w-5" />, gradient: "from-blue-500 to-cyan-600", title: "Action Plan" },
+    {
+      icon: <Target className="h-5 w-5" />,
+      gradient: "from-green-500 to-emerald-600",
+      title: "Key Opportunity",
+    },
+    {
+      icon: <TrendingUp className="h-5 w-5" />,
+      gradient: "from-blue-500 to-cyan-600",
+      title: "Action Plan",
+    },
   ];
 
   // ─────────────────────────────────────────
   // RENDER
   // ─────────────────────────────────────────
   return (
-    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-4 sm:p-6 border mb-6 min-w-0 max-w-full overflow-hidden">
+    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-4 sm:p-6 border min-w-0 max-w-full overflow-hidden">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 p-0">
         <div className="flex items-center">
           <div className="p-3 bg-primary rounded-xl mr-3 sm:mr-4 shrink-0">
             <Bot className="text-primary-foreground h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="min-w-0 flex-1">
-            <CardTitle className="text-base sm:text-lg font-semibold truncate">Decision Intelligence</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-semibold truncate">
+              Decision Intelligence
+            </CardTitle>
             <p className="text-sm text-muted-foreground">
               Natural language analysis for{" "}
-              <span className="font-medium text-foreground">{displaySource}</span>
+              <span className="font-medium text-foreground">
+                {displaySource}
+              </span>
               {filters.category && filters.category !== "All Categories" && (
-                <span className="text-primary font-medium"> · {filters.category}</span>
+                <span className="text-primary font-medium">
+                  {" "}
+                  · {filters.category}
+                </span>
               )}
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500/20 to-blue-500/20">
+          <Badge
+            variant="outline"
+            className="bg-purple-500/10 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-300/40 dark:border-purple-800/40 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+          >
             🤖 NLP Powered
           </Badge>
 
           {aiUsage && (
-            <Badge variant={usageLimitReached ? "destructive" : "outline"} className="text-xs">
-              {aiUsage.used}/{aiUsage.limit >= UNLIMITED ? "∞" : aiUsage.limit} Uses
+            <Badge
+              variant={usageLimitReached ? "destructive" : "outline"}
+              className="text-xs"
+            >
+              {aiUsage.used}/{aiUsage.limit >= UNLIMITED ? "∞" : aiUsage.limit}{" "}
+              Uses
             </Badge>
           )}
 
@@ -269,7 +369,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             size="sm"
             onClick={fetchIntelligence}
             disabled={loading || usageLimitReached || !hasAIRecommendations}
-            title={usageLimitReached ? "Monthly limit reached" : "Refresh insights"}
+            title={
+              usageLimitReached ? "Monthly limit reached" : "Refresh insights"
+            }
             data-track-id="ai_recs_refresh_btn"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
@@ -278,54 +380,67 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
       </CardHeader>
 
       <CardContent className="p-0">
-
         {/* ── LOCKED ── */}
         {!hasAIRecommendations ? (
-          <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <Lock className="w-5 h-5 text-amber-600 mt-1" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-amber-900">🤖 AI Business Advisor Locked</p>
-                <p className="text-sm text-amber-700 mt-1">
-                  Upgrade to {currentTier === "free" ? "Basic" : "Premium"} to unlock AI-powered recommendations.
+          <div className="p-5 sm:p-6 bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl">
+            <div className="flex items-start gap-3.5">
+              <div className="p-2 rounded-lg bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0 border border-amber-500/20">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                  <span>🤖 AI Business Advisor Locked</span>
                 </p>
-                <Button size="sm" variant="outline" className="mt-3 border-amber-400 text-amber-700 hover:bg-amber-100"
-                  onClick={() => window.location.href = "/subscription"}
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Upgrade to unlock AI-powered recommendations.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3.5 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 bg-slate-200/50 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold text-xs h-8 px-3 rounded-lg shadow-2xs"
+                  onClick={() => (window.location.href = "/subscription")}
                   data-track-id="ai_recs_locked_upgrade_btn"
                 >
-                  <Crown className="w-4 h-4 mr-1" /> Upgrade Now
+                  <Crown className="w-3.5 h-3.5 mr-1.5 text-amber-500" />{" "}
+                  Upgrade Now
                 </Button>
               </div>
             </div>
           </div>
-
-          /* ── LIMIT REACHED ── */
-        ) : usageLimitReached ? (
-          <div className="p-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-1" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-red-900">Monthly AI Limit Reached</p>
-                <p className="text-sm text-red-700 mt-1">
-                  You've used all {aiUsage?.limit} AI requests for this month. Upgrade for more!
+        ) : /* ── LIMIT REACHED ── */
+        usageLimitReached ? (
+          <div className="p-5 sm:p-6 bg-gradient-to-r from-red-50/90 via-orange-50/80 to-red-50/90 dark:from-red-950/40 dark:via-orange-950/30 dark:to-red-950/40 border border-red-200/80 dark:border-red-700/50 rounded-xl shadow-2xs">
+            <div className="flex items-start gap-3.5">
+              <div className="p-2 rounded-lg bg-red-500/15 dark:bg-red-400/20 text-red-600 dark:text-red-400 shrink-0 border border-red-300/50 dark:border-red-700/40">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-red-950 dark:text-red-100">
+                  Monthly AI Limit Reached
                 </p>
-                <Button size="sm" variant="outline" className="mt-3 border-red-400 text-red-700 hover:bg-red-100"
-                  onClick={() => window.location.href = "/subscription"}
+                <p className="text-xs sm:text-sm text-red-800/90 dark:text-red-200/80 mt-1 leading-relaxed">
+                  You've used all {aiUsage?.limit} AI requests for this month.
+                  Upgrade for more!
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3.5 border-red-400/80 dark:border-red-600/60 text-red-900 dark:text-red-100 bg-red-100/60 dark:bg-red-900/50 hover:bg-red-200/70 dark:hover:bg-red-800/70 font-semibold text-xs h-8 px-3 rounded-lg shadow-2xs"
+                  onClick={() => (window.location.href = "/subscription")}
                   data-track-id="ai_recs_limit_upgrade_btn"
                 >
-                  <Crown className="w-4 h-4 mr-1" /> Upgrade Plan
+                  <Crown className="w-3.5 h-3.5 mr-1.5 text-red-600 dark:text-red-400" />{" "}
+                  Upgrade Plan
                 </Button>
               </div>
             </div>
           </div>
-
-          /* ── MAIN CONTENT ── */
         ) : (
+          /* ── MAIN CONTENT ── */
           <>
             {/* ── TOP ROW: Momentum ring + Market Pulse ── */}
             <div className="mb-5 p-4 bg-white/70 dark:bg-black/20 rounded-lg border border-primary/10">
               <div className="flex items-start gap-4">
-
                 {/* Momentum Ring */}
                 <div className="shrink-0">
                   {loading ? (
@@ -359,7 +474,8 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             </div>
 
             {/* ── MICRO INSIGHTS ── */}
-            {(loading || (data?.micro_insights && data.micro_insights.length > 0)) && (
+            {(loading ||
+              (data?.micro_insights && data.micro_insights.length > 0)) && (
               <div className="mb-5">
                 <h3 className="font-semibold text-sm flex items-center mb-2">
                   <BarChart2 className="h-4 w-4 mr-2 text-blue-600" />
@@ -367,7 +483,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                 </h3>
                 {loading ? (
                   <div className="space-y-2">
-                    {[0, 1, 2].map(i => <Skeleton key={i} className="h-10 w-full rounded-lg" />)}
+                    {[0, 1, 2].map((i) => (
+                      <Skeleton key={i} className="h-10 w-full rounded-lg" />
+                    ))}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -404,7 +522,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                       <ShieldAlert className="h-5 w-5" />
                       <h4 className="font-semibold ml-2">Risk Flag</h4>
                     </div>
-                    <p className="text-sm text-white/90 leading-relaxed">{data?.risk}</p>
+                    <p className="text-sm text-white/90 leading-relaxed">
+                      {data?.risk}
+                    </p>
                   </div>
                 </>
               )}
@@ -414,18 +534,25 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             <div className="p-3 bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20 rounded-lg flex items-start gap-2">
               <Zap className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-primary mb-0.5">Strategic Verdict</p>
-                {loading
-                  ? <Skeleton className="h-4 w-full" />
-                  : <p className="text-sm text-foreground leading-relaxed">{data?.verdict}</p>
-                }
+                <p className="text-xs font-semibold text-primary mb-0.5">
+                  Strategic Verdict
+                </p>
+                {loading ? (
+                  <Skeleton className="h-4 w-full" />
+                ) : (
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {data?.verdict}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* ── Cache / data footer ── */}
             {!loading && data && (
               <p className="text-[10px] text-muted-foreground text-right mt-2">
-                {data.cached ? "⚡ Cached result" : `✓ Live · ${data.data_rows} data points analysed`}
+                {data.cached
+                  ? "⚡ Cached result"
+                  : `✓ Live · ${data.data_rows} data points analysed`}
               </p>
             )}
           </>
