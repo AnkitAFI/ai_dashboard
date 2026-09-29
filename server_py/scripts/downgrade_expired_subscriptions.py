@@ -39,8 +39,23 @@ def main():
                 # If expired, downgrade!
                 if expires_at <= now_utc:
                     logger.info(f"[CRON] Downgrading user {user.email} (ID: {user.id}) to Free tier.")
+                    
+                    old_tier = user.subscription_tier
                     user.subscription_tier = 'free'
                     user.subscription_expires_at = None
+                    
+                    # ── AUDIT LOG ────────────────────────────────────────────────
+                    try:
+                        from app.models.schema_v2 import AuditLog
+                        db.add(AuditLog(
+                            actor_user_id=user.id,
+                            action="subscription.expired",
+                            resource_type="subscription",
+                            resource_id=f"from:{old_tier}|expired_at:{str(expires_at)[:19]}|cron:true"
+                        ))
+                    except Exception as log_exc:
+                        logger.warning(f"Could not create audit log for user {user.id}: {log_exc}")
+                        
                     downgrade_count += 1
             
             # Save all downgrades to the database
