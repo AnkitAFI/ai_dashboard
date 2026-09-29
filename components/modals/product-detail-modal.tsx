@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, TrendingUp, Package, ExternalLink, ShoppingBag, ShieldCheck } from "lucide-react";
-import { Dialog as ShadcnDialog, DialogContent as ShadcnContent } from "@/components/ui/dialog";
+import { Dialog as ShadcnDialog, DialogContent as ShadcnContent, DialogTitle as ShadcnTitle } from "@/components/ui/dialog";
 
 export interface FastProduct {
   id?: number | string;
@@ -52,6 +52,7 @@ export default function ProductDetailModal({
   return (
     <ShadcnDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ShadcnContent className="sm:max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-0 overflow-hidden shadow-2xl">
+        <ShadcnTitle className="sr-only">{title}</ShadcnTitle>
         {/* Header Image & Title Banner */}
         <div className="bg-gradient-to-r from-sky-50 via-blue-50/50 to-indigo-50/60 dark:from-slate-950 dark:to-slate-900 p-5 border-b border-slate-200/60 dark:border-slate-800">
           <div className="flex items-start gap-4">

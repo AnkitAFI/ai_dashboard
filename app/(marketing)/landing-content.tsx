@@ -360,6 +360,7 @@ function FloatingBadge({
   subtitleColor = "text-[#5f5875] dark:text-gray-400",
   dark = false,
   rotate = 0,
+  delay = 0,
 }: {
   icon: React.ElementType;
   title: string;
@@ -369,12 +370,16 @@ function FloatingBadge({
   subtitleColor?: string;
   dark?: boolean;
   rotate?: number;
+  delay?: number;
 }) {
   return (
     <div
-      className={`flex items-center gap-3 rounded-2xl p-4 shadow-[0_18px_36px_rgba(40,20,90,0.12)] ${dark ? "bg-[#1a1033]" : "bg-white dark:bg-gray-950"
+      className={`animate-float flex items-center gap-3 rounded-2xl p-4 shadow-[0_18px_36px_rgba(40,20,90,0.12)] ${dark ? "bg-[#1a1033]" : "bg-white dark:bg-gray-950"
         }`}
-      style={{ transform: `rotate(${rotate}deg)` }}
+      style={{ 
+        "--rotate": `${rotate}deg`,
+        animationDelay: `${delay}s`
+      } as React.CSSProperties}
     >
       <span
         className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${dark ? "bg-white dark:bg-gray-950/10" : iconBg
@@ -665,7 +670,7 @@ export default function LandingContent() {
             <div className="-mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 [-webkit-overflow-scrolling:touch] sm:mx-0 sm:px-0">
               {heroBadges.map((b, i) => (
                 <div key={i} className="w-[220px] shrink-0 sm:w-[240px]">
-                  <FloatingBadge {...b} rotate={0} />
+                  <FloatingBadge {...b} rotate={0} delay={i * 0.4} />
                 </div>
               ))}
             </div>
@@ -682,6 +687,7 @@ export default function LandingContent() {
                 subtitle="ACoS down 3.2 pts"
                 subtitleColor="text-[#15803d] dark:text-green-400"
                 rotate={-3}
+                delay={0}
               />
               <FloatingBadge
                 icon={Search}
@@ -690,6 +696,7 @@ export default function LandingContent() {
                 title="Keyword research"
                 subtitle="1,240 keywords found"
                 rotate={2}
+                delay={0.6}
               />
               <FloatingBadge
                 icon={Users}
@@ -697,6 +704,7 @@ export default function LandingContent() {
                 subtitle="12 sellers tracked"
                 dark
                 rotate={-3}
+                delay={1.2}
               />
             </div>
 
@@ -776,6 +784,7 @@ export default function LandingContent() {
                 title="Price optimization"
                 subtitle="Suggested price ₹549"
                 rotate={3}
+                delay={0.3}
               />
               <FloatingBadge
                 icon={FileCheck2}
@@ -784,6 +793,7 @@ export default function LandingContent() {
                 title="Listing optimization"
                 subtitle="Listing score 92/100"
                 rotate={-2}
+                delay={0.9}
               />
               <FloatingBadge
                 icon={Bell}
@@ -792,6 +802,7 @@ export default function LandingContent() {
                 title="Smart alerts"
                 subtitle="On WhatsApp, 24/7"
                 rotate={3}
+                delay={1.5}
               />
             </div>
           </div>
@@ -1016,7 +1027,7 @@ export default function LandingContent() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
               {
-                image: "/insydz-opportunity-finder-thumbnail.png",
+                image: "/images/landing/thumbnails/thumb-opportunity-finder.webp",
                 video: "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
                 tag: "Product research",
                 duration: "06:12",
@@ -1024,7 +1035,7 @@ export default function LandingContent() {
                 desc: "Spot hidden market gaps, pricing gaps and demand signals on Amazon and Flipkart in seconds.",
               },
               {
-                image: "/insydz-complete-navigation-guide-thumbnail.png",
+                image: "/images/landing/thumbnails/thumb-navigation-guide.webp",
                 video: "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
                 tag: "Getting started",
                 duration: "08:45",
@@ -1032,7 +1043,7 @@ export default function LandingContent() {
                 desc: "Set up your account and explore every seller tool, step by step.",
               },
               {
-                image: "/insydz-market-visibility-thumbnail.png",
+                image: "/images/landing/thumbnails/thumb-market-visibility.webp",
                 video: "/videos/Insydz’s%20Market%20Visibility.mp4",
                 tag: "Competitor analysis",
                 duration: "05:30",
