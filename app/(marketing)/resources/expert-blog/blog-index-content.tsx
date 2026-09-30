@@ -57,6 +57,20 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "35",
+    title: "How Much Does It Cost to Start Selling on Amazon India in 2026?",
+    excerpt:
+      "Every cost a new Amazon India seller should plan for, from registration and GST to referral fees, closing fees, and ads, with a worked example on a ₹999 product and the costs most sellers miss.",
+    category: "Seller Tools & Strategy",
+    readTime: "7 min read",
+    image:
+      "/images/blogs/cost-to-start-selling-on-amazon-india-2026/cost-to-start-selling-on-amazon-india-2026.png",
+    featuredImage:
+      "/images/blogs/cost-to-start-selling-on-amazon-india-2026/cost-to-start-selling-on-amazon-india-2026-cover.png",
+    route: "/resources/expert-blog/cost-to-start-selling-on-amazon-india-2026",
+    popular: true,
+  },
+  {
     id: "34",
     title: "What Are the Best Amazon Seller Tools for Indian Sellers in 2026?",
     excerpt:
@@ -64,7 +78,6 @@ const articles: Article[] = [
     category: "Seller Tools & Strategy",
     readTime: "5 min read",
     image: "/best-amazon-seller-tools-india.png",
-    featuredImage: "/image.png",
     route: "/resources/expert-blog/best-amazon-seller-tools-india-2026",
     popular: true,
   },
