@@ -2,16 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.schema_v2 import (
-    AmazonSPAPICredential, 
-    UserAuth, 
+    AmazonSPAPICredential,
+    UserAuth,
     UserSubscription,
     AmazonSPAPIOrder,
     AmazonSPAPIFinancialEvent,
     AmazonSPAPIProductCosts,
     AmazonSPAPISettings,
+    AmazonSPAPIAuditLog,
     AmazonSPAPIInventorySettings,
     AmazonSPAPIInventorySummary,
-    AmazonSPAPIReviewRule,
+    AmazonSPAPIReviewRules,
     AmazonSPAPIOrderReviewLog,
     AmazonSPAPIRefundReconciliation,
     AmazonSPAPIReportQueue
@@ -174,9 +175,10 @@ def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_curren
             AmazonSPAPIFinancialEvent,
             AmazonSPAPIProductCosts,
             AmazonSPAPISettings,
+            AmazonSPAPIAuditLog,
             AmazonSPAPIInventorySettings,
             AmazonSPAPIInventorySummary,
-            AmazonSPAPIReviewRule,
+            AmazonSPAPIReviewRules,
             AmazonSPAPIOrderReviewLog,
             AmazonSPAPIRefundReconciliation,
             AmazonSPAPIReportQueue
