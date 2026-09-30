@@ -338,27 +338,38 @@ export default function AmazonStoreSetupPage() {
                         </p>
                       </div>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button disabled={isLoading} variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
-                          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Disconnect this account?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will disconnect this specific Amazon Seller account and purge its SP-API credentials.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-600 hover:bg-red-700 text-white">
-                            Yes, Disconnect
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex items-center gap-3">
+                      {/* Sync Status Badge */}
+                      <div className={`px-2.5 py-1 text-[11px] font-bold tracking-wide rounded-full uppercase ${
+                        acc.sync_status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' :
+                        'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400'
+                      }`}>
+                        {acc.sync_status === 'COMPLETED' ? 'Synced' : 'Pending'}
+                      </div>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button disabled={isLoading} variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-950/30 font-semibold transition-all">
+                            {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                            Disconnect
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Disconnect this store?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will instantly disconnect your Amazon account and permanently erase all its data from our servers to protect your privacy.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-600 hover:bg-red-700 text-white">
+                              Yes, Disconnect
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                 </div>
              ))}
              {canAddMore && (

@@ -285,7 +285,7 @@ export default function AmazonAdsSetupPage() {
                 </div>
                 <div>
                   <h3 className={`font-bold text-[17px] ${isDark ? 'text-slate-100' : 'text-[#0f172a]'}`}>Account Connected</h3>
-                  <p className={`text-[14px] ${isDark ? 'text-slate-400' : 'text-[#64748b]'}`}>Your API tokens are active and valid.</p>
+                  <p className={`text-[14px] ${isDark ? 'text-slate-400' : 'text-[#64748b]'}`}>Your Amazon Ad account is successfully connected and syncing.</p>
                 </div>
               </div>
               <div className="flex gap-3 mt-4">

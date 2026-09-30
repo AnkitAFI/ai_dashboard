@@ -253,7 +253,7 @@ export default function ReviewAutomatorPage() {
             </Button>
           </CardContent>
         </Card>
-      ) : activeAccountObj && (activeAccountObj.sync_status === "PENDING" || activeAccountObj.sync_status === "SYNCING") ? (
+      ) : activeAccountObj && activeAccountObj.sync_status === "PENDING" ? (
         <SyncPendingBanner
           connectedAt={activeAccountObj.connected_at}
           syncStatus={activeAccountObj.sync_status}

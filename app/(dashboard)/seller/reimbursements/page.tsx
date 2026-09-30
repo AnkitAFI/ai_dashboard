@@ -202,7 +202,7 @@ export default function ReimbursementDashboard() {
             </Button>
           </CardContent>
         </Card>
-      ) : (accountStatus === "PENDING" || accountStatus === "SYNCING") && !summary ? (
+      ) : accountStatus === "PENDING" ? (
         <SyncPendingBanner
           connectedAt={connectedAt}
           syncStatus={accountStatus}

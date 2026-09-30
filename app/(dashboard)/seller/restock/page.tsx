@@ -305,7 +305,7 @@ export default function RestockForecasterDashboard() {
             </Button>
           </CardContent>
         </Card>
-      ) : (accountStatus === "PENDING" || accountStatus === "SYNCING") && inventoryData.length === 0 ? (
+      ) : accountStatus === "PENDING" ? (
         <SyncPendingBanner
           connectedAt={connectedAt}
           syncStatus={accountStatus}
