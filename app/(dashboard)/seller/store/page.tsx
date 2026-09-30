@@ -322,36 +322,52 @@ export default function AmazonStoreSetupPage() {
 
         {/* Connected Accounts Status (Only show if connected) */}
         {isConnected && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-5">
              {accounts.map((acc: any, index: number) => (
-                <div key={index} className={`rounded-xl border shadow-sm flex items-center justify-between p-4 ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Left Card: Account Info */}
+                  <div className={`rounded-[16px] shadow-sm flex flex-col justify-between p-6 ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-gray-100'}`}>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-[14px] bg-emerald-100/80 flex items-center justify-center">
+                        <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                       </div>
                       <div>
-                        <h3 className={`font-semibold text-[15px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                        <h3 className={`font-bold text-[17px] ${isDark ? 'text-slate-100' : 'text-[#0f172a]'}`}>
                           Connected Store ({acc.region})
                         </h3>
-                        <p className={`text-[12px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        <p className={`text-[14px] ${isDark ? 'text-slate-400' : 'text-[#64748b]'}`}>
                           ID: {acc.selling_partner_id || "Loading..."}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      {/* Sync Status Badge */}
-                      <div className={`px-2.5 py-1 text-[11px] font-bold tracking-wide rounded-full uppercase ${
+                    <div className="flex gap-3 mt-2">
+                      <div className={`px-4 py-1.5 text-xs font-bold tracking-wide rounded-full uppercase flex items-center gap-2 ${
                         acc.sync_status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' :
                         'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400'
                       }`}>
-                        {acc.sync_status === 'COMPLETED' ? 'Synced' : 'Pending'}
+                        <div className={`w-2 h-2 rounded-full ${acc.sync_status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></div>
+                        {acc.sync_status === 'COMPLETED' ? 'Sync Completed' : 'Sync Pending'}
                       </div>
+                    </div>
+                  </div>
 
+                  {/* Right Card: Connection Settings */}
+                  <div className={`rounded-[16px] shadow-sm flex flex-col justify-between p-6 ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-gray-100'}`}>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-[14px] bg-red-100/80 flex items-center justify-center">
+                        <Unlink className="w-6 h-6 text-red-600" />
+                      </div>
+                      <div>
+                        <h3 className={`font-bold text-[17px] ${isDark ? 'text-slate-100' : 'text-[#0f172a]'}`}>Connection Settings</h3>
+                        <p className={`text-[14px] ${isDark ? 'text-slate-400' : 'text-[#64748b]'}`}>Manage your Amazon Seller integration.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 mt-4">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button disabled={isLoading} variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-950/30 font-semibold transition-all">
-                            {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
-                            Disconnect
+                          <Button disabled={isLoading} className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border border-red-200 dark:bg-red-950/30 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/50 font-bold transition-all shadow-sm">
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            Disconnect Account
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -363,13 +379,14 @@ export default function AmazonStoreSetupPage() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-600 hover:bg-red-700 text-white">
+                            <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-600 hover:bg-red-700 text-white font-bold">
                               Yes, Disconnect
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
+                  </div>
                 </div>
              ))}
              {canAddMore && (
