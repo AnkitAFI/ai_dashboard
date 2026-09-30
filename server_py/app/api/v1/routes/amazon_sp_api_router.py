@@ -1,7 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.models.schema_v2 import AmazonSPAPICredential, UserAuth, UserSubscription
+from app.models.schema_v2 import (
+    AmazonSPAPICredential, 
+    UserAuth, 
+    UserSubscription,
+    AmazonSPAPIOrder,
+    AmazonSPAPIFinancialEvent,
+    AmazonSPAPIProductCosts,
+    AmazonSPAPISettings,
+    AmazonSPAPIInventorySettings,
+    AmazonSPAPIInventorySummary,
+    AmazonSPAPIReviewRule,
+    AmazonSPAPIOrderReviewLog,
+    AmazonSPAPIRefundReconciliation,
+    AmazonSPAPIReportQueue
+)
 from app.api.deps import get_current_user
 from app.core.config import settings
 from app.services.rate_limiter import SPAPIRateLimit
@@ -154,6 +168,27 @@ def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_curren
     target = next((c for c in all_creds if c.selling_partner_id == selling_partner_id), None)
     
     if target:
+        # 1. DPDP/GDPR Compliance: Wipe all historical data for this selling_partner_id
+        models_to_wipe = [
+            AmazonSPAPIOrder,
+            AmazonSPAPIFinancialEvent,
+            AmazonSPAPIProductCosts,
+            AmazonSPAPISettings,
+            AmazonSPAPIInventorySettings,
+            AmazonSPAPIInventorySummary,
+            AmazonSPAPIReviewRule,
+            AmazonSPAPIOrderReviewLog,
+            AmazonSPAPIRefundReconciliation,
+            AmazonSPAPIReportQueue
+        ]
+        
+        for model in models_to_wipe:
+            db.query(model).filter(
+                model.user_id == current_user.id,
+                model.selling_partner_id == selling_partner_id
+            ).delete(synchronize_session=False)
+
+        # 2. Delete the credential
         db.delete(target)
         db.commit()
         return {"status": "success"}

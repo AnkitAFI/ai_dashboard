@@ -5,11 +5,15 @@ import { useAuth } from "@/lib/auth-context";
 import { API_BASE_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, Loader2, Link as LinkIcon, Unlink, Menu } from "lucide-react";
+import { 
+  AlertCircle, CheckCircle2, Loader2, Link as LinkIcon, 
+  Unlink, Menu, Calculator, Package, Star, ShieldCheck, ArrowRight, Activity, Zap, TrendingUp
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -170,56 +174,174 @@ export default function AmazonStoreSetupPage() {
   if (!mounted) return null;
   const isDark = resolvedTheme === "dark";
 
-  return (
-    <div className="min-h-screen flex flex-col bg-transparent max-w-5xl mx-auto w-full">
-      <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
-        <div className="flex items-center gap-3">
-          <button onClick={toggle} className={`lg:hidden p-2 rounded-xl mr-1 shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-sky-50 hover:bg-sky-100'}`}>
-            <Menu className={`w-5 h-5 ${isDark ? 'text-sky-400' : 'text-sky-900'}`} />
-          </button>
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-indigo-900/50 to-purple-900/50' : 'bg-gradient-to-br from-indigo-100 to-purple-100'}`}>
-            <LinkIcon className={`w-6 h-6 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
-          </div>
-          <div>
-            <h1 className="page-title">
-              Amazon Store Setup
-            </h1>
-            <p className="page-subtitle">
-              Connect your Amazon Seller account to track inventory, orders, and profitability.
-            </p>
-          </div>
-        </div>
-      </header>
+  const hour = new Date().getHours();
+  const timeOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+  const firstName = user?.name?.split(" ")[0] || "Seller";
 
-      <main className="flex-1 space-y-6">
-        <Card className={`rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-          <CardHeader>
-            <CardTitle className={isDark ? 'text-slate-200' : 'text-slate-800'}>Store Connection</CardTitle>
-            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-              Securely grant us read access to your Amazon Selling Partner data. We prioritize data privacy and DPDP compliance.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {accounts.length > 0 ? (
-              <div className="space-y-4">
-                {accounts.map((acc: any, index: number) => (
-                  <div key={index} className={`flex items-center justify-between p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-100'}`}>
-                    <div className="flex items-center space-x-4">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+  const features = [
+    {
+      title: "Financial Command Center",
+      description: "Track your net profit after Amazon fees, ad spend, and cost of goods.",
+      icon: Calculator,
+      color: "text-emerald-500 dark:text-emerald-400",
+      bg: "bg-emerald-100/80 dark:bg-emerald-900/40",
+      borderColor: "border-t-emerald-400",
+      href: "/seller/profitability"
+    },
+    {
+      title: "Restock Forecaster",
+      description: "Calculate reorder dates based on sales velocity and supplier lead times.",
+      icon: Package,
+      color: "text-[#2563eb] dark:text-blue-400",
+      bg: "bg-blue-100/80 dark:bg-blue-900/40",
+      borderColor: "border-t-[#2563eb]",
+      href: "/seller/restock"
+    },
+    {
+      title: "Review Automator",
+      description: "Automate Amazon's 'Request a Review' feature for delivered orders.",
+      icon: Star,
+      color: "text-amber-500 dark:text-amber-400",
+      bg: "bg-amber-100/80 dark:bg-amber-900/40",
+      borderColor: "border-t-amber-400",
+      href: "/seller/reviews"
+    },
+    {
+      title: "Lost Money Recovery",
+      description: "Identify FBA refunds where the customer did not return the item.",
+      icon: ShieldCheck,
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-100/80 dark:bg-purple-900/40",
+      borderColor: "border-t-purple-400",
+      href: "/seller/reimbursements"
+    }
+  ];
+
+  return (
+    <div className="w-full max-w-6xl mx-auto pb-8">
+      
+      <main className="space-y-6">
+        
+        {/* Mobile menu toggle for small screens */}
+        <div className="lg:hidden flex items-center mb-4">
+          <button onClick={toggle} className={`p-2 rounded-xl border shadow-sm ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* The Main Hero Banner (Matching Image Style) */}
+        <div className={`relative overflow-hidden rounded-[20px] ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-gradient-to-r from-[#eef4ff] to-[#d6e6ff] border-0'} p-6 sm:px-8 sm:py-8 shadow-sm`}>
+           {/* Background decorative blobs */}
+           {!isDark && (
+             <>
+               <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
+               <div className="absolute top-0 right-1/4 w-64 h-64 bg-white/40 rounded-full blur-3xl"></div>
+             </>
+           )}
+           
+           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">
+              <div className="max-w-xl space-y-3">
+                 <div className={`font-semibold text-sm sm:text-base ${isDark ? 'text-gray-400' : 'text-[#475569]'}`}>
+                    Good {timeOfDay}, {firstName}! 👋
+                 </div>
+                 
+                 {!isConnected ? (
+                   <>
+                     <h1 className={`text-3xl sm:text-[34px] font-extrabold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#0f172a]'}`}>
+                        Connect your <span className="text-[#2563eb]">Amazon Seller Account.</span>
+                     </h1>
+                     <p className={`text-[15px] sm:text-base ${isDark ? 'text-gray-400' : 'text-[#475569]'} max-w-lg leading-relaxed`}>
+                        Unlock your Seller Command Center. Connect your account securely to enable real-time financial tracking, restock forecasting, and automated reviews.
+                     </p>
+                     <div className="pt-3">
+                        <Button 
+                          onClick={handleConnect} 
+                          disabled={isLoading} 
+                          className="h-11 px-6 text-[15px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-full font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+                        >
+                          {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LinkIcon className="w-4 h-4 mr-2" />}
+                          Start Store Connection <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                     </div>
+                   </>
+                 ) : (
+                   <>
+                     <h1 className={`text-3xl sm:text-[34px] font-extrabold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#0f172a]'}`}>
+                        Your <span className="text-[#2563eb]">Command Center</span> is ready.
+                     </h1>
+                     <p className={`text-[15px] sm:text-base ${isDark ? 'text-gray-400' : 'text-[#475569]'} max-w-lg leading-relaxed`}>
+                        Your Amazon data is securely syncing. Use the tools below to optimize your profitability, inventory, and customer reviews.
+                     </p>
+                   </>
+                 )}
+              </div>
+              
+              {/* Right Side Illustration */}
+              {!isConnected && (
+                 <div className="hidden lg:flex items-center gap-6 shrink-0 relative pr-2">
+                    {/* The Amazon to Link visual */}
+                    <div className="flex items-center">
+                        {/* Amazon Card */}
+                        <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center transform -rotate-6 relative z-10 border border-gray-100">
+                            <span className="text-4xl font-extrabold text-black leading-none -mt-2">a</span>
+                            {/* Orange Smile */}
+                            <svg className="w-10 h-4 absolute bottom-3" viewBox="0 0 30 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 2C8 8 22 8 28 2" stroke="#FF9900" strokeWidth="3" strokeLinecap="round"/>
+                                <path d="M28 2L26 6M28 2L23 1" stroke="#FF9900" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        {/* Dashed line */}
+                        <div className="w-12 border-t-2 border-dashed border-blue-400 opacity-60"></div>
+                        
+                        {/* Link Circle */}
+                        <div className="w-16 h-16 bg-blue-600 rounded-full shadow-lg flex items-center justify-center relative z-10 border-4 border-blue-100">
+                            <LinkIcon className="w-6 h-6 text-white" />
+                        </div>
+                    </div>
+
+                    {/* Feature Badges */}
+                    <div className="flex flex-col gap-3">
+                        <div className="bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm flex items-center gap-2 border border-white/50">
+                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                            <span className="text-xs font-semibold text-slate-700">Secure Connection</span>
+                        </div>
+                        <div className="bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm flex items-center gap-2 border border-white/50 ml-4">
+                            <Zap className="w-4 h-4 text-blue-600" />
+                            <span className="text-xs font-semibold text-slate-700">Real-time Data</span>
+                        </div>
+                        <div className="bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm flex items-center gap-2 border border-white/50">
+                            <TrendingUp className="w-4 h-4 text-blue-600" />
+                            <span className="text-xs font-semibold text-slate-700">Smarter Decisions</span>
+                        </div>
+                    </div>
+                 </div>
+              )}
+           </div>
+        </div>
+
+        {/* Connected Accounts Status (Only show if connected) */}
+        {isConnected && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+             {accounts.map((acc: any, index: number) => (
+                <div key={index} className={`rounded-xl border shadow-sm flex items-center justify-between p-4 ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                      </div>
                       <div>
-                        <h3 className={`font-semibold text-lg ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                        <h3 className={`font-semibold text-[15px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                           Connected Store ({acc.region})
                         </h3>
-                        <p className={`text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                          Seller ID: {acc.selling_partner_id || "Loading..."} | Status: {acc.sync_status}
+                        <p className={`text-[12px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                          ID: {acc.selling_partner_id || "Loading..."}
                         </p>
                       </div>
                     </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button disabled={isLoading} variant="destructive" size="sm" className="gap-2 rounded-full">
+                        <Button disabled={isLoading} variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
                           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
-                          Disconnect
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -231,41 +353,65 @@ export default function AmazonStoreSetupPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-500 hover:bg-red-600 text-white">
+                          <AlertDialogAction onClick={() => handleDisconnect(acc.selling_partner_id)} className="bg-red-600 hover:bg-red-700 text-white">
                             Yes, Disconnect
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={`flex items-center space-x-4 p-4 rounded-xl border ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-100'}`}>
-                <AlertCircle className="w-8 h-8 text-amber-500" />
-                <div>
-                  <h3 className={`font-semibold text-lg ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                    Not Connected
-                  </h3>
-                  <p className={`text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Connect your seller account to start syncing orders, catalog items, and financial events.
-                  </p>
                 </div>
-              </div>
-            )}
-          </CardContent>
-          <CardFooter className="flex justify-between items-center border-t pt-4">
-            <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {accounts.length} / {maxAccounts} Accounts Connected
-            </div>
-            {canAddMore && (
-              <Button onClick={handleConnect} disabled={isLoading} className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full font-bold shadow hover:shadow-md transition-all">
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
-                {accounts.length > 0 ? "Connect Another Account" : "Connect Seller Account"}
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
+             ))}
+             {canAddMore && (
+                <div 
+                  onClick={handleConnect}
+                  className={`rounded-xl border border-dashed flex items-center gap-3 p-4 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/30 border-slate-700 hover:border-blue-500/50' : 'bg-slate-50 border-slate-300 hover:border-blue-300'}`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-white shadow-sm border border-slate-200 text-[#2563eb]'}`}>
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LinkIcon className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold text-[15px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Connect Another Store
+                    </h3>
+                    <p className={`text-[12px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Add another region or seller ID
+                    </p>
+                  </div>
+                </div>
+             )}
+          </div>
+        )}
+
+        {/* Feature Grid */}
+        <div className="pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {features.map((feature, idx) => (
+              <Link href={feature.href} key={idx} className="group block h-full">
+                <div className={`h-full rounded-[16px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative flex flex-col border border-t-[4px] ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} ${feature.borderColor}`}>
+                  
+                  <div className="p-6 flex flex-col h-full">
+                    {/* Header (Icon) */}
+                    <div className="flex items-start justify-between mb-4">
+                        <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${feature.bg} ${feature.color}`}>
+                          <feature.icon className="w-6 h-6" strokeWidth={2} />
+                        </div>
+                    </div>
+                    
+                    <h4 className={`text-[17px] font-bold mb-2 ${isDark ? 'text-slate-100' : 'text-[#0f172a]'}`}>
+                      {feature.title}
+                    </h4>
+                    <p className={`text-[14px] leading-relaxed flex-1 ${isDark ? 'text-slate-400' : 'text-[#64748b]'}`}>
+                      {feature.description}
+                    </p>
+                    <div className={`flex items-center mt-6 font-bold text-[14px] transition-colors ${isDark ? 'text-blue-400 group-hover:text-blue-300' : 'text-[#2563eb] group-hover:text-blue-700'}`}>
+                      Explore Tool <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -485,7 +485,7 @@ function Step1Animation() {
   }, []);
 
   return (
-    <div className="relative mt-2 flex h-[72px] items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner">
+    <div className="relative mt-2 flex h-[90px] items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner">
       <div className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-extrabold transition-all duration-300 ${stage === 2 ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" : stage === 1 ? "bg-violet-600 text-white scale-[1.03]" : "bg-white dark:bg-gray-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700"}`}>
         {stage === 2 ? <Check className="h-4 w-4" strokeWidth={3} /> : <Link2 className="h-4 w-4" />}
         {stage === 2 ? "Connected" : "Connect Amazon"}
@@ -587,7 +587,7 @@ function Step3Animation() {
   const CurrentIcon = items[stage].icon;
 
   return (
-    <div className="relative mt-2 flex h-[85px] w-full items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner p-2">
+    <div className="relative mt-2 flex h-[90px] w-full items-center justify-center rounded-2xl bg-[#fcfaff] dark:bg-gray-950 border border-[#eee9f7] dark:border-gray-800 overflow-hidden shadow-inner p-2">
       <AnimatePresence mode="wait">
         <motion.div
           key={stage}
