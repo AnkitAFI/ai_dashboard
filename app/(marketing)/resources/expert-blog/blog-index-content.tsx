@@ -57,6 +57,22 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "36",
+    title:
+      "Amazon Great Indian Festival & Flipkart BBD 2026: What to Do Before Oct 8",
+    excerpt:
+      "Amazon Great Indian Festival starts October 8 and Flipkart Big Billion Days on October 9, 2026. Here is what sellers should finish in the next 8 days.",
+    category: "Festive Trends",
+    readTime: "6 min read",
+    image:
+      "/images/blogs/36-amazon-great-indian-festival-flipkart-big-billion-days-2026/36_blog_image_1.webp",
+    featuredImage:
+      "/images/blogs/36-amazon-great-indian-festival-flipkart-big-billion-days-2026/36_blog_cover_image.webp",
+    route:
+      "/resources/expert-blog/amazon-great-indian-festival-flipkart-big-billion-days-2026",
+    popular: true,
+  },
+  {
     id: "35",
     title: "How Much Does It Cost to Start Selling on Amazon India in 2026?",
     excerpt:

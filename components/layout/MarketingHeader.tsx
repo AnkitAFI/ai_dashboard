@@ -4,9 +4,31 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  TrendingUp, Menu, X, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen,
-  Users, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package,
-  Bell, Code, Briefcase, Store, Flame, LayoutGrid, Layers, BarChart3
+  TrendingUp,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  Trophy,
+  Target,
+  DollarSign,
+  Globe,
+  BookOpen,
+  Users,
+  ChevronDown,
+  ShoppingBag,
+  TrendingDown,
+  MessageCircle,
+  Search,
+  Package,
+  Bell,
+  Code,
+  Briefcase,
+  Store,
+  Flame,
+  LayoutGrid,
+  Layers,
+  BarChart3,
 } from "lucide-react";
 
 // Define types for menu items
@@ -47,42 +69,154 @@ const Zap = ({ className }: { className?: string }) => (
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "Seller Dashboard", icon: <LayoutGrid className="w-4 h-4" />, badge: "NEW", route: "/seller-dashboard" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "", route: "/solutions/amazon-advertising" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    // { name: "Seller Dashboard", icon: <LayoutGrid className="w-4 h-4" />, badge: "NEW", route: "/seller-dashboard" },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "Amazon Advertising & PPC",
+      icon: <BarChart3 className="w-4 h-4" />,
+      badge: "",
+      route: "/solutions/amazon-advertising",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingDown className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingDown className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name: "All Features (Overview)", icon: <Layers className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
+    {
+      name: "All Features (Overview)",
+      icon: <Layers className="w-4 h-4" />,
+      route: "/features",
+    },
+    {
+      name: "Competitor Price Tracking",
+      icon: <TrendingDown className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <LayoutGrid className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <LayoutGrid className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-    { name: "Video Guides", icon: <TrendingUp className="w-4 h-4" />, route: "/resources/video-guides" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
+    {
+      name: "Video Guides",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/resources/video-guides",
+    },
   ],
   Integrations: [
     { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
@@ -91,18 +225,40 @@ const navigationMenu: NavigationMenu = {
     { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvshelium",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsjunglescout",
+    },
+    {
+      name: "Insydz vs Viral Launch",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsvirallaunch",
+    },
   ],
   About: [
-    { name: "Our Vision", icon: <Globe className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Users className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <MessageCircle className="w-4 h-4" />, route: "/about/contact-us" },
+    {
+      name: "Our Vision",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/careers",
+    },
+    {
+      name: "Contact Us",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/about/contact-us",
+    },
   ],
 };
-
-
 
 import { useTheme } from "next-themes";
 import { CustomBookDemoModal } from "@/components/ui/custom-book-demo-modal";
@@ -136,7 +292,10 @@ export function MarketingHeader() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setActiveDropdown(null);
       }
     };
@@ -150,7 +309,7 @@ export function MarketingHeader() {
     } else {
       const element = document.getElementById(sectionId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
     setIsMenuOpen(false);
@@ -162,7 +321,7 @@ export function MarketingHeader() {
   };
 
   const isSectionActive = (menuName: string) => {
-    const sectionPath = "/" + menuName.toLowerCase().replace(/\s+/g, '-');
+    const sectionPath = "/" + menuName.toLowerCase().replace(/\s+/g, "-");
     return pathname === sectionPath || pathname.startsWith(sectionPath + "/");
   };
 
@@ -185,16 +344,24 @@ export function MarketingHeader() {
     return (
       <Link
         href={item.route}
-        onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${isActive
-          ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
-          : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
-          }`}
+        onClick={() => {
+          setActiveDropdown(null);
+          setIsMenuOpen(false);
+        }}
+        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${
+          isActive
+            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+            : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
+        }`}
       >
-        <span className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
+        <span
+          className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}
+        >
           {item.icon}
         </span>
-        <span className={`text-sm flex-1 ${isActive ? "font-semibold text-purple-600 dark:text-purple-400" : "group-hover:text-purple-600 dark:group-hover:text-purple-400"}`}>
+        <span
+          className={`text-sm flex-1 ${isActive ? "font-semibold text-purple-600 dark:text-purple-400" : "group-hover:text-purple-600 dark:group-hover:text-purple-400"}`}
+        >
           {item.name}
         </span>
         {item.badge && (
@@ -212,33 +379,49 @@ export function MarketingHeader() {
         <span className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-500 cursor-default">
           {item.icon}
           {item.name}
-          {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
+          {item.badge && (
+            <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">
+              {item.badge}
+            </span>
+          )}
         </span>
       );
     }
     return (
       <Link
         href={item.route}
-        onClick={() => { setIsMenuOpen(false); setMobileActiveMenu(null); }}
+        onClick={() => {
+          setIsMenuOpen(false);
+          setMobileActiveMenu(null);
+        }}
         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
       >
         {item.icon}
         {item.name}
-        {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
+        {item.badge && (
+          <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">
+            {item.badge}
+          </span>
+        )}
       </Link>
     );
   };
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
-        : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
+          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-4 xl:gap-8">
-          <Link href="/" className="flex items-center space-x-3 group shrink-0" aria-label="Insydz – Home">
+          <Link
+            href="/"
+            className="flex items-center space-x-3 group shrink-0"
+            aria-label="Insydz – Home"
+          >
             <div className="relative shrink-0 min-w-[40px]">
               <img
                 src="/logo.png"
@@ -253,20 +436,36 @@ export function MarketingHeader() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2" ref={dropdownRef}>
-            {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as const).map((menu) => (
+          <div
+            className="hidden lg:flex items-center gap-1 xl:gap-2"
+            ref={dropdownRef}
+          >
+            {(
+              [
+                "Solutions",
+                "Use Cases",
+                "Features",
+                "Free Tools",
+                "Compare",
+                "Resources",
+                "About",
+              ] as const
+            ).map((menu) => (
               <div key={menu} className="relative">
                 <button
                   onMouseEnter={() => setActiveDropdown(menu)}
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === menu}
-                  className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${isSectionActive(menu)
-                    ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                    : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    }`}
+                  className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${
+                    isSectionActive(menu)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
                   {menu}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === menu ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${activeDropdown === menu ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {activeDropdown === menu && (
                   <div
@@ -284,10 +483,11 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
-              className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all whitespace-nowrap ${pathname === "/pricing"
-                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                }`}
+              className={`px-2 py-2 text-[13px] xl:text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>
@@ -300,16 +500,21 @@ export function MarketingHeader() {
               Login
             </Link>
 
-            <CustomBookDemoModal
-              className="ml-1 xl:ml-2 text-[13px] xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 py-1.5 xl:px-5 xl:py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap"
-            />
+            <CustomBookDemoModal className="ml-1 xl:ml-2 text-[13px] xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 py-1.5 xl:px-5 xl:py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap" />
 
             <button
               className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
               aria-label="Toggle dark mode"
             >
-              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />)}
+              {mounted &&
+                (resolvedTheme === "dark" ? (
+                  <Sun className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-gray-800" />
+                ))}
             </button>
           </div>
 
@@ -320,7 +525,11 @@ export function MarketingHeader() {
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
@@ -330,27 +539,41 @@ export function MarketingHeader() {
         <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 py-4 space-y-2">
             <button
-              onClick={() => scrollToSection('Home')}
-              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/"
-                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                }`}
+              onClick={() => scrollToSection("Home")}
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Home
             </button>
 
-            {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as const).map((menuName) => (
+            {(
+              [
+                "Solutions",
+                "Use Cases",
+                "Features",
+                "Free Tools",
+                "Compare",
+                "Resources",
+                "About",
+              ] as const
+            ).map((menuName) => (
               <div key={menuName}>
                 <button
                   onClick={() => toggleMobileMenu(menuName)}
                   aria-expanded={mobileActiveMenu === menuName}
-                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${isSectionActive(menuName)
-                    ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    }`}
+                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isSectionActive(menuName)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
                   {menuName}
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuName ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuName ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {mobileActiveMenu === menuName && (
                   <div className="ml-4 mt-2 space-y-1">
@@ -365,17 +588,16 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
-              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/pricing"
-                ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
-                : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                }`}
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>
 
-            <CustomBookDemoModal
-              className="block w-full mt-4 text-center bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full transition-all"
-            />
+            <CustomBookDemoModal className="block w-full mt-4 text-center bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full transition-all" />
 
             <Link
               href="/login"
@@ -387,20 +609,27 @@ export function MarketingHeader() {
 
             <button
               className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full flex justify-center items-center"
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
               aria-label="Toggle dark mode"
             >
-              {mounted && (resolvedTheme === "dark" ? (
-                <div className="flex items-center gap-2">
-                  <Sun className="w-5 h-5 text-yellow-400" />
-                  <span className="text-sm font-medium text-gray-300">Switch to Light Mode</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Moon className="w-5 h-5 text-gray-800" />
-                  <span className="text-sm font-medium text-gray-700">Switch to Dark Mode</span>
-                </div>
-              ))}
+              {mounted &&
+                (resolvedTheme === "dark" ? (
+                  <div className="flex items-center gap-2">
+                    <Sun className="w-5 h-5 text-yellow-400" />
+                    <span className="text-sm font-medium text-gray-300">
+                      Switch to Light Mode
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Moon className="w-5 h-5 text-gray-800" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Switch to Dark Mode
+                    </span>
+                  </div>
+                ))}
             </button>
           </div>
         </div>
