@@ -120,7 +120,7 @@ import { useTheme } from "next-themes";
 
 interface NumberedCardItem {
   title: string;
-  description: string;
+  description: React.ReactNode;
   symbol?: React.ReactNode;
 }
 
