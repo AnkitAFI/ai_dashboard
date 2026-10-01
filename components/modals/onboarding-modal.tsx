@@ -514,10 +514,10 @@ export default function OnboardingModal({
                         {/* What you unlock */}
                         <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-2">
                           {[
-                            "Financial Command Center — Revenue, profit & ASIN breakdown",
-                            "Restock Forecaster — Never run out of stock",
+                            "Profit Tracker — Revenue, profit & ASIN breakdown",
+                            "Restock Planner — Never run out of stock",
                             "Review Automator — Auto request reviews",
-                            "Lost Money Recovery — Find Amazon owed reimbursements",
+                            "Refund Finder — Find Amazon owed reimbursements",
                           ].map((feature) => (
                             <div key={feature} className="flex items-start gap-2 text-sm text-slate-600">
                               <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />

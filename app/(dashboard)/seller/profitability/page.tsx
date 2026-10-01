@@ -178,7 +178,7 @@ export default function ProfitabilityDashboard() {
             <TrendingUp className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
           </div>
           <div>
-            <h1 className="page-title">Financial Command Center</h1>
+            <h1 className="page-title">Profit Tracker</h1>
             <p className="page-subtitle">Track your True Net Profit accurately down to the rupee.</p>
           </div>
         </div>

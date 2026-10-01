@@ -101,10 +101,10 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Crown className="h-6 w-6 text-yellow-500" />,
     features: [
       "All Basic features",
-      { title: "Financial Command Center", detail: "ASIN-level profitability & Amazon fee breakdown" },
-      { title: "Restock Forecaster", detail: "Predict stockouts & track restock recommendations" },
+      { title: "Profit Tracker", detail: "ASIN-level profitability & Amazon fee breakdown" },
+      { title: "Restock Planner", detail: "Predict stockouts & track restock recommendations" },
       { title: "Review Automator", detail: "Automate review requests & generate AI reply drafts" },
-      { title: "Lost Money Recovery", detail: "Scan for missing inventory to help file claims" },
+      { title: "Refund Finder", detail: "Scan for missing inventory to help file claims" },
       { title: "Ads Automations", detail: "Target ACOS rules, Dayparting schedules & Keyword management" },
       "Unlimited product tracking",
       "Top 100 products filter",

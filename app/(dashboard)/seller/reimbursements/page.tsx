@@ -151,7 +151,7 @@ export default function ReimbursementDashboard() {
             <DollarSign className={`w-6 h-6 ${isDark ? 'text-rose-400' : 'text-rose-600'}`} />
           </div>
           <div>
-            <h1 className="page-title">Lost Money Recovery</h1>
+            <h1 className="page-title">Refund Finder</h1>
             <p className="page-subtitle">Find orders where the buyer got a refund, but the item never returned to the warehouse. Claim your money back!</p>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function ReimbursementDashboard() {
             </div>
             <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">Premium Feature Locked</h2>
             <p className="text-muted-foreground max-w-lg mb-8 text-lg">
-              The <b>Lost Money Recovery</b> tool is an exclusive feature for our Premium and Enterprise members. 
+              The <b>Refund Finder</b> tool is an exclusive feature for our Premium and Enterprise members. 
               Upgrade your plan to automatically scan for missing FBA returns and recover thousands of rupees!
             </p>
             <Button onClick={() => window.location.href = '/subscription'} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105">

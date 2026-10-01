@@ -159,10 +159,10 @@ const SELLER_SECTIONS: NavSection[] = [
     icon: Store,
     items: [
       { href: "/seller/store", label: "Amazon Store Setup", icon: Store },
-      { href: "/seller/profitability", label: "Financial Command Center", icon: Calculator },
-      { href: "/seller/restock", label: "Restock Forecaster", icon: Package },
+      { href: "/seller/profitability", label: "Profit Tracker", icon: Calculator },
+      { href: "/seller/restock", label: "Restock Planner", icon: Package },
       { href: "/seller/reviews", label: "Review Automator", icon: Star },
-      { href: "/seller/reimbursements", label: "Lost Money Recovery", icon: ShieldCheck },
+      { href: "/seller/reimbursements", label: "Refund Finder", icon: ShieldCheck },
     ],
   },
   {
