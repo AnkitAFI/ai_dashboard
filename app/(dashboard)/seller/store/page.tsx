@@ -180,7 +180,7 @@ export default function AmazonStoreSetupPage() {
 
   const features = [
     {
-      title: "Financial Command Center",
+      title: "Profit Tracker",
       description: "Track your net profit after Amazon fees, ad spend, and cost of goods.",
       icon: Calculator,
       color: "text-emerald-500 dark:text-emerald-400",
@@ -189,7 +189,7 @@ export default function AmazonStoreSetupPage() {
       href: "/seller/profitability"
     },
     {
-      title: "Restock Forecaster",
+      title: "Restock Planner",
       description: "Calculate reorder dates based on sales velocity and supplier lead times.",
       icon: Package,
       color: "text-[#2563eb] dark:text-blue-400",
@@ -207,7 +207,7 @@ export default function AmazonStoreSetupPage() {
       href: "/seller/reviews"
     },
     {
-      title: "Lost Money Recovery",
+      title: "Refund Finder",
       description: "Identify FBA refunds where the customer did not return the item.",
       icon: ShieldCheck,
       color: "text-purple-600 dark:text-purple-400",

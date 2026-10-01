@@ -105,10 +105,10 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Crown className="h-6 w-6 text-yellow-500" />,
     features: [
       "All Basic features",
-      "Financial Command Center (ASIN Level)",
-      "Restock Forecaster (Stockout Alerts)",
+      "Profit Tracker (ASIN Level)",
+      "Restock Planner (Stockout Alerts)",
       "Review Automator (Request & Reply)",
-      "Lost Money Recovery (Reimbursement claims)",
+      "Refund Finder (Reimbursement claims)",
       "Ads Automations (Bidding & Dayparting)",
       "Unlimited product tracking",
       "Top 100 products filter",
@@ -303,14 +303,14 @@ export default function PricingContent() {
                   <td className="p-6 text-center text-sm">Custom</td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">Financial Command Center</td>
+                  <td className="p-6 text-sm font-medium">Profit Tracker</td>
                   <td className="p-6 text-center text-sm">Store Level</td>
                   <td className="p-6 text-center text-sm">Store Level</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">Restock Forecaster</td>
+                  <td className="p-6 text-sm font-medium">Restock Planner</td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
@@ -324,7 +324,7 @@ export default function PricingContent() {
                   <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                 </tr>
                 <tr>
-                  <td className="p-6 text-sm font-medium">Lost Money Recovery</td>
+                  <td className="p-6 text-sm font-medium">Refund Finder</td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
@@ -337,13 +337,7 @@ export default function PricingContent() {
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
                 </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Executive PDF Reports</td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
-                </tr>
+
               </tbody>
             </table>
           </div>
