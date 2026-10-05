@@ -24,7 +24,6 @@ import {
 import FeatureCTA from "../components/FeatureCTA";
 import StepsList from "../components/NumberedCards";
 import NumberedCards from "../components/NumberedCards";
-import { title } from "process";
 
 export const dynamic = "force-static";
 

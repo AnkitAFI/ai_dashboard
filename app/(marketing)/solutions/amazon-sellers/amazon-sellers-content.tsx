@@ -21,7 +21,7 @@ const coreFeatures = [
   {
     icon: <Target className="w-10 h-10" />,
     title: "Automatic Competitor Tracking",
-    desc: "Monitor 100+ competitors across your Amazon India category without lifting a finger. Insydz watches price changes, new entrants, and stock levels 24/7.",
+    desc: <>Monitor 100+ competitors across your Amazon India category without lifting a finger. Insydz watches price changes, new entrants, and stock levels 24/7. See how sellers <Link href="/use-cases/track-competitor-prices" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">track competitor prices on Amazon India</Link>.</>,
     bullets: [
       "Real-time price drop detection (not delayed reports)",
       "Stock-out alerts for top competitors",
@@ -36,7 +36,7 @@ const coreFeatures = [
   {
     icon: <MessageCircle className="w-10 h-10" />,
     title: "AI-Powered Review Insights",
-    desc: "Stop reading 500 reviews one by one. Insydz's AI reads all your reviews and your competitors' reviews, then tells you what customers actually want and what's hurting your sales.",
+    desc: <>Stop reading 500 reviews one by one. Insydz's AI reads all your reviews and your competitors' reviews, then tells you what customers actually want and what's hurting your sales. Learn how to <Link href="/use-cases/analyze-customer-reviews" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">analyze customer reviews</Link> and fix what hurts your ratings.</>,
     bullets: [
       "Surface top complaints before they become 1-star ratings",
       "See which product attributes drive 5-star scores",
@@ -51,11 +51,11 @@ const coreFeatures = [
   {
     icon: <TrendingUp className="w-10 h-10" />,
     title: "Pricing AI & SEO Recommendations",
-    desc: "Insydz doesn't just show you prices it tells you the exact price to set based on competitor moves, your margin floor, and keyword ranking impact. Your all-in-one Amazon seller tool for pricing and SEO, combined.",
+    desc: <>Insydz doesn't just show you prices it <Link href="/features/price-optimization-feature" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">tells you the exact price to set</Link> based on competitor moves, your margin floor, and keyword ranking impact. Your all-in-one Amazon seller tool for pricing and SEO, combined. Listing dropping? Read why your <Link href="/resources/expert-blog/amazon-listing-not-ranking-india" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Amazon listing is not ranking in India</Link> and how to fix it.</>,
     bullets: [
       "AI calculates optimal price against your cost of goods",
       "Keyword rank tracking across Amazon India search pages",
-      "Title and bullet point SEO suggestions in plain Hindi/English",
+      <><Link href="/features/keyword-rank-tracking-feature" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Title and bullet point SEO suggestions</Link> in plain Hindi/English</>,
       "Ranking recovery playbook when positions drop",
     ],
     scenario: "Keyword 'wireless earbuds under 1500' drops from rank #5 to #18. Insydz alerts you and recommends: lower price by ₹80, add keyword in bullet point 2. Rank recovers to #7 in 4 days.",
@@ -265,6 +265,9 @@ export default function AmazonSellersContent() {
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
               You're doing everything right running ads, maintaining inventory, writing listings. But a handful of invisible problems are quietly eating into your margins every single month.
             </p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4">
+              Sales already slipping? Read <Link href="/resources/expert-blog/amazon-sales-drop" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">why Amazon sales drop</Link> and what to do about it. Running Sponsored Products? Our <Link href="/solutions/amazon-advertising" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Amazon PPC and advertising tool</Link> is coming soon.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -304,7 +307,10 @@ export default function AmazonSellersContent() {
               <span className="text-red-600">Never Built for Indian Sellers</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Tools like Helium 10 and Jungle Scout are excellent for Amazon.com. But if you're selling on Amazon India, you're paying for data that doesn't match your market, your categories, or your pricing reality.
+              Tools like Helium 10 and <Link href="/compare/insydzvsjunglescout" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Jungle Scout</Link> are excellent for Amazon.com. But if you're selling on Amazon India, you're paying for data that doesn't match your market, your categories, or your pricing reality.
+            </p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4">
+              You can also read how Insydz compares with <Link href="/compare/insydzvsvirallaunch" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Viral Launch</Link>. Comparing alternatives? See our guide to the <Link href="/resources/expert-blog/best-amazon-seller-tools-india-2026" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">best Amazon seller tools in India</Link>.
             </p>
           </div>
 
@@ -354,7 +360,7 @@ export default function AmazonSellersContent() {
               <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Built for India</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Insydz is not another dashboard. It's an AI-powered decision engine. Instead of showing you numbers,
+              Insydz is not another dashboard. It's an <Link href="/features/ai-recommendations-feature" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">AI-powered decision engine</Link>. Instead of showing you numbers,
               <span className="text-orange-700 dark:text-orange-400 font-bold"> it tells you exactly what to do and when to do it.</span>
             </p>
           </div>
@@ -424,7 +430,11 @@ export default function AmazonSellersContent() {
             ))}
           </div>
 
-          <div className="text-center mt-16">
+          <p className="text-center text-lg text-gray-600 dark:text-gray-400 mt-10 leading-relaxed">
+            Also selling on Flipkart? See our <Link href="/solutions/flipkart-sellers" className="text-orange-600 hover:text-orange-700 font-semibold underline underline-offset-2">Flipkart seller analytics tool</Link>.
+          </p>
+
+          <div className="text-center mt-8">
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-black px-12 py-6 text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
             >
@@ -519,9 +529,9 @@ export default function AmazonSellersContent() {
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {[
-              { label: "New Sellers", desc: "Just starting? Get free category insights.", cta: "Start Free", action: handleGetStarted },
+              { label: "New Sellers", desc: <>Just starting? Get <Link href="/features/product-research-feature" className="text-orange-200 hover:text-white font-semibold underline underline-offset-2">free category insights</Link>. Try the <Link href="/free-tools/free-amazon-product-analyzer" className="text-orange-200 hover:text-white font-semibold underline underline-offset-2">free Amazon product analyzer</Link> before you sign up.</>, cta: "Start Free", action: handleGetStarted },
               { label: "Growing Sellers", desc: "Scale with AI pricing and SEO.", cta: "View Pricing", action: () => router.push("/pricing") },
-              { label: "Agencies", desc: "Manage portfolios with ease.", cta: "Book Demo", action: () => router.push("/about/contact-us") },
+              { label: "Agencies", desc: <>Manage portfolios with ease. Running an agency? See our <Link href="/solutions/ecommerce-agencies" className="text-orange-200 hover:text-white font-semibold underline underline-offset-2">ecommerce analytics platform for agencies</Link>.</>, cta: "Book Demo", action: () => router.push("/about/contact-us") },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-left flex flex-col h-full hover:bg-white/20 transition-all group">
                 <p className="font-black text-white mb-2 uppercase tracking-wider text-xs">{card.label}</p>
