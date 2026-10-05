@@ -17560,7 +17560,7 @@ def _background_snapshot_competitors():
 
 scheduler = BackgroundScheduler(timezone="UTC")
 scheduler.add_job(_background_rank_update_all,      CronTrigger(hour=6, minute=0), id="daily_rank_update")
-scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
+# scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
 scheduler.add_job(_background_abandoned_signup_reminders, CronTrigger(minute=0), id="abandoned_signup_reminders")
 
 
@@ -19148,6 +19148,8 @@ async def sitemap():
         "/resources/expert-blog/raksha-bandhan-2026-seller-guide",
         "/resources/expert-blog/switch-excel-ai-amazon-india",
         "/resources/expert-blog/top-amazon-india-sellers-habits",
+        "/resources/expert-blog/cost-to-start-selling-on-amazon-india-2026",
+        "/resources/expert-blog/amazon-great-indian-festival-flipkart-big-billion-days-2026",
     ]
     
     xml = ['<?xml version="1.0" encoding="UTF-8"?>']
