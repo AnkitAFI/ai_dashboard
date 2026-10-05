@@ -32,6 +32,15 @@ export default function ThankYouPage() {
         // event_parameters can be added here if needed
       });
     }
+
+    // OpenAI Pixel Conversion Event - Signup
+    if (typeof window !== "undefined" && typeof (window as any).oaiq === "function") {
+      (window as any).oaiq(
+        "measure",
+        "registration_completed",
+        { type: "customer_action" }
+      );
+    }
   }, []);
 
   const userName =
