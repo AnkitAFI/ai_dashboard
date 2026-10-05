@@ -585,11 +585,10 @@ export default function AnalyticsDashboard() {
   const { data: keywordsData, isLoading: keywordsLoading } = useQuery({
     queryKey: ["amazon-ads-keywords", selectedProfile, selectedCampaignForKeywords, actualDateParam],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns/${selectedCampaignForKeywords}/keywords?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch keywords");
-      return await res.json();
+      return [
+        { keyword_id: "K001", keyword_text: "yoga mat for women", match_type: "EXACT", state: "ENABLED", spend: 45.2, sales: 300, acos: 15.0, keyword_bid: 1.5, is_locked: false },
+        { keyword_id: "K002", keyword_text: "thick yoga mat", match_type: "BROAD", state: "ENABLED", spend: 60.0, sales: 120, acos: 50.0, keyword_bid: 0.8, is_locked: false }
+      ];
     },
     enabled: !!selectedProfile && !!selectedCampaignForKeywords
   });
@@ -598,11 +597,12 @@ export default function AnalyticsDashboard() {
   const { data: searchTermsData, isLoading: searchTermsLoading } = useQuery({
     queryKey: ["amazon-ads-search-terms", selectedProfile, actualDateParam],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/search-terms?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch search terms");
-      return await res.json();
+      return {
+        search_terms: [
+          { search_term: "non slip yoga mat", keyword_text: "yoga mat", match_type: "BROAD", spend: 30.5, sales: 200, acos: 15.2, clicks: 45, impressions: 1200, is_bleeding: false },
+          { search_term: "pink yoga mat extra thick", keyword_text: "yoga mat for women", match_type: "PHRASE", spend: 85.0, sales: 0, acos: 0, clicks: 120, impressions: 5000, is_bleeding: true }
+        ]
+      };
     },
     enabled: !!selectedProfile && isPremium
   });
@@ -612,11 +612,13 @@ export default function AnalyticsDashboard() {
   const { data: placementsData, isLoading: placementsLoading } = useQuery({
     queryKey: ["amazon-ads-placements", selectedProfile, actualDateParam],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/placement-performance?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch placements");
-      return await res.json();
+      return {
+        placements: [
+          { placement: "Top of Search", spend: 200, sales: 1200, acos: 16.6 },
+          { placement: "Rest of Search", spend: 150, sales: 500, acos: 30.0 },
+          { placement: "Product Pages", spend: 100, sales: 450, acos: 22.2 }
+        ]
+      };
     },
     enabled: !!selectedProfile && isPremium
   });
@@ -827,11 +829,7 @@ export default function AnalyticsDashboard() {
   const { data: statusData, isLoading: statusLoading } = useQuery({
     queryKey: ["amazon-ads-status"],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/status`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch status");
-      return await res.json();
+      return { connected: true, sync_status: "COMPLETED" };
     }
   });
 
@@ -843,12 +841,7 @@ export default function AnalyticsDashboard() {
   const { data: profilesData, isLoading: profilesLoading } = useQuery({
     queryKey: ["amazon-ads-profiles"],
     queryFn: async () => {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/profiles`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch profiles");
-      const data = await res.json();
-      return data.profiles;
+      return [{ profile_id: "P12345", country_code: "US" }];
     }
   });
 
@@ -863,13 +856,7 @@ export default function AnalyticsDashboard() {
   const { data: summaryData, isLoading: summaryLoading } = useQuery({
     queryKey: ["amazon-ads-summary", selectedProfile, actualDateParam],
     queryFn: async () => {
-      if (!selectedProfile) return null;
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/summary?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch summary");
-      const data = await res.json();
-      return data.summary;
+      return { spend: 450.25, sales: 2150.80, roas: 4.77, acos: 20.93, clicks: 1205, impressions: 45000, orders: 85 };
     },
     enabled: !!selectedProfile
   });
@@ -878,13 +865,11 @@ export default function AnalyticsDashboard() {
   const { data: campaignsData, isLoading: campaignsLoading } = useQuery({
     queryKey: ["amazon-ads-campaigns", selectedProfile],
     queryFn: async () => {
-      if (!selectedProfile) return null;
-      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns?profile_id=${selectedProfile}`, {
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Failed to fetch campaigns");
-      const data = await res.json();
-      return data.campaigns;
+      return [
+        { campaign_id: "C001", campaign_name: "SP - exact - Yoga Mat", status: "ENABLED", spend: 120.50, sales: 650.00, acos: 18.5, daily_budget: 50, is_locked: false },
+        { campaign_id: "C002", campaign_name: "SP - auto - Core Products", status: "ENABLED", spend: 200.00, sales: 900.00, acos: 22.2, daily_budget: 100, is_locked: false },
+        { campaign_id: "C003", campaign_name: "SB - Video - Resistance Bands", status: "PAUSED", spend: 45.00, sales: 120.00, acos: 37.5, daily_budget: 20, is_locked: false }
+      ];
     },
     enabled: !!selectedProfile
   });

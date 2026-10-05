@@ -54,20 +54,12 @@ export default function AmazonStoreSetupPage() {
     
     // Check connection status from backend
     const checkStatus = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, {
-          credentials: "include"
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setIsConnected(data.connected);
-          setAccounts(data.accounts || []);
-          setMaxAccounts(data.max_accounts || 1);
-          setCanAddMore(data.can_add_more ?? true);
-        }
-      } catch (e) {
-        console.error("Failed to fetch connection status", e);
-      }
+      // FAKE DATA FOR SCREENSHOTS
+      setIsConnected(true);
+      setAccounts([{ selling_partner_id: "A1B2C3D4E5F6G7", region: "IN", sync_status: "COMPLETED", connected_at: new Date().toISOString() }]);
+      setMaxAccounts(3);
+      setCanAddMore(false);
+      setIsLoading(false);
     };
 
     // If we just returned from OAuth callback (legacy ?success=true or new ?connected=true)

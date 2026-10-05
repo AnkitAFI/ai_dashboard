@@ -54,59 +54,25 @@ export default function ProfitabilityDashboard() {
   }, [user]);
 
   const fetchStatus = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data.accounts || []);
-        setMaxAccounts(data.max_accounts || 1);
-        if (data.accounts && data.accounts.length > 0) {
-          setAccountStatus(data.accounts[0].sync_status || "");
-          setConnectedAt(data.accounts[0].connected_at || null);
-          setSelectedSpId(data.accounts[0].selling_partner_id);
-        }
-      } else if (res.status !== 401) {
-        setFetchError("Could not load account status. Please refresh the page.");
-      }
-    } catch (e) {
-      setFetchError("Network error. Please check your connection and refresh.");
-    } finally {
-      setLoading(false);
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setAccounts([{ selling_partner_id: "A1B2C3D4E5F6G7", region: "IN", sync_status: "COMPLETED", connected_at: new Date().toISOString() }]);
+    setMaxAccounts(3);
+    setAccountStatus("COMPLETED");
+    setSelectedSpId("A1B2C3D4E5F6G7");
+    setLoading(false);
   };
 
   const fetchProfitabilityData = async (spId: string) => {
     setLoading(true);
-    setFetchError(null);
-    try {
-      // Summary (KPI cards) — available to ALL tiers
-      const summaryRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/profitability/${spId}/summary`, { credentials: "include" });
-      if (summaryRes.ok) {
-        setSummary(await summaryRes.json());
-      } else if (summaryRes.status === 403) {
-        // 403 here means the account is pending sync or access denied — do NOT clear accounts
-        // The UI will show a "syncing" state based on accountStatus
-      } else if (summaryRes.status !== 401) {
-        setFetchError("Failed to load financial data. Please try again in a moment.");
-      }
-
-      // ASINs table — Premium & Enterprise only. 403 here is expected for Free/Basic — do NOT show an error.
-      const tier = user?.subscriptionTier || "free";
-      if (tier === "premium" || tier === "enterprise") {
-        const asinsRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/profitability/${spId}/asins`, { credentials: "include" });
-        if (asinsRes.ok) {
-          const asinsData = await asinsRes.json();
-          setAsins(asinsData.asins || []);
-        } else if (asinsRes.status !== 403 && asinsRes.status !== 401) {
-          // Only surface unexpected errors — not the expected 403 tier block
-          toast({ title: "Partial load", description: "ASIN breakdown could not be loaded. KPI cards are still accurate.", variant: "default" });
-        }
-      }
-    } catch (e) {
-      setFetchError("Network error. Please check your connection and try again.");
-    } finally {
-      setLoading(false);
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setSummary({ revenue: 1500000, amazon_fees: 450000, total_cogs: 300000, net_profit: 750000 });
+    setAsins([
+      { asin: "B08N5WRWNW", units_sold: 500, revenue: 500000, cogs: 400, shipping: 50, target_margin: 20, net_profit: 150000, margin_pct: 30, is_bleeding: false },
+      { asin: "B07Z8BRQ7X", units_sold: 100, revenue: 200000, cogs: 1800, shipping: 100, target_margin: 15, net_profit: -10000, margin_pct: -5, is_bleeding: true },
+      { asin: "B091234567", units_sold: 800, revenue: 800000, cogs: 300, shipping: 40, target_margin: 25, net_profit: 610000, margin_pct: 76.25, is_bleeding: false }
+    ]);
+    setIsPremium(true);
+    setLoading(false);
   };
 
   const handleCogsUpdate = async (asin: string, cogs: number, shipping: number, target: number) => {

@@ -56,56 +56,24 @@ export default function ReviewAutomatorPage() {
   }, [selectedAccount])
 
   const fetchAccounts = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" })
-      if (res.ok) {
-        const data = await res.json()
-        setAccounts(data.accounts || [])
-        if (data.accounts && data.accounts.length > 0) {
-          setSelectedAccount(data.accounts[0].selling_partner_id)
-        } else {
-          setLoading(false)
-        }
-      } else {
-        setLoading(false)
-      }
-    } catch (e) {
-      console.error(e)
-      setLoading(false)
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setAccounts([{ selling_partner_id: "A1B2C3D4E5F6G7", region: "IN", sync_status: "COMPLETED" }]);
+    setSelectedAccount("A1B2C3D4E5F6G7");
+    setLoading(false);
   }
 
   const fetchData = async (spId: string) => {
     setLoading(true)
-    setIsPremiumRequired(false)
-    try {
-      const rulesRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/reviews/${spId}/rules`, {
-        credentials: "include"
-      })
-      
-      if (rulesRes.status === 403) {
-        setIsPremiumRequired(true)
-        return
-      }
-
-      if (rulesRes.ok) {
-        const rulesData = await rulesRes.json()
-        setGlobalRule(rulesData.global_rule || { delay_days_after_shipment: 7, exclude_refunded: true, is_active: false })
-        setCustomRules(rulesData.custom_rules || [])
-
-        const statsRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/reviews/${spId}/stats`, {
-          credentials: "include"
-        })
-        if (statsRes.ok) {
-           const statsData = await statsRes.json()
-           setStats(statsData)
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch data", error)
-    } finally {
-      setLoading(false)
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setGlobalRule({ delay_days_after_shipment: 7, exclude_refunded: true, is_active: true });
+    setCustomRules([
+      { asin: "B08N5WRWNW", delay_days_after_shipment: 14, exclude_refunded: true },
+      { asin: "B07Z8BRQ7X", delay_days_after_shipment: 5, exclude_refunded: true },
+      { asin: "B091234567", delay_days_after_shipment: 20, exclude_refunded: false }
+    ]);
+    setStats({ requests_sent: 1245, pending_queue: 342, orders_excluded: 89 });
+    setIsPremiumRequired(false);
+    setLoading(false);
   }
 
   const saveGlobalRule = async () => {

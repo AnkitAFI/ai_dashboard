@@ -44,55 +44,25 @@ export default function ReimbursementDashboard() {
   }, [selectedSpId]);
 
   const fetchAccounts = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data.accounts || []);
-        if (data.accounts && data.accounts.length > 0) {
-          setAccountStatus(data.accounts[0].sync_status || "");
-          setConnectedAt(data.accounts[0].connected_at || null);
-          setSelectedSpId(data.accounts[0].selling_partner_id);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setAccounts([{ selling_partner_id: "A1B2C3D4E5F6G7", region: "IN", sync_status: "COMPLETED", connected_at: new Date().toISOString() }]);
+    setAccountStatus("COMPLETED");
+    setSelectedSpId("A1B2C3D4E5F6G7");
+    setLoading(false);
   };
 
   const fetchData = async (spId: string) => {
     setLoading(true);
+    // FAKE DATA FOR SCREENSHOTS
+    setSummary({ total_potential_lost: 45000, total_successfully_reimbursed: 12000, actionable_cases_count: 5 });
+    setDiscrepancies([
+      { id: 1, amazon_order_id: "171-1234567-8901234", asin: "B08N5WRWNW", refund_date: new Date(Date.now() - 50 * 86400000).toISOString(), refunded_amount: 1500, status: "PENDING" },
+      { id: 2, amazon_order_id: "171-7654321-4321098", asin: "B07Z8BRQ7X", refund_date: new Date(Date.now() - 55 * 86400000).toISOString(), refunded_amount: 8500, status: "CLAIM_FILED" },
+      { id: 3, amazon_order_id: "171-1111111-2222222", asin: "B091234567", refund_date: new Date(Date.now() - 60 * 86400000).toISOString(), refunded_amount: 2500, status: "REIMBURSED" },
+      { id: 4, amazon_order_id: "171-3333333-4444444", asin: "B09ABCDEFG", refund_date: new Date(Date.now() - 48 * 86400000).toISOString(), refunded_amount: 12500, status: "PENDING" }
+    ]);
     setIsPremiumRequired(false);
-    try {
-      const [summaryRes, discRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/amazon-sp-api/reimbursements/${spId}/summary`, { credentials: "include" }),
-        fetch(`${API_BASE_URL}/api/amazon-sp-api/reimbursements/${spId}/discrepancies`, { credentials: "include" })
-      ]);
-
-      if (summaryRes.status === 403 || discRes.status === 403) {
-        // 403 can mean tier restriction OR pending sync.
-        // Only show premium lock if user tier is actually insufficient.
-        const tier = user?.subscriptionTier || "free";
-        const isPremium = tier === "premium" || tier === "enterprise";
-        if (!isPremium) {
-          setIsPremiumRequired(true);
-        }
-        // If premium but 403, account is pending sync — leave isPremiumRequired false
-        return;
-      }
-
-      if (summaryRes.ok) setSummary(await summaryRes.json());
-      if (discRes.ok) {
-        const data = await discRes.json();
-        setDiscrepancies(data.discrepancies || []);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {

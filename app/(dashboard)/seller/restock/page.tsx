@@ -61,54 +61,24 @@ export default function RestockForecasterDashboard() {
   }, [selectedSpId]);
 
   const fetchAccounts = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/status`, { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json();
-        setAccounts(data.accounts || []);
-        if (data.accounts && data.accounts.length > 0) {
-          setAccountStatus(data.accounts[0].sync_status || "");
-          setConnectedAt(data.accounts[0].connected_at || null);
-          setSelectedSpId(data.accounts[0].selling_partner_id);
-        } else {
-          setLoading(false); // No accounts
-        }
-      } else {
-        setLoading(false);
-      }
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
+    // FAKE DATA FOR SCREENSHOTS
+    setAccounts([{ selling_partner_id: "A1B2C3D4E5F6G7", region: "IN", sync_status: "COMPLETED" }]);
+    setAccountStatus("COMPLETED");
+    setSelectedSpId("A1B2C3D4E5F6G7");
+    setLoading(false);
   };
 
   const fetchData = async (spId: string) => {
     setLoading(true);
+    // FAKE DATA FOR SCREENSHOTS
+    setInventoryData([
+      { asin: "B08N5WRWNW", product_title: "Premium Yoga Mat with Alignment Lines", total_stock: 45, sellable_quantity: 45, inbound_quantity: 0, units_sold_30d: 120, units_sold_7d: 30, velocity_calculation_method: "30D", manual_daily_velocity: 4, supplier_lead_time_days: 15, transit_time_days: 5, days_remaining: 11, recommended_order_quantity: 200, is_critical: true, reorder_date: new Date(Date.now() - 3 * 86400000).toISOString() },
+      { asin: "B07Z8BRQ7X", product_title: "Wireless Noise Cancelling Earbuds Pro", total_stock: 0, sellable_quantity: 0, inbound_quantity: 0, units_sold_30d: 350, units_sold_7d: 85, velocity_calculation_method: "30D", manual_daily_velocity: 11, supplier_lead_time_days: 30, transit_time_days: 7, days_remaining: 0, recommended_order_quantity: 500, is_critical: true, reorder_date: new Date(Date.now() - 10 * 86400000).toISOString() },
+      { asin: "B091234567", product_title: "Resistance Bands Set of 5", total_stock: 420, sellable_quantity: 350, inbound_quantity: 70, units_sold_30d: 400, units_sold_7d: 100, velocity_calculation_method: "30D", manual_daily_velocity: 13, supplier_lead_time_days: 20, transit_time_days: 5, days_remaining: 32, recommended_order_quantity: 800, is_critical: false, reorder_date: new Date(Date.now() + 15 * 86400000).toISOString() },
+      { asin: "B09ABCDEFG", product_title: "Ergonomic Office Chair", total_stock: 12, sellable_quantity: 12, inbound_quantity: 0, units_sold_30d: 60, units_sold_7d: 15, velocity_calculation_method: "30D", manual_daily_velocity: 2, supplier_lead_time_days: 45, transit_time_days: 10, days_remaining: 6, recommended_order_quantity: 100, is_critical: true, reorder_date: new Date(Date.now() - 40 * 86400000).toISOString() }
+    ]);
     setIsPremiumRequired(false);
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/inventory/${spId}/forecaster`, { credentials: "include" });
-      
-      if (res.status === 403) {
-        // 403 can mean tier restriction OR pending sync.
-        // Only show premium lock if we know user tier is insufficient.
-        const tier = (typeof window !== "undefined" ? (user?.subscriptionTier || "free") : "free");
-        const isPremium = tier === "premium" || tier === "enterprise";
-        if (!isPremium) {
-          setIsPremiumRequired(true);
-        }
-        // If premium but still 403, account is pending sync — leave isPremiumRequired false
-        return;
-      }
-
-      if (res.ok) {
-        const data = await res.json();
-        setInventoryData(data.data || []);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   const updateAsinSettings = async (asin: string, payload: any) => {
