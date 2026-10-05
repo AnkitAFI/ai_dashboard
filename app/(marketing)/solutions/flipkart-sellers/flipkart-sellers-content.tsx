@@ -258,12 +258,15 @@ export default function FlipkartSellersPage() {
           </div>
 
           <div className="text-center">
-            <button
-              onClick={() => router.push('/compare/insydzvshelium')}
-              className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
-            >
-            See how Insydz compares to other Flipkart seller tools
-            </button>
+            <p className="text-gray-700 dark:text-gray-300 font-semibold">
+              See how Insydz compares to{" "}
+              <Link
+                href="/resources/expert-blog/best-flipkart-analytics-tool"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+              >
+                other Flipkart seller tools
+              </Link>
+            </p>
           </div>
         </div>
       </section>
@@ -292,12 +295,12 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">1. Automated Competitor Monitoring</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Track 100+ competitors in your Flipkart category effortlessly. Insydz watches every price change, stock movement, and new seller entry so your Flipkart seller dashboard always shows the full competitive picture.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Track 100+ competitors in your Flipkart category effortlessly. Insydz watches every price change, stock movement, and new seller entry so your Flipkart seller dashboard always shows the full competitive picture. See how sellers <Link href="/use-cases/track-competitor-prices" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">track competitor prices on Flipkart</Link>.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
-                  "Real-time competitor price drop detection on Flipkart",
+                  <>Real-time <Link href="/features/competitor-price-tracking-feature" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">competitor price drop detection</Link> on Flipkart</>,
                   "Stock-out alerts capitalise when rivals run dry",
                   "New seller entry notifications in your category",
                   "Flipkart price history tracking for any product"
@@ -323,7 +326,7 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">2. AI Review Intelligence</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Stop scrolling through hundreds of Flipkart reviews manually. Insydz's AI reads every review yours and your competitors' and tells you exactly what's hurting your rating and what's driving purchases.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Stop scrolling through hundreds of Flipkart reviews manually. Insydz's AI reads every review yours and your competitors' and tells you exactly what's hurting your rating and what's driving purchases. Explore <Link href="/features/review-analytics-feature" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">review analytics software</Link> for Flipkart reviews. Learn how to <Link href="/use-cases/analyze-customer-reviews" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">analyse customer reviews</Link> and fix what hurts your ratings.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -354,12 +357,12 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">3. Smart Pricing &amp; SEO Recommendations</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Flipkart performance analytics go beyond dashboards with Insydz. The AI calculates the exact price you should set based on your margin floor, competitor moves, and keyword ranking impact then guides your listing SEO to recover lost visibility.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Flipkart performance analytics go beyond dashboards with Insydz. The AI calculates the exact price you should set based on your margin floor, competitor moves, and keyword ranking impact then guides your listing SEO to recover lost visibility. Learn how <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">Flipkart keyword research</Link> works for listing SEO.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
-                  "AI-recommended prices based on your cost of goods in INR",
+                  <><Link href="/features/price-optimization-feature" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">AI-recommended prices</Link> based on your cost of goods in INR</>,
                   "Keyword rank tracking across Flipkart search results daily",
                   "Listing title and bullet optimisation suggestions",
                   "Flipkart product analysis showing which attributes win search"
@@ -375,12 +378,12 @@ export default function FlipkartSellersPage() {
                   <span className="font-semibold text-orange-700 dark:text-orange-400">Real scenario:</span> A home décor seller's keyword 'led strip lights for bedroom' slipped from rank #6 to #24 on Flipkart. Insydz sent an alert with two specific fixes a ₹60 price reduction and a title tweak. Rank recovered to #9 within 5 days.
                 </p>
               </div>
-              <button
-                onClick={() => router.push('/features/keyword-rank-tracking-feature')}
-                className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline"
+              <Link
+                href="/features/keyword-rank-tracking-feature"
+                className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline inline-block"
               >
-              Explore Flipkart keyword rank tracker
-              </button>
+                Explore Flipkart keyword rank tracker
+              </Link>
             </div>
 
             {/* Feature 4 */}
@@ -396,7 +399,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
-                  "Competitor price drop → WhatsApp alert in seconds",
+                  <>Competitor price drop → <Link href="/features/whatsapp-alerts-feature" className="text-green-600 dark:text-green-400 font-semibold hover:underline">WhatsApp alert</Link> in seconds</>,
                   "Keyword ranking slip → alert with recommended fix",
                   "Negative review surge → instant AI summary on WhatsApp",
                   "Stock-out opportunity alert for top competitors"
@@ -409,7 +412,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-green-700 dark:text-green-400">Real scenario:</span> A Mumbai seller was travelling when a competitor slashed prices on Flipkart Big Billion Days eve. Insydz WhatsApp alert arrived within 90 seconds. He repriced from his phone. Saved an estimated ₹80,000 in potential lost sales that weekend.
+                  <span className="font-semibold text-green-700 dark:text-green-400">Real scenario:</span> A Mumbai seller was travelling when a competitor slashed prices on <Link href="/features/festive-trend-feature" className="text-green-700 dark:text-green-400 font-semibold hover:underline">Flipkart Big Billion Days</Link> eve. Insydz WhatsApp alert arrived within 90 seconds. He repriced from his phone. Saved an estimated ₹80,000 in potential lost sales that weekend.
                 </p>
               </div>
             </div>
@@ -481,7 +484,17 @@ export default function FlipkartSellersPage() {
             </div>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 text-gray-600 dark:text-gray-400">
+            Also selling on Amazon India? See our{" "}
+            <Link
+              href="/solutions/amazon-sellers"
+              className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+            >
+              Amazon seller analytics tool
+            </Link>.
+          </div>
+
+          <div className="text-center mt-8">
             <Button
               onClick={handleGetStarted}
               size="lg"
@@ -664,7 +677,21 @@ export default function FlipkartSellersPage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">For Agencies &amp; Brand Managers</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
-                Managing multiple Flipkart brands? Multi-account tracking, portfolio-level intelligence, and white-label reporting built for agencies and brand managers running Flipkart operations at scale.
+                Managing multiple Flipkart brands? Multi-account tracking, portfolio-level intelligence, and white-label reporting built for{" "}
+                <Link
+                  href="/solutions/ecommerce-agencies"
+                  className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+                >
+                  agencies
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/solutions/brand-managers"
+                  className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+                >
+                  brand managers
+                </Link>{" "}
+                running Flipkart operations at scale.
               </p>
               <Button
                 onClick={() => router.push('/about/contact-us')}

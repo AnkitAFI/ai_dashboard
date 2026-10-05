@@ -130,7 +130,7 @@ export default function BrandManagersPage() {
               <span className="text-red-600">Without Real-Time Intelligence</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Managing brands on e-commerce without live data is like driving blind. Competitors move at speed, customer sentiment shifts overnight, and by the time your monthly report is ready the market has already moved against you.
+              Managing brands on e-commerce without live data is like driving blind. Competitors move at speed, customer sentiment shifts overnight, and by the time your monthly report is ready the market has already moved against you. Brand teams should also watch for <Link href="/resources/expert-blog/amazon-listing-hijacker-india" className="text-red-600 dark:text-red-400 font-semibold hover:underline">listing hijackers</Link> that copy the brand and take the Buy Box.
             </p>
           </div>
 
@@ -186,7 +186,7 @@ export default function BrandManagersPage() {
               <tbody>
                 {[
                   { feature: "Market share tracking on Amazon & Flipkart", insydz: "✓", other: "✗" },
-                  { feature: "Competitor pricing intelligence (INR)", insydz: "✓", other: "✗ Doesn't track pricing" },
+                  { feature: <> <Link href="/features/competitor-price-tracking-feature" className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium hover:underline">Competitor pricing intelligence</Link> (INR)</>, insydz: "✓", other: "✗ Doesn't track pricing" },
                   { feature: "Review sentiment & root-cause AI", insydz: "✓ 250K+ reviews", other: "⚠ Social only" },
                   { feature: "Keyword ranking on marketplace search", insydz: "✓", other: "✗" },
                   { feature: "AI pricing recommendations", insydz: "✓", other: "✗" },
@@ -269,13 +269,13 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">2. AI-Powered Market Intelligence</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Stop receiving data. Start receiving decisions. Insydz's brand intelligence platform doesn't just surface competitor moves it tells you exactly how to respond. Get strategic recommendations, not just numbers, backed by marketplace AI trained on Indian category data.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Stop receiving data. Start receiving decisions. Insydz's brand intelligence platform doesn't just surface competitor moves it <Link href="/features/ai-recommendations-feature" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">tells you exactly how to respond</Link>. Get strategic recommendations, not just numbers, backed by marketplace AI trained on Indian category data. Read how to respond when a <Link href="/resources/expert-blog/competitor-undercutting-amazon-india" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">competitor undercuts you on Amazon India</Link>.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
                   "Competitor product launch detection with price & positioning analysis",
-                  "AI-calculated optimal price range to protect share without margin erosion",
+                  <> <Link href="/features/price-optimization-feature" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">AI-calculated optimal price range</Link> to protect share without margin erosion</>,
                   "Market share shift alerts with attribution (price/review/ranking cause)",
                   "Demand signal analysis where your category is growing or declining"
                 ].map((point, i) => (
@@ -331,14 +331,14 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">4. Competitive Defence Alerts</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Real-time brand tracking means knowing about competitive threats the moment they happen not after your sales data confirms the damage. Insydz monitors the market 24/7 and delivers WhatsApp alerts for every significant competitive event that could affect your brand's position.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Real-time brand tracking means knowing about competitive threats the moment they happen not after your sales data confirms the damage. Insydz monitors the market 24/7 and delivers <Link href="/features/whatsapp-alerts-feature" className="text-green-600 dark:text-green-400 font-semibold hover:underline">WhatsApp alerts</Link> for every significant competitive event that could affect your brand's position.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
                   "New competitor product launch alert with full pricing intel",
                   "Market share erosion alert when position drops more than 5%",
-                  "Keyword ranking loss alert with AI-recommended recovery action",
+                  <> <Link href="/features/keyword-rank-tracking-feature" className="text-green-600 dark:text-green-400 font-semibold hover:underline">Keyword ranking loss alert</Link> with AI-recommended recovery action</>,
                   "Review sentiment deterioration alert before ratings visibly decline"
                 ].map((point, i) => (
                   <div key={i} className="flex items-start gap-2">
@@ -368,7 +368,7 @@ export default function BrandManagersPage() {
             {[
               { icon: <PieChart className="w-8 h-8" />, title: "Market Share Tracking", desc: "Real-time category position vs. all competitors across Amazon and Flipkart" },
               { icon: <TrendingUp className="w-8 h-8" />, title: "Price Elasticity Analysis", desc: "AI models category price sensitivity never price blind again" },
-              { icon: <MessageCircle className="w-8 h-8" />, title: "Sentiment Analytics", desc: "AI-powered review analysis across 250K+ reviews; brand perception tracking" },
+              { icon: <MessageCircle className="w-8 h-8" />, title: "Sentiment Analytics", desc: <> <Link href="/features/review-analytics-feature" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">AI-powered review analysis</Link> across 250K+ reviews; brand perception tracking</> },
               { icon: <Target className="w-8 h-8" />, title: "Competitive Benchmarking", desc: "20+ metrics: pricing, reviews, keyword rankings, GMV estimates" },
               { icon: <Sparkles className="w-8 h-8" />, title: "Product Performance", desc: "Star performer vs. underperformer analysis across your portfolio" },
               { icon: <BarChart3 className="w-8 h-8" />, title: "Custom Dashboards", desc: "Executive views tailored to brand-specific KPIs and reporting needs" }
@@ -567,8 +567,24 @@ export default function BrandManagersPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">Ready to Manage Your Brands with Confidence?</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-3">
               Join brand managers who make strategic decisions backed by real-time market intelligence, not delayed reports.
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Selling directly on the marketplaces? See Insydz for{" "}
+              <Link
+                href="/solutions/amazon-sellers"
+                className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+              >
+                Amazon sellers
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/solutions/flipkart-sellers"
+                className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+              >
+                Flipkart sellers
+              </Link>.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
