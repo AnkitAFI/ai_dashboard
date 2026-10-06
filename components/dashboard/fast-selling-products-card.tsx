@@ -99,7 +99,7 @@ export default function FastSellingProductsCard({ selectedSource }: FastSellingP
                   <th className="py-2 px-3 pl-4 sm:pl-5 w-10 align-middle">#</th>
                   <th className="py-2 px-3 sm:px-4 align-middle min-w-[200px]">Product</th>
                   <th className="py-2 px-3 sm:px-4 align-middle">Category</th>
-                  <th className="py-2 px-3 sm:px-4 text-right align-middle whitespace-nowrap">Daily Sales</th>
+                  <th className="py-2 px-3 sm:px-4 text-right align-middle whitespace-nowrap">Sales</th>
                   <th className="py-2 px-3 sm:px-4 text-right align-middle whitespace-nowrap">Price</th>
                   <th className="py-2 px-3 sm:px-4 text-right align-middle whitespace-nowrap">Reviews</th>
                   <th className="py-2 px-3 pr-4 sm:pr-5 text-right align-middle whitespace-nowrap">Rating</th>
