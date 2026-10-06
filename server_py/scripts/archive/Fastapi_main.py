@@ -8003,7 +8003,7 @@ def generate_warnings(pricing: Dict, competition: Dict, base_cost: float) -> Lis
 # ─────────────────────────────────────────────────────────────────────────────
  
 def get_analysis_limit(tier: str) -> float:
-    return {"free": 5, "basic": 20, "premium": float("inf"), "enterprise": float("inf")}.get(tier.lower(), 5)
+    return {"free": 1, "basic": 20, "premium": float("inf"), "enterprise": float("inf")}.get(tier.lower(), 1)
  
  
 # ─────────────────────────────────────────────────────────────────────────────
