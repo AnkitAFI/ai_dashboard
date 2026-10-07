@@ -122,12 +122,18 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
     sorted_emails = sorted(grouped_logs.keys())
     
     # Executive Summary
-    total_users = len(sorted_emails)
+    total_active_users = len(sorted_emails)
+    total_registered_users = len(user_data)
+    total_stores_connected = sum(1 for u in user_data.values() if u.get('stores_connected'))
+    total_ads_connected = sum(1 for u in user_data.values() if u.get('ads_connected'))
     total_actions = sum(len(ulogs) for ulogs in grouped_logs.values())
     
     summary_style = ParagraphStyle('Summary', parent=styles['Normal'], fontSize=12, spaceAfter=15)
     elements.append(Paragraph("<b>Executive Summary</b>", styles['Heading2']))
-    elements.append(Paragraph(f"Total Unique Active Users: <b>{total_users}</b>", summary_style))
+    elements.append(Paragraph(f"Total Registered Users: <b>{total_registered_users}</b>", summary_style))
+    elements.append(Paragraph(f"Total Unique Active Users: <b>{total_active_users}</b>", summary_style))
+    elements.append(Paragraph(f"Total Stores Connected: <b>{total_stores_connected}</b>", summary_style))
+    elements.append(Paragraph(f"Total Ads Connected: <b>{total_ads_connected}</b>", summary_style))
     elements.append(Paragraph(f"Total Logged Actions: <b>{total_actions}</b>", summary_style))
     
     # Pie Chart for overall event breakdown
@@ -178,6 +184,53 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
         
     elements.append(PageBreak())
     
+    # All Users Details Section
+    elements.append(Paragraph("<b>All Users Summary</b>", styles['Heading2']))
+    users_table_data = [["Name", "Email", "Tier", "Status", "AI Chat", "Analysis", "SOV", "Store", "Ads", "Joined Date"]]
+    for email, u_info in user_data.items():
+        name = u_info.get("name", "Unknown User")
+        tier = str(u_info.get("tier", "free")).capitalize()
+        if not u_info.get("is_active", True):
+            status = "Deleted"
+        else:
+            status = "Verified" if u_info.get("is_verified") else "Pending"
+        ai_used = str(u_info.get("ai_chat_used", 0))
+        analysis_used = str(u_info.get("analysis_used", 0))
+        sov_used = str(u_info.get("sov_used", 0))
+        store_conn = "Yes" if u_info.get("stores_connected") else "No"
+        ads_conn = "Yes" if u_info.get("ads_connected") else "No"
+        joined = u_info.get("created_at", "Unknown")
+        if joined != "Unknown":
+            try:
+                # Handle potential +00:00 or missing timezone
+                ts_str = str(joined).replace('Z', '+00:00')
+                dt = datetime.fromisoformat(ts_str)
+                joined = dt.strftime("%b %d, %Y")
+            except:
+                joined = str(joined)[:10]
+        users_table_data.append([name, email, tier, status, ai_used, analysis_used, sov_used, store_conn, ads_conn, joined])
+        
+    u_col_widths = [110, 150, 50, 50, 50, 50, 45, 45, 45, 80]
+    u_table = Table(users_table_data, colWidths=u_col_widths, repeatRows=1)
+    u_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f1f5f9')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1e293b')),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#334155')),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+    ]))
+    for i in range(2, len(users_table_data), 2):
+        u_table.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), colors.HexColor('#f8fafc'))]))
+        
+    elements.append(u_table)
+    elements.append(PageBreak())
     # Event Colors mapping
     event_colors = {
         'page_view': '#2563eb', # Blue

@@ -7,6 +7,7 @@ from app.db.session import get_db
 from app.services.analytics_service import AnalyticsService
 from app.api.deps import r, get_optional_user, get_current_user
 from app.models.legacy_models import UserBehaviorLog, User
+from app.models.schema_v2 import AmazonAdsCredential, AmazonSPAPICredential
 import json
 from datetime import datetime
 from fastapi.responses import StreamingResponse
@@ -445,11 +446,25 @@ def export_admin_behavior_logs_pdf(
 
     # Get all users to build user_data mapping
     users = db.query(User).all()
+    
+    ads_connected_user_ids = {row[0] for row in db.query(AmazonAdsCredential.user_id).distinct().all()}
+    sp_api_connected_user_ids = {row[0] for row in db.query(AmazonSPAPICredential.user_id).distinct().all()}
+
     user_data = {}
     for user in users:
         user_data[user.email] = {
             "name": f"{user.first_name} {user.last_name}",
-            "id": user.id
+            "id": user.id,
+            "tier": user.subscription_tier or "free",
+            "is_verified": user.is_verified or False,
+            "is_active": user.is_active if user.is_active is not None else True,
+            "ai_chat_used": user.ai_chat_used or 0,
+            "created_at": str(user.created_at) if user.created_at else "Unknown",
+            "email": user.email,
+            "ads_connected": user.id in ads_connected_user_ids,
+            "stores_connected": user.id in sp_api_connected_user_ids,
+            "analysis_used": user.analysis_used or 0,
+            "sov_used": user.sov_used or 0
         }
 
     # Generate PDF
