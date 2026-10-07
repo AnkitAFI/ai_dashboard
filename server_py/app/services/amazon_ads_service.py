@@ -23,7 +23,8 @@ class AmazonAdsService:
         if not self.cred or not self.cred.refresh_token:
             raise ValueError("No Amazon Ads credentials found for user.")
             
-        now = datetime.utcnow()
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         if self.cred.access_token and self.cred.access_token_expires_at and self.cred.access_token_expires_at > now + timedelta(minutes=5):
             return # Still valid
             

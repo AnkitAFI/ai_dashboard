@@ -25,8 +25,8 @@ def execute_right_to_be_forgotten(db: Session, user_id: int, reason: str = "user
         # 1. Insert into deleted_users (Fraud prevention / Audit trail)
         deleted_record = DeletedUser(
             email_hash=email_hash,
-            deletion_reason=reason,
-            deleted_at=datetime.utcnow()
+            deleted_at=datetime.utcnow(),
+            deletion_reason=reason
         )
         db.add(deleted_record)
 

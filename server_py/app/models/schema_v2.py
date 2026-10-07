@@ -170,6 +170,7 @@ class DeletedUser(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email_hash = Column(HashedString(255), index=True, nullable=False)
     deleted_at = Column(DateTime(timezone=True), server_default=func.now())
+    deletion_reason = Column(String(50), nullable=True)
 class AmazonAdsAutomationRules(Base):
     __tablename__ = "amazon_ads_automation_rules"
 
