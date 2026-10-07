@@ -1145,9 +1145,9 @@ export default function AdminDashboard() {
 
   const filtered = users
     .filter(u => {
-      const q = search.toLowerCase();
-      const nameMatch = `${u.first_name} ${u.last_name}`.toLowerCase().includes(q);
-      const emailMatch = u.email.toLowerCase().includes(q);
+      const q = (search || "").toLowerCase();
+      const nameMatch = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase().includes(q);
+      const emailMatch = (u.email || "").toLowerCase().includes(q);
       const bizMatch = (u.business_name || "").toLowerCase().includes(q);
       const locMatch = (u.location || "").toLowerCase().includes(q);
       const matchesSearch = !q || nameMatch || emailMatch || bizMatch || locMatch;
@@ -1890,12 +1890,12 @@ export default function AdminDashboard() {
           const uniqueSessions = new Set(behaviorLogs.map(l => l.session_id)).size;
 
           const filteredLogs = behaviorLogs.filter(log => {
-            const q = behaviorSearch.toLowerCase();
+            const q = (behaviorSearch || "").toLowerCase();
             const matchesSearch = !q ||
               (log.user_email || "").toLowerCase().includes(q) ||
-              log.page_path.toLowerCase().includes(q) ||
+              (log.page_path || "").toLowerCase().includes(q) ||
               (log.properties?.track_id || "").toLowerCase().includes(q) ||
-              log.event_type.toLowerCase().includes(q);
+              (log.event_type || "").toLowerCase().includes(q);
             const matchesType = behaviorFilterType === "all" || log.event_type === behaviorFilterType;
             const matchesEmail = !behaviorEmailFilter || log.user_email === behaviorEmailFilter;
             const matchesPath = !behaviorPathFilter || log.page_path === behaviorPathFilter;
