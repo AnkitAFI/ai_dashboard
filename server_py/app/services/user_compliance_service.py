@@ -23,21 +23,23 @@ def execute_right_to_be_forgotten(db: Session, user_id: int, reason: str = "user
 
         email_hash = user_auth.email_hash
 
-        # 1. Insert into deleted_users (Fraud prevention / Audit trail)
-        deleted_record = DeletedUser(
-            email_hash=email_hash,
-            deleted_at=datetime.utcnow(),
-            deletion_reason=reason
-        )
-        db.add(deleted_record)
+        # 1. Audit trail is already created during soft-delete in legacy_router.py
+        # Skipping duplicate insertion into deleted_users here.
 
-        # 2. Nullify user_id in payment_orders (Financial records retained for tax)
-        db.query(PaymentOrder).filter(PaymentOrder.user_id == user_id).update({"user_id": None})
+        # 2. Scrub PII from payment_orders but keep user_id for tax constraints
+        db.query(PaymentOrder).filter(PaymentOrder.user_id == user_id).update({
+            "billing_full_name": None,
+            "billing_email": None,
+            "billing_mobile": None,
+            "billing_company": None,
+            "billing_address": None
+        })
         
         # 3. Schedule analytics deletion (user_behavior_logs)
-        # Note: Depending on retention policy, you might leave them to be cleaned up
-        # by a cron job (90-day retention) or delete them immediately. For strict compliance:
-        db.query(UserBehaviorLog).filter(UserBehaviorLog.user_id == user_id).update({"user_id": None})
+        db.query(UserBehaviorLog).filter(UserBehaviorLog.user_id == user_id).update({
+            "user_id": None,
+            "user_email": None
+        })
         
         # 4. Mark any open Data Subject Requests as completed
         db.query(DataSubjectRequest).filter(
@@ -49,11 +51,20 @@ def execute_right_to_be_forgotten(db: Session, user_id: int, reason: str = "user
             "notes": "Completed via Right to be Forgotten workflow."
         })
 
-        # 5. Delete users_auth. 
-        # Since relationships to profile, business_info, subscriptions, and app_state 
-        # are set to cascade="all, delete-orphan", SQLAlchemy/Postgres will automatically 
-        # delete those rows, completely scrubbing the PII.
-        db.delete(user_auth)
+        # 5. Delete all associated PII child records explicitly
+        if user_auth.profile: db.delete(user_auth.profile)
+        if user_auth.business_info: db.delete(user_auth.business_info)
+        if user_auth.subscriptions: db.delete(user_auth.subscriptions)
+        if user_auth.app_state: db.delete(user_auth.app_state)
+
+        # 6. Anonymize the root user_auth record instead of deleting it
+        # This keeps the foreign key for payment_orders alive, but scrubs the identity.
+        user_auth.email_hash = f"deleted_{user_auth.id}_{int(datetime.utcnow().timestamp())}"
+        user_auth.google_id = None
+        user_auth.password_hash = None
+        user_auth.mfa_secret = None
+        user_auth.mfa_backup_codes = None
+        user_auth.is_active = False
 
         # Commit the transaction
         db.commit()
