@@ -3,9 +3,9 @@ from datetime import datetime
 import logging
 from app.models.schema_v2 import (
     UserAuth, UserProfile, UserBusinessInfo, UserSubscription,
-    UserAppState, DeletedUser, UserBehaviorLog, DataSubjectRequest
+    UserAppState, DeletedUser, DataSubjectRequest
 )
-from app.models.legacy_models import PaymentOrder
+from app.models.legacy_models import PaymentOrder, UserBehaviorLog
 
 logger = logging.getLogger(__name__)
 
