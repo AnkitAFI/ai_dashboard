@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { useState, useEffect, Suspense, useRef, useCallback, useMemo } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { API_BASE_URL } from "@/lib/config";
@@ -53,12 +53,12 @@ export default function Page() {
 // } from "recharts";
 // import ReactMarkdown from "react-markdown";
 // import SmartSearchInput from "@/components/ui/smart-search-input";
-// 
+//
 // const BASE_URL = API_BASE_URL;
 // const API = `${BASE_URL}/api/rank-tracker`;
-// 
+//
 // // â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // interface RankSnapshot {
 //   keyword: string;
 //   rank_position: number | null;
@@ -66,7 +66,7 @@ export default function Page() {
 //   is_sponsored: boolean;
 //   checked_at: string;
 // }
-// 
+//
 // interface TrackedKeyword {
 //   keyword: string;
 //   current_rank: number | null;
@@ -82,7 +82,7 @@ export default function Page() {
 //   competitor_ranks?: { asin: string; title: string; rank: number | null }[];
 //   volatility_score?: number;
 // }
-// 
+//
 // interface RankProfile {
 //   asin: string;
 //   product_title: string;
@@ -102,13 +102,13 @@ export default function Page() {
 //   suggestions: string[];
 //   recent_alerts?: { type: "warn" | "danger" | "success"; msg: string; keyword: string; fired_at: string }[];
 // }
-// 
+//
 // // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function sym(currency: string) {
 //   return currency === "USD" ? "$" : "â‚¹";
 // }
-// 
+//
 // function rankLabel(rank: number | null): string {
 //   if (rank === null) return "Not found";
 //   if (rank <= 10) return "Top 10";
@@ -116,7 +116,7 @@ export default function Page() {
 //   if (rank <= 50) return "Top 50";
 //   return `#${rank}`;
 // }
-// 
+//
 // function rankColor(rank: number | null): string {
 //   if (rank === null) return "text-slate-400";
 //   if (rank <= 10) return "text-emerald-600";
@@ -124,7 +124,7 @@ export default function Page() {
 //   if (rank <= 50) return "text-amber-600";
 //   return "text-slate-600";
 // }
-// 
+//
 // function rankBg(rank: number | null): string {
 //   if (rank === null) return "bg-slate-50 border-slate-200 text-slate-400";
 //   if (rank <= 10) return "bg-emerald-50 border-emerald-200 text-emerald-700";
@@ -132,15 +132,15 @@ export default function Page() {
 //   if (rank <= 50) return "bg-amber-50 border-amber-200 text-amber-700";
 //   return "bg-slate-50 border-slate-200 text-slate-600";
 // }
-// 
+//
 // // â”€â”€ useStream â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function useStream() {
 //   const [streaming, setStreaming] = useState(false);
 //   const [text, setText] = useState("");
 //   const [error, setError] = useState<string | null>(null);
 //   const abortRef = useRef<AbortController | null>(null);
-// 
+//
 //   const start = useCallback(async (url: string, body: object) => {
 //     if (abortRef.current) abortRef.current.abort();
 //     abortRef.current = new AbortController();
@@ -181,21 +181,21 @@ export default function Page() {
 //       setStreaming(false);
 //     }
 //   }, []);
-// 
+//
 //   const stop = useCallback(() => { abortRef.current?.abort(); setStreaming(false); }, []);
 //   const reset = useCallback(() => { setText(""); setError(null); }, []);
 //   return { streaming, text, error, start, stop, reset };
 // }
-// 
+//
 // // â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
 //   const router = useRouter();
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="absolute inset-0 bg-white/88 dark:bg-slate-900/85 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
 //       <div className={cn(
@@ -222,19 +222,19 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Keyword Rank Score Ring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function RankScoreRing({ score }: { score: number }) {
 //   const r = 32, circ = 2 * Math.PI * r;
 //   const offset = circ - (circ * score) / 100;
 //   const color = score >= 70 ? "#10b981" : score >= 40 ? "#f59e0b" : "#ef4444";
 //   const label = score >= 70 ? "Strong" : score >= 40 ? "Moderate" : "Weak";
-//   
+//
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="flex flex-col items-center gap-1.5">
 //       <div className="relative w-24 h-24">
@@ -253,7 +253,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Rank Change Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function RankChangeBadge({ change, status }: { change: number | null; status: string }) {
 //   if (status === "new") return (
@@ -278,32 +278,32 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Sparkline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function Sparkline({ history, current }: { history: { date: string; rank: number | null }[]; current: number | null }) {
 //   const valid = history.filter((h) => h.rank !== null);
 //   if (valid.length < 2) return <span className="text-[10px] text-slate-400">No history</span>;
-// 
+//
 //   // Invert Y: lower rank = higher position = better
 //   const maxRank = Math.max(...valid.map((h) => h.rank!));
 //   const minRank = Math.min(...valid.map((h) => h.rank!));
 //   const range = maxRank - minRank || 1;
-// 
+//
 //   const w = 80, h = 28, pad = 3;
-// 
+//
 // const pts = valid.map((item, i) => {
 //   const x = pad + (i / (valid.length - 1)) * (w - pad * 2);
 //   const y = pad + ((item.rank! - minRank) / range) * (h - pad * 2);
 //   return `${x},${y}`;
 // });
-// 
+//
 //   const trend = valid.length >= 2
 //     ? valid[valid.length - 1].rank! < valid[0].rank! ? "up"
 //     : valid[valid.length - 1].rank! > valid[0].rank! ? "down" : "flat"
 //     : "flat";
-// 
+//
 //   const color = trend === "up" ? "#10b981" : trend === "down" ? "#ef4444" : "#94a3b8";
-// 
+//
 //   return (
 //     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
 //       <polyline
@@ -324,7 +324,7 @@ export default function Page() {
 //     </svg>
 //   );
 // }
-// 
+//
 // // â”€â”€ RankTooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // const RankTooltip = ({ active, payload }: any) => {
 //   if (!active || !payload?.length) return null;
@@ -336,7 +336,7 @@ export default function Page() {
 //     </div>
 //   );
 // };
-// 
+//
 // // â”€â”€ Keyword Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function KeywordRow({
 //   kw, isBasic, isPremium, expanded, onToggle, onRemove,
@@ -351,18 +351,18 @@ export default function Page() {
 //   const chartData = (kw.history || [])
 //     .filter((h) => h.rank !== null)
 //     .map((h) => ({ date: h.date, rank: h.rank }));
-// 
+//
 //   // Invert for chart â€” lower rank number = better = should appear higher
 //   const invertedData = chartData.map((d) => ({
 //     ...d,
 //     displayRank: d.rank ? 101 - d.rank : null, // invert so #1 = top of chart
 //   }));
-// 
+//
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className={cn(
 //       "rounded-xl border transition-all",
@@ -396,7 +396,7 @@ export default function Page() {
 //             )}
 //           </div>
 //         </div>
-// 
+//
 //         {/* Current rank */}
 //         <div className="text-center shrink-0">
 //           <span className={`text-2xl font-black ${rankColor(kw.current_rank)}`}>
@@ -404,19 +404,19 @@ export default function Page() {
 //           </span>
 //           <p className="text-[9px] text-slate-405 dark:text-slate-500 mt-0.5">{rankLabel(kw.current_rank)}</p>
 //         </div>
-// 
+//
 //         {/* Change */}
 //         <div className="shrink-0 w-16 flex justify-center">
 //           <RankChangeBadge change={kw.rank_change} status={kw.status} />
 //         </div>
-// 
+//
 //         {/* Sparkline â€” basic+ */}
 //         {isBasic && (
 //           <div className="shrink-0 hidden sm:block">
 //             <Sparkline history={kw.history || []} current={kw.current_rank} />
 //           </div>
 //         )}
-// 
+//
 //         {/* Expand + Remove */}
 //         <div className="flex items-center gap-1 shrink-0">
 //           {isBasic && (
@@ -435,7 +435,7 @@ export default function Page() {
 //           </button>
 //         </div>
 //       </div>
-// 
+//
 //       {/* Expanded detail â€” basic+ */}
 //       {expanded && isBasic && (
 //         <div className="px-4 pb-4 border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4">
@@ -454,7 +454,7 @@ export default function Page() {
 //               </div>
 //             ))}
 //           </div>
-// 
+//
 //           {/* 30-day chart â€” premium */}
 //           <div className="relative">
 //             {!isPremium && chartData.length > 0 && (
@@ -501,7 +501,7 @@ export default function Page() {
 //               </p>
 //             )}
 //           </div>
-// 
+//
 //           {/* Competitor ranks â€” premium */}
 //           {isPremium && kw.competitor_ranks && kw.competitor_ranks.length > 0 && (
 //             <div>
@@ -553,16 +553,16 @@ export default function Page() {
 // }) {
 //   const [input, setInput] = useState("");
 //   const [showSuggestions, setShowSuggestions] = useState(false);
-// 
+//
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   const filtered = suggestions.filter(
 //     (s) => s.toLowerCase().includes(input.toLowerCase()) && !trackedKeywords.includes(s)
 //   );
-// 
+//
 //   const handleAdd = (kw: string) => {
 //     const clean = kw.trim().toLowerCase();
 //     if (!clean || trackedKeywords.includes(clean)) return;
@@ -570,9 +570,9 @@ export default function Page() {
 //     setInput("");
 //     setShowSuggestions(false);
 //   };
-// 
+//
 //   const atLimit = trackedKeywords.length >= keywordLimit;
-// 
+//
 //   return (
 //     <div className="relative">
 //       <div className={`flex gap-2 ${atLimit ? "opacity-50 pointer-events-none" : ""}`}>
@@ -642,14 +642,14 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Stream Box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function StreamBox({ stream }: { stream: ReturnType<typeof useStream> }) {
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="mt-3 min-h-12 max-h-72 overflow-y-auto bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-205 dark:border-slate-800 shadow-sm">
 //       {stream.streaming && !stream.text && (
@@ -676,7 +676,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function RankTrackerContent() {
 //   const { t } = useTranslation();
@@ -684,18 +684,18 @@ export default function Page() {
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   const searchParams = useSearchParams();
 //   const router = useRouter();
 //   const { user } = useAuth();
 //   const { toggle } = useSidebar();
 //   const { selected } = useSelectedProduct();
-// 
+//
 //   const asin = searchParams.get("asin") || selected?.asin || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 //   const userId = user?.id?.toString() || "";
 //   const userEmail = user?.email || "";
-// 
+//
 //   const [profile, setProfile] = useSessionState<RankProfile | null>("seller_rank_tracker_profile", null);
 //   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_rank_tracker_asin", "");
 //   const [loading, setLoading] = useState(false);
@@ -704,21 +704,21 @@ export default function Page() {
 //   const [expandedKw, setExpandedKw] = useSessionState<string | null>("seller_rank_tracker_expandedKw", null);
 //   const [filterStatus, setFilterStatus] = useSessionState<"all" | "top10" | "up" | "down" | "lost">("seller_rank_tracker_filter", "all");
 //   const [refreshing, setRefreshing] = useState(false);
-// 
+//
 //   const aiStream = useStream();
-// 
+//
 //   const tier = (user?.subscriptionTier || profile?.tier || "free").toLowerCase();
 //   const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   const qs = (extra: Record<string, string> = {}) =>
 //     new URLSearchParams({ asin, seller_id: sellerId, ...extra }).toString();
-// 
+//
 //   // Load profile
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
 //     if (profile && lastFetchedAsin === asin) return; // Already have data for this ASIN
-// 
+//
 //     setLoading(true);
 //     fetch(`${API}/profile?${qs()}`, { credentials: "include" })
 //       .then((r) => r.ok ? r.json() : null)
@@ -731,7 +731,7 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, profile, lastFetchedAsin]);
-// 
+//
 //   const handleAddKeyword = async (keyword: string) => {
 //     if (!profile) return;
 //     setAdding(true);
@@ -749,7 +749,7 @@ export default function Page() {
 //     } catch (e) { console.error(e); }
 //     finally { setAdding(false); }
 //   };
-// 
+//
 //   const handleRemoveKeyword = async (keyword: string) => {
 //     setRemoving(keyword);
 //     try {
@@ -767,7 +767,7 @@ export default function Page() {
 //     } catch (e) { console.error(e); }
 //     finally { setRemoving(null); }
 //   };
-// 
+//
 //   const handleRefresh = async () => {
 //     if (!asin || !sellerId) return;
 //     setRefreshing(true);
@@ -785,9 +785,9 @@ export default function Page() {
 //     } catch (e) { console.error(e); }
 //     finally { setRefreshing(false); }
 //   };
-// 
+//
 //   const trackedKeywords = profile?.tracked_keywords || [];
-// 
+//
 //   const filteredKeywords = trackedKeywords.filter((kw) => {
 //     if (filterStatus === "all") return true;
 //     if (filterStatus === "top10") return kw.current_rank !== null && kw.current_rank <= 10;
@@ -796,11 +796,11 @@ export default function Page() {
 //     if (filterStatus === "lost") return kw.status === "lost";
 //     return true;
 //   });
-// 
+//
 //   const currency = profile?.currency || "USD";
-// 
+//
 //   // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //       {/* Header */}
@@ -839,9 +839,9 @@ export default function Page() {
 //           )}
 //         </div>
 //       </header>
-// 
+//
 //       <main className="flex-1 py-6 space-y-5">
-// 
+//
 //         {/* No product selected */}
 //         {!asin && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -860,7 +860,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Loading */}
 //         {asin && (loading || refreshing) && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -869,7 +869,7 @@ export default function Page() {
 //             <p className="text-slate-400 dark:text-slate-500 text-xs animate-pulse">We are analyzing the data. This may take 1â€“2 minutes.</p>
 //           </div>
 //         )}
-// 
+//
 //         {asin && !loading && !refreshing && profile && (
 //           <>
 //             {/* Product card */}
@@ -903,7 +903,7 @@ export default function Page() {
 //                 </div>
 //               )}
 //             </div>
-// 
+//
 //             {/* Stat cards */}
 //             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //               {[
@@ -921,7 +921,7 @@ export default function Page() {
 //                 </div>
 //               ))}
 //             </div>
-// 
+//
 //             {/* Add keywords */}
 //             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-5">
 //               <div className="flex items-center justify-between mb-3">
@@ -947,7 +947,7 @@ export default function Page() {
 //                 adding={adding}
 //               />
 //             </div>
-// 
+//
 //             {/* Keywords list */}
 //             {trackedKeywords.length > 0 && (
 //               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -983,7 +983,7 @@ export default function Page() {
 //                     ))}
 //                   </div>
 //                 </div>
-// 
+//
 //                 {/* Column headers */}
 //                 <div className="px-5 py-2 bg-slate-50/50 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800 hidden sm:grid grid-cols-[1fr_80px_80px_80px_40px] gap-3">
 //                   <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Keyword</span>
@@ -992,7 +992,7 @@ export default function Page() {
 //                   <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide text-center">7d Trend</span>
 //                   <span />
 //                 </div>
-// 
+//
 //                 {/* Rows */}
 //                 <div className="p-3 space-y-2">
 //                   {filteredKeywords.length === 0 ? (
@@ -1014,7 +1014,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             )}
-// 
+//
 //             {/* Empty state â€” no keywords yet */}
 //             {trackedKeywords.length === 0 && (
 //               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-8 flex flex-col items-center text-center gap-3">
@@ -1027,7 +1027,7 @@ export default function Page() {
 //                 </p>
 //               </div>
 //             )}
-// 
+//
 //             {/* Rank Change Alerts â€” premium */}
 //             <div className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 overflow-hidden">
 //               {!isPremium && <TierGate tier="premium" feature="Rank Change Alerts" />}
@@ -1057,7 +1057,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* AI Rank Insight â€” premium */}
 //             <div className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 //               {!isPremium && <TierGate tier="premium" feature="AI Rank Insight" />}
@@ -1096,7 +1096,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Upgrade CTA */}
 //             {!isPremium && (
 //               <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1134,7 +1134,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function RankTrackerPage() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -26,7 +26,7 @@ export default function Page() {
 }
 
 // import { API_BASE_URL } from "@/lib/config";
-// 
+//
 // import { useSelectedProduct } from "@/lib/selected-product-context";
 // import { useState, useEffect, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
@@ -48,15 +48,15 @@ export default function Page() {
 //   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
 //   Tooltip, ResponsiveContainer, ReferenceLine,
 // } from "recharts";
-// 
+//
 // const BASE_URL = API_BASE_URL;
-// 
+//
 // function fmt(val: number | null | undefined, currency = "USD"): string {
 //   if (val == null) return "â€”";
 //   const sym = currency === "INR" ? "â‚¹" : currency === "GBP" ? "Â£" : currency === "EUR" ? "â‚¬" : "$";
 //   return `${sym}${Number(val).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 // }
-// 
+//
 // function fmtShort(val: number | null | undefined, currency = "USD"): string {
 //   if (val == null) return "â€”";
 //   const sym = currency === "INR" ? "â‚¹" : "$";
@@ -64,7 +64,7 @@ export default function Page() {
 //   if (val >= 1000) return `${sym}${(val / 1000).toFixed(1)}K`;
 //   return `${sym}${val.toFixed(0)}`;
 // }
-// 
+//
 // // â”€â”€ Tier Gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
 //   const router = useRouter();
@@ -88,7 +88,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Data Quality Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function DataQualityBadge({ quality, count, isDark }: { quality: string; count?: number; isDark: boolean }) {
 //   if (quality === "live") return (
@@ -108,7 +108,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Position badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PositionBadge({ position, isDark }: { position: string; isDark: boolean }) {
 //   const map: Record<string, { icon: any; lightCls: string; darkCls: string }> = {
@@ -124,7 +124,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Similarity pill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function SimilarityPill({ score, isDark }: { score: number; isDark: boolean }) {
 //   const pct = Math.round(score * 100);
@@ -137,7 +137,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // const ChartTooltip = ({ active, payload, label, currency, isDark }: any) => {
 //   if (!active || !payload?.length) return null;
 //   return (
@@ -147,7 +147,7 @@ export default function Page() {
 //     </div>
 //   );
 // };
-// 
+//
 // function PriceComparisonContent() {
 //   const { t } = useTranslation();
 //   const searchParams = useSearchParams();
@@ -157,27 +157,27 @@ export default function Page() {
 //   const { selected } = useSelectedProduct();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const asin     = searchParams.get("asin")      || selected?.asin      || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId  || user?.seller_id || "";
-// 
+//
 //   const [data, setData]         = useSessionState<any>("seller_price_comp_data", null);
 //   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_price_comp_asin", "");
 //   const [loading, setLoading]   = useState(false);
-// 
+//
 //   const tier       = data?.tier || user?.subscriptionTier || "free";
 //   const isBasic    = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium  = tier === "premium" || tier === "enterprise";
 //   const currency   = data?.currency || "USD";
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
 //     if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
-// 
+//
 //     setLoading(true);
 //     const params = new URLSearchParams({ asin, seller_id: sellerId });
 //     fetch(`${BASE_URL}/api/comparison/price?${params}`, { credentials: "include" })
@@ -191,7 +191,7 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
-// 
+//
 //   const barData = data
 //     ? [
 //         { name: "Market Min", value: data.market_min,    fill: "#94a3b8" },
@@ -200,14 +200,14 @@ export default function Page() {
 //         { name: "Market Max", value: data.market_max,    fill: "#ef4444" },
 //       ].filter((d) => d.value != null)
 //     : [];
-// 
+//
 //   const densityColor: Record<string, string> = {
 //     High: "#ef4444", Medium: "#f59e0b", Low: "#10b981",
 //   };
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //         <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
@@ -238,7 +238,7 @@ export default function Page() {
 //             )}
 //           </div>
 //         </header>
-// 
+//
 //         <main className="flex-1 py-6 space-y-6">
 //           {!asin && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -254,7 +254,7 @@ export default function Page() {
 //               </button>
 //             </div>
 //           )}
-// 
+//
 //           {asin && loading && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-3">
 //               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
@@ -262,7 +262,7 @@ export default function Page() {
 //               <p className={`text-xs animate-pulse ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>We are analyzing the data. This may take 1â€“2 minutes.</p>
 //             </div>
 //           )}
-// 
+//
 //           {asin && !loading && data && (
 //             <>
 //               {/* â”€â”€ Selected Product Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -293,7 +293,7 @@ export default function Page() {
 //                   )}
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Free Tier Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //                 {[
@@ -311,7 +311,7 @@ export default function Page() {
 //                   </div>
 //                 ))}
 //               </div>
-// 
+//
 //               {/* â”€â”€ Basic+: Market Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //                 {[
@@ -333,7 +333,7 @@ export default function Page() {
 //                   </div>
 //                 ))}
 //               </div>
-// 
+//
 //               {/* â”€â”€ Top Competitors Table (Basic+) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               {isBasic && data.top_competitors && (
 //                 <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -398,7 +398,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* â”€â”€ Market Bar Chart (Basic+) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isBasic && <TierGate tier="basic" feature="Market Price Chart" isDark={isDark} />}
@@ -429,7 +429,7 @@ export default function Page() {
 //                   </ResponsiveContainer>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Price Band Density (Basic+) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isBasic && <TierGate tier="basic" feature="Price Band Density" isDark={isDark} />}
@@ -456,7 +456,7 @@ export default function Page() {
 //                   })}
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Insufficient data warning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               {isBasic && data.data_quality === "insufficient" && (
 //                 <div className={`border rounded-2xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-900/20 border-amber-800/50' : 'bg-amber-50 border-amber-200'}`}>
@@ -469,7 +469,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* â”€â”€ AI Pricing Tip (Premium) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="AI Pricing Recommendation" isDark={isDark} />}
@@ -496,7 +496,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Your Other Products (Premium) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               {isPremium && data.seller_other_products?.length > 0 && (
 //                 <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -521,7 +521,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* â”€â”€ Upgrade CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               {!isPremium && (
 //                 <div className="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -554,7 +554,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function PriceComparisonPage() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

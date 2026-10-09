@@ -710,7 +710,7 @@
 //       if (res.data && res.data.success && res.data.data) {
 //         const item = res.data.data;
 //         const recommendedPrice = item.pricing?.recommended_price || 0;
-        
+
 //         let monthlySales = 300;
 //         if (item.sales?.estimated_monthly_sales) {
 //           const match = item.sales.estimated_monthly_sales.match(/(\d+)\s*-\s*(\d+)/);
@@ -1670,13 +1670,13 @@ function useOllamaStream() {
 
 function AlertBox({ type, message }: { type: string; message: string }) {
   const styles: Record<string, string> = {
-    danger:  "bg-red-50 dark:bg-red-950/20 border-red-400 dark:border-red-900/50 text-red-800 dark:text-red-400",
-    warn:    "bg-amber-50 dark:bg-amber-950/20 border-amber-400 dark:border-amber-900/50 text-amber-800 dark:text-amber-400",
+    danger: "bg-red-50 dark:bg-red-950/20 border-red-400 dark:border-red-900/50 text-red-800 dark:text-red-400",
+    warn: "bg-amber-50 dark:bg-amber-950/20 border-amber-400 dark:border-amber-900/50 text-amber-800 dark:text-amber-400",
     success: "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-400 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-450",
   };
   const icons: Record<string, JSX.Element> = {
-    danger:  <XCircle className="w-4 h-4 shrink-0 mt-0.5" />,
-    warn:    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />,
+    danger: <XCircle className="w-4 h-4 shrink-0 mt-0.5" />,
+    warn: <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />,
     success: <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />,
   };
   return (
@@ -1747,13 +1747,13 @@ function AIPanel({
   const [activeMode, setActiveMode] = useState<"analyze" | "chat" | "scenario" | "health">("analyze");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const analyzeStream  = useOllamaStream();
-  const chatStream     = useOllamaStream();
+  const analyzeStream = useOllamaStream();
+  const chatStream = useOllamaStream();
   const scenarioStream = useOllamaStream();
-  const healthStream   = useOllamaStream();
+  const healthStream = useOllamaStream();
 
   useEffect(() => {
-    fetch(`${API}/profitability/ai/status`).then((r) => r.json()).then(setAiStatus).catch(() => {});
+    fetch(`${API}/profitability/ai/status`).then((r) => r.json()).then(setAiStatus).catch(() => { });
   }, []);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatStream.text, chatHistory]);
@@ -1829,10 +1829,10 @@ function AIPanel({
   }
 
   const MODES = [
-    { id: "analyze",  label: t('profitabilityOptimizer.ai.fullAnalysis', 'Full analysis'),     tier: "premium" as const },
-    { id: "chat",     label: t('profitabilityOptimizer.ai.askAnything', 'Ask anything'),       tier: "basic"   as const },
-    { id: "scenario", label: t('profitabilityOptimizer.ai.scenarioAdvice', 'Scenario advice'),    tier: "premium" as const },
-    { id: "health",   label: t('profitabilityOptimizer.ai.healthActionPlan', 'Health action plan'), tier: "premium" as const },
+    { id: "analyze", label: t('profitabilityOptimizer.ai.fullAnalysis', 'Full analysis'), tier: "premium" as const },
+    { id: "chat", label: t('profitabilityOptimizer.ai.askAnything', 'Ask anything'), tier: "basic" as const },
+    { id: "scenario", label: t('profitabilityOptimizer.ai.scenarioAdvice', 'Scenario advice'), tier: "premium" as const },
+    { id: "health", label: t('profitabilityOptimizer.ai.healthActionPlan', 'Health action plan'), tier: "premium" as const },
   ];
 
   const QUICK_Q = ["How do I reduce my ACOS?", "Should I raise price by 10%?", "What's eating my margin most?", "How do I hit 25% margin?"];
@@ -1846,13 +1846,12 @@ function AIPanel({
           return (
             <button key={m.id}
               onClick={() => locked ? onUpgrade(m.label) : setActiveMode(m.id as typeof activeMode)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium border transition-all ${
-                activeMode === m.id
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium border transition-all ${activeMode === m.id
                   ? "bg-violet-600 text-white border-violet-500 shadow-lg shadow-violet-900/30"
                   : locked
-                  ? isDark ? "bg-slate-800/60 text-slate-500 border-slate-700 cursor-not-allowed" : "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                  : isDark ? "bg-slate-800 text-slate-300 border-slate-700 hover:border-violet-500 hover:text-white" : "bg-white text-slate-600 border-slate-200 hover:border-violet-400 hover:text-violet-700"
-              }`}
+                    ? isDark ? "bg-slate-800/60 text-slate-500 border-slate-700 cursor-not-allowed" : "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                    : isDark ? "bg-slate-800 text-slate-300 border-slate-700 hover:border-violet-500 hover:text-white" : "bg-white text-slate-600 border-slate-200 hover:border-violet-400 hover:text-violet-700"
+                }`}
               data-track-id="ai_advisor_mode_btn"
               data-filter-value={m.id}
             >
@@ -1921,11 +1920,10 @@ function AIPanel({
             )}
             {chatHistory.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] px-3.5 py-2.5 text-xs leading-relaxed rounded-2xl ${
-                  msg.role === "user"
+                <div className={`max-w-[85%] px-3.5 py-2.5 text-xs leading-relaxed rounded-2xl ${msg.role === "user"
                     ? "bg-violet-600 text-white rounded-br-sm"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-bl-sm border border-slate-200 dark:border-slate-700"
-                }`}>
+                  }`}>
                   <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown>{String(msg.content ?? "")}</ReactMarkdown>
                   </div>
@@ -2059,35 +2057,35 @@ export default function ProfitabilityOptimizer() {
     marketplace: "amazon", your_brand: "",
   });
 
-  const [categories, setCategories]   = useState<string[]>([]);
-  const [activeTab, setActiveTab]     = useState<"calc" | "scenario" | "market" | "health" | "ai">("calc");
-  const [calcResult, setCalcResult]   = useState<CalcResult | null>(null);
-  const [scenarios, setScenarios]     = useState<unknown[] | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"calc" | "scenario" | "market" | "health" | "ai">("calc");
+  const [calcResult, setCalcResult] = useState<CalcResult | null>(null);
+  const [scenarios, setScenarios] = useState<unknown[] | null>(null);
   const [sensitivity, setSensitivity] = useState<Record<string, unknown>[]>([]);
   const [marketIntel, setMarketIntel] = useState<Record<string, unknown> | null>(null);
-  const [healthData, setHealthData]   = useState<Record<string, unknown> | null>(null);
-  const [tier, setTier]               = useState("free");
+  const [healthData, setHealthData] = useState<Record<string, unknown> | null>(null);
+  const [tier, setTier] = useState("free");
   const [calcLoading, setCalcLoading] = useState(false);
-  const [tabLoading, setTabLoading]   = useState(false);
+  const [tabLoading, setTabLoading] = useState(false);
 
-  const [savedProducts, setSaved]         = useState<SavedProductDB[]>([]);
-  const [saveModal, setSaveModal]         = useState(false);
-  const [saveName, setSaveName]           = useState("");
+  const [savedProducts, setSaved] = useState<SavedProductDB[]>([]);
+  const [saveModal, setSaveModal] = useState(false);
+  const [saveName, setSaveName] = useState("");
   const [savingProduct, setSavingProduct] = useState(false);
 
   const [upgradeModal, setUpgrade] = useState({ open: false, feature: "" });
-  const [toasts, setToasts]        = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   // Niche search state
-  const [nicheKeyword, setNicheKeyword]       = useState("");
-  const [fetchingNiche, setFetchingNiche]     = useState(false);
+  const [nicheKeyword, setNicheKeyword] = useState("");
+  const [fetchingNiche, setFetchingNiche] = useState(false);
   const [nicheDataSource, setNicheDataSource] = useState<"db" | "ai_estimate" | null>(null);
   const [nicheProductCount, setNicheProductCount] = useState<number>(0);
   const [nicheConfidence, setNicheConfidence] = useState<string>("");
 
   const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
-  const isPremium   = tier === "premium" || tier === "enterprise";
-  const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
+  const isPremium = tier === "premium" || tier === "enterprise";
+  const saveLimit = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
@@ -2123,8 +2121,8 @@ export default function ProfitabilityOptimizer() {
   useEffect(() => {
     const t = setTimeout(() => {
       if (activeTab === "scenario" && isPremium) fetchScenarios();
-      if (activeTab === "market"   && isPremium) fetchMarketIntel();
-      if (activeTab === "health"   && isPremium) fetchHealth();
+      if (activeTab === "market" && isPremium) fetchMarketIntel();
+      if (activeTab === "health" && isPremium) fetchHealth();
     }, 500);
     return () => clearTimeout(t);
   }, [inputs, activeTab]);
@@ -2136,7 +2134,7 @@ export default function ProfitabilityOptimizer() {
       setCategories(cats);
       if (cats.length > 0) {
         setInputs((p) => {
-          const hasBaby    = cats.includes("Baby Products");
+          const hasBaby = cats.includes("Baby Products");
           const defaultCat = hasBaby ? "Baby Products" : (cats[0] || "");
           const currentValid = p.category && cats.includes(p.category);
           return { ...p, category: currentValid ? p.category : defaultCat };
@@ -2163,12 +2161,12 @@ export default function ProfitabilityOptimizer() {
       });
 
       if (res.data?.success && res.data?.data) {
-        const item             = res.data.data;
-        const pricing          = item.pricing || {};
+        const item = res.data.data;
+        const pricing = item.pricing || {};
         const recommendedPrice: number = pricing.recommended_price || 0;
         const dataSource: "db" | "ai_estimate" = item.data_source || "db";
         const productCount: number = pricing.product_count || item.similar_products?.length || 0;
-        const confidence: string   = pricing.confidence || "";
+        const confidence: string = pricing.confidence || "";
 
         setNicheDataSource(dataSource);
         setNicheProductCount(productCount);
@@ -2186,7 +2184,7 @@ export default function ProfitabilityOptimizer() {
 
         // Parse monthly sales from range string e.g. "240 - 360"
         let monthlySales = 300;
-        const salesStr   = item.sales?.estimated_monthly_sales || "";
+        const salesStr = item.sales?.estimated_monthly_sales || "";
         const rangeMatch = salesStr.match(/(\d[\d,]*)\s*-\s*(\d[\d,]*)/);
         if (rangeMatch) {
           const lo = parseInt(rangeMatch[1].replace(/,/g, ""));
@@ -2198,29 +2196,29 @@ export default function ProfitabilityOptimizer() {
         }
 
         // Category-aware cost ratios — only applied once we have a real DB price
-        const cat           = (item.category || inputs.category).toLowerCase();
+        const cat = (item.category || inputs.category).toLowerCase();
         const isElectronics = /electronic|laptop|phone|mobile|gadget|camera|tablet|audio/.test(cat);
-        const isApparel     = /cloth|fashion|apparel|wear|shirt|dress|shoe/.test(cat);
+        const isApparel = /cloth|fashion|apparel|wear|shirt|dress|shoe/.test(cat);
 
-        const cogsPct     = isElectronics ? 0.35 : isApparel ? 0.25 : 0.30;
-        const fbaPct      = isElectronics ? 0.10 : 0.08;
+        const cogsPct = isElectronics ? 0.35 : isApparel ? 0.25 : 0.30;
+        const fbaPct = isElectronics ? 0.10 : 0.08;
         const shippingPct = 0.03;
-        const adsPct      = isElectronics ? 0.08 : 0.10;
+        const adsPct = isElectronics ? 0.08 : 0.10;
 
-        const calculatedCost     = Math.max(50, Math.round(recommendedPrice * cogsPct));
-        const calculatedFba      = Math.max(30, Math.round(recommendedPrice * fbaPct));
+        const calculatedCost = Math.max(50, Math.round(recommendedPrice * cogsPct));
+        const calculatedFba = Math.max(30, Math.round(recommendedPrice * fbaPct));
         const calculatedShipping = Math.max(20, Math.round(recommendedPrice * shippingPct));
-        const calculatedAdSpend  = Math.max(20, Math.round(recommendedPrice * adsPct));
+        const calculatedAdSpend = Math.max(20, Math.round(recommendedPrice * adsPct));
 
         setInputs((prev) => ({
           ...prev,
-          category:          item.category || prev.category,
-          selling_price:     recommendedPrice,
-          product_cost:      calculatedCost,
-          shipping_to_fba:   calculatedShipping,
-          fba_fee:           calculatedFba,
+          category: item.category || prev.category,
+          selling_price: recommendedPrice,
+          product_cost: calculatedCost,
+          shipping_to_fba: calculatedShipping,
+          fba_fee: calculatedFba,
           ad_spend_per_unit: calculatedAdSpend,
-          monthly_units:     monthlySales,
+          monthly_units: monthlySales,
         }));
 
         const sourceLabel =
@@ -2351,13 +2349,13 @@ export default function ProfitabilityOptimizer() {
     if (!calcResult?.cost_breakdown) return [];
     const bd = calcResult.cost_breakdown;
     return [
-      { name: "Product cost",   value: Number(bd.product_cost    || 0), color: WATERFALL_COLORS.product_cost },
+      { name: "Product cost", value: Number(bd.product_cost || 0), color: WATERFALL_COLORS.product_cost },
       { name: "Shipping → FBA", value: Number(bd.shipping_to_fba || 0), color: WATERFALL_COLORS.shipping_to_fba },
-      { name: "FBA fee",        value: Number(bd.fba_fee         || 0), color: WATERFALL_COLORS.fba_fee },
-      { name: "Referral fee",   value: Number(bd.referral_fee    || 0), color: WATERFALL_COLORS.referral_fee },
-      { name: "Ad spend",       value: Number(bd.ad_spend        || 0), color: WATERFALL_COLORS.ad_spend },
-      { name: "Storage",        value: Number(bd.storage_fee     || 0), color: WATERFALL_COLORS.storage_fee },
-      { name: "Returns",        value: Number(bd.return_cost     || 0), color: WATERFALL_COLORS.return_cost },
+      { name: "FBA fee", value: Number(bd.fba_fee || 0), color: WATERFALL_COLORS.fba_fee },
+      { name: "Referral fee", value: Number(bd.referral_fee || 0), color: WATERFALL_COLORS.referral_fee },
+      { name: "Ad spend", value: Number(bd.ad_spend || 0), color: WATERFALL_COLORS.ad_spend },
+      { name: "Storage", value: Number(bd.storage_fee || 0), color: WATERFALL_COLORS.storage_fee },
+      { name: "Returns", value: Number(bd.return_cost || 0), color: WATERFALL_COLORS.return_cost },
     ].filter((d) => d.value > 0);
   }, [calcResult]);
 
@@ -2368,7 +2366,7 @@ export default function ProfitabilityOptimizer() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/80 p-4 rounded-2xl border border-sky-100 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Price Optimizer')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Best Price Finder')}</h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{t('profitabilityOptimizer.subtitle', 'Real margins · Live market data')}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -2470,10 +2468,10 @@ export default function ProfitabilityOptimizer() {
         <CardContent className="p-0">
           <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto">
             {([
-              { id: "calc",     label: t('profitabilityOptimizer.tabs.calc', 'Calculator'),   icon: <Calculator className="w-4 h-4" />,  min: "free"    },
-              { id: "scenario", label: t('profitabilityOptimizer.tabs.scenario', 'Scenarios'),    icon: <BarChart3 className="w-4 h-4" />,   min: "premium" },
-              { id: "health",   label: t('profitabilityOptimizer.tabs.health', 'Health'),       icon: <Activity className="w-4 h-4" />,    min: "premium" },
-              { id: "ai",       label: t('profitabilityOptimizer.tabs.ai', 'AI Advisor'),   icon: <Bot className="w-4 h-4" />,         min: "basic"   },
+              { id: "calc", label: t('profitabilityOptimizer.tabs.calc', 'Calculator'), icon: <Calculator className="w-4 h-4" />, min: "free" },
+              { id: "scenario", label: t('profitabilityOptimizer.tabs.scenario', 'Scenarios'), icon: <BarChart3 className="w-4 h-4" />, min: "premium" },
+              { id: "health", label: t('profitabilityOptimizer.tabs.health', 'Health'), icon: <Activity className="w-4 h-4" />, min: "premium" },
+              { id: "ai", label: t('profitabilityOptimizer.tabs.ai', 'AI Advisor'), icon: <Bot className="w-4 h-4" />, min: "basic" },
             ] as { id: string; label: string; icon: JSX.Element; min: string }[]).map((tab) => {
               const locked = (tab.min === "premium" && !isPremium) || (tab.min === "basic" && !isBasicPlus);
               return (
@@ -2538,11 +2536,10 @@ export default function ProfitabilityOptimizer() {
 
                 {/* Data source badge — shown after search completes */}
                 {nicheDataSource && (
-                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold w-fit ${
-                    nicheDataSource === "db"
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold w-fit ${nicheDataSource === "db"
                       ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
                       : "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                  }`}>
+                    }`}>
                     {nicheDataSource === "db" ? (
                       <>
                         <Database className="w-3 h-3" />
@@ -2580,12 +2577,12 @@ export default function ProfitabilityOptimizer() {
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
               <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{t('profitabilityOptimizer.calculator.corePricing', 'Core pricing')}</p>
 
-              <SliderRow label={t('profitabilityOptimizer.calculator.sellingPrice', 'Selling price')}   value={inputs.selling_price}     min={100}  max={Math.max(10000, Math.ceil(inputs.selling_price * 1.5 / 5000) * 5000)} step={50}  format={inr}           onChange={(v) => inp("selling_price", v)} />
-              <SliderRow label={t('profitabilityOptimizer.calculator.productCost', 'Product cost')}    value={inputs.product_cost}      min={50}   max={Math.max(5000,  Math.ceil(inputs.product_cost * 1.5 / 1000) * 1000)}  step={25}  format={inr}           onChange={(v) => inp("product_cost", v)} />
-              <SliderRow label={t('profitabilityOptimizer.calculator.shippingToFba', 'Shipping to FBA')} value={inputs.shipping_to_fba}   min={0}    max={Math.max(800,   Math.ceil(inputs.shipping_to_fba * 2 / 100) * 100)}   step={10}  format={inr}           onChange={(v) => inp("shipping_to_fba", v)} />
-              <SliderRow label={t('profitabilityOptimizer.calculator.fbaFee', 'FBA fee')}         value={inputs.fba_fee}           min={0}    max={Math.max(600,   Math.ceil(inputs.fba_fee * 2 / 100) * 100)}           step={10}  format={inr}           onChange={(v) => inp("fba_fee", v)} />
-              <SliderRow label={t('profitabilityOptimizer.calculator.adSpendPerUnit', 'Ad spend / unit')} value={inputs.ad_spend_per_unit} min={0}    max={Math.max(800,   Math.ceil(inputs.ad_spend_per_unit * 2 / 100) * 100)} step={5}   format={inr}           onChange={(v) => inp("ad_spend_per_unit", v)} />
-              <SliderRow label={t('profitabilityOptimizer.calculator.monthlyUnits', 'Monthly units')}   value={inputs.monthly_units}     min={10}   max={Math.max(5000,  Math.ceil(inputs.monthly_units * 1.5 / 500) * 500)}   step={10}  format={(v) => `${v}`} onChange={(v) => inp("monthly_units", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.sellingPrice', 'Selling price')} value={inputs.selling_price} min={100} max={Math.max(10000, Math.ceil(inputs.selling_price * 1.5 / 5000) * 5000)} step={50} format={inr} onChange={(v) => inp("selling_price", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.productCost', 'Product cost')} value={inputs.product_cost} min={50} max={Math.max(5000, Math.ceil(inputs.product_cost * 1.5 / 1000) * 1000)} step={25} format={inr} onChange={(v) => inp("product_cost", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.shippingToFba', 'Shipping to FBA')} value={inputs.shipping_to_fba} min={0} max={Math.max(800, Math.ceil(inputs.shipping_to_fba * 2 / 100) * 100)} step={10} format={inr} onChange={(v) => inp("shipping_to_fba", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.fbaFee', 'FBA fee')} value={inputs.fba_fee} min={0} max={Math.max(600, Math.ceil(inputs.fba_fee * 2 / 100) * 100)} step={10} format={inr} onChange={(v) => inp("fba_fee", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.adSpendPerUnit', 'Ad spend / unit')} value={inputs.ad_spend_per_unit} min={0} max={Math.max(800, Math.ceil(inputs.ad_spend_per_unit * 2 / 100) * 100)} step={5} format={inr} onChange={(v) => inp("ad_spend_per_unit", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.monthlyUnits', 'Monthly units')} value={inputs.monthly_units} min={10} max={Math.max(5000, Math.ceil(inputs.monthly_units * 1.5 / 500) * 500)} step={10} format={(v) => `${v}`} onChange={(v) => inp("monthly_units", v)} />
               <SliderRow label={t('profitabilityOptimizer.calculator.referralFee', 'Referral') + ` (${Number(inputs.referral_fee_pct).toFixed(0)}%)`} value={inputs.referral_fee_pct} min={1} max={25} step={0.5} format={pct} onChange={(v) => inp("referral_fee_pct", v)} />
 
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
@@ -2596,7 +2593,7 @@ export default function ProfitabilityOptimizer() {
                     className="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors">Basic+</span>
                 )}
               </div>
-              <SliderRow label={t('profitabilityOptimizer.calculator.returnRate', 'Return rate')}    value={inputs.return_rate_pct}      min={0} max={40}  step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.returnRate', 'Return rate')} value={inputs.return_rate_pct} min={0} max={40} step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
               <SliderRow label={t('profitabilityOptimizer.calculator.storagePerUnit', 'Storage / unit')} value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
               {!isBasicPlus && (
                 <button onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
@@ -2612,12 +2609,12 @@ export default function ProfitabilityOptimizer() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {([
-                    { label: t('profitabilityOptimizer.calculator.profitPerUnit', 'Profit / unit'),  val: inr(Number(calcResult.profit_per_unit)),  cls: Number(calcResult.profit_per_unit) > 0 ? (Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400") : "text-red-600 dark:text-red-400" },
-                    { label: t('profitabilityOptimizer.calculator.netMargin', 'Net margin'),     val: pct(Number(calcResult.net_margin_pct)),   cls: Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : Number(calcResult.net_margin_pct) > 10 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400" },
-                    { label: t('profitabilityOptimizer.calculator.monthlyProfit', 'Monthly profit'), val: inr(Number(calcResult.monthly_profit)),   cls: "text-blue-600 dark:text-blue-400", sub: calcResult.yearly_profit ? "~" + inr(Number(calcResult.yearly_profit)) + "/yr" : undefined },
-                    { label: t('profitabilityOptimizer.calculator.breakEven', 'Break-even'),     val: String(Number(calcResult.breakeven_units) || 0) + ` ${t('profitabilityOptimizer.calculator.units', 'units')}`, cls: "text-slate-700 dark:text-slate-200" },
-                    { label: t('profitabilityOptimizer.calculator.roi', 'ROI'),            val: calcResult.roi_pct !== undefined ? pct(Number(calcResult.roi_pct)) : "—", cls: "text-purple-600 dark:text-purple-400", locked: !isBasicPlus },
-                    { label: t('profitabilityOptimizer.calculator.trueAcos', 'True ACOS'),      val: calcResult.acos_pct !== undefined ? pct(Number(calcResult.acos_pct)) : "—", cls: calcResult.acos_pct !== undefined && Number(calcResult.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200", locked: !isBasicPlus },
+                    { label: t('profitabilityOptimizer.calculator.profitPerUnit', 'Profit / unit'), val: inr(Number(calcResult.profit_per_unit)), cls: Number(calcResult.profit_per_unit) > 0 ? (Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400") : "text-red-600 dark:text-red-400" },
+                    { label: t('profitabilityOptimizer.calculator.netMargin', 'Net margin'), val: pct(Number(calcResult.net_margin_pct)), cls: Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : Number(calcResult.net_margin_pct) > 10 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400" },
+                    { label: t('profitabilityOptimizer.calculator.monthlyProfit', 'Monthly profit'), val: inr(Number(calcResult.monthly_profit)), cls: "text-blue-600 dark:text-blue-400", sub: calcResult.yearly_profit ? "~" + inr(Number(calcResult.yearly_profit)) + "/yr" : undefined },
+                    { label: t('profitabilityOptimizer.calculator.breakEven', 'Break-even'), val: String(Number(calcResult.breakeven_units) || 0) + ` ${t('profitabilityOptimizer.calculator.units', 'units')}`, cls: "text-slate-700 dark:text-slate-200" },
+                    { label: t('profitabilityOptimizer.calculator.roi', 'ROI'), val: calcResult.roi_pct !== undefined ? pct(Number(calcResult.roi_pct)) : "—", cls: "text-purple-600 dark:text-purple-400", locked: !isBasicPlus },
+                    { label: t('profitabilityOptimizer.calculator.trueAcos', 'True ACOS'), val: calcResult.acos_pct !== undefined ? pct(Number(calcResult.acos_pct)) : "—", cls: calcResult.acos_pct !== undefined && Number(calcResult.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200", locked: !isBasicPlus },
                   ] as { label: string; val: string; cls: string; sub?: string; locked?: boolean }[]).map((m, i) => (
                     <div key={i} className={`relative bg-white dark:bg-slate-900/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm ${m.locked ? "overflow-hidden" : ""}`}>
                       <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{m.label}</p>
@@ -2644,7 +2641,7 @@ export default function ProfitabilityOptimizer() {
                     {isBasicPlus && waterfallData.length > 0 ? (
                       <div className="space-y-2.5">
                         {waterfallData.map((row) => {
-                          const sp     = Number(calcResult.selling_price) || 1;
+                          const sp = Number(calcResult.selling_price) || 1;
                           const rowPct = Math.min((row.value / sp) * 100, 100);
                           return (
                             <div key={row.name} className="flex items-center gap-3">
@@ -2758,12 +2755,12 @@ export default function ProfitabilityOptimizer() {
               )}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {([
-                  { label: t('profitabilityOptimizer.market.avgPrice', 'Avg price'),     val: inr(Number(bench.avg_price)) },
-                  { label: t('profitabilityOptimizer.market.minPrice', 'Min price'),     val: inr(Number(bench.min_price)) },
-                  { label: t('profitabilityOptimizer.market.maxPrice', 'Max price'),     val: inr(Number(bench.max_price)) },
-                  { label: t('profitabilityOptimizer.market.avgRating', 'Avg rating'),    val: bench.avg_rating != null ? "★ " + Number(bench.avg_rating).toFixed(1) : "N/A" },
-                  { label: t('profitabilityOptimizer.market.avgSalesMo', 'Avg sales/mo'),  val: bench.avg_sales_volume != null ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "N/A" },
-                  { label: t('profitabilityOptimizer.market.mrpDiscount', 'MRP discount'),  val: bench.mrp_discount_depth_pct != null ? Math.round(Number(bench.mrp_discount_depth_pct)) + "%" : "N/A" },
+                  { label: t('profitabilityOptimizer.market.avgPrice', 'Avg price'), val: inr(Number(bench.avg_price)) },
+                  { label: t('profitabilityOptimizer.market.minPrice', 'Min price'), val: inr(Number(bench.min_price)) },
+                  { label: t('profitabilityOptimizer.market.maxPrice', 'Max price'), val: inr(Number(bench.max_price)) },
+                  { label: t('profitabilityOptimizer.market.avgRating', 'Avg rating'), val: bench.avg_rating != null ? "★ " + Number(bench.avg_rating).toFixed(1) : "N/A" },
+                  { label: t('profitabilityOptimizer.market.avgSalesMo', 'Avg sales/mo'), val: bench.avg_sales_volume != null ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "N/A" },
+                  { label: t('profitabilityOptimizer.market.mrpDiscount', 'MRP discount'), val: bench.mrp_discount_depth_pct != null ? Math.round(Number(bench.mrp_discount_depth_pct)) + "%" : "N/A" },
                 ] as { label: string; val: string }[]).map((m, i) => (
                   <div key={i} className="bg-white dark:bg-slate-900/80 rounded-2xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm text-center">
                     <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{m.label}</p>
@@ -2802,8 +2799,8 @@ export default function ProfitabilityOptimizer() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {(marketIntel.price_bands as Record<string, unknown>[]).map((b, i) => {
-                      const opp  = String(b.opportunity ?? "");
-                      const c    = opp === "High" ? "#10b981" : opp === "Medium" ? "#f59e0b" : opp === "Low" ? "#3b82f6" : "#ef4444";
+                      const opp = String(b.opportunity ?? "");
+                      const c = opp === "High" ? "#10b981" : opp === "Medium" ? "#f59e0b" : opp === "Low" ? "#3b82f6" : "#ef4444";
                       const maxB = Math.max(...(marketIntel.price_bands as Record<string, unknown>[]).map((x) => Number(x.brand_count) || 0), 1);
                       return (
                         <div key={i} className="flex items-center gap-3">

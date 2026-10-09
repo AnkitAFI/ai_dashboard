@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { useState, useEffect, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { API_BASE_URL } from "@/lib/config";
@@ -40,9 +40,9 @@ export default function Page() {
 //   Minus, Crown, Swords, AlertTriangle, Store,
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
-// 
+//
 // const BASE_URL = API_BASE_URL;
-// 
+//
 // // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function ThreatRing({ score, size = "sm", isDark }: { score: number; size?: "sm" | "md"; isDark: boolean }) {
 //   const dims = { sm: { w: 48, r: 18, sw: 5 }, md: { w: 64, r: 24, sw: 6 } };
@@ -53,7 +53,7 @@ export default function Page() {
 //     score >= 8 ? (isDark ? "#f87171" : "#ef4444") :
 //     score >= 6 ? (isDark ? "#fb923c" : "#f97316") :
 //     score >= 4 ? (isDark ? "#fbbf24" : "#f59e0b") : (isDark ? "#34d399" : "#10b981");
-// 
+//
 //   return (
 //     <div className="relative flex-shrink-0" style={{ width: d.w, height: d.w }}>
 //       <svg width={d.w} height={d.w} className="-rotate-90" viewBox={`0 0 ${d.w} ${d.w}`}>
@@ -69,7 +69,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function PriceDelta({ pct, isDark }: { pct: number | null; isDark: boolean }) {
 //   const { t } = useTranslation();
 //   if (pct == null) return null;
@@ -79,7 +79,7 @@ export default function Page() {
 //     return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}><ArrowDownRight className="w-2.5 h-2.5" /> {Math.abs(pct).toFixed(0)}% {t('common.cheaper', 'cheaper')}</span>;
 //   return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}><ArrowUpRight className="w-2.5 h-2.5" /> {pct.toFixed(0)}% {t('common.pricier', 'pricier')}</span>;
 // }
-// 
+//
 // // â”€â”€ Watchlist Card â€” same visual as CompetitorCard in competitor-analysis â”€â”€â”€â”€â”€
 // function WatchlistCard({
 //   item, onUnpin, unpinLoading, isDark
@@ -89,7 +89,7 @@ export default function Page() {
 //   const { t } = useTranslation();
 //   const sym = item.currency === "INR" ? "â‚¹" : "$";
 //   const isTopThreat = item.threat_score >= 8;
-// 
+//
 //   return (
 //     <div className={`relative rounded-2xl border p-4 transition-all ${
 //       isTopThreat
@@ -101,7 +101,7 @@ export default function Page() {
 //           <Flame className="w-2.5 h-2.5" /> {t('common.highThreat', 'HIGH THREAT')}
 //         </div>
 //       )}
-// 
+//
 //       <div className="flex items-start gap-3">
 //         {/* Photo */}
 //         <div className={`w-14 h-14 rounded-xl border flex items-center justify-center overflow-hidden flex-shrink-0 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
@@ -110,7 +110,7 @@ export default function Page() {
 //             : <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
 //           }
 //         </div>
-// 
+//
 //         {/* Info */}
 //         <div className="flex-1 min-w-0">
 //           <div className="flex items-start justify-between gap-2">
@@ -118,7 +118,7 @@ export default function Page() {
 //               <p className={`text-sm font-bold line-clamp-2 leading-snug ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{item.title}</p>
 //               <p className={`text-[10px] font-mono mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{item.competitor_asin}</p>
 //             </div>
-// 
+//
 //             <div className="flex items-center gap-1.5 flex-shrink-0">
 //               {/* Threat ring */}
 //               {item.threat_score != null && (
@@ -142,7 +142,7 @@ export default function Page() {
 //               </button>
 //             </div>
 //           </div>
-// 
+//
 //           {/* Platform badges */}
 //           <div className="flex flex-wrap gap-1 mt-2">
 //             {item.is_prime && (
@@ -158,7 +158,7 @@ export default function Page() {
 //               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${isDark ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-500 bg-slate-50 border-slate-200'}`}>{item.sales_volume}</span>
 //             )}
 //           </div>
-// 
+//
 //           {/* Stats row */}
 //           <div className="flex flex-wrap items-center gap-3 mt-2">
 //             {item.price != null && (
@@ -176,14 +176,14 @@ export default function Page() {
 //               <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{Number(item.num_ratings).toLocaleString()} {t('common.reviews', 'reviews')}</span>
 //             )}
 //           </div>
-// 
+//
 //           {/* Threat reason */}
 //           {item.threat_reason && (
 //             <p className={`text-[11px] mt-2 rounded-lg px-2.5 py-1.5 border ${isDark ? 'text-slate-400 bg-slate-800/50 border-slate-700' : 'text-slate-500 bg-white/60 border-slate-100'}`}>
 //               {item.threat_reason}
 //             </p>
 //           )}
-// 
+//
 //           {/* Source ASIN context */}
 //           {item.source_asin && (
 //             <p className={`text-[10px] mt-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
@@ -195,7 +195,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function ListingAuditContent() {
 //   const { t } = useTranslation();
@@ -204,21 +204,21 @@ export default function Page() {
 //   const { toggle } = useSidebar();
 //   const { resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const sellerId = user?.seller_id || "";
-// 
+//
 //   const [items, setItems]             = useSessionState<any[]>("seller_listing_audit_items", []);
 //   const [loading, setLoading]         = useState(true);
 //   const [unpinLoading, setUnpinLoading] = useState<Set<string>>(new Set());
 //   const [error, setError]             = useState<string | null>(null);
-// 
+//
 //   const tier      = user?.subscriptionTier || "free";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   // â”€â”€ Load watchlist from Postgres â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   const loadWatchlist = () => {
 //     if (!user?.email || !sellerId) { setLoading(false); return; }
@@ -227,7 +227,7 @@ export default function Page() {
 //     const params = new URLSearchParams();
 //     if (user?.email) params.append("user_email", user.email);
 //     if (sellerId)    params.append("seller_id", sellerId);
-// 
+//
 //     fetch(`${BASE_URL}/api/watchlist?${params}`, { credentials: "include" })
 //       .then((r) => {
 //         if (!r.ok) throw new Error("Failed to load watchlist");
@@ -237,15 +237,15 @@ export default function Page() {
 //       .catch((e) => setError(e.message))
 //       .finally(() => setLoading(false));
 //   };
-// 
+//
 //   useEffect(() => { loadWatchlist(); }, [user?.email, sellerId]);
-// 
+//
 //   // â”€â”€ Unpin (DELETE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   const handleUnpin = async (competitorAsin: string) => {
 //     // Optimistic remove
 //     setItems(prev => prev.filter(i => i.competitor_asin !== competitorAsin));
 //     setUnpinLoading(prev => new Set(prev).add(competitorAsin));
-// 
+//
 //     try {
 //       const res = await fetch(`${BASE_URL}/api/watchlist`, {
 //         method: "DELETE",
@@ -269,10 +269,10 @@ export default function Page() {
 //       });
 //     }
 //   };
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //       {/* Header */}
@@ -309,9 +309,9 @@ export default function Page() {
 //           </button>
 //         </div>
 //       </header>
-// 
+//
 //       <main className="flex-1 py-6 space-y-5">
-// 
+//
 //         {/* Non-premium gate */}
 //         {!isPremium && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -332,7 +332,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Loading */}
 //         {isPremium && loading && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -340,7 +340,7 @@ export default function Page() {
 //             <p className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Loading your tracked competitorsâ€¦</p>
 //           </div>
 //         )}
-// 
+//
 //         {/* Error */}
 //         {isPremium && !loading && sellerId && error && (
 //           <div className={`border rounded-2xl p-4 flex items-start gap-3 ${isDark ? 'bg-red-900/20 border-red-900/50' : 'bg-red-50 border-red-200'}`}>
@@ -354,7 +354,7 @@ export default function Page() {
 //             </div>
 //           </div>
 //         )}
-// 
+//
 //         {/* Missing Seller ID State */}
 //         {isPremium && !loading && !sellerId && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -375,7 +375,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Empty state */}
 //         {isPremium && !loading && sellerId && !error && items.length === 0 && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -396,7 +396,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Watchlist cards */}
 //         {isPremium && !loading && !error && items.length > 0 && (
 //           <>
@@ -419,7 +419,7 @@ export default function Page() {
 //                 </p>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Cards list */}
 //             <div className="space-y-3">
 //               {/* Sort: high threat first */}
@@ -436,7 +436,7 @@ export default function Page() {
 //                 ))
 //               }
 //             </div>
-// 
+//
 //             {/* Bottom action */}
 //             <div className="flex justify-center pt-2">
 //               <button
@@ -452,7 +452,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function ListingAuditPage() {
 //   return (
 //     <Suspense fallback={

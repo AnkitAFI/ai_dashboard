@@ -74,43 +74,43 @@ interface NavSection {
 
 const EXPLORER_SECTIONS: NavSection[] = [
   {
-    label: "GET STARTED",
+    label: "Start Here",
     icon: Rocket,
-    items: [{ href: "/dashboard", label: "Dashboard", icon: Home }],
+    items: [{ href: "/dashboard", label: "Home", icon: Home }],
   },
   {
-    label: "DISCOVER MARKET",
+    label: "Explore the Market",
     icon: Compass,
     items: [
-      { href: "/categories", label: "Browse Categories", icon: PieChart },
-      { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
+      { href: "/categories", label: "Explore Categories", icon: PieChart },
+      { href: "/sales", label: "Best Sellers", icon: TrendingUp },
     ],
   },
   {
-    label: "BEAT COMPETITION",
+    label: "Check Competitors",
     icon: Sword,
     items: [
       {
         href: "/explorer/white-space-finder",
-        label: "Opportunity Finder",
+        label: "Niche Finder",
         icon: ShieldCheck,
       },
-      { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
+      { href: "/share-of-voice", label: "Top Competitors", icon: BarChart3 },
       {
         href: "/keyword-intelligence",
-        label: "Keyword Intelligence",
+        label: "Keyword Research",
         icon: Compass,
       },
     ],
   },
   {
-    label: "DECIDE & PRICE",
+    label: "Plan & Price",
     icon: Tag,
     items: [
-      { href: "/product-tracker", label: "Product Radar (AI)", icon: Target },
+      { href: "/product-tracker", label: "Product Ideas", icon: Target },
       {
         href: "/explorer/profitability-optimizer",
-        label: "Price Optimizer",
+        label: "Best Price Finder",
         icon: Calculator,
       },
       {
@@ -122,7 +122,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     ],
   },
   {
-    label: "TRACK & GROW",
+    label: "Stay Updated",
     icon: Activity,
     items: [
       {
@@ -132,23 +132,23 @@ const EXPLORER_SECTIONS: NavSection[] = [
       },
       {
         href: "/explorer/festive-trends",
-        label: "Festive Trends",
+        label: "Festival Sales Planner",
         icon: Star,
       },
       {
         href: "/explorer/my-watchlist",
-        label: "My Watchlist",
+        label: "Saved Products",
         icon: Bookmark,
       },
     ],
   },
   {
-    label: "SETTINGS",
+    label: "MY ACCOUNT",
     icon: Settings,
     items: [
-      { href: "/subscription", label: "Subscription", icon: Crown },
-      { href: "/about", label: "About", icon: Info },
-      { href: "/order-history", label: "Order History", icon: Receipt },
+      { href: "/subscription", label: "My Plan", icon: Crown },
+      { href: "/about", label: "About Insydz", icon: Info },
+      { href: "/order-history", label: "Payment History", icon: Receipt },
     ],
   },
 ];
@@ -178,7 +178,7 @@ const SELLER_SECTIONS: NavSection[] = [
     label: "TRACK & GROW",
     icon: Activity,
     items: [
-      { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
+      { href: "/share-of-voice", label: "Top Competitors", icon: BarChart3 },
       {
         href: "/seller/whatsapp-alerts",
         label: "WhatsApp Alerts",
@@ -186,19 +186,19 @@ const SELLER_SECTIONS: NavSection[] = [
       },
       {
         href: "/seller/festive-trends",
-        label: "Festive Trends",
+        label: "Festival Sales Planner",
         icon: Star,
         disabled: true,
       },
     ],
   },
   {
-    label: "SETTINGS",
+    label: "MY ACCOUNT",
     icon: Settings,
     items: [
-      { href: "/subscription", label: "Subscription", icon: Crown },
-      { href: "/about", label: "About", icon: Info },
-      { href: "/order-history", label: "Order History", icon: Receipt },
+      { href: "/subscription", label: "My Plan", icon: Crown },
+      { href: "/about", label: "About Insydz", icon: Info },
+      { href: "/order-history", label: "Payment History", icon: Receipt },
     ],
   },
 ];

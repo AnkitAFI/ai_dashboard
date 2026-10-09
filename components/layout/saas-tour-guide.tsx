@@ -66,7 +66,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "browse-categories",
-    title: "Browse Categories",
+    title: "Explore Categories",
     description: "Deep dive into specific market segments. Analyze sales volume, average price trends, and search keyword distributions across primary product categories.",
     icon: BarChart3,
     mode: "explorer",
@@ -77,7 +77,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "top-selling",
-    title: "Top Selling Products",
+    title: "Best Sellers",
     description: "See the absolute best-performing products in real time. Track sales velocity, estimated monthly revenue, and rank improvements.",
     icon: TrendingUp,
     mode: "explorer",
@@ -88,7 +88,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "opportunity-finder",
-    title: "Opportunity Finder (White Space)",
+    title: "Niche Finder (White Space)",
     description: "Locate gaps in the active marketplace where buyer demand is high but available product quality or supply is low. Ideal for launching new SKUs.",
     icon: ShieldCheck,
     mode: "explorer",
@@ -99,7 +99,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "market-visibility",
-    title: "Market Visibility (Share of Voice)",
+    title: "Top Competitors (Share of Voice)",
     description: "Measure what percentage of search results, sponsored ads, and top-page real estate your brand owns compared to your direct competitors.",
     icon: BarChart3,
     mode: "explorer",
@@ -110,7 +110,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "keyword-intelligence",
-    title: "Keyword Intelligence",
+    title: "Keyword Research",
     description: "Your master search database. Discover keywords buyers actually use, along with search volume, priority score, and competitor bids.",
     icon: Compass,
     mode: "explorer",
@@ -121,7 +121,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "product-radar",
-    title: "Product Radar (AI Tracker)",
+    title: "Product Ideas (AI Tracker)",
     description: "Add specific competitor items to your radar. The platform monitors price drops, stockouts, review spikes, and listing changes 24/7.",
     icon: Target,
     mode: "explorer",
@@ -132,7 +132,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "price-optimizer-explorer",
-    title: "Price Optimizer & Calculator",
+    title: "Best Price Finder & Calculator",
     description: "Simulate pricing changes and view live profit margin projections. Factors in shipping costs, FBA fees, and referral tariffs automatically.",
     icon: Calculator,
     mode: "explorer",
@@ -165,7 +165,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "festive-trends",
-    title: "Festive Trends Tracker",
+    title: "Festival Sales Planner",
     description: "Analyze historical demand spikes during major regional festivals (Diwali, Eid, Holi). Plan inventory levels and optimize ad spends weeks in advance.",
     icon: Star,
     mode: "explorer",
@@ -176,7 +176,7 @@ const FEATURE_CATALOG: FeatureInfo[] = [
   },
   {
     id: "my-watchlist",
-    title: "My Watchlist",
+    title: "Saved Products",
     description: "A centralized dashboard compiling all items, categories, and keyword tracks you have bookmarked, for simple access.",
     icon: Bookmark,
     mode: "explorer",
@@ -376,7 +376,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     // videoPath: "/videos/Insydz -  Complete Navigation Guide.mp4"
   },
   {
-    title: "Browse Categories Catalog",
+    title: "Explore Categories Catalog",
     description: "Deep dive into specific market segments. Analyze sales volume, average price trends, and search keyword distributions across primary product categories.",
     badge: "Categories",
     selector: 'a[href="/categories"]',
@@ -389,7 +389,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     videoPath: ""
   },
   {
-    title: "Top Selling Products Niches",
+    title: "Best Sellers Niches",
     description: "See the absolute best-performing products in real time. Track sales velocity, estimated monthly revenue, and rank improvements inside specific category paths.",
     badge: "Top Sellers",
     selector: 'a[href="/sales"]',
@@ -402,7 +402,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     videoPath: ""
   },
   {
-    title: "Opportunity Finder (White Space)",
+    title: "Niche Finder (White Space)",
     description: "Locate gaps in the active marketplace where buyer demand is high but available product quality or supply is low. Ideal for launching new SKUs.",
     badge: "Opportunities",
     selector: 'a[href="/explorer/white-space-finder"]',
@@ -415,7 +415,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     // videoPath: "/videos/Insydz Feature - Opportunity Finder.mp4"
   },
   {
-    title: "Market Visibility Share",
+    title: "Top Competitors Share",
     description: "Measure what percentage of search results, sponsored ads, and top-page real estate your brand owns compared to your direct competitors.",
     badge: "Visibility",
     selector: 'a[href="/share-of-voice"]',
@@ -428,7 +428,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     // videoPath: "/videos/Insydz’s Market Visibility.mp4"
   },
   {
-    title: "Keyword Intelligence Search",
+    title: "Keyword Research Search",
     description: "Your master search database. Discover keywords buyers actually use, along with search volume, priority score, and competitor bids.",
     badge: "Keywords",
     selector: 'a[href="/keyword-intelligence"]',
@@ -441,7 +441,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     videoPath: ""
   },
   {
-    title: "Product Radar (AI Tracker)",
+    title: "Product Ideas (AI Tracker)",
     description: "Add specific competitor items to your radar. The platform monitors price drops, stockouts, review spikes, and listing changes 24/7.",
     badge: "Radars",
     selector: 'a[href="/product-tracker"]',
@@ -454,7 +454,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     videoPath: ""
   },
   {
-    title: "Price Optimizer margin simulator",
+    title: "Best Price Finder margin simulator",
     description: "Simulate pricing changes and view live profit margin projections. Factors in shipping costs, FBA fees, and referral tariffs automatically.",
     badge: "Pricing",
     selector: 'a[href="/explorer/profitability-optimizer"]',
@@ -492,7 +492,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     successMessage: "WhatsApp Alerts loaded successfully!"
   },
   {
-    title: "Festive Trends Tracker",
+    title: "Festival Sales Planner",
     description: "Analyze historical demand spikes during major regional festivals (Diwali, Eid, Holi). Plan inventory levels and optimize ad spends weeks in advance.",
     badge: "Festive",
     selector: 'a[href="/explorer/festive-trends"]',
@@ -505,16 +505,16 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     videoPath: ""
   },
   {
-    title: "My Watchlist Bookmarks",
+    title: "Saved Products Bookmarks",
     description: "A centralized dashboard compiling all items, categories, and keyword tracks you have bookmarked, for simple access.",
     badge: "Watchlist",
     selector: 'a[href="/explorer/my-watchlist"]',
-    actionInstruction: "Click 'My Watchlist' under TRACK & GROW in the sidebar now!",
+    actionInstruction: "Click 'Saved Products' under TRACK & GROW in the sidebar now!",
     expectedMode: "explorer",
     triggerType: "route",
     triggerValue: "/explorer/my-watchlist",
     placement: "right",
-    successMessage: "My Watchlist loaded successfully!",
+    successMessage: "Saved Products loaded successfully!",
     videoPath: ""
   },
   {
@@ -1327,9 +1327,9 @@ export default function SaaSTourGuide() {
             <div
               style={arrowStyle}
               className={`absolute w-2.5 h-2.5 bg-slate-900 border-white/10 rotate-45 pointer-events-none transition-all ${arrowDir === "up" ? "-top-[5px] border-t border-l" :
-                  arrowDir === "down" ? "-bottom-[5px] border-b border-r" :
-                    arrowDir === "left" ? "-left-[5px] border-b border-l" :
-                      " -right-[5px] border-t border-r"
+                arrowDir === "down" ? "-bottom-[5px] border-b border-r" :
+                  arrowDir === "left" ? "-left-[5px] border-b border-l" :
+                    " -right-[5px] border-t border-r"
                 }`}
             />
           )}
@@ -1427,8 +1427,8 @@ export default function SaaSTourGuide() {
                     onClick={handlePrevStep}
                     disabled={currentStep === 0}
                     className={`p-1.5 rounded-lg border border-white/5 text-[10px] font-bold flex items-center transition ${currentStep === 0
-                        ? "opacity-30 cursor-not-allowed bg-slate-900/20 text-slate-600"
-                        : "bg-slate-800 hover:bg-slate-700 text-slate-200"
+                      ? "opacity-30 cursor-not-allowed bg-slate-900/20 text-slate-600"
+                      : "bg-slate-800 hover:bg-slate-700 text-slate-200"
                       }`}
                   >
                     <ChevronLeft className="w-3 h-3" />
@@ -1485,10 +1485,10 @@ export default function SaaSTourGuide() {
                         key={d}
                         onClick={() => setSelectedDifficulty(d === "Advanced" ? "Advanced" : d === "Beginner" ? "Beginner" : "All")}
                         className={`px-1.5 py-0.5 rounded font-bold transition ${(d === "All" && selectedDifficulty === "All") ||
-                            (d === "Beginner" && selectedDifficulty === "Beginner") ||
-                            (d === "Advanced" && selectedDifficulty === "Advanced")
-                            ? 'bg-slate-900 text-white'
-                            : 'text-slate-500 hover:text-slate-300'
+                          (d === "Beginner" && selectedDifficulty === "Beginner") ||
+                          (d === "Advanced" && selectedDifficulty === "Advanced")
+                          ? 'bg-slate-900 text-white'
+                          : 'text-slate-500 hover:text-slate-300'
                           }`}
                       >
                         {d}

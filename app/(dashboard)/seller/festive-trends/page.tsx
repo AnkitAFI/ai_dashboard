@@ -33,7 +33,7 @@ const BASE_URL = API_BASE_URL;
 function fmtINR(val: number | null | undefined): string {
   if (val == null) return "—";
   if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-  if (val >= 1000)   return `₹${(val / 1000).toFixed(1)}K`;
+  if (val >= 1000) return `₹${(val / 1000).toFixed(1)}K`;
   return `₹${Number(val).toFixed(0)}`;
 }
 
@@ -43,17 +43,17 @@ function fmtINRFull(val: number | null | undefined): string {
 }
 
 function intensityColor(intensity: string): string {
-  return intensity === "peak"   ? "#534AB7"
-       : intensity === "high"   ? "#0F6E56"
-       : intensity === "medium" ? "#854F0B"
-       : "#64748b";
+  return intensity === "peak" ? "#534AB7"
+    : intensity === "high" ? "#0F6E56"
+      : intensity === "medium" ? "#854F0B"
+        : "#64748b";
 }
 
 function intensityBg(intensity: string): string {
-  return intensity === "peak"   ? "bg-violet-50 text-violet-700 border-violet-200"
-       : intensity === "high"   ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-       : intensity === "medium" ? "bg-amber-50 text-amber-700 border-amber-200"
-       : "bg-slate-50 text-slate-500 border-slate-200";
+  return intensity === "peak" ? "bg-violet-50 text-violet-700 border-violet-200"
+    : intensity === "high" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : intensity === "medium" ? "bg-amber-50 text-amber-700 border-amber-200"
+        : "bg-slate-50 text-slate-500 border-slate-200";
 }
 
 function readinessColor(score: number): string {
@@ -68,41 +68,41 @@ function readinessBg(score: number): string {
   return score >= 75
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : score >= 50
-    ? "bg-amber-50 text-amber-700 border-amber-200"
-    : "bg-red-50 text-red-600 border-red-200";
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : "bg-red-50 text-red-600 border-red-200";
 }
 
 function positionBg(position: string): string {
   return position === "below_avg" || position === "below_floor"
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : position === "on_market"
-    ? "bg-sky-50 text-sky-700 border-sky-200"
-    : position === "above_avg"
-    ? "bg-amber-50 text-amber-700 border-amber-200"
-    : "bg-red-50 text-red-600 border-red-200";
+      ? "bg-sky-50 text-sky-700 border-sky-200"
+      : position === "above_avg"
+        ? "bg-amber-50 text-amber-700 border-amber-200"
+        : "bg-red-50 text-red-600 border-red-200";
 }
 
 function positionLabel(position: string): string {
   return position === "below_floor" ? "Below Floor"
-       : position === "below_avg"   ? "Below Avg"
-       : position === "on_market"   ? "On Market"
-       : position === "above_avg"   ? "Above Avg"
-       : position === "premium"     ? "Premium"
-       : position || "—";
+    : position === "below_avg" ? "Below Avg"
+      : position === "on_market" ? "On Market"
+        : position === "above_avg" ? "Above Avg"
+          : position === "premium" ? "Premium"
+            : position || "—";
 }
 
 function riskColor(level: string): string {
   return level === "critical" ? "#ef4444"
-       : level === "high"     ? "#f59e0b"
-       : level === "medium"   ? "#0ea5e9"
-       : "#10b981";
+    : level === "high" ? "#f59e0b"
+      : level === "medium" ? "#0ea5e9"
+        : "#10b981";
 }
 
 function riskBg(level: string): string {
   return level === "critical" ? "bg-red-50 text-red-600 border-red-200"
-       : level === "high"     ? "bg-amber-50 text-amber-700 border-amber-200"
-       : level === "medium"   ? "bg-sky-50 text-sky-700 border-sky-200"
-       : "bg-emerald-50 text-emerald-700 border-emerald-200";
+    : level === "high" ? "bg-amber-50 text-amber-700 border-amber-200"
+      : level === "medium" ? "bg-sky-50 text-sky-700 border-sky-200"
+        : "bg-emerald-50 text-emerald-700 border-emerald-200";
 }
 
 // ── Helper to convert non-INR prices to INR ──────────────────────────────────
@@ -128,11 +128,10 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise";
       </div>
       <button
         onClick={() => router.push("/subscription")}
-        className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${
-          tier === "premium"
+        className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "premium"
             ? "bg-gradient-to-r from-blue-500 to-cyan-500"
             : "bg-gradient-to-r from-amber-500 to-orange-500"
-        }`}
+          }`}
       >
         <Crown className="w-3 h-3" /> Upgrade
       </button>
@@ -143,12 +142,11 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise";
 // ── Festival chip ─────────────────────────────────────────────────────────────
 function FestivalChip({ fest, compact = false }: { fest: any; compact?: boolean }) {
   const col = intensityColor(fest.intensity);
-  const bg  = intensityBg(fest.intensity);
+  const bg = intensityBg(fest.intensity);
   return (
     <div
-      className={`flex-shrink-0 border rounded-2xl text-center bg-white ${
-        fest.is_active ? "ring-2 ring-offset-1 ring-violet-400" : ""
-      } ${compact ? "px-3 py-2 min-w-[90px]" : "px-4 py-3 min-w-[112px]"}`}
+      className={`flex-shrink-0 border rounded-2xl text-center bg-white ${fest.is_active ? "ring-2 ring-offset-1 ring-violet-400" : ""
+        } ${compact ? "px-3 py-2 min-w-[90px]" : "px-4 py-3 min-w-[112px]"}`}
       style={{ borderColor: col + "40" }}
     >
       <p className="text-lg leading-none mb-1">{fest.emoji}</p>
@@ -201,7 +199,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 // ── Risk meter (3 segments) ───────────────────────────────────────────────────
 function RiskMeter({ level }: { level: string }) {
   const filled = level === "critical" ? 3 : level === "high" ? 2 : level === "medium" ? 1 : 0;
-  const col    = riskColor(level);
+  const col = riskColor(level);
   return (
     <div className="flex items-center gap-1.5">
       {[0, 1, 2].map((i) => (
@@ -219,11 +217,10 @@ function TabBtn({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-        active
+      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${active
           ? "bg-sky-600 text-white shadow-sm"
           : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-      }`}
+        }`}
     >
       {locked && <Lock className="w-3 h-3" />}
       {children}
@@ -236,37 +233,37 @@ function TabBtn({
 // ─────────────────────────────────────────────────────────────────────────────
 function SellerFestiveTrendsContent() {
   const searchParams = useSearchParams();
-  const router       = useRouter();
-  const { user }     = useAuth();
-  const { toggle }   = useSidebar();
+  const router = useRouter();
+  const { user } = useAuth();
+  const { toggle } = useSidebar();
   const { selected } = useSelectedProduct();
 
   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 
   // ── State ─────────────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab]           = useState<"readiness" | "pricing" | "reviews" | "margin" | "launch" | "insights">("readiness");
-  const [snapshot, setSnapshot]             = useState<any>(null);
-  const [readiness, setReadiness]           = useState<any>(null);
-  const [priceBench, setPriceBench]         = useState<any>(null);
-  const [reviewHealth, setReviewHealth]     = useState<any>(null);
-  const [marginSim, setMarginSim]           = useState<any>(null);
-  const [launchWindow, setLaunchWindow]     = useState<any>(null);
-  const [calendar, setCalendar]             = useState<any>(null);
-  const [tierInfo, setTierInfo]             = useState<any>(null);
-  const [loading, setLoading]               = useState<Record<string, boolean>>({});
-  const [baseCost, setBaseCost]             = useState<string>("950");
-  const [selectedAsin, setSelectedAsin]     = useState<string>("");
-  const [categoryName, setCategoryName]     = useState<string>("");
+  const [activeTab, setActiveTab] = useState<"readiness" | "pricing" | "reviews" | "margin" | "launch" | "insights">("readiness");
+  const [snapshot, setSnapshot] = useState<any>(null);
+  const [readiness, setReadiness] = useState<any>(null);
+  const [priceBench, setPriceBench] = useState<any>(null);
+  const [reviewHealth, setReviewHealth] = useState<any>(null);
+  const [marginSim, setMarginSim] = useState<any>(null);
+  const [launchWindow, setLaunchWindow] = useState<any>(null);
+  const [calendar, setCalendar] = useState<any>(null);
+  const [tierInfo, setTierInfo] = useState<any>(null);
+  const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [baseCost, setBaseCost] = useState<string>("950");
+  const [selectedAsin, setSelectedAsin] = useState<string>("");
+  const [categoryName, setCategoryName] = useState<string>("");
 
-  const tier      = tierInfo?.tier || user?.subscriptionTier || "free";
-  const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const tier = tierInfo?.tier || user?.subscriptionTier || "free";
+  const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
   const isPremium = tier === "premium" || tier === "enterprise";
 
   // ── Fetch helpers ─────────────────────────────────────────────────────────
   const get = useCallback(
     async (path: string, params: Record<string, string> = {}) => {
       const qs = new URLSearchParams({ ...params }).toString();
-      const r  = await fetch(`${BASE_URL}/api/festive/seller/${path}${qs ? "?" + qs : ""}`, {
+      const r = await fetch(`${BASE_URL}/api/festive/seller/${path}${qs ? "?" + qs : ""}`, {
         credentials: "include",
       });
       if (!r.ok) throw new Error(`${r.status}`);
@@ -369,11 +366,10 @@ function SellerFestiveTrendsContent() {
         </div>
         <div className="flex items-center gap-2">
           {isLoading && <RefreshCw className="w-4 h-4 animate-spin text-sky-400" />}
-          <Badge className={`text-xs font-bold ${
-            tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-700"
-            : tier === "basic" ? "bg-amber-100 text-amber-700"
-            : "bg-slate-100 text-slate-600"
-          }`}>
+          <Badge className={`text-xs font-bold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-700"
+              : tier === "basic" ? "bg-amber-100 text-amber-700"
+                : "bg-slate-100 text-slate-600"
+            }`}>
             {tier.toUpperCase()}
           </Badge>
           {!isPremium && (
@@ -511,8 +507,8 @@ function SellerFestiveTrendsContent() {
                     {nextPeak.days_away > 35
                       ? `Source inventory now — supplier lead time is 21–30 days + 7–10 days FBA processing.`
                       : nextPeak.days_away > 14
-                      ? `List new SKUs and festive bundles this week to index before the search surge.`
-                      : `Festival is imminent — apply festive price premium immediately on all SKUs.`}
+                        ? `List new SKUs and festive bundles this week to index before the search surge.`
+                        : `Festival is imminent — apply festive price premium immediately on all SKUs.`}
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
@@ -631,9 +627,8 @@ function SellerFestiveTrendsContent() {
                                   {p.price != null ? fmtINRFull(getDisplayPrice(p.price, p.currency)) : "—"}
                                 </p>
                                 {isBasic && p.price_vs_market_pct != null && (
-                                  <p className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
-                                    p.price_vs_market_pct > 0 ? "text-red-500" : "text-emerald-600"
-                                  }`}>
+                                  <p className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${p.price_vs_market_pct > 0 ? "text-red-500" : "text-emerald-600"
+                                    }`}>
                                     {p.price_vs_market_pct > 0
                                       ? <ArrowUpRight className="w-3 h-3" />
                                       : <ArrowDownRight className="w-3 h-3" />
@@ -743,10 +738,10 @@ function SellerFestiveTrendsContent() {
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                           {[
                             { label: "Market Min", value: fmtINRFull(priceBench.market?.min_price || 0) },
-                            { label: "P25",         value: fmtINRFull(priceBench.market?.p25 || 0) },
-                            { label: "Market Avg",  value: fmtINRFull(priceBench.market?.avg_price || 0), accent: true },
-                            { label: "P75",         value: fmtINRFull(priceBench.market?.p75 || 0) },
-                            { label: "Market Max",  value: fmtINRFull(priceBench.market?.max_price || 0) },
+                            { label: "P25", value: fmtINRFull(priceBench.market?.p25 || 0) },
+                            { label: "Market Avg", value: fmtINRFull(priceBench.market?.avg_price || 0), accent: true },
+                            { label: "P75", value: fmtINRFull(priceBench.market?.p75 || 0) },
+                            { label: "Market Max", value: fmtINRFull(priceBench.market?.max_price || 0) },
                           ].map((s) => (
                             <div key={s.label} className={`bg-white rounded-2xl p-3 border shadow-sm text-center ${s.accent ? "border-sky-200" : "border-slate-100"}`}>
                               <p className="text-[10px] text-slate-400 font-medium mb-1">{s.label}</p>
@@ -768,8 +763,8 @@ function SellerFestiveTrendsContent() {
                               const avg = priceBench.market?.avg_price || 0;
                               const myP = getDisplayPrice(b.your_price, b.currency);
                               const range = max - min || 1;
-                              const myPct  = Math.min(100, Math.max(0, ((myP  - min) / range) * 100));
-                              const avgPct = Math.min(100, Math.max(0, ((avg  - min) / range) * 100));
+                              const myPct = Math.min(100, Math.max(0, ((myP - min) / range) * 100));
+                              const avgPct = Math.min(100, Math.max(0, ((avg - min) / range) * 100));
                               return (
                                 <div key={b.asin} className="px-5 py-3.5">
                                   <div className="flex items-center justify-between mb-2">
@@ -888,11 +883,10 @@ function SellerFestiveTrendsContent() {
                                   <p className="text-xs font-semibold text-slate-800 line-clamp-1">{h.title}</p>
                                   <div className="flex flex-wrap items-center gap-2 mt-1">
                                     <span className="text-[10px] text-slate-500">{h.star_rating} ★ · {(h.num_ratings || 0).toLocaleString("en-IN")} reviews</span>
-                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${
-                                      h.response_rate_pct === 0
+                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${h.response_rate_pct === 0
                                         ? "bg-red-50 text-red-600 border-red-200"
                                         : "bg-emerald-50 text-emerald-600 border-emerald-200"
-                                    }`}>
+                                      }`}>
                                       {h.response_rate_pct}% response
                                     </span>
                                   </div>
@@ -902,16 +896,15 @@ function SellerFestiveTrendsContent() {
                                     </p>
                                   )}
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${
-                                  h.risk_flag === "healthy"               ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                  : h.risk_flag === "no_responses"        ? "bg-sky-50 text-sky-700 border-sky-200"
-                                  : h.risk_flag === "unanswered_negative" ? "bg-red-50 text-red-600 border-red-200"
-                                  : "bg-amber-50 text-amber-700 border-amber-200"
-                                }`}>
-                                  {h.risk_flag === "healthy"               ? "Healthy"
-                                  : h.risk_flag === "no_responses"         ? "No Responses"
-                                  : h.risk_flag === "unanswered_negative"  ? "1★ Unanswered"
-                                  : "Rating Risk"}
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${h.risk_flag === "healthy" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    : h.risk_flag === "no_responses" ? "bg-sky-50 text-sky-700 border-sky-200"
+                                      : h.risk_flag === "unanswered_negative" ? "bg-red-50 text-red-600 border-red-200"
+                                        : "bg-amber-50 text-amber-700 border-amber-200"
+                                  }`}>
+                                  {h.risk_flag === "healthy" ? "Healthy"
+                                    : h.risk_flag === "no_responses" ? "No Responses"
+                                      : h.risk_flag === "unanswered_negative" ? "1★ Unanswered"
+                                        : "Rating Risk"}
                                 </span>
                               </div>
                             ))}
@@ -991,10 +984,10 @@ function SellerFestiveTrendsContent() {
                         {/* Market range */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {[
-                            { label: "Your Cost",   value: fmtINRFull(marginSim.base_cost), cls: "text-slate-800" },
-                            { label: "Market Min",  value: fmtINRFull(marginSim.market_range?.min || 0) },
-                            { label: "Market Avg",  value: fmtINRFull(marginSim.market_range?.avg || 0), cls: "text-sky-700" },
-                            { label: "Platform Fee",value: `${marginSim.platform_fee_pct}%`, cls: "text-red-500" },
+                            { label: "Your Cost", value: fmtINRFull(marginSim.base_cost), cls: "text-slate-800" },
+                            { label: "Market Min", value: fmtINRFull(marginSim.market_range?.min || 0) },
+                            { label: "Market Avg", value: fmtINRFull(marginSim.market_range?.avg || 0), cls: "text-sky-700" },
+                            { label: "Platform Fee", value: `${marginSim.platform_fee_pct}%`, cls: "text-red-500" },
                           ].map((s) => (
                             <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
                               <p className="text-xs text-slate-400 mb-1">{s.label}</p>
@@ -1021,11 +1014,10 @@ function SellerFestiveTrendsContent() {
                         {/* Scenario cards */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {marginSim.scenarios?.map((sc: any) => (
-                            <div key={sc.label} className={`bg-white rounded-2xl p-4 border shadow-sm ${
-                              sc.label === marginSim.recommended_label
+                            <div key={sc.label} className={`bg-white rounded-2xl p-4 border shadow-sm ${sc.label === marginSim.recommended_label
                                 ? "border-emerald-300 ring-1 ring-emerald-300"
                                 : sc.viable ? "border-slate-100" : "border-red-100 opacity-70"
-                            }`}>
+                              }`}>
                               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{sc.label}</p>
                               <p className="text-xl font-black text-slate-800">{fmtINRFull(sc.price || 0)}</p>
                               <p className={`text-sm font-bold mt-1 ${sc.viable ? "text-emerald-600" : "text-red-500"}`}>
@@ -1033,9 +1025,8 @@ function SellerFestiveTrendsContent() {
                               </p>
                               <p className="text-[10px] text-slate-400">{sc.net_pct}% margin</p>
                               <p className="text-[10px] text-slate-400">Fee: {fmtINRFull(sc.platform_fee)}</p>
-                              <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                sc.viable ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"
-                              }`}>
+                              <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${sc.viable ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"
+                                }`}>
                                 {sc.viable ? "Viable" : "Loss"}
                               </span>
                             </div>
@@ -1110,9 +1101,8 @@ function SellerFestiveTrendsContent() {
                                       <p className="text-[10px] text-slate-400">{w.festival_date} · {w.days_away} days away</p>
                                     </div>
                                   </div>
-                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${
-                                    isUrgent ? "bg-red-50 text-red-600 border-red-200" : "bg-sky-50 text-sky-700 border-sky-200"
-                                  }`}>
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${isUrgent ? "bg-red-50 text-red-600 border-red-200" : "bg-sky-50 text-sky-700 border-sky-200"
+                                    }`}>
                                     List by {new Date(w.optimal_list_by).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                                   </span>
                                 </div>
@@ -1162,9 +1152,9 @@ function SellerFestiveTrendsContent() {
                     {/* Static insights derived from snapshot data */}
                     {snapshot && (() => {
                       const products = snapshot.products || [];
-                      const kpis     = snapshot.catalog_kpis || {};
-                      const highVel  = products.filter((p: any) => (p.monthly_units || 0) >= 1000);
-                      const noPrime  = products.filter((p: any) => !p.is_prime);
+                      const kpis = snapshot.catalog_kpis || {};
+                      const highVel = products.filter((p: any) => (p.monthly_units || 0) >= 1000);
+                      const noPrime = products.filter((p: any) => !p.is_prime);
                       const insights = [
                         highVel.length > 0 && {
                           icon: <Flame className="w-4 h-4 text-orange-500" />,
@@ -1236,11 +1226,10 @@ function SellerFestiveTrendsContent() {
 
             {/* ── Upgrade CTA (non-premium) ────────────────────────────────── */}
             {!isPremium && (
-              <div className={`rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-                isBasic
+              <div className={`rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isBasic
                   ? "bg-gradient-to-r from-blue-600 to-cyan-500"
                   : "bg-gradient-to-r from-amber-500 to-orange-500"
-              }`}>
+                }`}>
                 <div>
                   <p className="font-bold text-base">
                     {isBasic ? "Unlock Margin Simulator & Launch Windows" : "Unlock Full Festive Intelligence"}

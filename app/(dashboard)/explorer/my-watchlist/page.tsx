@@ -89,9 +89,9 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }
         <Sparkles className="w-4 h-4" />
         {t("myWatchlist.niches", "Niches")}
         <span className={cn(
-          "text-[10px] px-1.5 py-0.5 rounded-md", 
-          activeTab === "whitespace" 
-            ? isDark ? "bg-violet-950/80 text-violet-300" : "bg-violet-100 text-violet-600" 
+          "text-[10px] px-1.5 py-0.5 rounded-md",
+          activeTab === "whitespace"
+            ? isDark ? "bg-violet-950/80 text-violet-300" : "bg-violet-100 text-violet-600"
             : isDark ? "bg-slate-800/60 text-slate-400" : "bg-slate-200 text-slate-500"
         )}>
           {whiteSpaceCount}
@@ -109,9 +109,9 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }
         <Calculator className="w-4 h-4" />
         {t("myWatchlist.calculator", "Calculator")}
         <span className={cn(
-          "text-[10px] px-1.5 py-0.5 rounded-md", 
-          activeTab === "profit" 
-            ? isDark ? "bg-blue-950/80 text-blue-300" : "bg-blue-100 text-blue-600" 
+          "text-[10px] px-1.5 py-0.5 rounded-md",
+          activeTab === "profit"
+            ? isDark ? "bg-blue-950/80 text-blue-300" : "bg-blue-100 text-blue-600"
             : isDark ? "bg-slate-800/60 text-slate-400" : "bg-slate-200 text-slate-500"
         )}>
           {profitCount}
@@ -220,8 +220,8 @@ export default function MyWatchlist() {
         i.platform === "both"
           ? "amazon india flipkart india both"
           : i.platform === "amazon"
-          ? "amazon india"
-          : "flipkart india";
+            ? "amazon india"
+            : "flipkart india";
       return (
         (i.niche && i.niche.toLowerCase().includes(q)) ||
         (i.category && i.category.toLowerCase().includes(q)) ||
@@ -268,7 +268,7 @@ export default function MyWatchlist() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              {t("myWatchlist.title", "My Watchlist")}
+              {t("myWatchlist.title", "Saved Products")}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
               {t("myWatchlist.subtitle", "Your saved opportunities and product calculations, synced across all your devices.")}
@@ -324,7 +324,7 @@ export default function MyWatchlist() {
                 maxSuggestions={5}
               />
             </div>
-            
+
             {activeTab === "whitespace" && (
               <div className="flex items-center gap-2">
                 {!confirmClear ? (

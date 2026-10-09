@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { useState, useEffect, useMemo, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { API_BASE_URL } from "@/lib/config";
@@ -49,9 +49,9 @@ export default function Page() {
 //   PopoverTrigger,
 // } from "@/components/ui/popover";
 // import { useSelectedProduct } from "@/lib/selected-product-context";
-// 
+//
 // const BASE_URL = API_BASE_URL;
-// 
+//
 // // â”€â”€ Cluster icon + colour map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // const CLUSTER_META: Record<string, { color: string; colorDark: string; bg: string; bgDark: string; border: string; borderDark: string; emoji: string }> = {
 //   "Speed & Performance":   { color: "text-red-600",    colorDark: "text-red-400",    bg: "bg-red-50",    bgDark: "bg-red-900/30",    border: "border-red-200",    borderDark: "border-red-800/50",    emoji: "âš¡" },
@@ -64,11 +64,11 @@ export default function Page() {
 //   "Gap Keywords":          { color: "text-slate-600",  colorDark: "text-slate-400",  bg: "bg-slate-50",  bgDark: "bg-slate-800",     border: "border-slate-200",  borderDark: "border-slate-700",     emoji: "ðŸ”‘" },
 //   "Other":                 { color: "text-slate-500",  colorDark: "text-slate-500",  bg: "bg-slate-50",  bgDark: "bg-slate-800",     border: "border-slate-100",  borderDark: "border-slate-700",     emoji: "ðŸ“¦" },
 // };
-// 
+//
 // function clusterMeta(name: string) {
 //   return CLUSTER_META[name] || CLUSTER_META["Other"];
 // }
-// 
+//
 // // â”€â”€ Placement badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PlacementBadge({ placement, isDark }: { placement: string; isDark: boolean }) {
 //   const map: Record<string, string> = {
@@ -88,7 +88,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Semantic distance indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function SemanticBadge({ sim, isDark }: { sim: number; isDark: boolean }) {
 //   if (sim == null) return null;
@@ -98,7 +98,7 @@ export default function Page() {
 //     return <span title="Partially related concept" className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-amber-400 bg-amber-900/30 border-amber-800/50' : 'text-amber-600 bg-amber-50 border-amber-200'}`}>~ Partial</span>;
 //   return <span title="Genuinely new concept â€” high discovery value" className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}>âœ¦ New concept</span>;
 // }
-// 
+//
 // // â”€â”€ Tier Gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
 //   const router = useRouter();
@@ -122,7 +122,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Coverage Score Ring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function CoverageRing({ score, isDark }: { score: number; isDark: boolean }) {
 //   const r = 32, circ = 2 * Math.PI * r;
@@ -147,7 +147,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Priority Pill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PriorityPill({ priority, isDark }: { priority: string; isDark: boolean }) {
 //   const map: Record<string, string> = {
@@ -161,7 +161,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Opportunity Score Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function OpportunityBar({ score, keyword, reason, add_to, is_spec, isDark }: {
 //   score: number; keyword: string; reason: string; add_to?: string; is_spec?: boolean; isDark: boolean;
@@ -189,7 +189,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Keyword Pill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function KwPill({ kw, variant, isDark }: { kw: string; variant: "gap" | "shared" | "unique" | "review"; isDark: boolean }) {
 //   const styles = {
@@ -204,7 +204,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Heatmap Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function HeatmapRow({ item, maxFreq, isDark }: { item: any; maxFreq: number; isDark: boolean }) {
 //   const pct  = Math.max((item.freq / maxFreq) * 100, 3);
@@ -227,7 +227,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Expandable Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function Section({ title, icon: Icon, children, defaultOpen = true, count, accent, isDark, helpText }: any) {
 //   const [open, setOpen] = useState(defaultOpen);
@@ -264,12 +264,12 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Semantic Gap Clusters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function GapClusters({ clusters, isDark }: { clusters: Record<string, string[]>; isDark: boolean }) {
 //   const entries = Object.entries(clusters).filter(([, kws]) => kws.length > 0);
 //   if (entries.length === 0) return null;
-// 
+//
 //   return (
 //     <Section title="Semantic Keyword Clusters" helpText="Gap keywords grouped by concept. Focus on clusters with the most keywords first." icon={Layers} defaultOpen={true} accent={isDark ? "bg-violet-900/30" : "bg-violet-50"} isDark={isDark}>
 //       <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
@@ -310,13 +310,13 @@ export default function Page() {
 //     </Section>
 //   );
 // }
-// 
+//
 // // â”€â”€ Gap Keywords Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function GapKeywordsTable({ items, isDark }: { items: any[]; isDark: boolean }) {
 //   const [filter, setFilter]       = useState<"All" | "High" | "Medium" | "Low">("All");
 //   const [showBigrams, setShowBigrams] = useState(true);
 //   const [showSemantic, setShowSemantic] = useState(true);
-// 
+//
 //   const filtered = useMemo(() => {
 //     return items.filter((k) => {
 //       if (filter !== "All" && k.priority !== filter) return false;
@@ -324,7 +324,7 @@ export default function Page() {
 //       return true;
 //     });
 //   }, [items, filter, showBigrams]);
-// 
+//
 //   return (
 //     <div>
 //       {/* Filter bar */}
@@ -364,7 +364,7 @@ export default function Page() {
 //           </button>
 //         </div>
 //       </div>
-// 
+//
 //       {/* Legend for semantic badges */}
 //       {showSemantic && (
 //         <div className={`flex flex-wrap gap-2 mb-3 p-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
@@ -375,7 +375,7 @@ export default function Page() {
 //           <span className={`text-[9px] self-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>genuinely missing content area</span>
 //         </div>
 //       )}
-// 
+//
 //       {/* Table */}
 //       <div className="space-y-1">
 //         {filtered.slice(0, 30).map((item, i) => (
@@ -416,7 +416,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function KeywordGapContent() {
 //   const { t } = useTranslation();
 //   const searchParams = useSearchParams();
@@ -426,26 +426,26 @@ export default function Page() {
 //   const { selected } = useSelectedProduct();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const asin     = searchParams.get("asin")      || selected?.asin     || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
-// 
+//
 //   const [data, setData]         = useSessionState<any>("seller_keyword_gap_data", null);
 //   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_keyword_gap_asin", "");
 //   const [loading, setLoading]   = useState(false);
-// 
+//
 //   const tier      = data?.tier || user?.subscriptionTier || "free";
 //   const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
 //     if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
-//     
+//
 //     setLoading(true);
 //     const params = new URLSearchParams({ asin, seller_id: sellerId });
 //     fetch(`${BASE_URL}/api/keyword-gap/analyse?${params}`, { credentials: "include" })
@@ -459,7 +459,7 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
-// 
+//
 //   const gapKeywords    = data?.gap_keywords    || [];
 //   const sharedKeywords = data?.shared_keywords || [];
 //   const uniqueKeywords = data?.unique_keywords || [];
@@ -471,10 +471,10 @@ export default function Page() {
 //   const gapClusters    = data?.gap_clusters    || {};
 //   const maxHeatFreq    = heatmap.length ? Math.max(...heatmap.map((h: any) => h.freq)) : 1;
 //   const embeddingModel = data?.embedding_model || null;
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //         <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
@@ -511,7 +511,7 @@ export default function Page() {
 //             )}
 //           </div>
 //         </header>
-// 
+//
 //         <main className="flex-1 py-6 space-y-5">
 //           {!asin && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -528,7 +528,7 @@ export default function Page() {
 //               </button>
 //             </div>
 //           )}
-// 
+//
 //           {asin && loading && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-3">
 //               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
@@ -538,7 +538,7 @@ export default function Page() {
 //               </div>
 //             </div>
 //           )}
-// 
+//
 //           {asin && !loading && data && (
 //             <>
 //               {/* Product card */}
@@ -573,13 +573,13 @@ export default function Page() {
 //                     )}
 //                   </div>
 //                 </div>
-// 
+//
 //                 {isBasic && data.coverage_score != null && (
 //                   <div className="flex-shrink-0">
 //                     <CoverageRing score={data.coverage_score} isDark={isDark} />
 //                   </div>
 //                 )}
-// 
+//
 //                 {!isBasic && (
 //                   <div className="flex-shrink-0 text-right">
 //                     <p className="text-3xl font-black text-red-500">{data.gap_count_teaser ?? "â€”"}</p>
@@ -591,7 +591,7 @@ export default function Page() {
 //                   </div>
 //                 )}
 //               </div>
-// 
+//
 //               {/* Your keywords */}
 //               <Section title="Your Title Keywords" icon={FileText} count={data.your_keyword_count} defaultOpen={true} isDark={isDark}>
 //                 <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Every keyword extracted from your current product title</p>
@@ -604,7 +604,7 @@ export default function Page() {
 //                   )}
 //                 </div>
 //               </Section>
-// 
+//
 //               {/* teaser gate */}
 //               {!isBasic && (
 //                 <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -634,7 +634,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* Stats bar */}
 //               {isBasic && (
 //                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -655,7 +655,7 @@ export default function Page() {
 //                   ))}
 //                 </div>
 //               )}
-// 
+//
 //               {/* Gap keywords */}
 //               {isBasic && (
 //                 <Section title="Missing Keywords (Gap)" helpText="These are words missing from your title. Add them to rank for more searches." icon={AlertTriangle} count={gapKeywords.length}
@@ -671,12 +671,12 @@ export default function Page() {
 //                   }
 //                 </Section>
 //               )}
-// 
+//
 //               {/* Semantic Gap Clusters */}
 //               {isBasic && Object.keys(gapClusters).length > 0 && (
 //                 <GapClusters clusters={gapClusters} isDark={isDark} />
 //               )}
-// 
+//
 //               {/* Keyword heatmap */}
 //               {isBasic && (
 //                 <Section title="Competitor Keyword Heatmap" helpText="Shows how often a keyword appears in competitors' titles. Red means it's a high-frequency gap." icon={BarChart2} defaultOpen={false} isDark={isDark}>
@@ -693,7 +693,7 @@ export default function Page() {
 //                   </div>
 //                 </Section>
 //               )}
-// 
+//
 //               {/* Shared + Unique */}
 //               {isBasic && (
 //                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -709,7 +709,7 @@ export default function Page() {
 //                       {sharedKeywords.length === 0 && <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>None found.</p>}
 //                     </div>
 //                   </Section>
-// 
+//
 //                   <Section title="Your Unique Keywords" helpText="Keywords that only you are using. These are your unique selling points." icon={Star} count={uniqueKeywords.length} accent={isDark ? "bg-purple-900/30" : "bg-purple-50"} defaultOpen={false} isDark={isDark}>
 //                     <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Keywords only in your title â€” your differentiators. Keep them.</p>
 //                     <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
@@ -721,7 +721,7 @@ export default function Page() {
 //                   </Section>
 //                 </div>
 //               )}
-// 
+//
 //               {/* Competitors analysed */}
 //               {isBasic && competitors && (
 //                 <Section title="Competitors Analysed" helpText="The top products we compared your title against, ranked by similarity." icon={Eye} count={competitors.length} defaultOpen={false} isDark={isDark}>
@@ -770,7 +770,7 @@ export default function Page() {
 //                   </div>
 //                 </Section>
 //               )}
-// 
+//
 //               {/* Review keywords */}
 //               <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="Customer Review Keyword Mining" isDark={isDark} />}
@@ -824,7 +824,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* AI opportunity scores */}
 //               <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="AI Keyword Opportunity Scores" isDark={isDark} />}
@@ -868,7 +868,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* AI listing rewrite */}
 //               <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="AI Listing Rewrite Suggestion" isDark={isDark} />}
@@ -925,7 +925,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* Action plan */}
 //               <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="AI Prioritised Action Plan" isDark={isDark} />}
@@ -977,7 +977,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* Upgrade CTA */}
 //               {!isPremium && (
 //                 <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1011,7 +1011,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function KeywordGapAnalysisPage() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

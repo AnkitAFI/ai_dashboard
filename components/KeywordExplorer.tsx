@@ -792,9 +792,16 @@ export default function KeywordExplorer({
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={
                     (data.trend || []).map((vol, idx) => {
-                      const monthNames = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
+                      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                      const currentMonth = new Date().getMonth();
+                      const dynamicMonths = [];
+                      for (let i = 11; i >= 0; i--) {
+                        let m = currentMonth - i;
+                        if (m < 0) m += 12;
+                        dynamicMonths.push(months[m]);
+                      }
                       return {
-                        month: monthNames[idx % 12],
+                        month: dynamicMonths[idx % 12],
                         Volume: vol
                       };
                     })
@@ -887,7 +894,6 @@ export default function KeywordExplorer({
                         <th className="p-3 text-center">KD%</th>
                         <th className="p-3 text-center">Intent</th>
                         <th className="p-3 text-right">CPC</th>
-                        <th className="p-3 text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -929,18 +935,6 @@ export default function KeywordExplorer({
                             </span>
                           </td>
                           <td className="p-3 text-right font-medium">₹{v.cpc.toFixed(2)}</td>
-                          <td className="p-3 text-center">
-                            <button
-                              onClick={() => handleQuickTrack(v.keyword)}
-                              disabled={loading}
-                              className="p-1 hover:bg-purple-100 text-purple-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Add to Rank Tracker"
-                              data-track-id="quick_track_keyword_btn"
-                              data-filter-value={v.keyword}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </td>
                         </tr>
                       ))}
                     </tbody>

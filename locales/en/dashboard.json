@@ -17,7 +17,7 @@
     "hindi": "Hindi"
   },
   "myWatchlist": {
-    "title": "My Watchlist",
+    "title": "Saved Products",
     "subtitle": "Your saved opportunities and product calculations, synced across all your devices.",
     "niches": "Niches",
     "calculator": "Calculator",
@@ -126,7 +126,7 @@
     "upgradeNow": "Upgrade Now"
   },
   "festiveTrends": {
-    "title": "Festive Trends",
+    "title": "Festive Sales Planner",
     "subtitle": "Ride India's festive demand cycles — price smarter, stock right, list on time",
     "plan": "plan",
     "upcomingEvents": "Upcoming Festive Events",
@@ -197,7 +197,7 @@
   },
   "productResearch": {
     "title1": "Product",
-    "title2": "Research",
+    "title2": "Ideas",
     "subtitle": "Discover high-potential niches and validate your product ideas with AI-driven market data",
     "researchHistory": "Research History",
     "blueprintTitle": "Market Research Blueprint",
@@ -330,7 +330,7 @@
     "all": "All",
     "yourPlan": "Your plan",
     "upgrade": "Upgrade",
-    "opportunityFinder": "Opportunity Finder",
+    "opportunityFinder": "Niche Finder",
     "discoverUntapped": "Discover untapped product gaps and find hidden opportunities across Amazon India and Flipkart India.",
     "scansUsed": "Scans used",
     "exportCsv": "Export CSV",
@@ -350,7 +350,7 @@
     "monthText": "/mo"
   },
   "profitabilityOptimizer": {
-    "title": "Price Optimizer",
+    "title": "Best Price Finder",
     "subtitle": "Real margins · Live market data",
     "tabs": {
       "calc": "Calculator",
@@ -440,7 +440,7 @@
   },
   "sov": {
     "analysesUsed": "Analyses used",
-    "title": "Market Visibility",
+    "title": "Top Competitors",
     "subtitle": "Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.",
     "searchParams": "Search Parameters",
     "marketplace": "Marketplace",
@@ -455,7 +455,7 @@
   },
   "ki": {
     "searchesUsed": "Searches used",
-    "pageTitle": "Keyword Intelligence",
+    "pageTitle": "Keyword Research",
     "pageSubtitle": "Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.",
     "searchByProductName": "Search by Product Name",
     "searchPlaceholder": "e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum",
@@ -471,7 +471,7 @@
   },
   "pr": {
     "analysesUsed": "Analyses used",
-    "title": "Product Radar (AI)",
+    "title": "Product Ideas",
     "subtitle": "Scan specific products to analyze market competition, pricing metrics, and project AI reports.",
     "productInfo": "Product Information",
     "enterDetails": "Enter your product details to get AI-powered market insights from",
@@ -487,7 +487,7 @@
   },
   "categories": {
     "loading": "Loading categories...",
-    "title": "Product Categories",
+    "title": "Explore Categories",
     "subtitle": "Explore top-performing categories and jump directly to their product lists.",
     "marketplace": "Marketplace:",
     "allMarketplaces": "All Marketplaces",

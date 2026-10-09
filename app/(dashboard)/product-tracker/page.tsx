@@ -286,7 +286,7 @@ const getGapIcon = (iconText: string) => {
   if (t.includes('TRUCK') || t.includes('SHIP') || t.includes('DELIVER') || t.includes('PRIME')) return <Truck className="h-5 w-5" />;
   if (t.includes('WARN') || t.includes('ALERT') || t.includes('RISK')) return <AlertTriangle className="h-5 w-5" />;
   if (t.includes('BOX') || t.includes('PACKAGE') || t.includes('PRODUCT') || t.includes('INVENT')) return <Package className="h-5 w-5" />;
-  
+
   // Emoji fallback if it's actually an emoji or short symbol
   if (t.length <= 2) return <span className="text-xl">{iconText}</span>;
 
@@ -328,7 +328,7 @@ export default function ProductTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/users/${userId}/analysis-usage`, { 
+      const res = await fetch(`${API_BASE_URL}/users/${userId}/analysis-usage`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -523,11 +523,10 @@ export default function ProductTracker() {
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 animate-in slide-in-from-right ${
-            t.variant === "success"
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 animate-in slide-in-from-right ${t.variant === "success"
               ? "bg-green-50 dark:bg-green-950/60 border-green-300 dark:border-green-800"
               : "bg-red-50 dark:bg-red-950/60 border-red-300 dark:border-red-800"
-          }`}>
+            }`}>
             {t.variant === "success"
               ? <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
               : <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />}
@@ -549,7 +548,7 @@ export default function ProductTracker() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div className="text-left space-y-1">
               <h1 className="page-title">
-                {t('pr.title', 'Product Radar (AI)')}
+                {t('pr.title', 'Product Ideas')}
               </h1>
               <p className="page-subtitle">
                 {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
@@ -568,9 +567,9 @@ export default function ProductTracker() {
                   <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%`, 
-                        background: (usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD" 
+                      style={{
+                        width: `${usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%`,
+                        background: (usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD"
                       }}
                     />
                   </div>
@@ -738,7 +737,7 @@ export default function ProductTracker() {
                     const isCritical = w.includes("CRITICAL") || w.includes("DANGER") || w.includes("impossible") || w.includes("Cannot compete");
                     const isPositive = w.includes("EXCELLENT") || w.includes("VIABLE");
                     const isSolution = w.toLowerCase().startsWith("solution");
-                    
+
                     let typeColor = "border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-950/40 dark:to-yellow-950/20 text-amber-800 dark:text-amber-300";
                     let Icon = AlertTriangle;
                     let iconColor = "text-amber-600 dark:text-amber-400";
@@ -812,17 +811,15 @@ export default function ProductTracker() {
                         ₹{result.pricing.min_price.toLocaleString()} – ₹{result.pricing.max_price.toLocaleString()}
                       </p>
                     </div>
-                    <div className={`p-4 rounded-lg border-2 ${
-                      result.pricing.profit_margin >= 20 ? 'bg-gradient-to-br from-green-50 dark:from-green-900/30 to-emerald-50 dark:to-emerald-900/20 border-green-200 dark:border-green-800' :
-                      result.pricing.profit_margin >= 0 ? 'bg-gradient-to-br from-amber-50 dark:from-amber-900/30 to-yellow-50 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800' :
-                      'bg-gradient-to-br from-red-50 dark:from-red-900/30 to-rose-50 dark:to-rose-900/20 border-red-200 dark:border-red-800'
-                    }`}>
+                    <div className={`p-4 rounded-lg border-2 ${result.pricing.profit_margin >= 20 ? 'bg-gradient-to-br from-green-50 dark:from-green-900/30 to-emerald-50 dark:to-emerald-900/20 border-green-200 dark:border-green-800' :
+                        result.pricing.profit_margin >= 0 ? 'bg-gradient-to-br from-amber-50 dark:from-amber-900/30 to-yellow-50 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800' :
+                          'bg-gradient-to-br from-red-50 dark:from-red-900/30 to-rose-50 dark:to-rose-900/20 border-red-200 dark:border-red-800'
+                      }`}>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Profit Margin</p>
-                      <p className={`text-3xl font-bold ${
-                        result.pricing.profit_margin >= 20 ? 'text-green-600 dark:text-green-400' :
-                        result.pricing.profit_margin >= 0 ? 'text-amber-600 dark:text-amber-400' :
-                        'text-red-600 dark:text-red-400'
-                      }`}>{result.pricing.profit_margin.toFixed(1)}%</p>
+                      <p className={`text-3xl font-bold ${result.pricing.profit_margin >= 20 ? 'text-green-600 dark:text-green-400' :
+                          result.pricing.profit_margin >= 0 ? 'text-amber-600 dark:text-amber-400' :
+                            'text-red-600 dark:text-red-400'
+                        }`}>{result.pricing.profit_margin.toFixed(1)}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -991,12 +988,11 @@ export default function ProductTracker() {
                       </div>
                     </div>
                     <div className="mt-2">
-                      <Badge className={`text-base px-4 py-1 ${
-                        result.final_verdict.verdict_color === "green" ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" :
-                        result.final_verdict.verdict_color === "blue" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" :
-                        result.final_verdict.verdict_color === "orange" ? "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800" :
-                        "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800"
-                      }`}>
+                      <Badge className={`text-base px-4 py-1 ${result.final_verdict.verdict_color === "green" ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" :
+                          result.final_verdict.verdict_color === "blue" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" :
+                            result.final_verdict.verdict_color === "orange" ? "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800" :
+                              "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800"
+                        }`}>
                         {result.final_verdict.verdict_label}
                       </Badge>
                     </div>
