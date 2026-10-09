@@ -1048,8 +1048,15 @@ function KeywordExplorerPanel({
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={
                     (data.trend || []).map((vol, idx) => {
-                      const monthNames = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
-                      return { month: monthNames[idx % 12], Volume: vol };
+                      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                      const currentMonth = new Date().getMonth();
+                      const dynamicMonths = [];
+                      for (let i = 11; i >= 0; i--) {
+                        let m = currentMonth - i;
+                        if (m < 0) m += 12;
+                        dynamicMonths.push(months[m]);
+                      }
+                      return { month: dynamicMonths[idx % 12], Volume: vol };
                     })
                   } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#334155" : "#f1f5f9"} />
@@ -1200,7 +1207,6 @@ function KeywordExplorerPanel({
                             </UITooltip>
                           </TooltipProvider>
                         </th>
-                        <th className="p-3 text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
@@ -1242,18 +1248,6 @@ function KeywordExplorerPanel({
                             </span>
                           </td>
                           <td className="p-3 text-right font-medium">₹{v.cpc.toFixed(2)}</td>
-                          <td className="p-3 text-center">
-                            <button
-                              onClick={() => handleQuickTrack(v.keyword)}
-                              disabled={loading}
-                              className="p-1 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Add to Rank Tracker"
-                              data-track-id="quick_track_keyword_btn"
-                              data-filter-value={v.keyword}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
