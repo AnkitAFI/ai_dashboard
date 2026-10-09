@@ -1549,7 +1549,7 @@ export default function AdminDashboard() {
                               </div>
                               <div>
                                 <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#1e293b", display: "flex", alignItems: "center", gap: 6 }}>
-                                  {u.first_name} {u.last_name}
+                                  {u.first_name || u.last_name ? `${u.first_name || ""} ${u.last_name || ""}` : "Anon User"}
                                   {u.ads_connected && (
                                     <span style={{ padding: "2px 5px", fontSize: 9, fontWeight: 700, borderRadius: 4, background: "#dcfce7", color: "#16a34a", border: "1px solid #bbf7d0", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
                                       Ads Connected 🟢
@@ -1592,14 +1592,18 @@ export default function AdminDashboard() {
                               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                                   <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444" }} />
-                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#ef4444" }}>Deleted</span>
+                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#ef4444" }}>
+                                    {!u.email ? "Anonymized" : "Deleted"}
+                                  </span>
                                 </div>
-                                <button
-                                  onClick={(e) => handleRecoverUser(e, u.id)}
-                                  style={{ fontSize: 10, padding: "2px 6px", background: "#3b82f6", color: "white", borderRadius: 4, cursor: "pointer", border: "none" }}
-                                >
-                                  Recover
-                                </button>
+                                {u.email && (
+                                  <button
+                                    onClick={(e) => handleRecoverUser(e, u.id)}
+                                    style={{ fontSize: 10, padding: "2px 6px", background: "#3b82f6", color: "white", borderRadius: 4, cursor: "pointer", border: "none" }}
+                                  >
+                                    Recover
+                                  </button>
+                                )}
                               </div>
                             ) : (
                               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>

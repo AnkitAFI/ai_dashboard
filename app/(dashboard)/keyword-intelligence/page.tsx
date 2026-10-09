@@ -704,7 +704,7 @@ function KeywordExplorerPanel({
 
   const handleSearch = async (overrideKeyword?: string) => {
     if (isLocked) {
-      showToast("Upgrade Required", "Keyword Intelligence requires a Basic or Premium plan.", "error");
+      showToast("Upgrade Required", "Keyword Research requires a Basic or Premium plan.", "error");
       return;
     }
     if (isAtLimit) {
@@ -821,8 +821,8 @@ function KeywordExplorerPanel({
               </h4>
               <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
                 {platform === "flipkart"
-                  ? t('ki.retrievingDescFlipkart', 'Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.')
-                  : t('ki.retrievingDescAmazon', 'Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.')}
+                  ? t('ki.retrievingDescFlipkart', 'Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword Research.')
+                  : t('ki.retrievingDescAmazon', 'Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword Research.')}
               </p>
             </div>
           </CardContent>
@@ -837,7 +837,7 @@ function KeywordExplorerPanel({
               <Compass className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">{t('ki.keywordExplorer', 'Keyword Explorer')}</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">{t('ki.keywordExplorer', 'Keyword Research')}</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
                 {t('ki.emptyStateDesc', 'Type in any search term above and click Analyze to retrieve search volumes, buyer intent, regional demand, and competitor SERPs.')}
               </p>
@@ -1516,7 +1516,7 @@ function KeywordTrackerIntelligenceContent() {
                 <Compass className="h-7 w-7 sm:h-8 sm:w-8 text-purple-600 dark:text-purple-400" />
               </div>
               <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
-                {t('ki.pageTitle', 'Keyword Intelligence')}
+                {t('ki.pageTitle', 'Keyword Research')}
               </h1>
               <p className="text-xs sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto px-2">
                 {t('ki.pageSubtitle', 'Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.')}
@@ -1552,7 +1552,7 @@ function KeywordTrackerIntelligenceContent() {
           {/* Subscription gate wrapper */}
           <div className="relative">
             {(user?.subscriptionTier?.toLowerCase() || "free") === "free" && (
-              <TierGate tier="basic" feature="Keyword Intelligence" />
+              <TierGate tier="basic" feature="Keyword Research" />
             )}
             <div className={(user?.subscriptionTier?.toLowerCase() || "free") === "free" ? "blur-sm pointer-events-none" : ""}>
               <KeywordExplorerPanel

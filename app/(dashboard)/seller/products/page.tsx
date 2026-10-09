@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,11 +25,11 @@ export default function Page() {
   );
 }
 // "use client";
-// 
+//
 // import { useState, useEffect, Suspense } from "react";
 // import { API_BASE_URL } from "@/lib/config";
 // import { useRouter } from "next/navigation";
-// 
+//
 // import SellerIdInput from "@/components/dashboard/seller-id-input";
 // import { useAuth } from "@/lib/auth-context";
 // import {
@@ -38,20 +38,20 @@ export default function Page() {
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import SmartSearchInput from "@/components/ui/smart-search-input";
-// 
+//
 // function SellerProductsContent() {
 //   const { user, refreshUser } = useAuth();
 //   const router = useRouter();
-// 
+//
 //   const [localSellerId, setLocalSellerId] = useState<string | null>(null);
 //   const [products, setProducts] = useState<any[]>([]);
 //   const [loading, setLoading] = useState(false);
 //   const [syncStatus, setSyncStatus] = useState<string>("IDLE");
 //   const [searchQuery, setSearchQuery] = useState("");
 //   const [activeFilter, setActiveFilter] = useState<"all" | "prime" | "best_seller">("all");
-// 
+//
 //   const activeSellerId = user?.seller_id || localSellerId;
-// 
+//
 //   const fetchProducts = async (silent = false) => {
 //     if (!activeSellerId) return;
 //     if (!silent) setLoading(true);
@@ -74,11 +74,11 @@ export default function Page() {
 //       if (!silent) setLoading(false);
 //     }
 //   };
-// 
+//
 //   useEffect(() => {
 //     if (activeSellerId) fetchProducts();
 //   }, [activeSellerId]);
-// 
+//
 //   useEffect(() => {
 //     let interval: NodeJS.Timeout;
 //     if (activeSellerId && syncStatus === "SYNCING") {
@@ -88,7 +88,7 @@ export default function Page() {
 //     }
 //     return () => { if (interval) clearInterval(interval); };
 //   }, [activeSellerId, syncStatus]);
-// 
+//
 //   const filteredProducts = products.filter((p) => {
 //     const matchesSearch =
 //       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,7 +101,7 @@ export default function Page() {
 //         : p.is_best_seller === true;
 //     return matchesSearch && matchesTab;
 //   });
-// 
+//
 //   const goToComparison = (
 //     e: React.MouseEvent,
 //     type: "price" | "review",
@@ -114,7 +114,7 @@ export default function Page() {
 //       : `/seller/review-comparison?${params}`
 //     );
 //   };
-// 
+//
 //   return (
 //     <div className="space-y-6">
 //       {/* Title Section */}
@@ -140,7 +140,7 @@ export default function Page() {
 //           </div>
 //         )}
 //       </div>
-// 
+//
 //       {!activeSellerId ? (
 //         <SellerIdInput
 //           onSaved={(id) => {
@@ -190,7 +190,7 @@ export default function Page() {
 //               </div>
 //             </div>
 //           </div>
-// 
+//
 //           {/* Table */}
 //           <div className="overflow-x-auto">
 //             {loading ? (
@@ -269,7 +269,7 @@ export default function Page() {
 //                           </div>
 //                         </div>
 //                       </td>
-// 
+//
 //                       {/* Price */}
 //                       <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
 //                         {p.price
@@ -278,7 +278,7 @@ export default function Page() {
 //                             : `₹${p.price}`
 //                           : "N/A"}
 //                       </td>
-// 
+//
 //                       {/* Rating */}
 //                       <td className="px-6 py-4 whitespace-nowrap">
 //                         <div className="flex items-center gap-1 font-bold text-slate-800">
@@ -286,26 +286,26 @@ export default function Page() {
 //                           {p.rating}
 //                         </div>
 //                       </td>
-// 
+//
 //                       {/* Reviews */}
 //                       <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
 //                         {p.reviews >= 1000
 //                           ? `${(p.reviews / 1000).toFixed(1)}K`
 //                           : p.reviews}
 //                       </td>
-// 
+//
 //                       {/* Sales */}
 //                       <td className="px-6 py-4 whitespace-nowrap">
 //                         <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs">
 //                           {p.sales}
 //                         </span>
 //                       </td>
-// 
+//
 //                       {/* BSR */}
 //                       <td className="px-6 py-4 text-slate-500 whitespace-nowrap font-mono text-xs">
 //                         {p.bsr}
 //                       </td>
-// 
+//
 //                       {/* Type */}
 //                       <td className="px-6 py-4 whitespace-nowrap">
 //                         {p.is_fba ? (
@@ -318,7 +318,7 @@ export default function Page() {
 //                           </Badge>
 //                         )}
 //                       </td>
-// 
+//
 //                       {/* Compare buttons — always visible, click to navigate */}
 //                       <td className="px-6 py-4 whitespace-nowrap">
 //                         <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function Page() {
 //               </table>
 //             )}
 //           </div>
-// 
+//
 //           {/* Footer */}
 //           {products.length > 0 && !loading && (
 //             <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center bg-slate-50/50">
@@ -356,7 +356,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function SellerProducts() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
@@ -364,5 +364,5 @@ export default function Page() {
 //     </Suspense>
 //   );
 // }
-// 
+//
 // 

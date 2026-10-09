@@ -470,11 +470,11 @@ function extractErr(e: unknown): string {
   const err = e as Record<string, unknown>;
   const detail = (err?.response as Record<string, unknown>)?.data
     ? (
-        (err.response as Record<string, unknown>).data as Record<
-          string,
-          unknown
-        >
-      )?.detail
+      (err.response as Record<string, unknown>).data as Record<
+        string,
+        unknown
+      >
+    )?.detail
     : undefined;
   if (!detail) return (err?.message as string) ?? "Something went wrong.";
   if (typeof detail === "string") return detail;
@@ -554,10 +554,10 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
   const { t } = useTranslation();
   const items = [
-    { label: t("whiteSpaceFinder.ratingGap", "Rating gap"),      value: breakdown.rating_gap,      max: 32, color: "#3b82f6" },
+    { label: t("whiteSpaceFinder.ratingGap", "Rating gap"), value: breakdown.rating_gap, max: 32, color: "#3b82f6" },
     { label: t("whiteSpaceFinder.reviewThinness", "Review thinness"), value: breakdown.review_thinness, max: 32, color: "#8b5cf6" },
-    { label: t("whiteSpaceFinder.demandSignal", "Demand signal"),   value: breakdown.demand_signal,   max: 24, color: "#10b981" },
-    { label: t("whiteSpaceFinder.priceGap", "Price gap"),       value: breakdown.price_gap,       max: 12, color: "#f59e0b" },
+    { label: t("whiteSpaceFinder.demandSignal", "Demand signal"), value: breakdown.demand_signal, max: 24, color: "#10b981" },
+    { label: t("whiteSpaceFinder.priceGap", "Price gap"), value: breakdown.price_gap, max: 12, color: "#f59e0b" },
   ];
   return (
     <div className="space-y-2">
@@ -622,8 +622,8 @@ function CompetitorRow({ comp, index, isLoading, isError, onReload }: { comp: Co
           <span className="flex-1">
             {comp.weakness}
             {isError && onReload && (
-              <button 
-                onClick={onReload} 
+              <button
+                onClick={onReload}
                 className="ml-2 inline-flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors"
               >
                 <RefreshCw className="w-3 h-3" /> Retry Analysis
@@ -696,9 +696,9 @@ function OpportunityCard({
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const isBasicPlus  = tier === "basic" || tier === "premium" || tier === "enterprise";
-  const isPremium    = tier === "premium" || tier === "enterprise";
-  const sl           = getScoreLabel(opp.score, t);
+  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium = tier === "premium" || tier === "enterprise";
+  const sl = getScoreLabel(opp.score, t);
   const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
 
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -724,18 +724,18 @@ function OpportunityCard({
       const token = localStorage.getItem("auth_token");
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000);
-      
+
       const res = await fetch(`${API}/white-space/scan/insights`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}) 
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify(req),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
-      
+
       const data = await res.json();
       if (isMounted) {
         if (data.error) setLazyError(true);
@@ -839,29 +839,29 @@ function OpportunityCard({
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
           {[
-            { 
-              label: t("whiteSpaceFinder.estRevenueMo", "Est. Seller Rev / mo"), 
+            {
+              label: t("whiteSpaceFinder.estRevenueMo", "Est. Seller Rev / mo"),
               value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}`,
               tooltip: "Expected monthly earnings range for a single active seller in this niche",
               modalKey: "est-revenue"
             },
-            { 
+            {
               label: t("whiteSpaceFinder.avgPrice", "Avg price"),
-              value: `₹${opp.avg_price.toLocaleString("en-IN")}`, 
+              value: `₹${opp.avg_price.toLocaleString("en-IN")}`,
               tooltip: "Typical selling price across top competitors",
-              modalKey: "avg-price" 
+              modalKey: "avg-price"
             },
-            { 
+            {
               label: t("whiteSpaceFinder.avgRating", "Avg rating"),
-              value: `★ ${opp.avg_rating.toFixed(1)}`, 
+              value: `★ ${opp.avg_rating.toFixed(1)}`,
               tooltip: "Average customer rating in this niche",
               modalKey: "avg-rating"
             },
-            { 
+            {
               label: t("whiteSpaceFinder.competitors", "Competitors"),
-              value: String(opp.competitor_count), 
+              value: String(opp.competitor_count),
               tooltip: "Total active competing listings found",
-              modalKey: "competitor-count" 
+              modalKey: "competitor-count"
             },
           ].map((s) => (
             <div
@@ -944,10 +944,10 @@ function OpportunityCard({
             <div className="flex items-center gap-2">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t("whiteSpaceFinder.aiInsights", "AI insights")}</p>
               <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded flex items-center gap-1.5">
-                Insydz 
+                Insydz
               </span>
             </div>
-            
+
             {insightsLoading ? (
               <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/80">
                 <Loader2 className="w-5 h-5 text-violet-500 animate-spin mb-2" />
@@ -964,9 +964,9 @@ function OpportunityCard({
                     <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">Server is currently busy.</p>
                     <p className="text-xs text-amber-600/80 dark:text-amber-400/70 mt-0.5">AI Insights could not be generated at this moment, but you can still review the competitor metrics below.</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => fetchInsights(true, true)}
-                    className="p-1.5 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md transition-colors text-amber-700 dark:text-amber-400 shrink-0" 
+                    className="p-1.5 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md transition-colors text-amber-700 dark:text-amber-400 shrink-0"
                     title="Try again"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -990,16 +990,16 @@ function OpportunityCard({
             {expanded && (
               <div className="space-y-2">
                 {lazyCompetitors.map((c, i) => (
-                  <CompetitorRow 
-                    key={i} 
+                  <CompetitorRow
+                    key={i}
                     comp={{
                       ...c,
-                      weakness: insightsLoading 
-                        ? "Generating AI analysis..." 
-                        : lazyError 
+                      weakness: insightsLoading
+                        ? "Generating AI analysis..."
+                        : lazyError
                           ? "Analysis timed out."
                           : c.weakness || "Analysis complete. No critical weaknesses found."
-                    }} 
+                    }}
                     index={i}
                     isLoading={insightsLoading}
                     isError={lazyError}
@@ -1016,11 +1016,10 @@ function OpportunityCard({
           <button
             onClick={() => onWatchlist(opp)}
             disabled={watchlistLoading}
-            className={`flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-full font-medium border transition-all ${
-              alreadyWatched
+            className={`flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-full font-medium border transition-all ${alreadyWatched
                 ? "bg-violet-600 text-white border-violet-600 hover:bg-violet-700"
                 : "border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 dark:hover:border-violet-850 hover:text-violet-600 dark:hover:text-violet-300"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {watchlistLoading
               ? <RefreshCw className="w-2.5 h-2.5 animate-spin" />
@@ -1078,17 +1077,17 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
 // ── Tier Feature Table ────────────────────────────────────────────────────────
 
 const getTierFeatures = (t: any) => [
-  { key: "scans",       label: t("whiteSpaceFinder.scansMonth", "Scans / month"),         free: "3",   basic: "20",  premium: t("whiteSpaceFinder.unlimited", "Unlimited") },
-  { key: "results",     label: t("whiteSpaceFinder.resultsPerScan", "Results per scan"),       free: "3",   basic: t("whiteSpaceFinder.all", "All"), premium: t("whiteSpaceFinder.all", "All")       },
-  { key: "breakdown",   label: t("whiteSpaceFinder.scoreBreakdown", "Score breakdown"),        free: false, basic: true,  premium: true        },
-  { key: "competitors", label: t("whiteSpaceFinder.competitorWeaknesses", "Competitor weaknesses"),  free: false, basic: true,  premium: true        },
-  { key: "demand",      label: t("whiteSpaceFinder.demandSignalsChart", "Demand signals chart"),   free: false, basic: true,  premium: true        },
-  { key: "trend",       label: t("whiteSpaceFinder.trendData", "Trend data (90-day)"),    free: false, basic: false, premium: true        },
-  { key: "entry_price", label: t("whiteSpaceFinder.entryPriceSuggestion", "Entry price suggestion"), free: false, basic: false, premium: true        },
-  { key: "ai_insights", label: t("whiteSpaceFinder.aiStrategicInsights", "AI strategic insights"),  free: false, basic: false, premium: true        },
-  { key: "watchlist",   label: t("whiteSpaceFinder.watchlist", "Watchlist"),              free: true,  basic: true,  premium: true        },
-  { key: "export",      label: t("whiteSpaceFinder.csvExport", "CSV export"),             free: false, basic: false, premium: true        },
-  { key: "badges",      label: t("whiteSpaceFinder.bestSellerGapSignal", "Best Seller gap signal"), free: false, basic: true,  premium: true        },
+  { key: "scans", label: t("whiteSpaceFinder.scansMonth", "Scans / month"), free: "3", basic: "20", premium: t("whiteSpaceFinder.unlimited", "Unlimited") },
+  { key: "results", label: t("whiteSpaceFinder.resultsPerScan", "Results per scan"), free: "3", basic: t("whiteSpaceFinder.all", "All"), premium: t("whiteSpaceFinder.all", "All") },
+  { key: "breakdown", label: t("whiteSpaceFinder.scoreBreakdown", "Score breakdown"), free: false, basic: true, premium: true },
+  { key: "competitors", label: t("whiteSpaceFinder.competitorWeaknesses", "Competitor weaknesses"), free: false, basic: true, premium: true },
+  { key: "demand", label: t("whiteSpaceFinder.demandSignalsChart", "Demand signals chart"), free: false, basic: true, premium: true },
+  { key: "trend", label: t("whiteSpaceFinder.trendData", "Trend data (90-day)"), free: false, basic: false, premium: true },
+  { key: "entry_price", label: t("whiteSpaceFinder.entryPriceSuggestion", "Entry price suggestion"), free: false, basic: false, premium: true },
+  { key: "ai_insights", label: t("whiteSpaceFinder.aiStrategicInsights", "AI strategic insights"), free: false, basic: false, premium: true },
+  { key: "watchlist", label: t("whiteSpaceFinder.watchlist", "Watchlist"), free: true, basic: true, premium: true },
+  { key: "export", label: t("whiteSpaceFinder.csvExport", "CSV export"), free: false, basic: false, premium: true },
+  { key: "badges", label: t("whiteSpaceFinder.bestSellerGapSignal", "Best Seller gap signal"), free: false, basic: true, premium: true },
 ];
 
 function TierCell({ val }: { val: boolean | string }) {
@@ -1239,7 +1238,7 @@ function WhiteSpaceFinderContent() {
         setCategories(["all", ...res.data.categories]);
         setCategory("all");
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [platform]);
 
   const runScan = useCallback(async () => {
@@ -1416,23 +1415,23 @@ function WhiteSpaceFinderContent() {
     ])[0] ?? [];
 
   const distData = [
-    { name: `Hot 80+`,    count: (result?.opportunities ?? []).filter((o) => o.score >= 80).length,                 fill: "#639922" },
+    { name: `Hot 80+`, count: (result?.opportunities ?? []).filter((o) => o.score >= 80).length, fill: "#639922" },
     { name: `Good 65–79`, count: (result?.opportunities ?? []).filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
-    { name: `Mod 50–64`,  count: (result?.opportunities ?? []).filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
-    { name: `Skip <50`,   count: (result?.opportunities ?? []).filter((o) => o.score < 50).length,                  fill: "#E24B4A" },
+    { name: `Mod 50–64`, count: (result?.opportunities ?? []).filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
+    { name: `Skip <50`, count: (result?.opportunities ?? []).filter((o) => o.score < 50).length, fill: "#E24B4A" },
   ];
 
   const chartStyle =
     resolvedTheme === "dark"
       ? {
-          backgroundColor: "rgba(30,41,59,0.97)",
-          borderRadius: "12px",
-          border: "1.5px solid #334155",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-          fontSize: 12,
-          padding: "8px 14px",
-          color: "#f3f4f6",
-        }
+        backgroundColor: "rgba(30,41,59,0.97)",
+        borderRadius: "12px",
+        border: "1.5px solid #334155",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+        fontSize: 12,
+        padding: "8px 14px",
+        color: "#f3f4f6",
+      }
       : CHART_STYLE;
 
   return (
@@ -1478,7 +1477,7 @@ function WhiteSpaceFinderContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-                {t("whiteSpaceFinder.opportunityFinder", "Opportunity Finder")}
+                {t("whiteSpaceFinder.opportunityFinder", "Niche Finder")}
               </h1>
               <p className="text-slate-500 text-sm font-medium">
                 {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon India and Flipkart India.")}
@@ -1506,13 +1505,13 @@ function WhiteSpaceFinderContent() {
                           (result
                             ? scanPct
                             : usageLimits?.limit !== -1 &&
-                                usageLimits?.limit !== undefined
+                              usageLimits?.limit !== undefined
                               ? Math.min(
-                                  ((usageLimits?.count || 0) /
-                                    usageLimits.limit) *
-                                    100,
-                                  100,
-                                )
+                                ((usageLimits?.count || 0) /
+                                  usageLimits.limit) *
+                                100,
+                                100,
+                              )
                               : 0) >= 80
                             ? "#ef4444"
                             : "#7F77DD",
@@ -1639,11 +1638,10 @@ function WhiteSpaceFinderContent() {
                             ) : planTier !== "free" ? (
                               <a
                                 href="/subscription"
-                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${
-                                  planTier === "basic"
+                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${planTier === "basic"
                                     ? "bg-amber-500 text-white hover:bg-amber-600"
                                     : "bg-violet-600 text-white hover:bg-violet-700"
-                                }`}
+                                  }`}
                               >
                                 {t("whiteSpaceFinder.upgrade", "Upgrade")}
                               </a>
@@ -1765,7 +1763,7 @@ function WhiteSpaceFinderContent() {
 
           {/* Error / Paywall Nudge */}
           {error &&
-          error === "Monthly scan limit reached. Upgrade for more scans." ? (
+            error === "Monthly scan limit reached. Upgrade for more scans." ? (
             <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 border border-violet-200 dark:border-violet-900/30 rounded-2xl shadow-sm text-center overflow-hidden animate-in fade-in slide-in-from-bottom-4">
               <CardContent className="p-10 flex flex-col items-center justify-center relative">
                 <div className="absolute top-0 right-0 p-32 bg-violet-400/10 dark:bg-violet-600/10 rounded-full blur-3xl -z-10 -translate-y-1/2 translate-x-1/2" />

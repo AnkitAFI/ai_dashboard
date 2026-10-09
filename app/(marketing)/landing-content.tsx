@@ -1595,12 +1595,16 @@ export default function LandingContent() {
               </SecondaryButton>
               <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
-                  "Basic dashboard access",
-                  "Track up to 25 products",
-                  "Top 5 products filter",
-                  "5 AI chat messages a month",
-                  "5 notifications",
-                  "Weekly reports",
+                  "Basic Explorer Dashboard for Flipkart and Amazon",
+                  "Explore Categories",
+                  "Best Sellers",
+                  "Niche Finder - 3 uses/month + limited data",
+                  "Top Competitors Score - 1 use/month",
+                  "Product Ideas - 1 use/month",
+                  "Best Price Finder - Calculator tab only",
+                  "Amazon Seller Integration",
+                  "Amazon Ads Integration",
+                  "View Campaigns, Orders and Revenue",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
@@ -1632,14 +1636,18 @@ export default function LandingContent() {
               </PrimaryButton>
               <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
-                  "Everything in Free",
-                  "Track up to 500 products",
-                  "Top 20 products filter",
-                  "20 AI chat messages a month",
-                  "15 notifications",
-                  "AI chart summaries",
-                  "Basic competitor alerts",
-                  "Daily reports and email support",
+                  "Basic Explorer Dashboard for Flipkart and Amazon",
+                  "Explore Categories",
+                  "Best Sellers",
+                  "Niche Finder - 20 uses/month + full data",
+                  "Top Competitors Score - 10 uses/month",
+                  "Product Ideas - 20 uses/month",
+                  "Best Price Finder - Calculator tab + Cost Waterfall",
+                  "Keyword Research - 2 uses/month",
+                  "AI Advisor - 20 uses/month",
+                  "Amazon Seller Integration",
+                  "Amazon Ads Integration",
+                  "View Campaigns, Orders and Revenue",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
@@ -1671,14 +1679,23 @@ export default function LandingContent() {
               </button>
               <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
                 {[
-                  "Everything in Basic",
-                  "Unlimited product tracking",
-                  "Top 100 products filter",
-                  "Unlimited AI chat and notifications",
-                  "Advanced AI chatbot",
-                  "Real-time data and alerts",
-                  "Priority support",
-                  "Advanced analytics",
+                  "Basic Explorer Dashboard for Flipkart and Amazon",
+                  "Explore Categories",
+                  "Best Sellers",
+                  "Niche Finder - Unlimited uses/month + full data",
+                  "Top Competitors Score - Unlimited uses/month",
+                  "Product Ideas - Unlimited uses/month",
+                  "Best Price Finder - Calculator tab + Cost Waterfall + Scenarios + AI",
+                  "Keyword Research - 20 uses/month",
+                  "AI Advisor - Unlimited uses/month",
+                  "Amazon Seller Integration",
+                  "Amazon Ads Integration",
+                  "View Campaigns, Orders and Revenue",
+                  "Original Profit and Margins",
+                  "Restock Planner",
+                  "Review Automator",
+                  "Refund Finder",
+                  "Amazon Ads - Bid Automation, Campaign Scheduling, Auto-Boost Winning Placements, Auto-Negate Bleeding Search Terms, Smart Budget Scaling",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />

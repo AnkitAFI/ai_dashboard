@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -26,12 +26,12 @@ export default function Page() {
 }
 
 // import { API_BASE_URL } from "@/lib/config";
-// 
+//
 // import { useState, useEffect, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { useRouter } from "next/navigation";
 // import { useTheme } from "next-themes";
-// 
+//
 // import SellerIdInput from "@/components/dashboard/seller-id-input";
 // import { useAuth } from "@/lib/auth-context";
 // import {
@@ -41,14 +41,14 @@ export default function Page() {
 // import { Badge } from "@/components/ui/badge";
 // import SmartSearchInput from "@/components/ui/smart-search-input";
 // import { useSelectedProduct } from "@/lib/selected-product-context";
-// 
+//
 // function SellerProductsContent() {
 //   const { t } = useTranslation();
 //   const { user, refreshUser } = useAuth();
 //   const router = useRouter();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const [localSellerId, setLocalSellerId] = useSessionState<string | null>("seller_my_products_id", null);
 //   const [products, setProducts] = useSessionState<any[]>("seller_my_products_data", []);
 //   const [lastFetchedSellerId, setLastFetchedSellerId] = useSessionState<string>("seller_my_products_last_seller_id", "");
@@ -58,17 +58,17 @@ export default function Page() {
 //   const [selectedAsin, setSelectedAsin] = useSessionState<string | null>("seller_my_products_asin", null);
 //   const [currentPage, setCurrentPage] = useSessionState("seller_my_products_page", 1);
 //   const itemsPerPage = 10;
-// 
+//
 //   const activeSellerId = user?.seller_id || localSellerId;
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   const fetchProducts = async () => {
 //     if (!activeSellerId) return;
 //     if (products.length > 0 && lastFetchedSellerId === activeSellerId) return;
-//     
+//
 //     setLoading(true);
 //     try {
 //       const BASE_URL = API_BASE_URL;
@@ -87,18 +87,18 @@ export default function Page() {
 //       setLoading(false);
 //     }
 //   };
-// 
+//
 //   useEffect(() => {
 //     if (activeSellerId) fetchProducts();
 //   }, [activeSellerId, products, lastFetchedSellerId]);
-// 
+//
 //   // Reset page when search or tab filter changes
 //   useEffect(() => {
 //     setCurrentPage(1);
 //   }, [searchQuery, activeFilter]);
-// 
+//
 //   const { setSelected } = useSelectedProduct();
-// 
+//
 //   const filteredProducts = products.filter((p) => {
 //     const matchesSearch =
 //       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,12 +111,12 @@ export default function Page() {
 //         : p.is_best_seller === true;
 //     return matchesSearch && matchesTab;
 //   });
-// 
+//
 //   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 //   const indexOfLastItem = currentPage * itemsPerPage;
 //   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 //   const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
-// 
+//
 //   const handleRowClick = (p: any) => {
 //     setSelectedAsin(p.asin);
 //     setSelected({ asin: p.asin, sellerId: activeSellerId || "" });
@@ -124,14 +124,14 @@ export default function Page() {
 //     // Navigate to price comparison by default; user can switch tabs there
 //     router.push(`/seller/price-comparison?${params}`);
 //   };
-// 
+//
 //   if (!mounted) return null;
-// 
+//
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="space-y-6">
-// 
+//
 //       {/* Premium Hero Header */}
 //       {/* Hero */}
 //       <div className="text-left space-y-1 mb-6">
@@ -142,7 +142,7 @@ export default function Page() {
 //           {t('sellerPages.catalogSubtitle', 'Manage your tracked seller inventory and launch competitive benchmarks.')}
 //         </p>
 //       </div>
-// 
+//
 //       {!activeSellerId ? (
 //         <SellerIdInput
 //           onSaved={(id) => {
@@ -196,7 +196,7 @@ export default function Page() {
 //               </div>
 //             </div>
 //           </div>
-// 
+//
 //           {/* Table */}
 //           <div className="overflow-x-auto">
 //             {loading ? (
@@ -254,8 +254,8 @@ export default function Page() {
 //                             </div>
 //                             <div className="min-w-0">
 //                               <p className={`font-semibold line-clamp-1 ${
-//                                 isSelected 
-//                                   ? isDark ? "text-sky-400" : "text-sky-700" 
+//                                 isSelected
+//                                   ? isDark ? "text-sky-400" : "text-sky-700"
 //                                   : isDark ? "text-slate-200" : "text-slate-800"
 //                               }`} title={p.title}>
 //                                 {p.title}
@@ -276,7 +276,7 @@ export default function Page() {
 //                             </div>
 //                           </div>
 //                         </td>
-// 
+//
 //                         {/* Price */}
 //                         <td className={`px-6 py-4 font-bold whitespace-nowrap ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
 //                           {p.price
@@ -285,7 +285,7 @@ export default function Page() {
 //                               : `â‚¹${p.price}`
 //                             : "N/A"}
 //                         </td>
-// 
+//
 //                         {/* Rating */}
 //                         <td className="px-6 py-4 whitespace-nowrap">
 //                           <div className={`flex items-center gap-1 font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
@@ -293,26 +293,26 @@ export default function Page() {
 //                             {p.rating}
 //                           </div>
 //                         </td>
-// 
+//
 //                         {/* Reviews */}
 //                         <td className={`px-6 py-4 whitespace-nowrap ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
 //                           {p.reviews >= 1000
 //                             ? `${(p.reviews / 1000).toFixed(1)}K`
 //                             : p.reviews}
 //                         </td>
-// 
+//
 //                         {/* Sales */}
 //                         <td className="px-6 py-4 whitespace-nowrap">
 //                           <span className={`font-bold px-2.5 py-1 rounded-md text-xs ${isDark ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
 //                             {p.sales}
 //                           </span>
 //                         </td>
-// 
+//
 //                         {/* BSR */}
 //                         <td className={`px-6 py-4 whitespace-nowrap font-mono text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
 //                           {p.bsr}
 //                         </td>
-// 
+//
 //                         {/* Type */}
 //                         <td className="px-6 py-4 whitespace-nowrap">
 //                           {p.is_fba ? (
@@ -325,12 +325,12 @@ export default function Page() {
 //                             </Badge>
 //                           )}
 //                         </td>
-// 
+//
 //                         {/* Arrow indicator */}
 //                         <td className="px-4 py-4 whitespace-nowrap">
 //                           <ChevronRight className={`w-4 h-4 transition-colors ${
-//                             isSelected 
-//                               ? isDark ? "text-sky-400" : "text-sky-500" 
+//                             isSelected
+//                               ? isDark ? "text-sky-400" : "text-sky-500"
 //                               : isDark ? "text-slate-600" : "text-slate-300"
 //                           }`} />
 //                         </td>
@@ -341,7 +341,7 @@ export default function Page() {
 //               </table>
 //             )}
 //           </div>
-// 
+//
 //           {/* Footer & Pagination */}
 //           {filteredProducts.length > 0 && !loading && (
 //             <div className={`p-4 border-t text-xs flex flex-col sm:flex-row justify-between items-center gap-4 ${isDark ? 'bg-slate-800/30 border-slate-800 text-slate-400' : 'bg-slate-50/50 border-slate-100 text-slate-500'}`}>
@@ -353,7 +353,7 @@ export default function Page() {
 //                 <span className={`hidden sm:inline ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>|</span>
 //                 <p className={isDark ? 'text-slate-500' : 'text-slate-400'}>Click a row to analyze it</p>
 //               </div>
-//               
+//
 //               {totalPages > 1 && (
 //                 <div className="flex items-center gap-2">
 //                   <button
@@ -382,7 +382,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function SellerProducts() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

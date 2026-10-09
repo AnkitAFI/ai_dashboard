@@ -78,7 +78,7 @@ export default function Categories() {
       {/* Hero Section */}
       <div className="text-left space-y-1">
         <h1 className="page-title">
-          {t('categories.title', 'Product Categories')}
+          {t('categories.title', 'Explore Categories')}
         </h1>
         <p className="page-subtitle">
           {t('categories.subtitle', 'Explore top-performing categories and jump directly to their product lists.')}

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { useState, useEffect, Suspense } from "react";
 // import { useSearchParams, useRouter } from "next/navigation";
 // import { useSessionState } from "@/hooks/use-session-state";
@@ -47,9 +47,9 @@ export default function Page() {
 //   Tooltip, ResponsiveContainer,
 // } from "recharts";
 // import { useSelectedProduct } from "@/lib/selected-product-context";
-// 
+//
 // const BASE_URL = API_BASE_URL;
-// 
+//
 // // â”€â”€ Tier Gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
 //   const router = useRouter();
@@ -69,7 +69,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Health Score Ring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function HealthScoreRing({ score, isDark }: { score: number; isDark: boolean }) {
 //   const r = 28, circ = 2 * Math.PI * r;
@@ -94,7 +94,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function StarRow({ rating, count, total, isDark }: { rating: number; count: number; total: number; isDark: boolean }) {
 //   const pct = total > 0 ? (count / total) * 100 : 0;
 //   const color = rating >= 4 ? "#10b981" : rating === 3 ? "#f59e0b" : "#ef4444";
@@ -109,15 +109,15 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function ReviewCard({ review, isDark, isPremium, productTitle }: { review: any; isDark: boolean; isPremium: boolean; productTitle?: string }) {
 //   const [showDraft, setShowDraft] = useState(false);
 //   const [copied, setCopied] = useState(false);
 //   const [aiReply, setAiReply] = useState<string | null>(null);
 //   const [generating, setGenerating] = useState(false);
-// 
+//
 //   const ratingColor = review.rating >= 4 ? isDark ? "text-emerald-400 bg-emerald-900/30" : "text-emerald-600 bg-emerald-50" : review.rating === 3 ? isDark ? "text-amber-400 bg-amber-900/30" : "text-amber-600 bg-amber-50" : isDark ? "text-red-400 bg-red-900/30" : "text-red-600 bg-red-50";
-// 
+//
 //   const handleToggleDraft = async () => {
 //     setShowDraft((v) => !v);
 //     // Only generate once â€” cache result in state
@@ -148,7 +148,7 @@ export default function Page() {
 //       }
 //     }
 //   };
-// 
+//
 //   const handleCopy = () => {
 //     if (!aiReply) return;
 //     navigator.clipboard.writeText(aiReply).then(() => {
@@ -156,7 +156,7 @@ export default function Page() {
 //       setTimeout(() => setCopied(false), 2000);
 //     });
 //   };
-// 
+//
 //   return (
 //     <div className={`rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
 //       <div className="p-4">
@@ -180,7 +180,7 @@ export default function Page() {
 //           </div>
 //         </div>
 //         <p className={`text-xs leading-relaxed line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{review.comment}</p>
-// 
+//
 //         {/* Per-review AI Draft Reply Button (Premium only) */}
 //         {isPremium && (
 //           <button
@@ -196,7 +196,7 @@ export default function Page() {
 //           </button>
 //         )}
 //       </div>
-// 
+//
 //       {/* Draft reply expandable panel */}
 //       {isPremium && showDraft && (
 //         <div className={`mx-4 mb-4 rounded-xl p-3 border ${isDark ? 'bg-blue-900/20 border-blue-800/40' : 'bg-blue-50 border-blue-100'}`}>
@@ -231,7 +231,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function SentimentBar({ label, pct, icon: Icon, color, isDark }: { label: string; pct: number; icon: any; color: string; isDark: boolean }) {
 //   return (
 //     <div className="flex items-center gap-3">
@@ -250,7 +250,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function SimilarityPill({ score, isDark }: { score: number; isDark: boolean }) {
 //   const pct = Math.round(score * 100);
 //   const cls = pct >= 50 ? isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200"
@@ -260,7 +260,7 @@ export default function Page() {
 //     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${cls}`}>{pct}% match</span>
 //   );
 // }
-// 
+//
 // const ChartTooltip = ({ active, payload, label, isDark }: any) => {
 //   if (!active || !payload?.length) return null;
 //   return (
@@ -270,7 +270,7 @@ export default function Page() {
 //     </div>
 //   );
 // };
-// 
+//
 // function ReviewComparisonContent() {
 //   const { t } = useTranslation();
 //   const searchParams = useSearchParams();
@@ -280,26 +280,26 @@ export default function Page() {
 //   const { selected } = useSelectedProduct();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const asin     = searchParams.get("asin")      || selected?.asin      || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId  || user?.seller_id || "";
-// 
+//
 //   const [data, setData]         = useSessionState<any>("seller_review_comp_data", null);
 //   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_review_comp_asin", "");
 //   const [loading, setLoading]   = useState(false);
-// 
+//
 //   const tier      = data?.tier || user?.subscriptionTier || "free";
 //   const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
 //     if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
-//     
+//
 //     setLoading(true);
 //     const params = new URLSearchParams({ asin, seller_id: sellerId });
 //     if (user?.email) params.append("user_email", user.email);
@@ -314,16 +314,16 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
-// 
+//
 //   const ratingDist = data?.rating_distribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 //   const totalDist  = Object.values(ratingDist).reduce((a: any, b: any) => a + b, 0) as number;
 //   const barData = Object.entries(ratingDist)
 //     .sort(([a], [b]) => Number(b) - Number(a))
 //     .map(([k, v]) => ({ star: `${k}â˜…`, count: v as number, fill: Number(k) >= 4 ? "#10b981" : Number(k) === 3 ? "#f59e0b" : "#ef4444" }));
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //         <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
@@ -354,7 +354,7 @@ export default function Page() {
 //             )}
 //           </div>
 //         </header>
-// 
+//
 //         <main className="flex-1 py-6 space-y-6">
 //           {!asin && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -370,7 +370,7 @@ export default function Page() {
 //               </button>
 //             </div>
 //           )}
-// 
+//
 //           {asin && loading && (
 //             <div className="flex flex-col items-center justify-center h-64 gap-3">
 //               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
@@ -378,7 +378,7 @@ export default function Page() {
 //               <p className={`text-xs animate-pulse ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>We are analyzing the data. This may take 1â€“2 minutes.</p>
 //             </div>
 //           )}
-// 
+//
 //           {asin && !loading && data && (
 //             <>
 //               {/* â”€â”€ Product Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -408,7 +408,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Rating Overview + Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 //                 <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -458,7 +458,7 @@ export default function Page() {
 //                   </ResponsiveContainer>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Recent Reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isBasic && <TierGate tier="basic" feature="Recent Customer Reviews" isDark={isDark} />}
@@ -477,7 +477,7 @@ export default function Page() {
 //                   }
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Review Velocity Insight (moved here, right after reviews) â”€â”€ */}
 //               {isPremium && data.review_velocity_insight && (
 //                 <div className={`rounded-2xl border p-4 flex items-start gap-3 ${isDark ? 'bg-sky-900/20 border-sky-800/50' : 'bg-gradient-to-r from-sky-50 to-blue-50 border-sky-100'}`}>
@@ -488,7 +488,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* â”€â”€ Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 //                 {/* Response rate */}
@@ -535,7 +535,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Sentiment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="Sentiment Breakdown" isDark={isDark} />}
@@ -551,7 +551,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ Smart Competitor Reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                 {!isPremium && <TierGate tier="premium" feature="Competitor Review Comparison" isDark={isDark} />}
@@ -606,7 +606,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               </div>
-// 
+//
 //               {/* â”€â”€ AI Response Suggestion (locked gate for non-premium) â”€â”€ */}
 //               {!isPremium && (
 //                 <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -624,7 +624,7 @@ export default function Page() {
 //                   </div>
 //                 </div>
 //               )}
-// 
+//
 //               {/* â”€â”€ Upgrade CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //               {!isPremium && (
 //                 <div className="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -657,7 +657,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function ReviewComparisonPage() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

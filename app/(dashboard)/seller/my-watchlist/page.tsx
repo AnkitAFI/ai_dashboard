@@ -69,18 +69,18 @@ interface SavedProductDB {
 
 function inr(n: number): string {
   if (n >= 100000) return "₹" + (n / 100000).toFixed(1) + "L";
-  if (n >= 1000)   return "₹" + Math.round(n / 1000) + "K";
+  if (n >= 1000) return "₹" + Math.round(n / 1000) + "K";
   return "₹" + Math.round(n);
 }
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  const hrs  = Math.floor(diff / 3600000);
+  const hrs = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
-  if (mins < 1)  return "just now";
+  if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
-  if (hrs  < 24) return `${hrs}h ago`;
+  if (hrs < 24) return `${hrs}h ago`;
   return `${days}d ago`;
 }
 
@@ -112,10 +112,10 @@ function getMarginColor(margin: number): string {
 }
 
 function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
-  const r    = (size - 8) / 2;
+  const r = (size - 8) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ * (1 - score / 100);
-  const color  = score >= 80 ? "#10b981" : score >= 65 ? "#3b82f6" : score >= 50 ? "#f59e0b" : "#ef4444";
+  const color = score >= 80 ? "#10b981" : score >= 65 ? "#3b82f6" : score >= 50 ? "#f59e0b" : "#ef4444";
   return (
     <div style={{ width: size, height: size, position: "relative", flexShrink: 0 }} className="flex items-center justify-center">
       <svg width={size} height={size} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
@@ -134,7 +134,7 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
 
 function MarginRing({ margin, size = 48 }: { margin: number; size?: number }) {
   const clamped = Math.max(0, Math.min(100, margin));
-  const r    = (size - 8) / 2;
+  const r = (size - 8) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ * (1 - clamped / 100);
   const color = margin >= 20 ? "#10b981" : margin >= 10 ? "#f59e0b" : "#ef4444";
@@ -173,7 +173,7 @@ function TabSlider({
       <div
         className="absolute top-1 bottom-1 rounded-xl bg-white shadow-md transition-all duration-300 ease-out"
         style={{
-          left:  activeTab === "whitespace" ? "4px" : "calc(50% + 2px)",
+          left: activeTab === "whitespace" ? "4px" : "calc(50% + 2px)",
           width: "calc(50% - 6px)",
         }}
       />
@@ -185,7 +185,7 @@ function TabSlider({
         )}
       >
         <Sparkles className="w-4 h-4" />
-        <span>Opportunity Finder</span>
+        <span>Niche Finder</span>
         {whiteSpaceCount > 0 && (
           <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full", activeTab === "whitespace" ? "bg-violet-100 text-violet-700" : "bg-slate-200 text-slate-500")}>
             {whiteSpaceCount}
@@ -220,21 +220,21 @@ export default function MyWatchlistPage() {
   const userId = user?.id;
 
   // ── White Space state ──────────────────────────────────────────────────────
-  const [items,        setItems]        = useState<WatchlistItem[]>([]);
-  const [wsLoading,    setWsLoading]    = useState(true);
-  const [removing,     setRemoving]     = useState<string | null>(null);
+  const [items, setItems] = useState<WatchlistItem[]>([]);
+  const [wsLoading, setWsLoading] = useState(true);
+  const [removing, setRemoving] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
-  const [clearing,     setClearing]     = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   // ── Profitability state ────────────────────────────────────────────────────
-  const [savedProducts,    setSavedProducts]    = useState<SavedProductDB[]>([]);
-  const [profitLoading,    setProfitLoading]    = useState(true);
-  const [removingProduct,  setRemovingProduct]  = useState<string | null>(null);
+  const [savedProducts, setSavedProducts] = useState<SavedProductDB[]>([]);
+  const [profitLoading, setProfitLoading] = useState(true);
+  const [removingProduct, setRemovingProduct] = useState<string | null>(null);
 
   // ── Shared state ──────────────────────────────────────────────────────────
-  const [activeTab,    setActiveTab]    = useState<"whitespace" | "profitability">("whitespace");
-  const [search,       setSearch]       = useState("");
-  const [sortBy,       setSortBy]       = useState<"added" | "score" | "revenue">("added");
+  const [activeTab, setActiveTab] = useState<"whitespace" | "profitability">("whitespace");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"added" | "score" | "revenue">("added");
   const [profitSortBy, setProfitSortBy] = useState<"added" | "margin" | "profit">("added");
 
   // ── Fetch White Space watchlist ────────────────────────────────────────────
@@ -328,7 +328,7 @@ export default function MyWatchlistPage() {
       i.query.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortBy === "score")   return b.score - a.score;
+      if (sortBy === "score") return b.score - a.score;
       if (sortBy === "revenue") return b.est_revenue_max - a.est_revenue_max;
       return new Date(b.added_at).getTime() - new Date(a.added_at).getTime();
     });
@@ -399,7 +399,7 @@ export default function MyWatchlistPage() {
         {userId && (items.length > 0 || savedProducts.length > 0) && (
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="relative flex-1">
-            <SmartSearchInput
+              <SmartSearchInput
                 value={search}
                 onChange={setSearch}
                 placeholder={activeTab === "whitespace" ? "Search niches, categories..." : "Search products, categories..."}
@@ -413,7 +413,7 @@ export default function MyWatchlistPage() {
                 maxSuggestions={5}
               />
             </div>
-            
+
             {activeTab === "whitespace" ? (
               <div className="flex items-center gap-2">
                 <select
@@ -488,7 +488,7 @@ export default function MyWatchlistPage() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                         {[
                           { label: "Max rev/mo", val: inr(item.est_revenue_max) },
-                          { label: "Avg price",  val: "₹" + item.avg_price.toLocaleString("en-IN") },
+                          { label: "Avg price", val: "₹" + item.avg_price.toLocaleString("en-IN") },
                           { label: "Avg rating", val: "★ " + item.avg_rating.toFixed(1) },
                           { label: "Competitors", val: String(item.competitor_count) },
                         ].map((s) => (

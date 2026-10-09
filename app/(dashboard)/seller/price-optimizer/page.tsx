@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { API_BASE_URL } from "@/lib/config";
@@ -45,12 +45,12 @@ export default function Page() {
 // import { Badge } from "@/components/ui/badge";
 // import ReactMarkdown from "react-markdown";
 // import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-// 
+//
 // const BASE_URL = API_BASE_URL;
 // const API      = `${BASE_URL}/api/seller/optimize`;
-// 
+//
 // // â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // interface Profile {
 //   asin: string;
 //   product_title: string;
@@ -71,7 +71,7 @@ export default function Page() {
 //   market_product_count: number;
 //   last_updated: string;
 // }
-// 
+//
 // interface PriceGap {
 //   your_price: number;
 //   market_avg: number;
@@ -90,7 +90,7 @@ export default function Page() {
 //   price_bands: { band: string; count: number; your_price_in_band: boolean }[];
 //   competitors: CompetitorRow[];
 // }
-// 
+//
 // interface CompetitorRow {
 //   product_title: string;
 //   asin: string;
@@ -102,7 +102,7 @@ export default function Page() {
 //   is_amazon_choice?: boolean;
 //   sales_volume?: string;
 // }
-// 
+//
 // interface Reprice {
 //   asin: string;
 //   product_title: string;
@@ -118,7 +118,7 @@ export default function Page() {
 //   velocity_signal: string;
 //   alerts: { type: string; message: string }[];
 // }
-// 
+//
 // interface AlertData {
 //   asin: string;
 //   product_title: string;
@@ -131,7 +131,7 @@ export default function Page() {
 //   undercut_sellers: Delta[];
 //   alert_level: "ok" | "warn" | "critical";
 // }
-// 
+//
 // interface Delta {
 //   seller_id: string;
 //   seller_name: string;
@@ -143,31 +143,31 @@ export default function Page() {
 //   is_prime?: boolean;
 //   updated_at: string;
 // }
-// 
+//
 // // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function sym(currency: string) {
 //   return currency === "USD" ? "$" : "â‚¹";
 // }
-// 
+//
 // function fmt(n: number | undefined | null, currency = "INR") {
 //   if (n === undefined || n === null || isNaN(n)) return "â€”";
 //   return sym(currency) + Math.round(n).toLocaleString("en-IN");
 // }
-// 
+//
 // function pct(n: number | undefined | null) {
 //   if (n === undefined || n === null || isNaN(n)) return "â€”";
 //   return (n > 0 ? "+" : "") + n.toFixed(1) + "%";
 // }
-// 
+//
 // // â”€â”€ useStream â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function useStream() {
 //   const [streaming, setStreaming] = useState(false);
 //   const [text, setText]           = useState("");
 //   const [error, setError]         = useState<string | null>(null);
 //   const abortRef                  = useRef<AbortController | null>(null);
-// 
+//
 //   const start = useCallback(async (url: string, body: object) => {
 //     if (abortRef.current) abortRef.current.abort();
 //     abortRef.current = new AbortController();
@@ -207,14 +207,14 @@ export default function Page() {
 //       setStreaming(false);
 //     }
 //   }, []);
-// 
+//
 //   const stop  = useCallback(() => { abortRef.current?.abort(); setStreaming(false); }, []);
 //   const reset = useCallback(() => { setText(""); setError(null); }, []);
 //   return { streaming, text, error, start, stop, reset };
 // }
-// 
+//
 // // â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
 //   const router = useRouter();
 //   const { t } = useTranslation();
@@ -238,7 +238,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function AlertBox({ type, message, isDark }: { type: string; message: string; isDark: boolean }) {
 //   const s: Record<string, string> = {
 //     danger:  isDark ? "bg-red-900/30 border-red-800/50 text-red-400" : "bg-red-50 border-red-300 text-red-800",
@@ -258,7 +258,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function Section({
 //   title, icon: Icon, children, defaultOpen = true, count, accent, isDark
 // }: {
@@ -287,7 +287,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function ConfidenceRing({ score, isDark }: { score: number; isDark: boolean }) {
 //   const r = 32, circ = 2 * Math.PI * r;
 //   const offset = circ - (circ * score) / 100;
@@ -311,7 +311,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // function StreamBox({ stream, isDark }: { stream: ReturnType<typeof useStream>; isDark: boolean }) {
 //   const { t } = useTranslation();
 //   return (
@@ -340,9 +340,9 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
+//
 // export default function SellerPriceOptimizer() {
 //   const { t } = useTranslation();
 //   const searchParams = useSearchParams();
@@ -352,12 +352,12 @@ export default function Page() {
 //   const { selected } = useSelectedProduct();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const asin     = searchParams.get("asin")      || selected?.asin     || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 //   const userId   = user?.id?.toString() || "";
 //   const userEmail= user?.email || "";
-// 
+//
 //   const [profile,    setProfile]    = useSessionState<Profile | null>("seller_price_opt_profile", null);
 //   const [priceGap,   setPriceGap]   = useSessionState<PriceGap | null>("seller_price_opt_gap", null);
 //   const [reprice,    setReprice]    = useSessionState<Reprice | null>("seller_price_opt_reprice", null);
@@ -366,20 +366,20 @@ export default function Page() {
 //   const [loading,    setLoading]    = useState(false);
 //   const [tabLoading, setTabLoading] = useState(false);
 //   const [tier,       setTier]       = useState(user?.subscriptionTier || "free");
-// 
+//
 //   const repriceStream = useStream();
 //   const alertStream   = useStream();
-// 
+//
 //   const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   const qs = (extra: Record<string, string> = {}) =>
 //     new URLSearchParams({ asin, seller_id: sellerId, user_id: userId, user_email: userEmail, ...extra }).toString();
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   // Load profile (free â€” always)
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
@@ -390,7 +390,7 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, userEmail]);
-// 
+//
 //   // Load tab data when tab changes
 //   useEffect(() => {
 //     if (!asin || !sellerId || !profile) return;
@@ -419,12 +419,12 @@ export default function Page() {
 //         .finally(() => setTabLoading(false));
 //     }
 //   }, [activeTab, profile, isBasic, isPremium]);
-// 
+//
 //   const currency = profile?.currency || reprice?.currency || "INR";
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   // â”€â”€ InfoTip â€” click/tap to toggle (works on desktop + mobile) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   function InfoTip({ text }: { text: string }) {
 //     const [open, setOpen] = useState(false);
@@ -453,10 +453,10 @@ export default function Page() {
 //       </span>
 //     );
 //   }
-// 
+//
 //   // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 
-// 
+//
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //       {/* Header */}
@@ -489,7 +489,7 @@ export default function Page() {
 //           )}
 //         </div>
 //       </header>
-// 
+//
 //       <main className="flex-1 py-6 space-y-5">
 //         {/* No product selected */}
 //         {!asin && (
@@ -507,7 +507,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Loading profile */}
 //         {asin && loading && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -515,7 +515,7 @@ export default function Page() {
 //             <p className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Loading product dataâ€¦</p>
 //           </div>
 //         )}
-// 
+//
 //         {asin && !loading && profile && (
 //           <>
 //             {/* Product card */}
@@ -546,7 +546,7 @@ export default function Page() {
 //                   </p>
 //                 )}
 //               </div>
-// 
+//
 //               {/* Free price position pill */}
 //               <div className="w-full sm:w-auto text-left sm:text-right sm:ml-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
 //                 <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold border-2 ${
@@ -563,7 +563,7 @@ export default function Page() {
 //                 <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{pct(profile.pct_vs_avg)} vs market</p>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Free stat cards */}
 //             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //               {[
@@ -581,7 +581,7 @@ export default function Page() {
 //                 </div>
 //               ))}
 //             </div>
-// 
+//
 //             {/* Upgrade gate for free users */}
 //             {!isBasic && (
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -598,7 +598,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             )}
-// 
+//
 //             {/* Tabs â€” basic+ */}
 //             {isBasic && (
 //               <>
@@ -626,14 +626,14 @@ export default function Page() {
 //                     })}
 //                   </div>
 //                 </div>
-// 
+//
 //                 {tabLoading && (
 //                   <div className="flex items-center justify-center h-40 gap-3">
 //                     <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
 //                     <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Loadingâ€¦</p>
 //                   </div>
 //                 )}
-// 
+//
 //                 {/* â”€â”€ REPRICE TAB â”€â”€ */}
 //                 {activeTab === "reprice" && !tabLoading && reprice && (
 //                   <div className="space-y-4">
@@ -658,7 +658,7 @@ export default function Page() {
 //                         <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Currently: {fmt(reprice.your_price, currency)}</p>
 //                       </div>
 //                     </div>
-// 
+//
 //                     {/* Signal cards */}
 //                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 //                       {[
@@ -672,14 +672,14 @@ export default function Page() {
 //                         </div>
 //                       ))}
 //                     </div>
-// 
+//
 //                     {/* Alerts */}
 //                     {reprice.alerts?.length > 0 && (
 //                       <div className="space-y-2">
 //                         {reprice.alerts.map((a, i) => <AlertBox key={i} type={a.type} message={a.message} isDark={isDark} />)}
 //                       </div>
 //                     )}
-// 
+//
 //                     {/* AI rationale â€” premium */}
 //                     <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //                       {!isPremium && <TierGate tier="premium" feature="AI Repricing Rationale" isDark={isDark} />}
@@ -716,7 +716,7 @@ export default function Page() {
 //                     </div>
 //                   </div>
 //                 )}
-// 
+//
 //                 {/* â”€â”€ PRICE GAP TAB â”€â”€ */}
 //                 {activeTab === "gap" && !tabLoading && priceGap && (
 //                   <div className="space-y-4">
@@ -737,7 +737,7 @@ export default function Page() {
 //                         </div>
 //                       ))}
 //                     </div>
-// 
+//
 //                     {/* Rating + discount row */}
 //                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //                       {[
@@ -755,7 +755,7 @@ export default function Page() {
 //                         </div>
 //                       ))}
 //                     </div>
-// 
+//
 //                     {/* Price band chart */}
 //                     <Section title="Price band distribution" icon={BarChart2} defaultOpen={true} accent={isDark ? "bg-sky-900/30" : "bg-sky-50"} isDark={isDark}>
 //                       <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>How many competitors sit in each price band. Your band is highlighted.</p>
@@ -788,7 +788,7 @@ export default function Page() {
 //                         })}
 //                       </div>
 //                     </Section>
-// 
+//
 //                     {/* Competitor table */}
 //                     <Section title="Competitors in this category" icon={Target} count={priceGap.competitors.length} defaultOpen={false} accent={isDark ? "bg-purple-900/30" : "bg-purple-50"} isDark={isDark}>
 //                       <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
@@ -813,7 +813,7 @@ export default function Page() {
 //                     </Section>
 //                   </div>
 //                 )}
-// 
+//
 //                 {/* â”€â”€ ALERTS TAB â”€â”€ */}
 //                 {activeTab === "alerts" && (
 //                   <div className="relative overflow-hidden">
@@ -833,8 +833,8 @@ export default function Page() {
 //                     )}
 //                     {isPremium && !tabLoading && alertData && (
 //                       <div className="space-y-4">
-// 
-// 
+//
+//
 //                         {/* Summary cards */}
 //                         <div className="grid grid-cols-3 gap-3">
 //                           {[
@@ -851,7 +851,7 @@ export default function Page() {
 //                             </div>
 //                           ))}
 //                         </div>
-// 
+//
 //                         {/* Delta list */}
 //                         {alertData.deltas.length > 0 && (
 //                           <Section title="Price movements" icon={Bell} count={alertData.deltas.length} accent={isDark ? "bg-amber-900/30" : "bg-amber-50"} defaultOpen={true} isDark={isDark}>
@@ -885,7 +885,7 @@ export default function Page() {
 //                             </div>
 //                           </Section>
 //                         )}
-// 
+//
 //                         {/* AI alert advice â€” premium SSE */}
 //                         {alertData.deltas.length > 0 && (
 //                           <div className={`rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -925,7 +925,7 @@ export default function Page() {
 //                 )}
 //               </>
 //             )}
-// 
+//
 //             {/* Upgrade CTA */}
 //             {!isPremium && (
 //               <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

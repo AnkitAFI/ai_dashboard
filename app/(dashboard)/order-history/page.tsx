@@ -367,7 +367,7 @@ export default function OrderHistory() {
           </div>
           <div>
             <h1 className="page-title">
-              {t('orderHistory.title', 'Order History')}
+              {t('orderHistory.title', 'Payment History')}
             </h1>
             <p className="page-subtitle">
               {t('orderHistory.subtitle', 'View your invoices, transaction receipts, and active subscriptions')} ({user.email}).

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below (line-commented).
 // This page is intentionally not available to users.
@@ -25,7 +25,7 @@ export default function Page() {
   );
 }
 
-// 
+//
 // import { API_BASE_URL } from "@/lib/config";
 // import { useState, useEffect, useMemo, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
@@ -47,9 +47,9 @@ export default function Page() {
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { InfoTip } from "@/components/ui/info-tip";
-// 
+//
 // const BASE_URL = API_BASE_URL;
-// 
+//
 // // â”€â”€ Tier Gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
 //   const router = useRouter();
@@ -73,7 +73,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Expandable Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function Section({ title, icon: Icon, children, defaultOpen = true, count, accent, isDark }: any) {
 //   const [open, setOpen] = useState(defaultOpen);
@@ -98,7 +98,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Threat Score Ring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function ThreatRing({ score, size = "md", isDark }: { score: number; size?: "sm" | "md" | "lg"; isDark: boolean }) {
 //   const dims = { sm: { w: 48, r: 18, sw: 5 }, md: { w: 64, r: 24, sw: 6 }, lg: { w: 80, r: 32, sw: 7 } };
@@ -113,7 +113,7 @@ export default function Page() {
 //     score >= 8 ? "Critical" :
 //       score >= 6 ? "High" :
 //         score >= 4 ? "Medium" : "Low";
-// 
+//
 //   return (
 //     <div className="flex flex-col items-center gap-1">
 //       <div className="relative" style={{ width: d.w, height: d.w }}>
@@ -132,7 +132,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Buy Box Risk Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function BuyBoxBadge({ level, isDark, isPrivateLabel }: { level: "Safe" | "Watch" | "At Risk"; isDark: boolean; isPrivateLabel?: boolean }) {
 //   const styles = {
@@ -149,7 +149,7 @@ export default function Page() {
 //     </span>
 //   );
 // }
-// 
+//
 // // â”€â”€ Platform Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PlatformBadges({ isPrime, isBestSeller, isAmazonChoice, isDark }: {
 //   isPrime?: boolean; isBestSeller?: boolean; isAmazonChoice?: boolean; isDark: boolean;
@@ -168,7 +168,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Price Delta Pill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PriceDelta({ pct, isDark }: { pct: number | null; isDark: boolean }) {
 //   if (pct == null) return null;
@@ -177,7 +177,7 @@ export default function Page() {
 //     return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}><ArrowDownRight className="w-2.5 h-2.5" /> {Math.abs(pct).toFixed(0)}% cheaper</span>;
 //   return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}><ArrowUpRight className="w-2.5 h-2.5" /> {pct.toFixed(0)}% pricier</span>;
 // }
-// 
+//
 // // â”€â”€ Competitor Identity Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function CompetitorCard({
 //   comp, isTopThreat, isPinned, onPin, showThreat, currency, pinLoading, isDark
@@ -204,7 +204,7 @@ export default function Page() {
 //             : <Package className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
 //           }
 //         </div>
-// 
+//
 //         {/* Info */}
 //         <div className="flex-1 min-w-0">
 //           <div className="flex items-start justify-between gap-2">
@@ -233,7 +233,7 @@ export default function Page() {
 //               )}
 //             </div>
 //           </div>
-// 
+//
 //           {/* Badges */}
 //           <div className="flex flex-wrap items-center gap-1.5 mt-2">
 //             <PlatformBadges isPrime={comp.is_prime} isBestSeller={comp.is_best_seller} isAmazonChoice={comp.is_amazon_choice} isDark={isDark} />
@@ -241,7 +241,7 @@ export default function Page() {
 //               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${isDark ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-500 bg-slate-50 border-slate-200'}`}>{comp.sales_volume}</span>
 //             )}
 //           </div>
-// 
+//
 //           {/* Stats row */}
 //           <div className="flex flex-wrap items-center gap-3 mt-2">
 //             {comp.price != null && (
@@ -259,14 +259,14 @@ export default function Page() {
 //               <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{comp.num_ratings.toLocaleString()} reviews</span>
 //             )}
 //           </div>
-// 
+//
 //           {/* Threat breakdown */}
 //           {showThreat && comp.threat_reason && (
 //             <p className={`text-[11px] mt-2 rounded-lg px-2.5 py-1.5 border ${isDark ? 'text-slate-400 bg-slate-800/50 border-slate-700' : 'text-slate-500 bg-white/60 border-slate-100'}`}>
 //               {comp.threat_reason}
 //             </p>
 //           )}
-// 
+//
 //           {/* Pin hint */}
 //           {isPinned && (
 //             <p className={`text-[10px] mt-1.5 flex items-center gap-1 ${isDark ? 'text-violet-400' : 'text-violet-500'}`}>
@@ -278,14 +278,14 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Buy Box Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: boolean; currency: string; isDark: boolean }) {
 //   const sym = currency === "INR" ? "â‚¹" : "$";
 //   const riskLevel = data.buy_box_risk_level as "Safe" | "Watch" | "At Risk";
 //   const numOffers = data.num_offers ?? 1;
 //   const isPrivateLabel = numOffers === 1 && riskLevel === "Safe";
-// 
+//
 //   return (
 //     <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //       <div className="flex items-center gap-2 mb-4">
@@ -295,7 +295,7 @@ export default function Page() {
 //         <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Buy Box Intelligence</span>
 //         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-500 bg-red-50 border-red-200'}`}>UNIQUE TO THIS PAGE</span>
 //       </div>
-// 
+//
 //       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
 //         <div className="flex flex-col gap-1">
 //           <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Buy Box Status</p>
@@ -310,7 +310,7 @@ export default function Page() {
 //             )}
 //           </span>
 //         </div>
-// 
+//
 //         {isBasic ? (
 //           <>
 //             {data.min_offer_price != null && (
@@ -345,7 +345,7 @@ export default function Page() {
 //           </div>
 //         )}
 //       </div>
-// 
+//
 //       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
 //         <div className="flex items-center justify-between mb-1.5">
 //           <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Risk Level</span>
@@ -367,7 +367,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Change Feed Item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function ChangeFeedItem({ change, isDark }: { change: any; isDark: boolean }) {
 //   const iconMap: Record<string, any> = {
@@ -380,7 +380,7 @@ export default function Page() {
 //   };
 //   const meta = iconMap[change.type] || iconMap.default;
 //   const Icon = meta.icon;
-// 
+//
 //   return (
 //     <div className={`flex items-start gap-3 py-2.5 border-b last:border-0 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
 //       <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${meta.cls}`}>
@@ -396,7 +396,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Market Gap Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function MarketGapRow({ gap, currency, isDark }: { gap: any; currency: string; isDark: boolean }) {
 //   const sym = currency === "INR" ? "â‚¹" : "$";
@@ -415,7 +415,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function CompetitorAnalysisContent() {
 //   const { t } = useTranslation();
@@ -426,31 +426,31 @@ export default function Page() {
 //   const { selected } = useSelectedProduct();
 //   const { theme, resolvedTheme } = useTheme();
 //   const [mounted, setMounted] = useState(false);
-// 
+//
 //   const asin = searchParams.get("asin") || selected?.asin || "";
 //   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
-// 
+//
 //   const [data, setData] = useSessionState<any>("seller_comp_analysis_data", null);
 //   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_comp_analysis_asin", "");
 //   const [loading, setLoading] = useState(false);
 //   const [pinned, setPinned] = useState<Set<string>>(new Set());
 //   const [pinLoading, setPinLoading] = useState<Set<string>>(new Set());
-// 
+//
 //   const tier = data?.tier || user?.subscriptionTier || "free";
 //   const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
 //   const currency = data?.currency || "USD";
 //   const sym = currency === "INR" ? "â‚¹" : "$";
-// 
+//
 //   useEffect(() => {
 //     setMounted(true);
 //   }, []);
-// 
+//
 //   // â”€â”€ Fetch competitor data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   useEffect(() => {
 //     if (!asin || !sellerId) return;
 //     if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
-// 
+//
 //     setLoading(true);
 //     const params = new URLSearchParams({ asin, seller_id: sellerId });
 //     if (user?.email) params.append("user_email", user.email);
@@ -465,14 +465,14 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setLoading(false));
 //   }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
-// 
+//
 //   // â”€â”€ Load persisted pins from Postgres on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   useEffect(() => {
 //     if (!user?.email || !sellerId) return;
 //     const params = new URLSearchParams();
 //     if (user?.email) params.append("user_email", user.email);
 //     if (sellerId) params.append("seller_id", sellerId);
-// 
+//
 //     fetch(`${BASE_URL}/api/watchlist?${params}`, { credentials: "include" })
 //       .then((r) => r.ok ? r.json() : null)
 //       .then((d) => {
@@ -482,20 +482,20 @@ export default function Page() {
 //       })
 //       .catch(console.error);
 //   }, [user?.email, sellerId]);
-// 
+//
 //   // â”€â”€ Toggle pin â†’ save / delete in Postgres â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   const togglePin = async (competitorAsin: string, competitorData: any) => {
 //     if (!isPremium) return;
-// 
+//
 //     const alreadyPinned = pinned.has(competitorAsin);
 //     setPinned(prev => {
 //       const next = new Set(prev);
 //       alreadyPinned ? next.delete(competitorAsin) : next.add(competitorAsin);
 //       return next;
 //     });
-// 
+//
 //     setPinLoading(prev => new Set(prev).add(competitorAsin));
-// 
+//
 //     try {
 //       if (alreadyPinned) {
 //         await fetch(`${BASE_URL}/api/watchlist`, {
@@ -548,7 +548,7 @@ export default function Page() {
 //       });
 //     }
 //   };
-// 
+//
 //   const competitors = data?.competitors || [];
 //   const topThreat = data?.top_threat || null;
 //   const buyBox = data?.buy_box || {};
@@ -557,10 +557,10 @@ export default function Page() {
 //   const sellerHealth = data?.seller_health || {};
 //   const aiWeeklySummary = data?.ai_weekly_summary || null;
 //   const portfolioRisk = data?.portfolio_threat || [];
-// 
+//
 //   if (!mounted) return null;
 //   const isDark = resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
 //       {/* Header */}
@@ -601,7 +601,7 @@ export default function Page() {
 //           )}
 //         </div>
 //       </header>
-// 
+//
 //       <main className="flex-1 py-6 space-y-5">
 //         {/* No product selected */}
 //         {!asin && (
@@ -619,7 +619,7 @@ export default function Page() {
 //             </button>
 //           </div>
 //         )}
-// 
+//
 //         {/* Loading */}
 //         {asin && loading && (
 //           <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -628,7 +628,7 @@ export default function Page() {
 //             <p className={`text-xs animate-pulse ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>We are analyzing the data. This may take 1â€“2 minutes.</p>
 //           </div>
 //         )}
-// 
+//
 //         {asin && !loading && data && (
 //           <>
 //             {/* Product card */}
@@ -668,7 +668,7 @@ export default function Page() {
 //                 )}
 //               </div>
 //             </div>
-// 
+//
 //             {/* Stat strip */}
 //             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 //               {[
@@ -714,10 +714,10 @@ export default function Page() {
 //                 </div>
 //               ))}
 //             </div>
-// 
+//
 //             {/* Buy Box Intelligence */}
 //             <BuyBoxPanel data={{ ...buyBox, ...data }} isBasic={isBasic} currency={currency} isDark={isDark} />
-// 
+//
 //             {/* FREE TIER GATE: full competitor list */}
 //             {!isBasic ? (
 //               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -750,7 +750,7 @@ export default function Page() {
 //                     />
 //                   </div>
 //                 )}
-// 
+//
 //                 {/* All competitors */}
 //                 <Section title="All Competitors" icon={Users} count={competitors.length} accent={isDark ? "bg-sky-900/30" : "bg-sky-50"} defaultOpen={true} isDark={isDark}>
 //                   <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
@@ -776,7 +776,7 @@ export default function Page() {
 //                 </Section>
 //               </>
 //             )}
-// 
+//
 //             {/* Change Feed â€” Premium */}
 //             <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //               {!isPremium && <TierGate tier="premium" feature="Competitor Change Feed & Timeline" isDark={isDark} />}
@@ -823,7 +823,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Seller Health Card â€” Premium */}
 //             <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //               {!isPremium && <TierGate tier="premium" feature="Seller Health Card & Portfolio Intelligence" isDark={isDark} />}
@@ -874,7 +874,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Market Gap Finder â€” Premium */}
 //             <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //               {!isPremium && <TierGate tier="premium" feature="Market Gap Finder â€” Launch Opportunities" isDark={isDark} />}
@@ -907,7 +907,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* AI Weekly Summary â€” Premium */}
 //             <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 //               {!isPremium && <TierGate tier="premium" feature="AI Biggest Threat This Week" isDark={isDark} />}
@@ -938,7 +938,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             </div>
-// 
+//
 //             {/* Portfolio Threat Overview â€” Premium */}
 //             {isPremium && portfolioRisk.length > 0 && (
 //               <Section title="Portfolio Threat Overview â€” All Your ASINs" icon={Radar} defaultOpen={false} accent={isDark ? "bg-red-900/30" : "bg-red-50"} isDark={isDark}>
@@ -957,7 +957,7 @@ export default function Page() {
 //                 </div>
 //               </Section>
 //             )}
-// 
+//
 //             {/* Upgrade CTA */}
 //             {!isPremium && (
 //               <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -991,7 +991,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function CompetitorAnalysisPage() {
 //   return (
 //     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>

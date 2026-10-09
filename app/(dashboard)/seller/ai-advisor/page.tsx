@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 // ============================================================
 // DISABLED — Original code preserved below in // commented lines.
 // This page is intentionally not available to users.
@@ -25,24 +25,24 @@ export default function Page() {
   );
 }
 // "use client";
-// 
+//
 // // import Chatbot from "@/components/chatbot/chatbot";
 // // import { Sparkles, Bot, Menu } from "lucide-react";
 // // import { useSidebar } from "@/components/layout/sidebar-context";
-// 
+//
 // // export default function AiAdvisorPage() {
 // //   const { toggle } = useSidebar();
 // //   return (
 // //     <div className="flex-1 w-full min-h-screen flex flex-col">
 // //       {/* Header */}
-// //       <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg 
-// //         rounded-none sm:rounded-2xl 
-// //         px-4 sm:px-6 lg:px-8 
-// //         py-4 sm:py-5 
-// //         mb-4 sm:mb-6 
-// //         flex items-center 
-// //         justify-between gap-4 
-// //         sticky top-0 sm:top-4 
+// //       <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg
+// //         rounded-none sm:rounded-2xl
+// //         px-4 sm:px-6 lg:px-8
+// //         py-4 sm:py-5
+// //         mb-4 sm:mb-6
+// //         flex items-center
+// //         justify-between gap-4
+// //         sticky top-0 sm:top-4
 // //         z-20 mx-0 sm:mx-6">
 // //         <div className="flex items-center gap-3 w-full sm:w-auto">
 // //           <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
@@ -57,13 +57,13 @@ export default function Page() {
 // //             </p>
 // //           </div>
 // //         </div>
-// 
+//
 // //         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-sky-50 border border-sky-100 rounded-full">
 // //           <Bot className="w-4 h-4 text-sky-600" />
 // //           <span className="text-xs font-semibold text-sky-800 uppercase tracking-wider">AI Powered Assistant</span>
 // //         </div>
 // //       </header>
-// 
+//
 // //       {/* Full Screen Chatbot Component */}
 // //       <main className="flex-1 px-4 sm:px-6 pb-6 h-full flex flex-col">
 // //         <div className="flex-1 bg-background backdrop-blur-none rounded-3xl border border-sky-100 shadow-xl overflow-hidden flex flex-col">
@@ -75,7 +75,7 @@ export default function Page() {
 // // }
 // "use client";
 // import { API_BASE_URL } from "@/lib/config";
-// 
+//
 // import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 // import { useSessionState } from "@/hooks/use-session-state";
 // import { useSearchParams, useRouter } from "next/navigation";
@@ -95,12 +95,12 @@ export default function Page() {
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import ReactMarkdown from "react-markdown";
-// 
+//
 // const BASE_URL = API_BASE_URL;
 // const API = `${BASE_URL}/api/seller/ai-advisor`;
-// 
+//
 // // ── Types ─────────────────────────────────────────────────────────────────────
-// 
+//
 // interface Message {
 //   id:        string;
 //   role:      "user" | "assistant";
@@ -108,7 +108,7 @@ export default function Page() {
 //   timestamp: Date;
 //   loading?:  boolean;
 // }
-// 
+//
 // interface SellerContext {
 //   seller_id:      string;
 //   total_products: number;
@@ -116,13 +116,13 @@ export default function Page() {
 //   avg_rating:     number;
 //   currency:       string;
 // }
-// 
+//
 // // ── Helpers ───────────────────────────────────────────────────────────────────
-// 
+//
 // function genId() {
 //   return Math.random().toString(36).slice(2, 10);
 // }
-// 
+//
 // // ── Tier Gate ─────────────────────────────────────────────────────────────────
 // function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
 //   const router = useRouter();
@@ -130,7 +130,7 @@ export default function Page() {
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   return (
 //     <div className="absolute inset-0 bg-white/88 dark:bg-slate-900/85 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
 //       <div className={cn(
@@ -157,7 +157,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // ── Suggestion Chip ───────────────────────────────────────────────────────────
 // function SuggestionChip({ text, onClick }: { text: string; onClick: () => void }) {
 //   return (
@@ -176,7 +176,7 @@ export default function Page() {
 //     </button>
 //   );
 // }
-// 
+//
 // // ── Message Bubble ────────────────────────────────────────────────────────────
 // function MessageBubble({
 //   message,
@@ -188,7 +188,7 @@ export default function Page() {
 //   onFeedback: (id: string, type: "up" | "down") => void;
 // }) {
 //   const isUser = message.role === "user";
-// 
+//
 //   if (isUser) {
 //     return (
 //       <div className="flex items-end justify-end gap-2.5">
@@ -201,7 +201,7 @@ export default function Page() {
 //       </div>
 //     );
 //   }
-// 
+//
 //   return (
 //     <div className="flex items-end gap-2.5">
 //       {/* AI orb avatar */}
@@ -260,7 +260,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // ── Context Panel ─────────────────────────────────────────────────────────────
 // function ContextPanel({ context, selectedAsin, onSelectProduct, t }: {
 //   context:         SellerContext | null;
@@ -269,7 +269,7 @@ export default function Page() {
 //   t:               any;
 // }) {
 //   if (!context) return null;
-// 
+//
 //   return (
 //     <div className="w-64 shrink-0 space-y-3 hidden lg:block">
 //       {/* Store summary card */}
@@ -301,7 +301,7 @@ export default function Page() {
 //           </div>
 //         </div>
 //       </div>
-// 
+//
 //       {/* Product selector */}
 //       <div className="bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-700/40 shadow-sm p-4 backdrop-blur-sm">
 //         <div className="flex items-center gap-2 mb-3">
@@ -339,7 +339,7 @@ export default function Page() {
 //           ))}
 //         </div>
 //       </div>
-// 
+//
 //       {/* Tips card */}
 //       <div className="relative overflow-hidden rounded-2xl border border-amber-200/60 dark:border-amber-800/30 shadow-sm">
 //         <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50/60 dark:from-amber-950/30 dark:to-orange-950/20" />
@@ -357,7 +357,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // // ── Starter Suggestions ───────────────────────────────────────────────────────
 // const getStarterSuggestions = (t: any) => [
 //   t('sellerPages.ask1', "How is my store performing overall?"),
@@ -367,7 +367,7 @@ export default function Page() {
 //   "What keywords am I missing from my top product?",
 //   "How do my review ratings compare to competitors?",
 // ];
-// 
+//
 // const getProductSuggestions = (title: string, t: any) => [
 //   `Why isn't ${title} selling better?`,
 //   `How should I price ${title} vs competitors?`,
@@ -375,7 +375,7 @@ export default function Page() {
 //   `How are ${title} reviews compared to rivals?`,
 //   `Should I raise or lower the price of ${title}?`,
 // ];
-// 
+//
 // // ── Main Component ────────────────────────────────────────────────────────────
 // function AIAdvisorContent() {
 //   const { t } = useTranslation();
@@ -383,20 +383,20 @@ export default function Page() {
 //   const { user }   = useAuth();
 //   const { toggle } = useSidebar();
 //   const { selected } = useSelectedProduct();
-// 
+//
 //   const [mounted, setMounted] = useState(false);
 //   useEffect(() => { setMounted(true); }, []);
 //   const { resolvedTheme } = useTheme();
 //   const isDark = mounted && resolvedTheme === "dark";
-// 
+//
 //   const sellerId  = selected?.sellerId || user?.seller_id || "";
 //   const userEmail = user?.email || "";
 //   const userId    = user?.id?.toString() || "";
-// 
+//
 //   const tier      = user?.subscriptionTier || "free";
 //   const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
 //   const isPremium = tier === "premium" || tier === "enterprise";
-// 
+//
 //   const [messages,      setMessages]      = useSessionState<Message[]>("seller_ai_messages", []);
 //   const [input,         setInput]         = useSessionState("seller_ai_input", "");
 //   const [streaming,     setStreaming]     = useState(false);
@@ -406,16 +406,16 @@ export default function Page() {
 //   const [selectedTitle, setSelectedTitle] = useSessionState("seller_ai_title", "");
 //   const [sessionId,     setSessionId]     = useSessionState("seller_ai_session", Math.random().toString(36).slice(2, 14));
 //   const [copiedId,      setCopiedId]      = useState<string | null>(null);
-// 
+//
 //   const messagesEndRef = useRef<HTMLDivElement>(null);
 //   const inputRef       = useRef<HTMLTextAreaElement>(null);
 //   const abortRef       = useRef<AbortController | null>(null);
-// 
+//
 //   // Auto-scroll to bottom
 //   useEffect(() => {
 //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 //   }, [messages]);
-// 
+//
 //   // Load seller context
 //   useEffect(() => {
 //     if (!sellerId || context) return;
@@ -428,7 +428,7 @@ export default function Page() {
 //       .catch(console.error)
 //       .finally(() => setContextLoading(false));
 //   }, [sellerId, userEmail]);
-// 
+//
 //   // Greeting on mount
 //   useEffect(() => {
 //     if (!sellerId) return;
@@ -442,11 +442,11 @@ export default function Page() {
 //       }];
 //     });
 //   }, [sellerId, t]);
-// 
+//
 //   const sendMessage = useCallback(async (text: string) => {
 //     const question = text.trim();
 //     if (!question || streaming) return;
-// 
+//
 //     // Add user message
 //     const userMsg: Message = {
 //       id:        genId(),
@@ -454,7 +454,7 @@ export default function Page() {
 //       content:   question,
 //       timestamp: new Date(),
 //     };
-// 
+//
 //     // Add loading assistant message
 //     const loadingId = genId();
 //     const loadingMsg: Message = {
@@ -464,15 +464,15 @@ export default function Page() {
 //       timestamp: new Date(),
 //       loading:   true,
 //     };
-// 
+//
 //     setMessages((prev) => [...prev, userMsg, loadingMsg]);
 //     setInput("");
 //     setStreaming(true);
-// 
+//
 //     // Abort any existing stream
 //     if (abortRef.current) abortRef.current.abort();
 //     abortRef.current = new AbortController();
-// 
+//
 //     try {
 //       const res = await fetch(`${API}/chat`, {
 //         method: "POST",
@@ -490,16 +490,16 @@ export default function Page() {
 //           stream:       true,
 //         }),
 //       });
-// 
+//
 //       if (!res.ok) {
 //         throw new Error(`HTTP ${res.status}`);
 //       }
-// 
+//
 //       const reader = res.body!.getReader();
 //       const dec    = new TextDecoder();
 //       let buf      = "";
 //       let fullText = "";
-// 
+//
 //       // Replace loading bubble with streaming bubble
 //       setMessages((prev) =>
 //         prev.map((m) =>
@@ -508,7 +508,7 @@ export default function Page() {
 //             : m
 //         )
 //       );
-// 
+//
 //       while (true) {
 //         const { done, value } = await reader.read();
 //         if (done) break;
@@ -534,7 +534,7 @@ export default function Page() {
 //           }
 //         }
 //       }
-// 
+//
 //     } catch (e: any) {
 //       if (e?.name === "AbortError") return;
 //       setMessages((prev) =>
@@ -552,28 +552,28 @@ export default function Page() {
 //       setStreaming(false);
 //     }
 //   }, [streaming, sellerId, userEmail, userId, sessionId, selectedAsin, selectedTitle]);
-// 
+//
 //   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 //     if (e.key === "Enter" && !e.shiftKey) {
 //       e.preventDefault();
 //       sendMessage(input);
 //     }
 //   };
-// 
+//
 //   const handleCopy = (text: string) => {
 //     navigator.clipboard.writeText(text);
 //   };
-// 
+//
 //   const handleFeedback = (id: string, type: "up" | "down") => {
 //     // Could send to backend for improvement tracking
 //     console.log("Feedback:", id, type);
 //   };
-// 
+//
 //   const handleSelectProduct = (asin: string, title: string) => {
 //     setSelectedAsin(asin);
 //     setSelectedTitle(title);
 //   };
-// 
+//
 //   const handleReset = () => {
 //     setMessages([]);
 //     setSessionId(Math.random().toString(36).slice(2, 14));
@@ -585,13 +585,13 @@ export default function Page() {
 //     };
 //     setMessages([greeting]);
 //   };
-// 
+//
 //   const suggestions = selectedAsin && selectedTitle
 //     ? getProductSuggestions(selectedTitle.substring(0, 30), t)
 //     : getStarterSuggestions(t);
-// 
+//
 //   const showSuggestions = messages.length <= 1;
-// 
+//
 //   // ── Render ────────────────────────────────────────────────────────────────
 //   return (
 //     <div className="min-h-screen flex flex-col bg-transparent">
@@ -644,7 +644,7 @@ export default function Page() {
 //           )}
 //         </div>
 //       </header>
-// 
+//
 //       {/* No seller ID */}
 //       {!sellerId && (
 //         <div className="flex flex-col items-center justify-center h-64 gap-4 text-center mt-8">
@@ -663,7 +663,7 @@ export default function Page() {
 //           </button>
 //         </div>
 //       )}
-// 
+//
 //       {sellerId && (
 //         <div className="flex-1 py-6 flex gap-5 items-start">
 //           {/* Context panel */}
@@ -673,10 +673,10 @@ export default function Page() {
 //             onSelectProduct={handleSelectProduct}
 //             t={t}
 //           />
-// 
+//
 //           {/* Chat area */}
 //           <div className="flex-1 flex flex-col min-h-0">
-// 
+//
 //             {/* Free tier gate */}
 //             {!isBasic && (
 //               <div className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 overflow-hidden mb-5">
@@ -705,7 +705,7 @@ export default function Page() {
 //                 </div>
 //               </div>
 //             )}
-// 
+//
 //             {isBasic && (
 //               <>
 //                 {/* Messages */}
@@ -726,7 +726,7 @@ export default function Page() {
 //                         onFeedback={handleFeedback}
 //                       />
 //                     ))}
-// 
+//
 //                     {/* Starter suggestions */}
 //                     {showSuggestions && (
 //                       <div className="pt-2">
@@ -740,10 +740,10 @@ export default function Page() {
 //                         </div>
 //                       </div>
 //                     )}
-// 
+//
 //                     <div ref={messagesEndRef} />
 //                   </div>
-// 
+//
 //                   {/* Input */}
 //                   <div className="border-t border-slate-200/60 dark:border-slate-700/40 p-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
 //                     {/* Selected product context bar */}
@@ -761,7 +761,7 @@ export default function Page() {
 //                         </button>
 //                       </div>
 //                     )}
-// 
+//
 //                     <div className="flex gap-3 items-end">
 //                       <div className="flex-1 relative">
 //                         <textarea
@@ -801,7 +801,7 @@ export default function Page() {
 //                     </p>
 //                   </div>
 //                 </div>
-// 
+//
 //                 {/* Upgrade CTA for basic */}
 //                 {!isPremium && (
 //                   <div className="mt-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-4 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -829,7 +829,7 @@ export default function Page() {
 //     </div>
 //   );
 // }
-// 
+//
 // export default function AIAdvisorPage() {
 //   return (
 //     <Suspense fallback={

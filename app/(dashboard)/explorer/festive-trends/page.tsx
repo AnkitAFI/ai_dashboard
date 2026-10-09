@@ -2108,7 +2108,7 @@ function FestiveTrendContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-            {t("festiveTrends.title", "Festive Trends").split(" ")[0]} <span className="text-sky-600">{t("festiveTrends.title", "Festive Trends").split(" ")[1]}</span>
+            {t("festiveTrends.title", "Festival Sales Planner").split(" ")[0]} <span className="text-sky-600">{t("festiveTrends.title", "Festival Sales Planner").split(" ").slice(1).join(" ")}</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-base">
             {t("festiveTrends.subtitle", "Ride India's festive demand cycles — price smarter, stock right, list on time")}
