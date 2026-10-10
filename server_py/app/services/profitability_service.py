@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # ── Tier config ────────────────────────────────────────────────────────────────
 
-TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3}
+TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3, "trial": 2}
 
 TIER_FEATURES = {
     "free": {
@@ -53,6 +53,16 @@ TIER_FEATURES = {
     },
     "enterprise": {
         "save_limit": 9999,
+        "scenarios": True,
+        "market_intel": True,
+        "health": True,
+        "export": True,
+        "advanced_inputs": True,
+        "ai_chat": True,
+        "ai_analysis": True,
+    },
+    "trial": {
+        "save_limit": 3,
         "scenarios": True,
         "market_intel": True,
         "health": True,

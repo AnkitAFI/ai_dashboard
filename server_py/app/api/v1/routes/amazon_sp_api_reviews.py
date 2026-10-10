@@ -23,7 +23,7 @@ class GlobalRuleUpdate(ReviewRuleUpdate):
 
 def check_premium_tier(user: UserAuth, db: Session):
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == user.id).first()
-    if not sub or sub.subscription_tier not in ["premium", "enterprise"]:
+    if not sub or sub.subscription_tier not in ["premium", "enterprise", "trial"]:
         raise HTTPException(status_code=403, detail="Review Automation requires Premium or Enterprise tier.")
 
 @router.get("/{sp_id}/rules")

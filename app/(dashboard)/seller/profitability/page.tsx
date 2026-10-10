@@ -6,11 +6,18 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
-import { Menu, TrendingUp, AlertTriangle, Loader2, WifiOff } from "lucide-react";
+import { Menu, TrendingUp, AlertTriangle, Loader2, WifiOff, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import SyncPendingBanner from "@/components/seller/sync-pending-banner";
 
 export default function ProfitabilityDashboard() {
@@ -50,7 +57,7 @@ export default function ProfitabilityDashboard() {
   // Derive premium status from user tier
   useEffect(() => {
     const tier = user?.subscriptionTier || "free";
-    setIsPremium(tier === "premium" || tier === "enterprise");
+    setIsPremium(tier === "premium" || tier === "enterprise" || tier === "trial");
   }, [user]);
 
   const fetchStatus = async () => {
@@ -92,7 +99,7 @@ export default function ProfitabilityDashboard() {
 
       // ASINs table — Premium & Enterprise only. 403 here is expected for Free/Basic — do NOT show an error.
       const tier = user?.subscriptionTier || "free";
-      if (tier === "premium" || tier === "enterprise") {
+      if (tier === "premium" || tier === "enterprise" || tier === "trial") {
         const asinsRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/profitability/${spId}/asins`, { credentials: "include" });
         if (asinsRes.ok) {
           const asinsData = await asinsRes.json();
@@ -205,7 +212,26 @@ export default function ProfitabilityDashboard() {
       </header>
 
       {accounts.length === 0 ? (
-        <Card className={`mt-8 rounded-2xl border border-dashed ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+        <Card className={`mt-8 rounded-2xl border border-dashed relative overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+          <div className="absolute top-4 right-4 z-20">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors shadow-sm ${isDark ? 'bg-slate-800/60 hover:bg-slate-800/90 text-indigo-400' : 'bg-white/60 hover:bg-white/90 text-indigo-600'}`} title="See what it looks like after connecting">
+                  <Info className="w-5 h-5" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-4xl p-0 overflow-hidden border-0 bg-transparent shadow-2xl">
+                <DialogTitle className="sr-only">Connected Profit Tracker Demo</DialogTitle>
+                <DialogDescription className="sr-only">
+                  Preview of the Profit Tracker after successful connection.
+                </DialogDescription>
+                <div className="relative rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                  <img src="/profit-tracker-demo.png" alt="Connected Profit Tracker Demo" className="w-full h-auto object-cover" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl"></div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
               <AlertTriangle className={`w-8 h-8 ${isDark ? 'text-amber-500' : 'text-amber-600'}`} />

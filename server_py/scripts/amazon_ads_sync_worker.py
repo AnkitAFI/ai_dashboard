@@ -40,7 +40,7 @@ async def sync_profile(db, profile):
     # Subscription Tier check
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == profile.user_id).first()
     tier = sub.subscription_tier.lower() if sub and sub.subscription_tier else "free"
-    expected_history_days = 60 if tier in ["premium", "enterprise"] else 30
+    expected_history_days = 60 if tier in ["premium", "enterprise", "trial"] else 30
     
     today = datetime.utcnow().date()
     dates_to_sync = []

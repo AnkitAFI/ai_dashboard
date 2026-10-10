@@ -579,7 +579,7 @@ export default function AnalyticsDashboard() {
     }
   };
 
-  const isPremium = tier === "premium" || tier === "enterprise";
+  const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
 
   // Keyword Data Fetching
   const { data: keywordsData, isLoading: keywordsLoading } = useQuery({
@@ -1031,12 +1031,12 @@ export default function AnalyticsDashboard() {
             className={`hidden md:flex ml-2 capitalize px-3 py-1.5 text-xs shadow-sm font-bold items-center gap-1.5 ${
               tier === 'enterprise' 
                 ? 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300 dark:bg-fuchsia-900/30 dark:text-fuchsia-400 dark:border-fuchsia-800' 
-                : tier === 'premium' 
+                : (tier === 'premium' || tier === 'trial')
                   ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' 
                   : 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
             }`}
           >
-            {(tier === 'premium' || tier === 'enterprise') && <Crown className="w-3 h-3" />}
+            {(tier === 'premium' || tier === 'enterprise' || tier === 'trial') && <Crown className="w-3 h-3" />}
             {tier} Tier
           </Badge>
         </div>

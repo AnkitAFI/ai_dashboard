@@ -146,7 +146,7 @@ async def main():
         # EXACT SUBSCRIPTION FALLBACK PROTECTION
         # Join UserSubscription to ensure only Active Premium/Enterprise users are processed
         active_premium_users = db.query(UserSubscription).filter(
-            UserSubscription.subscription_tier.in_(["premium", "enterprise"])
+            UserSubscription.subscription_tier.in_(["premium", "enterprise", "trial"])
         ).all()
         
         valid_user_ids = [u.user_id for u in active_premium_users]

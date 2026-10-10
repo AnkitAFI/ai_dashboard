@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Mail, Clock, ShieldAlert, Crown, Search, Settings2, Trash2, Plus, Star, Menu, AlertTriangle, Loader2 } from "lucide-react"
+import { Mail, Clock, ShieldAlert, Crown, Search, Settings2, Trash2, Plus, Star, Menu, AlertTriangle, Loader2, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import SyncPendingBanner from "@/components/seller/sync-pending-banner"
 import {
@@ -21,6 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 export default function ReviewAutomatorPage() {
   const { user } = useAuth()
@@ -223,7 +230,26 @@ export default function ReviewAutomatorPage() {
 
       {/* Main Content Areas */}
       {accounts.length === 0 ? (
-        <Card className={`mt-8 rounded-2xl border border-dashed ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+        <Card className={`mt-8 rounded-2xl border border-dashed relative overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+          <div className="absolute top-4 right-4 z-20">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors shadow-sm ${isDark ? 'bg-slate-800/60 hover:bg-slate-800/90 text-amber-400' : 'bg-white/60 hover:bg-white/90 text-amber-600'}`} title="See what it looks like after connecting">
+                  <Info className="w-5 h-5" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-4xl p-0 overflow-hidden border-0 bg-transparent shadow-2xl">
+                <DialogTitle className="sr-only">Connected Review Automator Demo</DialogTitle>
+                <DialogDescription className="sr-only">
+                  Preview of the Review Automator after successful connection.
+                </DialogDescription>
+                <div className="relative rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                  <img src="/review-automator-demo.png" alt="Connected Review Automator Demo" className="w-full h-auto object-cover" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl"></div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
               <AlertTriangle className={`w-8 h-8 ${isDark ? 'text-amber-500' : 'text-amber-600'}`} />

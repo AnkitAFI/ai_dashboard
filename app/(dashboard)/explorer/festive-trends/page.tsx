@@ -1040,7 +1040,7 @@ const JSON_FETCH_OPTS: RequestInit = {
 // Tier order matches backend: free=0, basic=1, premium=2, enterprise=3
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TIER_ORDER: Record<string, number> = { free: 0, basic: 1, premium: 2, enterprise: 3 };
+const TIER_ORDER: Record<string, number> = { free: 0, basic: 1, premium: 2, enterprise: 3, trial: 2 };
 
 function hasTier(userTier: string, required: string): boolean {
   return (TIER_ORDER[userTier?.toLowerCase().trim()] ?? 0) >= (TIER_ORDER[required] ?? 99);

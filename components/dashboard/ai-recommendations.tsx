@@ -189,7 +189,7 @@ export default function AIRecommendations({
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
 
   const [data, setData] = useState<IntelligenceData | null>(null);
-  const [loading, setLoading] = useState(hasAIRecommendations);
+  const [loading, setLoading] = useState(false);
   const [aiUsage, setAiUsage] = useState<{
     used: number;
     limit: number;
@@ -290,7 +290,8 @@ export default function AIRecommendations({
 
   // ── Re-fetch on filter / source change ──
   useEffect(() => {
-    if (hasAIRecommendations && !usageLimitReached) {
+    // Only auto-refresh if the user has already manually generated insights at least once
+    if (hasAIRecommendations && !usageLimitReached && data !== null) {
       fetchIntelligence();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -434,6 +435,20 @@ export default function AIRecommendations({
                 </Button>
               </div>
             </div>
+          </div>
+        ) : !data && !loading ? (
+          /* ── MANUAL TRIGGER STATE ── */
+          <div className="p-8 sm:p-10 flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-900/20 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center mb-4">
+              <Bot className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Ready to analyze the market?</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-5 leading-relaxed">
+              Click "Generate Insights" to run a deep scan of this category for immediate opportunities and risks.
+            </p>
+            <Button onClick={fetchIntelligence} className="bg-purple-600 hover:bg-purple-700 text-white shadow-md">
+              <Zap className="w-4 h-4 mr-2 text-yellow-300" /> Generate AI Insights
+            </Button>
           </div>
         ) : (
           /* ── MAIN CONTENT ── */

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def check_premium_access(user_id: int, db: Session):
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
-    if not sub or sub.subscription_tier not in ["premium", "enterprise"]:
+    if not sub or sub.subscription_tier not in ["premium", "enterprise", "trial"]:
         raise HTTPException(status_code=403, detail="Upgrade to Premium required to use this feature.")
     return True
 

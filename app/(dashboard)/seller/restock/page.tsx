@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
-import { Menu, Package, AlertTriangle, Loader2, Crown, Search, Filter, Settings, CheckCircle2 } from "lucide-react";
+import { Menu, Package, AlertTriangle, Loader2, Crown, Search, Filter, Settings, CheckCircle2, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,7 +92,7 @@ export default function RestockForecasterDashboard() {
         // 403 can mean tier restriction OR pending sync.
         // Only show premium lock if we know user tier is insufficient.
         const tier = (typeof window !== "undefined" ? (user?.subscriptionTier || "free") : "free");
-        const isPremium = tier === "premium" || tier === "enterprise";
+        const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
         if (!isPremium) {
           setIsPremiumRequired(true);
         }
@@ -275,7 +275,26 @@ export default function RestockForecasterDashboard() {
       </header>
 
       {accounts.length === 0 ? (
-        <Card className={`mt-8 rounded-2xl border border-dashed ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+        <Card className={`mt-8 rounded-2xl border border-dashed relative overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-300'}`}>
+          <div className="absolute top-4 right-4 z-20">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors shadow-sm ${isDark ? 'bg-slate-800/60 hover:bg-slate-800/90 text-indigo-400' : 'bg-white/60 hover:bg-white/90 text-indigo-600'}`} title="See what it looks like after connecting">
+                  <Info className="w-5 h-5" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-4xl p-0 overflow-hidden border-0 bg-transparent shadow-2xl">
+                <DialogTitle className="sr-only">Connected Restock Planner Demo</DialogTitle>
+                <DialogDescription className="sr-only">
+                  Preview of the Restock Planner after successful connection.
+                </DialogDescription>
+                <div className="relative rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                  <img src="/restock-planner-demo.png" alt="Connected Restock Planner Demo" className="w-full h-auto object-cover" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl"></div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <CardContent className="flex flex-col items-center justify-center py-16 px-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
               <AlertTriangle className={`w-8 h-8 ${isDark ? 'text-amber-500' : 'text-amber-600'}`} />

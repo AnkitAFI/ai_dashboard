@@ -1130,7 +1130,7 @@ function WhiteSpaceFinderContent() {
 
   const [watchlistItems, setWatchlistItems] = useState<WatchlistItem[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
-  const [exporting, setExporting] = useState(false);
+
   const [usageLimits, setUsageLimits] = useState<{
     count: number;
     limit: number;
@@ -1173,8 +1173,8 @@ function WhiteSpaceFinderContent() {
 
   const tier = result?.tier ?? user?.subscriptionTier ?? "free";
   const isBasicPlus =
-    tier === "basic" || tier === "premium" || tier === "enterprise";
-  const isPremium = tier === "premium" || tier === "enterprise";
+    tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
+  const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
   const scansUsed = result?.scans_used ?? 0;
   const scansLimit = result?.scans_limit ?? 3;
   const scanPct = Math.min((scansUsed / scansLimit) * 100, 100);
@@ -1275,59 +1275,7 @@ function WhiteSpaceFinderContent() {
     }
   }, [query, category, platform, userId]);
 
-  const handleExport = async () => {
-    if (!isPremium) {
-      showToast(
-        "Premium feature",
-        "CSV export requires the Premium plan.",
-        "error",
-      );
-      return;
-    }
-    if (!result) return;
-    setExporting(true);
-    try {
-      const rows = [
-        [
-          "Niche",
-          "Score",
-          "Category",
-          "Platform",
-          "Avg Price",
-          "Avg Rating",
-          "Competitors",
-          "Est Rev Min",
-          "Est Rev Max",
-          "Trend",
-          "Top Keyword",
-        ],
-        ...result.opportunities.map((o) => [
-          o.product_niche,
-          o.score,
-          o.category,
-          o.platform,
-          o.avg_price,
-          o.avg_rating,
-          o.competitor_count,
-          o.est_revenue_min,
-          o.est_revenue_max,
-          o.trend_direction,
-          o.top_keyword,
-        ]),
-      ];
-      const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `white_space_${query.replace(/\s+/g, "_")}_${Date.now()}.csv`;
-      a.click();
-      showToast("Export ready!", "CSV downloaded successfully.");
-    } catch {
-      showToast("Export failed", "Could not generate CSV.", "error");
-    } finally {
-      setExporting(false);
-    }
-  };
+
 
   const handleWatchlist = async (opp: Opportunity) => {
     if (!userId) {
@@ -1520,7 +1468,7 @@ function WhiteSpaceFinderContent() {
                   </div>
                   <span className="text-[11px] font-bold text-slate-600">
                     {result ? scansUsed : usageLimits?.count || 0}/
-                    {isPremium
+                    {tier === "premium" || tier === "enterprise"
                       ? "∞"
                       : result
                         ? scansLimit
@@ -1537,17 +1485,7 @@ function WhiteSpaceFinderContent() {
             {/* Action buttons */}
             {result && (
               <div className="flex items-center gap-2">
-                {isPremium && (
-                  <button
-                    onClick={handleExport}
-                    disabled={exporting}
-                    data-track-id="export-btn"
-                    className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
-                  >
-                    {exporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                    {t("whiteSpaceFinder.exportCsv", "Export CSV")}
-                  </button>
-                )}
+
                 <button
                   onClick={() => setShowTierTable(!showTierTable)}
                   data-track-id="plans-toggle-btn"

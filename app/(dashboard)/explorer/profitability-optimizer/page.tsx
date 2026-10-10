@@ -2083,9 +2083,9 @@ export default function ProfitabilityOptimizer() {
   const [nicheProductCount, setNicheProductCount] = useState<number>(0);
   const [nicheConfidence, setNicheConfidence] = useState<string>("");
 
-  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
-  const isPremium = tier === "premium" || tier === "enterprise";
-  const saveLimit = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
+  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
+  const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
+  const saveLimit = tier === "trial" ? 3 : tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
