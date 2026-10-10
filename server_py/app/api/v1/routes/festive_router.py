@@ -173,7 +173,7 @@ def get_optional_user_id(session_id: str = Cookie(None)) -> Optional[str]:
     return None
 
 
-_TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3}
+_TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3, "trial": 2}
 
 
 def _get_user_tier(user_id: Optional[str], db: Session) -> str:

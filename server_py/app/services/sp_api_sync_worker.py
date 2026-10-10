@@ -178,7 +178,7 @@ def get_tier_sync_interval(tier: str) -> timedelta:
     tier = tier.lower()
     if tier == "enterprise":
         return timedelta(hours=2)
-    elif tier == "premium":
+    elif tier == "premium" or tier == "trial":
         return timedelta(hours=12)
     else:
         # Basic, Free, or Expired Fallback

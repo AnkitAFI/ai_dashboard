@@ -93,6 +93,28 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
     maxKeywordIntelligenceSearchesPerMonth: 20, // ✅ 20 keyword intelligence searches per month for premium
   },
+  trial: {
+    productTrackingLimit: UNLIMITED,
+    hasAdvancedAI: true,
+    hasRealTimeData: true,
+    hasRealTimeAlerts: true,
+    hasPrioritySupport: true,
+    hasAdvancedAnalytics: true,
+    hasCustomIntegrations: true,
+    hasCompetitorAnalysis: true,
+    reportFrequency: 'realtime',
+    hasAIChatbot: true,
+    hasDedicatedManager: false,
+    canExportData: true,
+    maxDashboardWidgets: UNLIMITED,
+    maxSavedReports: UNLIMITED,
+    maxTopN: 100,
+    hasChartAISummaries: true,
+    maxNotifications: UNLIMITED,
+    maxFullAnalysesPerMonth: UNLIMITED, 
+    maxAIChatMessagesPerMonth: 3, 
+    maxKeywordIntelligenceSearchesPerMonth: 3, 
+  },
   enterprise: {
     productTrackingLimit: UNLIMITED,
     hasAdvancedAI: true,
@@ -217,24 +239,20 @@ export function useSubscriptionLimits() {
     limitType: 'productAnalyses' | 'AIChatMessages' | 'widgets' | 'reports'
   ): string => {
     const nextTier = currentTier === 'free' ? 'Basic' : 'Premium';
-    
+
     switch (limitType) {
       case 'productAnalyses':
-        return `Upgrade to ${nextTier} for ${
-          currentTier === 'free' ? '20' : 'unlimited'
-        } product analyses per month`;
+        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '20' : 'unlimited'
+          } product analyses per month`;
       case 'AIChatMessages':
-        return `Upgrade to ${nextTier} for ${
-          currentTier === 'free' ? '20' : 'unlimited'
-        } AI chat messages per month`;
+        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '20' : 'unlimited'
+          } AI chat messages per month`;
       case 'widgets':
-        return `Upgrade to ${nextTier} for ${
-          currentTier === 'free' ? '8' : 'unlimited'
-        } dashboard widgets`;
+        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '8' : 'unlimited'
+          } dashboard widgets`;
       case 'reports':
-        return `Upgrade to ${nextTier} for ${
-          currentTier === 'free' ? '10' : 'unlimited'
-        } saved reports`;
+        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '10' : 'unlimited'
+          } saved reports`;
       default:
         return `Upgrade to ${nextTier} for more features`;
     }

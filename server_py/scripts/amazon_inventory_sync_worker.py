@@ -273,7 +273,7 @@ async def main():
     try:
         # Get all Premium/Enterprise users
         premium_users = db.query(UserSubscription).filter(
-            UserSubscription.subscription_tier.in_(["premium", "enterprise"])
+            UserSubscription.subscription_tier.in_(["premium", "enterprise", "trial"])
         ).all()
         
         premium_user_ids = [u.user_id for u in premium_users]

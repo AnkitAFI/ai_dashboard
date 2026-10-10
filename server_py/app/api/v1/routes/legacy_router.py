@@ -9495,7 +9495,7 @@ def generate_warnings(pricing: Dict, competition: Dict, base_cost: float) -> Lis
 # ─────────────────────────────────────────────────────────────────────────────
  
 def get_analysis_limit(tier: str) -> float:
-    return {"free": 1, "basic": 20, "premium": float("inf"), "enterprise": float("inf")}.get(tier.lower(), 1)
+    return {"free": 1, "basic": 20, "premium": float("inf"), "enterprise": float("inf"), "trial": 3}.get(tier.lower(), 1)
  
  
 # ─────────────────────────────────────────────────────────────────────────────
@@ -11240,6 +11240,7 @@ SOV_TIER_LIMITS: Dict[str, int] = {
     "basic":      10,
     "premium":    -1,
     "enterprise": -1,
+    "trial":      3,
 }
  
 HHI_COMPETITIVE = 1_500   # < 1500 → easy to enter

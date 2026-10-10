@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { 
   AlertCircle, CheckCircle2, Loader2, Link as LinkIcon, 
-  Unlink, Menu, Calculator, Package, Star, ShieldCheck, ArrowRight, Activity, Zap, TrendingUp
+  Unlink, Menu, Calculator, Package, Star, ShieldCheck, ArrowRight, Activity, Zap, TrendingUp, Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,6 +25,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function AmazonStoreSetupPage() {
   const { user } = useAuth();
@@ -237,6 +244,28 @@ export default function AmazonStoreSetupPage() {
                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
                <div className="absolute top-0 right-1/4 w-64 h-64 bg-white/40 rounded-full blur-3xl"></div>
              </>
+           )}
+
+           {!isConnected && (
+             <div className="absolute top-4 right-4 z-20">
+               <Dialog>
+                 <DialogTrigger asChild>
+                   <button className="flex items-center justify-center w-8 h-8 rounded-full bg-white/60 hover:bg-white/90 text-blue-600 transition-colors shadow-sm dark:bg-slate-800/60 dark:hover:bg-slate-800/90 dark:text-blue-400" title="See what it looks like after connecting">
+                     <Info className="w-5 h-5" />
+                   </button>
+                 </DialogTrigger>
+                 <DialogContent className="sm:max-w-4xl p-0 overflow-hidden border-0 bg-transparent shadow-2xl">
+                    <DialogTitle className="sr-only">Connected Dashboard Demo</DialogTitle>
+                    <DialogDescription className="sr-only">
+                      Preview of the Amazon Seller Command Center after successful connection.
+                    </DialogDescription>
+                    <div className="relative rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                      <img src="/connected-demo.png" alt="Connected Dashboard Demo" className="w-full h-auto object-cover" />
+                      <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl"></div>
+                    </div>
+                 </DialogContent>
+               </Dialog>
+             </div>
            )}
            
            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">

@@ -140,7 +140,7 @@ def require_premium_tier(current_user = Depends(get_current_user)):
     Checks the live database record on every request, so downgrades take effect instantly.
     """
     tier = (getattr(current_user, 'subscription_tier', 'free') or 'free').lower()
-    if tier not in ['premium', 'enterprise']:
+    if tier not in ['premium', 'enterprise', 'trial']:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
             detail="This feature requires a Premium or Enterprise subscription."

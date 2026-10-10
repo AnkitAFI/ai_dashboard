@@ -367,7 +367,7 @@ async def process_automations():
             User, AmazonAdsAutomationRules.user_id == User.id
         ).filter(
             AmazonAdsAutomationRules.is_active == True,
-            User.subscription_tier.in_(["premium", "enterprise"])
+            User.subscription_tier.in_(["premium", "enterprise", "trial"])
         ).all()
         
         if not active_rules:

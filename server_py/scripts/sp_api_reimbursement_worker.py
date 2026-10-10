@@ -263,7 +263,7 @@ async def run_reimbursement_cycle():
             sub = db.query(UserSubscription).filter(UserSubscription.user_id == cred.user_id).first()
             tier = sub.subscription_tier if sub else "free"
             
-            if tier not in ["premium", "enterprise"]:
+            if tier not in ["premium", "enterprise", "trial"]:
                 logger.debug(f"Skipping {cred.selling_partner_id} — tier '{tier}' not eligible.")
                 continue
 
