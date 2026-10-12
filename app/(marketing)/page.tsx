@@ -4,11 +4,20 @@ import LandingContent from "./landing-content";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "Amazon & Flipkart Seller Tools | Insydz",
+  title: "Amazon & Flipkart Sellers Tool | Marketplace Intelligence Software",
   description:
     "Track competitor prices, research keywords, and win the Buy Box on Amazon & Flipkart. Get instant WhatsApp alerts with Insydz's seller dashboard. Try free.",
   alternates: {
     canonical: "https://insydz.com",
+  },
+  openGraph: {
+    title: "Amazon & Flipkart Sellers Tool | Marketplace Intelligence Software",
+    description:
+      "Track competitor prices, research keywords, and win the Buy Box on Amazon & Flipkart. Get instant WhatsApp alerts with Insydz's seller dashboard. Try free.",
+    url: "https://insydz.com",
+    siteName: "Insydz",
+    locale: "en_IN",
+    type: "website",
   },
 };
 
@@ -19,7 +28,7 @@ const SCHEMAS = {
       "@type": "WebPage",
       "@id": "https://insydz.com/#webpage",
       url: "https://insydz.com",
-      name: "AI-Powered Ecommerce Analytics Software | Insydz",
+      name: "Amazon & Flipkart Sellers Tool | Marketplace Intelligence Software",
       description:
         "Track competitor prices, research keywords, and win the Buy Box on Amazon & Flipkart. Get instant WhatsApp alerts with Insydz's seller dashboard. Try free.",
       breadcrumb: { "@id": "https://insydz.com/#breadcrumb" },
@@ -35,14 +44,6 @@ const SCHEMAS = {
           item: "https://insydz.com",
         },
       ],
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://insydz.com/#organization",
-      name: "Insydz",
-      url: "https://insydz.com",
-      logo: "https://insydz.com/logo.png",
-      sameAs: ["https://www.linkedin.com/company/insydz"],
     },
     {
       "@type": "SoftwareApplication",
