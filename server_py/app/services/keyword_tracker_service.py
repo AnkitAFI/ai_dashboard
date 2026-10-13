@@ -2967,133 +2967,137 @@ def explore_keyword(user_id: int, keyword: str, platform: str, db: Session) -> K
     variations = []
     
     # Helper to generate local e-commerce suggestion variations
-    def generate_local_suggestions(keyword_str: str, hash_val: int) -> list:
-        k_lower = keyword_str.lower().strip()
-        words = k_lower.split()
-        kw_set = set(words)
-        
-        # Category triggers
-        summer_triggers = {"sunscreen", "sunscream", "ac", "cooler", "coolers", "refrigerator", "fridge", "ice", "lemonade", "sunglasses", "swimwear", "cotton"}
-        monsoon_triggers = {"umbrella", "umbrellas", "raincoat", "raincoats", "tea", "coffee"}
-        winter_triggers = {"heater", "heaters", "geyser", "geysers", "woolen", "sweater", "sweaters", "jacket", "jackets", "socks", "blanket", "blankets"}
-        bottle_triggers = {"bottle", "bottles"}
-        cosmetics_triggers = {"serum", "cream", "shampoo", "wash", "oil", "hair", "lipstick", "moisturizer", "conditioner", "skincare", "beauty", "lotion", "gel", "face"}
-        electronics_triggers = {"speaker", "speakers", "headphone", "headphones", "earbud", "earbuds", "earphone", "earphones", "charger", "charging", "watch", "smartwatch", "mouse", "keyboard", "mobile", "phone", "laptop", "soundbar", "powerbank", "cable", "adapter", "dryer", "hairdryer", "trimmer", "iron"}
-        backpack_triggers = {"bag", "bags", "backpack", "backpacks"}
-        
-        # Generic e-commerce modifiers
-        intents_list = ["best", "buy", "top rated", "latest", "original", "premium"]
-        suffixes_list = [
-            "under 1000", "under 500", "on sale", "with discount", 
-            "deals", "online", "price", "reviews", "for gift"
-        ]
-        
-        # Category-specific modifiers
-        if kw_set & summer_triggers:
-            cat_suffixes = ["for summer", "cooling", "portable", "home use", "outdoor"]
-        elif kw_set & monsoon_triggers:
-            cat_suffixes = ["waterproof", "windproof", "durable", "unisex", "folded"]
-        elif kw_set & winter_triggers:
-            cat_suffixes = ["for winter", "room heating", "warm", "thermal", "insulated"]
-        elif kw_set & bottle_triggers:
-            cat_suffixes = ["1 litre", "steel", "insulated", "water bottle for school", "gym", "hot and cold"]
-        elif kw_set & cosmetics_triggers:
-            cat_suffixes = ["for glowing skin", "for dry skin", "for oily skin", "natural", "organic", "daily use"]
-        elif kw_set & electronics_triggers:
-            cat_suffixes = ["bluetooth", "wireless", "with mic", "noise cancelling", "fast charging", "bass boosted"]
-        elif kw_set & backpack_triggers:
-            cat_suffixes = ["for college", "waterproof", "travel", "laptop bag", "office"]
-        else:
-            cat_suffixes = ["combo pack", "high quality", "new model", "for daily use"]
-
-        candidates = []
-        for i_word in intents_list:
-            if not k_lower.startswith(i_word):
-                candidates.append(f"{i_word} {k_lower}")
-                
-        for s_word in cat_suffixes:
-            s_words = s_word.split()
-            if not any(w in kw_set for w in s_words):
-                candidates.append(f"{k_lower} {s_word}")
-                
-        for s_word in suffixes_list:
-            s_words = s_word.split()
-            if not any(w in kw_set for w in s_words):
-                candidates.append(f"{k_lower} {s_word}")
-
-        picked_list = []
-        curr_seed = hash_val
-        unique_candidates = []
-        seen = set()
-        for c in candidates:
-            c_clean = c.strip()
-            if c_clean and c_clean != k_lower and c_clean not in seen:
-                seen.add(c_clean)
-                unique_candidates.append(c_clean)
-                
-        while len(picked_list) < 10 and unique_candidates:
-            curr_seed = (curr_seed * 1664525 + 1013904223) % 2**32
-            idx = curr_seed % len(unique_candidates)
-            picked_list.append(unique_candidates.pop(idx))
-            
-        return picked_list
-
-    # Try to fetch real suggestions from RapidAPI Global Search Suggestions API if platform is amazon
-    sugg_data = []
-    if platform == "amazon":
+    # Real database product title mining for 100% authentic keyword variations
+    def extract_real_db_suggestions(db_session, keyword_str: str, target_platform: str) -> list:
         try:
-            import httpx
-            url = "https://global-search-suggestions-api.p.rapidapi.com/amazon/"
-            import os
-            api_key = os.getenv("KEYWORD_SUGGEST_KEY")
-            if not api_key:
-                raise ValueError("KEYWORD_SUGGEST_KEY is not set in the environment variables")
-            headers = {
-                "x-rapidapi-host": "global-search-suggestions-api.p.rapidapi.com",
-                "x-rapidapi-key": api_key
-            }
-            with httpx.Client(timeout=2.5) as client:
-                resp = client.get(url, headers=headers, params={"query": kw_lower})
-                if resp.status_code == 200:
-                    resp_json = resp.json()
-                    raw_suggs = []
-                    if isinstance(resp_json, list):
-                        for item in resp_json:
-                            if isinstance(item, str):
-                                raw_suggs.append(item)
-                            elif isinstance(item, dict):
-                                val = item.get("suggestion") or item.get("value") or item.get("text")
-                                if val:
-                                    raw_suggs.append(str(val))
-                    elif isinstance(resp_json, dict):
-                        suggestions_list = resp_json.get("suggestions") or resp_json.get("data") or resp_json.get("results")
-                        if isinstance(suggestions_list, list):
-                            for item in suggestions_list:
-                                if isinstance(item, str):
-                                    raw_suggs.append(item)
-                                elif isinstance(item, dict):
-                                    val = item.get("suggestion") or item.get("value") or item.get("text")
-                                    if val:
-                                        raw_suggs.append(str(val))
-                        else:
-                            for key in ["suggestions", "data", "results", "suggestions_list"]:
-                                if key in resp_json:
-                                    val = resp_json[key]
-                                    if isinstance(val, list):
-                                        raw_suggs.extend([str(x) for x in val if isinstance(x, str)])
-                    sugg_data = [s.strip() for s in raw_suggs if s.strip()]
-                else:
-                    logger.warning(f"RapidAPI autocomplete request returned status code {resp.status_code}")
-        except Exception as api_err:
-            logger.error(f"RapidAPI autocomplete fetch failed: {api_err}")
-
-    # Fallback to local e-commerce NLP suggestion engine if RapidAPI returned too few suggestions
-    if len(sugg_data) < 5:
-        if ollama_success and ai_generated_keywords:
-            sugg_data = [item.get("keyword") for item in ai_generated_keywords if isinstance(item, dict) and item.get("keyword")]
+            import re
+            from collections import Counter
+            main_tbl = "rapidapi_flipkart_products" if target_platform == "flipkart" else "rapidapi_amazon_products"
+            hist_tbl = "rapidapi_flipkart_products_history" if target_platform == "flipkart" else "rapidapi_amazon_products_history"
             
+            # Query actual matching products with highest demand/sales
+            db_rows = db_session.execute(text(f"""
+                SELECT product_title 
+                FROM {main_tbl} 
+                WHERE LOWER(product_title) LIKE :query
+                ORDER BY COALESCE(avg_sales_volume, 0) DESC
+                LIMIT 50
+            """), {"query": f"%{keyword_str.lower()}%"}).fetchall()
+            
+            if not db_rows:
+                db_rows = db_session.execute(text(f"""
+                    SELECT product_title 
+                    FROM {hist_tbl} 
+                    WHERE LOWER(product_title) LIKE :query
+                    LIMIT 50
+                """), {"query": f"%{keyword_str.lower()}%"}).fetchall()
+
+            clean_k = keyword_str.lower().strip()
+            phrases = []
+            
+            for (title,) in db_rows:
+                if not title:
+                    continue
+                parts = re.split(r'[,|–\-\(\)\+&/]', title.lower())
+                for part in parts:
+                    part = part.strip()
+                    if clean_k in part:
+                        words = part.split()
+                        if 2 <= len(words) <= 5:
+                            clean_p = " ".join([w for w in words if w.isalnum() or '.' in w])
+                            if clean_p and clean_p != clean_k:
+                                phrases.append(clean_p)
+
+            counts = Counter(phrases)
+            extracted = []
+            for p, _ in counts.most_common(12):
+                if p not in extracted:
+                    extracted.append(p)
+            return extracted
+        except Exception as db_mine_err:
+            logger.error(f"Failed to mine real keywords from DB: {db_mine_err}")
+            return []
+
+    # Fetch real suggestions based on selected platform
+    sugg_data = []
+
+    if platform == "flipkart":
+        # 1. Primary for Flipkart: Extract real search variations directly from Flipkart database (5.9M products)
+        real_db_suggs = extract_real_db_suggestions(db, kw_lower, "flipkart")
+        for r_sugg in real_db_suggs:
+            if r_sugg not in sugg_data and r_sugg.lower() != kw_lower:
+                sugg_data.append(r_sugg)
+                if len(sugg_data) >= 8:
+                    break
+
+        # 2. If fewer than 5, supplement with live e-commerce search autocomplete
         if len(sugg_data) < 5:
-            sugg_data = generate_local_suggestions(kw_lower, h)
+            try:
+                import os
+                import httpx
+                from dotenv import load_dotenv
+                load_dotenv()
+                api_key = os.getenv("KEYWORD_SUGGEST_KEY") or os.getenv("RAPIDAPI_KEY")
+                if api_key:
+                    url = "https://global-search-suggestions-api.p.rapidapi.com/amazon/"
+                    headers = {
+                        "x-rapidapi-host": "global-search-suggestions-api.p.rapidapi.com",
+                        "x-rapidapi-key": api_key
+                    }
+                    with httpx.Client(timeout=3.0) as client:
+                        resp = client.get(url, headers=headers, params={"query": kw_lower})
+                        if resp.status_code == 200:
+                            resp_json = resp.json()
+                            raw_suggs = resp_json.get("suggestions", [])
+                            for s in raw_suggs:
+                                s_str = str(s).strip()
+                                if s_str and s_str.lower() != kw_lower and s_str not in sugg_data:
+                                    sugg_data.append(s_str)
+            except Exception as api_err:
+                logger.warning(f"Flipkart autocomplete fallback API fetch failed: {api_err}")
+
+    else:
+        # Primary for Amazon: Live Amazon Autocomplete API first
+        try:
+            import os
+            import httpx
+            from dotenv import load_dotenv
+            load_dotenv()
+            api_key = os.getenv("KEYWORD_SUGGEST_KEY") or os.getenv("RAPIDAPI_KEY")
+            if api_key:
+                url = "https://global-search-suggestions-api.p.rapidapi.com/amazon/"
+                headers = {
+                    "x-rapidapi-host": "global-search-suggestions-api.p.rapidapi.com",
+                    "x-rapidapi-key": api_key
+                }
+                with httpx.Client(timeout=3.0) as client:
+                    resp = client.get(url, headers=headers, params={"query": kw_lower})
+                    if resp.status_code == 200:
+                        resp_json = resp.json()
+                        raw_suggs = resp_json.get("suggestions", [])
+                        for s in raw_suggs:
+                            s_str = str(s).strip()
+                            if s_str and s_str.lower() != kw_lower and s_str not in sugg_data:
+                                sugg_data.append(s_str)
+        except Exception as api_err:
+            logger.warning(f"Amazon autocomplete API fetch failed: {api_err}")
+
+        # Backfill with real matching product titles from Amazon database
+        if len(sugg_data) < 5:
+            real_db_suggs = extract_real_db_suggestions(db, kw_lower, "amazon")
+            for r_sugg in real_db_suggs:
+                if r_sugg not in sugg_data and r_sugg.lower() != kw_lower:
+                    sugg_data.append(r_sugg)
+                    if len(sugg_data) >= 8:
+                        break
+
+    # If still needed, backfill with AI suggestions
+    if len(sugg_data) < 5 and ollama_success and ai_generated_keywords:
+        for item in ai_generated_keywords:
+            if isinstance(item, dict) and item.get("keyword"):
+                k_val = item.get("keyword").strip()
+                if k_val and k_val.lower() != kw_lower and k_val not in sugg_data:
+                    sugg_data.append(k_val)
 
     # Convert suggestion strings to ExplorerVariationItems
     for val in sugg_data:
