@@ -57,6 +57,22 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "37",
+    title:
+      "How to Sell on Amazon (Step by Step Tutorial): Amazon FBA for Beginners",
+    excerpt:
+      "Selling on Amazon India takes a few days to set up and a few months to get right. This step by step tutorial covers registration, FBA, listings, pricing, and ads in the order you will do them.",
+    category: "Seller Tools & Strategy",
+    readTime: "7 min read",
+    image:
+      "/images/blogs/37-how-to-sell-on-amazon-india-fba-beginners-2026/37_blog_image_1.webp",
+    featuredImage:
+      "/images/blogs/37-how-to-sell-on-amazon-india-fba-beginners-2026/37_blog_cover_image.webp",
+    route:
+      "/resources/expert-blog/how-to-sell-on-amazon-india-fba-beginners-2026",
+    popular: true,
+  },
+  {
     id: "36",
     title:
       "Amazon Great Indian Festival & Flipkart BBD 2026: What to Do Before Oct 8",
@@ -66,8 +82,8 @@ const articles: Article[] = [
     readTime: "6 min read",
     image:
       "/images/blogs/36-amazon-great-indian-festival-flipkart-big-billion-days-2026/36_blog_image_1.webp",
-    featuredImage:
-      "/images/blogs/36-amazon-great-indian-festival-flipkart-big-billion-days-2026/36_blog_cover_image.webp",
+    // featuredImage:
+    // "/images/blogs/36-amazon-great-indian-festival-flipkart-big-billion-days-2026/36_blog_cover_image.webp",
     route:
       "/resources/expert-blog/amazon-great-indian-festival-flipkart-big-billion-days-2026",
     popular: true,
@@ -682,16 +698,16 @@ export default function ExpertBlog() {
                 </div>
 
                 {/* Content */}
-                <div className="p-5 sm:p-6 md:p-8 flex flex-col justify-center overflow-hidden">
+                <div className="p-5 sm:p-6 md:p-8 flex flex-col justify-center">
                   <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold mb-3 w-fit">
                     {featuredArticle.category}
                   </div>
 
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-snug mb-4 line-clamp-3">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white leading-snug mb-3 break-words">
                     {featuredArticle.title}
                   </h3>
 
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-5 line-clamp-3">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-5 break-words">
                     {featuredArticle.excerpt}
                   </p>
 
@@ -1081,7 +1097,7 @@ export default function ExpertBlog() {
   height: 100%;
   min-height: 280px;
   overflow: hidden;
-  background: #FDEEDB; /* matches the cream tone in the source image so any letterbox edge blends in */
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;

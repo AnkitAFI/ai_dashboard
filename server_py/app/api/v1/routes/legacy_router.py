@@ -19151,6 +19151,7 @@ async def sitemap():
         "/resources/expert-blog/top-amazon-india-sellers-habits",
         "/resources/expert-blog/cost-to-start-selling-on-amazon-india-2026",
         "/resources/expert-blog/amazon-great-indian-festival-flipkart-big-billion-days-2026",
+        "/resources/expert-blog/how-to-sell-on-amazon-india-fba-beginners-2026",
     ]
     
     xml = ['<?xml version="1.0" encoding="UTF-8"?>']

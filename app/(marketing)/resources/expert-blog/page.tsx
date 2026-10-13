@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ExpertBlogContent from "./blog-index-content";
+import ExpertBlogContent from "./blog-index-main";
 
 export const dynamic = "force-static";
 
