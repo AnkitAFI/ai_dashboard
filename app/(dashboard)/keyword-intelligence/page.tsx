@@ -150,6 +150,8 @@ interface KeywordExplorerResponse {
   serp: ExplorerSerpItem[];
   cached_at: string;
   trend: number[];
+  trend_dates?: string[];
+  is_real_history?: boolean;
   global_search_volume: number;
   global_breakdown: Record<string, number>;
   competitive_density: number;
@@ -1028,55 +1030,100 @@ function KeywordExplorerPanel({
 
             {/* Search Trend Chart */}
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl p-6 bg-white dark:bg-slate-900 lg:col-span-3">
-              <CardHeader className="p-0 pb-4">
-                <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-                  12-Month Search Volume Trend
-                  <TooltipProvider delayDuration={0}>
-                    <UITooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
-                      </TooltipTrigger>
-                      <TooltipContent className="w-60" side="top">
-                        <p className="text-xs">How search interest for this product has changed over the last 12 months.</p>
-                      </TooltipContent>
-                    </UITooltip>
-                  </TooltipProvider>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={
-                    (data.trend || []).map((vol, idx) => {
-                      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                      const currentMonth = new Date().getMonth();
-                      const dynamicMonths = [];
-                      for (let i = 11; i >= 0; i--) {
-                        let m = currentMonth - i;
-                        if (m < 0) m += 12;
-                        dynamicMonths.push(months[m]);
-                      }
-                      return { month: dynamicMonths[idx % 12], Volume: vol };
-                    })
-                  } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#334155" : "#f1f5f9"} />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      fontSize={10}
-                      stroke="#94a3b8"
-                      width={45}
-                      tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
-                    />
-                    <Tooltip
-                      contentStyle={{ background: isDark ? "#0f172a" : "#ffffff", border: isDark ? "1px solid #1e293b" : "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: isDark ? "#f8fafc" : "#334155" }}
-                      labelClassName="font-bold"
-                    />
-                    <Bar dataKey="Volume" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
+              {(() => {
+                // Compute month-wise chart data dynamically
+                let chartItems: { month: string; Volume: number }[] = [];
+
+                if (data.is_real_history && data.trend_dates && data.trend_dates.length > 0) {
+                  // Group daily records by month name (e.g. "06 May" -> "May")
+                  const monthTotals: { [key: string]: { total: number; count: number } } = {};
+                  const monthOrder: string[] = [];
+
+                  data.trend.forEach((vol, idx) => {
+                    const dateStr = data.trend_dates![idx] || "";
+                    const mMatch = dateStr.match(/[a-zA-Z]+/);
+                    const month = mMatch ? mMatch[0] : `M${idx + 1}`;
+
+                    if (!monthTotals[month]) {
+                      monthTotals[month] = { total: 0, count: 0 };
+                      monthOrder.push(month);
+                    }
+                    monthTotals[month].total += vol;
+                    monthTotals[month].count += 1;
+                  });
+
+                  chartItems = monthOrder.map((month) => {
+                    const avgDaily = monthTotals[month].total / Math.max(1, monthTotals[month].count);
+                    // Total monthly volume = average daily volume * 30 days
+                    const monthlyTotal = Math.round((avgDaily * 30) / 50) * 50;
+                    return {
+                      month,
+                      Volume: monthlyTotal,
+                    };
+                  });
+                } else {
+                  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                  const currentMonth = new Date().getMonth();
+                  const dynamicMonths: string[] = [];
+                  for (let i = 11; i >= 0; i--) {
+                    let m = currentMonth - i;
+                    if (m < 0) m += 12;
+                    dynamicMonths.push(months[m]);
+                  }
+                  chartItems = (data.trend || []).map((vol, idx) => ({
+                    month: dynamicMonths[idx % 12],
+                    Volume: vol,
+                  }));
+                }
+
+                return (
+                  <>
+                    <CardHeader className="p-0 pb-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+                          {data.is_real_history ? "Marketplace History Trend" : "12-Month Search Volume Trend"}
+                          <TooltipProvider delayDuration={0}>
+                            <UITooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-64" side="top">
+                                <p className="text-xs">
+                                  {data.is_real_history
+                                    ? `Monthly search volume aggregated directly from ${platform === "amazon" ? "Amazon India" : "Flipkart India"} marketplace history.`
+                                    : "Estimated monthly search interest over the last 12 months."}
+                                </p>
+                              </TooltipContent>
+                            </UITooltip>
+                          </TooltipProvider>
+                        </CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0 h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartItems} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#334155" : "#f1f5f9"} />
+                          <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            fontSize={10}
+                            stroke="#94a3b8"
+                            width={45}
+                            tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                          />
+                          <Tooltip
+                            contentStyle={{ background: isDark ? "#0f172a" : "#ffffff", border: isDark ? "1px solid #1e293b" : "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: isDark ? "#f8fafc" : "#334155" }}
+                            labelClassName="font-bold"
+                          />
+                          <Bar dataKey="Volume" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </>
+                );
+              })()}
             </Card>
 
             {/* Geo breakdown list */}

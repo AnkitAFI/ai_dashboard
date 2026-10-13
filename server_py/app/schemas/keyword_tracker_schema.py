@@ -192,3 +192,5 @@ class KeywordExplorerResponse(BaseModel):
     competitive_density: Optional[float] = None
     serp_features: Optional[List[str]] = None
     trend: Optional[List[int]] = None
+    trend_dates: Optional[List[str]] = None
+    is_real_history: Optional[bool] = False

@@ -13,7 +13,7 @@ export const dynamic = "force-static";
 
 const faqs = [
   { q: "How quickly do you respond?", a: "We typically respond within 24–48 hours on business days. For urgent support issues, please mention it in your message subject." },
-  { q: "Where is INSYDZ based?", a: "INSYDZ is headquartered in New Delhi, India. We are an India-first SaaS platform built specifically for Indian marketplace sellers." },
+  { q: "Where is INSYDZ based?", a: "INSYDZ is headquartered in Noida, Uttar Pradesh (Delhi NCR), India. We are an India-first SaaS platform built specifically for Indian marketplace sellers." },
   { q: "Can I request a feature?", a: "Absolutely. We actively build based on seller feedback. Use the contact form below and select 'Other' as your inquiry type, then describe the feature you need." },
   { q: "Do you offer enterprise plans?", a: "Yes. We have custom plans for agencies and large seller operations. Reach out to partnerships@insydz.com or book a demo to discuss your requirements." },
   { q: "How do I cancel my subscription?", a: "You can cancel your subscription anytime from your account settings. For help, email support@insydz.com and our team will assist you promptly." },
@@ -187,21 +187,21 @@ export default function ContactUsPage() {
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1.5">Full Name <span className="text-red-400">*</span></label>
-                      <input type="text" name="name" required value={formState.name} onChange={handleFormChange} placeholder="Rahul Sharma" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50" />
+                      <input type="text" name="name" required value={formState.name} onChange={handleFormChange} placeholder="Rahul Sharma" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50 min-h-[48px]" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1.5">Work Email <span className="text-red-400">*</span></label>
-                      <input type="email" name="email" required value={formState.email} onChange={handleFormChange} placeholder="rahul@brand.com" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50" />
+                      <input type="email" name="email" required value={formState.email} onChange={handleFormChange} placeholder="rahul@brand.com" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50 min-h-[48px]" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">Company / Brand</label>
-                    <input type="text" name="company" value={formState.company} onChange={handleFormChange} placeholder="Your company or brand name" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50" />
+                    <input type="text" name="company" value={formState.company} onChange={handleFormChange} placeholder="Your company or brand name" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50 min-h-[48px]" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">Inquiry Type <span className="text-red-400">*</span></label>
                     <div className="relative">
-                      <select name="inquiry" required value={formState.inquiry} onChange={handleFormChange} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 appearance-none focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50 cursor-pointer">
+                      <select name="inquiry" required value={formState.inquiry} onChange={handleFormChange} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm text-gray-900 appearance-none focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition bg-gray-50 cursor-pointer min-h-[48px]">
                         <option value="" disabled>Select inquiry type</option>
                         <option value="support">Support</option>
                         <option value="sales">Sales</option>
@@ -213,7 +213,7 @@ export default function ContactUsPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">Message <span className="text-red-400">*</span></label>
-                    <textarea name="message" required rows={5} value={formState.message} onChange={handleFormChange} placeholder="Describe your question or request in detail..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition resize-none bg-gray-50" />
+                    <textarea name="message" required rows={5} value={formState.message} onChange={handleFormChange} placeholder="Describe your question or request in detail..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition resize-none bg-gray-50" />
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-1">
                     <button type="submit" id="contact-form-submit-btn" disabled={isSubmitting} className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-bold px-7 py-3 rounded-full shadow-md transition-all hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed">
@@ -227,16 +227,17 @@ export default function ContactUsPage() {
 
             <div className="flex flex-col gap-4">
               {[
-                { icon: "📧", title: "Email Us", value: "contact@insydz.com", href: "mailto:contact@insydz.com", sub: "General enquiries" },
-                { icon: "📍", title: "Registered Office", value: "New Delhi, India", href: null as string | null, sub: "Serving sellers nationwide" },
-                { icon: "⏱️", title: "Response Time", value: "24–48 hours on business days", href: null as string | null, sub: null as string | null },
+                { icon: "📞", title: "Phone / WhatsApp", value: "+91-92172-46794", href: "tel:+919217246794", sub: "Mon–Sat, 09:00 to 18:00 IST" },
+                { icon: "📧", title: "Email Us", value: "contact@insydz.com", href: "mailto:contact@insydz.com", sub: "Support: support@insydz.com" },
+                { icon: "📍", title: "Office Address", value: "506, 5th Floor, ITHUM Tower, Block A, Industrial Area, Sector 62, Noida, Uttar Pradesh 201301", href: null as string | null, sub: "Verified Google Business Location" },
+                { icon: "⏱️", title: "Opening Hours", value: "09:00 – 18:00 (Mon–Sat)", href: null as string | null, sub: "Sunday Closed" },
               ].map((item, i) => (
                 <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-start gap-4">
                   <span className="text-2xl">{item.icon}</span>
                   <div>
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-0.5">{item.title}</p>
-                    {item.href ? <a href={item.href} className="text-sm font-bold text-violet-600 hover:text-violet-700 transition-colors">{item.value}</a> : <p className="text-sm font-bold text-gray-800">{item.value}</p>}
-                    {item.sub && <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>}
+                    {item.href ? <a href={item.href} className="text-sm font-bold text-violet-600 hover:text-violet-700 transition-colors">{item.value}</a> : <p className="text-sm font-bold text-gray-800 leading-snug">{item.value}</p>}
+                    {item.sub && <p className="text-xs text-gray-400 mt-1">{item.sub}</p>}
                   </div>
                 </div>
               ))}
