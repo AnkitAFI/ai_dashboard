@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Facebook, Twitter, Instagram, Linkedin, Shield } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Shield, Youtube, Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
   const pathname = usePathname();
@@ -111,6 +111,37 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Contact Information Bar */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-6 mb-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-[#a19bad]">
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-white mb-1">Office Address</span>
+              <p className="leading-relaxed text-xs sm:text-sm text-[#c2bdd0]">
+                506, 5th Floor, ITHUM Tower, Block A, Industrial Area, Sector 62, Noida, Uttar Pradesh 201301
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Phone className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-white mb-1">Phone / WhatsApp</span>
+              <a href="tel:+919217246794" className="text-white hover:text-purple-300 transition-colors font-medium text-sm">
+                +91-92172-46794
+              </a>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Mail className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-white mb-1">Support Email</span>
+              <a href="mailto:support@insydz.com" className="text-white hover:text-purple-300 transition-colors font-medium text-sm">
+                support@insydz.com
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Strip */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
 
@@ -127,6 +158,9 @@ export function Footer() {
             </a>
             <a title="Insydz on LinkedIn" href="https://www.linkedin.com/company/insydz/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
               <Linkedin className="w-4 h-4" />
+            </a>
+            <a title="Insydz on YouTube" href="https://www.youtube.com/@growwith_Insydz" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white hover:text-red-400">
+              <Youtube className="w-4 h-4" />
             </a>
           </div>
 

@@ -10,15 +10,50 @@ export default function MarketingLayout({
 }) {
   const organizationSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "ProfessionalService"],
     "@id": "https://insydz.com/#organization",
-    "name": "Insydz",
-    "url": "https://insydz.com",
-    "logo": {
+    name: "Insydz",
+    url: "https://insydz.com/",
+    logo: {
       "@type": "ImageObject",
-      "url": "https://insydz.com/logo.png",
+      url: "https://insydz.com/logo.png",
     },
-    "sameAs": [
+    image: "https://insydz.com/logo.png",
+    description:
+      "Insydz is an AI powered marketplace analytics platform built for Amazon India and Flipkart sellers. The software brings sales, advertising, pricing and competitor data into one dashboard so sellers can see what is working and act on it quickly.",
+    telephone: "+91-92172-46794",
+    email: "contact@insydz.com",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "506, 5th Floor, ITHUM Tower, Block A, Industrial Area, Sector 62",
+      addressLocality: "Noida",
+      addressRegion: "Uttar Pradesh",
+      postalCode: "201301",
+      addressCountry: "IN",
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        opens: "09:00",
+        closes: "18:00",
+      },
+    ],
+    areaServed: {
+      "@type": "Country",
+      name: "India",
+    },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "support@insydz.com",
+        telephone: "+91-92172-46794",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+    ],
+    sameAs: [
       "https://www.instagram.com/growwithinsydz",
       "https://www.linkedin.com/company/insydz/",
       "https://www.facebook.com/profile.php?id=61586202582209",
