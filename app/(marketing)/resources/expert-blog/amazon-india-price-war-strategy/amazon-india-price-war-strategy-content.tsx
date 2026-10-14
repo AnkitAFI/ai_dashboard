@@ -428,7 +428,7 @@ export default function AmazonIndiaPriceWarStrategyContent() {
 
         {/* Hero image */}
         <BlogImageSection
-          imageSrc="/Blog_30_banner.png"
+          imageSrc="/BLog_30_banner.png"
           altText="Amazon India Price War Strategy"
           caption="Insydz competitor price monitor showing a live price war in a tiffin box category. Two competitors dropped from ₹849 to ₹699 in 72 hours. The seller held at ₹799 above their ₹740 floor because the review gap (4.4 vs 3.8 stars) justified the premium — and retained 64% Buy Box share without matching a single drop."
         />

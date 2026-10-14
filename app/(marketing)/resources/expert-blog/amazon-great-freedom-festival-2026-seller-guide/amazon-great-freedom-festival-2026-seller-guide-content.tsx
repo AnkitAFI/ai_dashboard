@@ -332,7 +332,7 @@ const freedomRelatedCards = [
     tag: "Price War Strategy",
     title: "Amazon India Price Wars: Compete Without Losing Margin",
     route: "/resources/expert-blog/amazon-india-price-war-strategy",
-    image: "/Blog_30_banner.png",
+    image: "/BLog_30_banner.png",
   },
   {
     tag: "Prime Day Strategy",
