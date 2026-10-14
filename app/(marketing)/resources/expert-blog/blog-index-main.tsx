@@ -156,7 +156,7 @@ const articles: Article[] = [
       "Stuck in an Amazon India price war? Learn 3 proven strategies to compete without racing to the bottom -- differentiate, bundle, or own the mid-range.",
     category: "Pricing Strategy",
     readTime: "11 min read",
-    image: "/Blog_30_banner.png",
+    image: "/BLog_30_banner.png",
     featuredImage: "/image.png",
     route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
     popular: true,

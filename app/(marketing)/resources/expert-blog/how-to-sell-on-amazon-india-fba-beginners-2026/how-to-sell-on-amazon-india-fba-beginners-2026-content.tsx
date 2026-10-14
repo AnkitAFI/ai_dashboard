@@ -212,7 +212,7 @@ const relatedArticlesCards = [
     tag: "Pricing Strategy",
     title: "How to Survive an Amazon India Price War",
     route: "/resources/expert-blog/amazon-india-price-war-strategy",
-    image: "/Blog_30_banner.png",
+    image: "/BLog_30_banner.png",
   },
   {
     tag: "Review Intelligence",
