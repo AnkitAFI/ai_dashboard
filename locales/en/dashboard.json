@@ -530,7 +530,18 @@
     "sales": "Sales",
     "previous": "Previous",
     "next": "Next",
-    "page": "Page"
+    "page": "Page",
+    "groupedBanner": "Products grouped by parent listing • Expand to compare variants",
+    "variantsCount": "{{count}} variants",
+    "variant": "Variant",
+    "size": "Size",
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All",
+    "parentListings": "Parent Listings",
+    "optionSpec": "Option / Spec",
+    "colorSize": "Color / Size",
+    "sizeVolume": "Size / Volume",
+    "configSpec": "Config / Spec"
   },
   "routes": {
     "home": {
