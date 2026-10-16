@@ -107,7 +107,7 @@ export function Footer() {
                     <Shield className="w-5 h-5 text-green-400 flex-shrink-0" />
                     <h4 className="font-bold text-white text-base">Data Privacy Guarantee</h4>
                   </div>
-                  <IsoLogo className="w-9 h-9 shrink-0" />
+                  <IsoLogo className="h-8 w-auto shrink-0 bg-white p-0.5 rounded" />
                 </div>
                 <p className="text-sm text-[#a19bad] leading-relaxed mb-3">
                   Insydz strictly complies with Amazon's Acceptable Use Policy (Sections 4.4 and 4.5). All market insights are derived exclusively from public marketplace data. We never aggregate, share, or pool private internal seller data to provide insights.
