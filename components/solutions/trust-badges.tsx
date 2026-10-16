@@ -23,7 +23,7 @@ export default function TrustBadges({ theme = "light" }: TrustBadgesProps) {
         <span>✓ Cancel anytime</span>
         <span className="text-black/40">·</span>
         <span className="font-medium text-black inline-flex items-center gap-1.5">
-          <img src="/iso-logo.png" alt="IAF ISO 27001" className="h-4 w-auto object-contain" />
+          <img src="/hawk.png" alt="Hawk Eye ISO 27001" className="h-4 w-auto object-contain rounded-[2px]" />
           <span>✓ ISO 27001:2022 Certified</span>
         </span>
       </p>
@@ -39,7 +39,7 @@ export default function TrustBadges({ theme = "light" }: TrustBadgesProps) {
       <span>✓ Cancel anytime</span>
       <span className="text-white/40">·</span>
       <span className="font-medium text-sky-200 inline-flex items-center gap-1.5">
-        <img src="/iso-logo.png" alt="IAF ISO 27001" className="h-4 w-auto object-contain" />
+        <img src="/hawk.png" alt="Hawk Eye ISO 27001" className="h-4 w-auto object-contain rounded-[2px] bg-white/90 p-0.5" />
         <span>✓ ISO 27001:2022 Certified</span>
       </span>
     </p>

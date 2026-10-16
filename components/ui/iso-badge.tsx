@@ -9,11 +9,11 @@ interface IsoBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Official IAF Accredited Logo from ISO 27001:2022 Certificate
+ * Official Hawk Eye & EGAC Certified ISO 27001:2022 Client Mark
  */
 export function IsoLogo({
-  className = "w-8 h-8",
-  alt = "IAF ISO/IEC 27001:2022 Certified",
+  className = "h-8 w-auto",
+  alt = "Hawk Eye Certified ISO 27001:2022",
 }: {
   className?: string;
   theme?: "light" | "dark" | "auto";
@@ -21,23 +21,23 @@ export function IsoLogo({
 }) {
   return (
     <img
-      src="/iso-logo.png"
+      src="/hawk.png"
       alt={alt}
-      className={cn("object-contain shrink-0 select-none", className)}
+      className={cn("object-contain shrink-0 select-none rounded-[2px]", className)}
       loading="lazy"
     />
   );
 }
 
 /**
- * IAF Multilateral Recognition Arrangement Logo Badge
+ * Certification Logo Mark Badge
  */
 export function IafLogo({ className = "h-4" }: { className?: string }) {
   return (
     <img
-      src="/iso-logo.png"
-      alt="IAF Multilateral Recognition Arrangement"
-      className={cn("h-4 w-auto object-contain inline-block shrink-0", className)}
+      src="/hawk.png"
+      alt="Hawk Eye Certified ISO 27001:2022"
+      className={cn("h-4 w-auto object-contain inline-block shrink-0 rounded-[2px]", className)}
       loading="lazy"
     />
   );
@@ -64,7 +64,7 @@ export function IsoBadge({
         title="ISO/IEC 27001:2022 Certified Information Security"
         {...props}
       >
-        <img src="/iso-logo.png" alt="IAF" className="h-3.5 w-auto object-contain shrink-0" />
+        <img src="/hawk.png" alt="ISO 27001" className="h-3.5 w-auto object-contain shrink-0 rounded-[2px]" />
         <span>ISO 27001:2022</span>
       </div>
     );
@@ -79,7 +79,7 @@ export function IsoBadge({
         )}
         {...props}
       >
-        <img src="/iso-logo.png" alt="IAF ISO 27001" className="h-10 w-auto object-contain shrink-0" />
+        <img src="/hawk.png" alt="Hawk Eye ISO 27001" className="h-10 w-auto object-contain shrink-0 rounded-[3px] bg-white p-0.5" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-bold text-white text-xs sm:text-sm">ISO/IEC 27001:2022</span>
@@ -102,7 +102,7 @@ export function IsoBadge({
       title="ISO/IEC 27001:2022 Certified Information Security System"
       {...props}
     >
-      <img src="/iso-logo.png" alt="IAF" className="h-4 w-auto object-contain shrink-0" />
+      <img src="/hawk.png" alt="ISO 27001" className="h-4 w-auto object-contain shrink-0 rounded-[2px] bg-white p-0.5" />
       <span className="font-semibold tracking-tight text-[11px] sm:text-xs">
         ISO 27001:2022 Certified
       </span>
