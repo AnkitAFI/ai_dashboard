@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import ExpertButton from "../components/Expertbutton";
 import VideoButton from "../components/Videobutton";
+import { IsoLogo } from "@/components/ui/iso-badge";
 
 export default function Login() {
   const router = useRouter();
@@ -765,7 +766,7 @@ export default function Login() {
                 {/* Signup link */}
                 <div className="mt-5 pt-5 border-t border-gray-100 dark:border-slate-800 text-center space-y-3">
                   <p className="text-xs text-gray-400 dark:text-slate-500">
-                    Secure authentication with session management
+                    🔒 ISO 27001:2022 Certified & Secure Session Managed
                   </p>
                   <p className="text-sm text-gray-600 dark:text-slate-400">
                     Don't have an account?{" "}
@@ -784,9 +785,20 @@ export default function Login() {
       </div>
 
       {/* ── Full Width Footer ── */}
-      <div className="hidden lg:flex w-full bg-white dark:bg-slate-900 py-5 px-6 sm:px-12 lg:px-20 items-center justify-between gap-4 mt-auto border-t border-gray-200 dark:border-slate-800 transition-colors duration-300">
-        <div className="text-xs font-bold text-[#8a94a6] dark:text-slate-500 tracking-widest uppercase">
-          Trusted across India
+      <div className="hidden lg:flex w-full bg-white dark:bg-slate-900 py-4 px-6 sm:px-12 lg:px-20 items-center justify-between gap-4 mt-auto border-t border-gray-200 dark:border-slate-800 transition-colors duration-300">
+        <div className="flex flex-col items-start gap-1">
+          <div className="text-xs font-bold text-[#8a94a6] dark:text-slate-500 tracking-widest uppercase">
+            Trusted across India
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-[#4b5563] dark:text-slate-400">
+            <IsoLogo className="h-4 w-auto" />
+            <span>
+              <strong className="text-black dark:text-white font-semibold">
+                ISO 27001:2022
+              </strong>{" "}
+              certified
+            </span>
+          </div>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <div className="flex items-center gap-2 text-sm text-[#4b5563] dark:text-slate-400">
@@ -823,6 +835,7 @@ export default function Login() {
               average rating
             </span>
           </div>
+          <div className="hidden sm:block w-px h-5 bg-gray-200 dark:bg-slate-700" />
           <div className="flex items-center gap-2 text-sm text-[#4b5563] dark:text-slate-400">
             <div className="w-6 h-6 bg-[#f0f4f8] dark:bg-slate-800 rounded flex items-center justify-center">
               <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />

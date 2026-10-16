@@ -777,10 +777,10 @@ function PaymentModalInner({
                   <PriceCard breakup={breakup} hasGst={form.hasGst}
                     gstNumber={form.gstNumber} priceNote={plan.priceNote} />
 
-                  <div className="flex items-center justify-center gap-2 py-1">
-                    <Lock className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-xs text-slate-400 font-medium">256-bit SSL · Secured by Razorpay</span>
-                    <Shield className="h-3.5 w-3.5 text-green-500" />
+                  <div className="flex items-center justify-center gap-2 py-1 flex-wrap">
+                    <Lock className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                    <span className="text-xs text-slate-400 font-medium">256-bit SSL · ISO 27001:2022 · Secured by Razorpay</span>
+                    <Shield className="h-3.5 w-3.5 text-green-500 shrink-0" />
                   </div>
 
                   <div className="flex gap-3">

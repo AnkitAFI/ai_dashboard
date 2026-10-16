@@ -1803,8 +1803,10 @@ export default function LandingContent() {
                 className="rounded-full border border-white/40 px-8 py-3.5 text-center text-[15px] font-bold text-white transition-colors hover:bg-white hover:text-[#1a1033] dark:hover:text-gray-50 dark:hover:bg-gray-950/5"
                 text="Book a demo"
               />
-              <span className="text-center text-xs text-[#c9c2dd]">
-                Free plan. No credit card needed.
+              <span className="text-center text-xs text-[#c9c2dd] flex items-center justify-center gap-2 flex-wrap">
+                <span>Free plan. No credit card needed.</span>
+                <span className="text-white/40">·</span>
+                <span className="text-sky-300 font-medium">ISO 27001:2022 Certified</span>
               </span>
             </div>
           </div>

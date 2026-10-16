@@ -16,6 +16,7 @@ import { Menu } from "lucide-react";
 import SaaSTourGuide from "@/components/layout/saas-tour-guide";
 import CompleteProfileModal from "@/components/modals/complete-profile-modal";
 import { useAuth } from "@/lib/auth-context";
+import { IsoBadge } from "@/components/ui/iso-badge";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isOpen, setIsOpen, toggle } = useSidebar();
@@ -107,8 +108,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </main>
         {/* Disclaimer Footer */}
-        <footer className="mt-auto px-4 sm:px-6 py-4 border-t border-sky-100 dark:border-slate-800">
-          <p className="text-xs text-gray-400 dark:text-gray-500 text-center leading-relaxed">
+        <footer className="mt-auto px-4 sm:px-6 py-4 border-t border-sky-100 dark:border-slate-800 flex flex-col items-center gap-2.5">
+          <IsoBadge variant="pill" className="bg-white/90 dark:bg-slate-900/90 border-sky-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 shadow-xs" />
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center leading-relaxed max-w-4xl">
             <span className="font-medium text-gray-500 dark:text-gray-400">
               Disclaimer:
             </span>{" "}
