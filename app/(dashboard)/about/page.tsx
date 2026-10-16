@@ -29,16 +29,16 @@ const FEATURES = [
   },
   {
     icon: <Shield className="h-6 w-6 text-orange-600 dark:text-orange-400" />,
-    title: "Secure & Private",
+    title: "Secure & ISO Certified",
     description:
-      "Your business data is protected with enterprise-grade security and encrypted storage. We never share your information with third parties.",
+      "Your business data is protected under an ISO/IEC 27001:2022 certified Information Security Management System (ISMS) with enterprise-grade encrypted storage.",
   },
 ];
 
 const STATS = [
   { label: "Active Sellers", value: "Growing", icon: <Users className="h-5 w-5" /> },
   { label: "Products Tracked", value: "4000+", icon: <Target className="h-5 w-5" /> },
-  { label: "Market", value: "India", icon: <Globe className="h-5 w-5" /> },
+  { label: "Security", value: "ISO 27001:2022", icon: <Shield className="h-5 w-5" /> },
   { label: "Focus", value: "Data-Driven", icon: <Award className="h-5 w-5" /> },
 ];
 

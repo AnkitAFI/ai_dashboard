@@ -241,7 +241,7 @@ export default function Subscription() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
 
-      setSuccess("Subscription cancelled successfully. It will not auto-renew.");
+      setSuccess(data.message || "Subscription auto-renewal cancelled successfully. It will not auto-renew.");
       await refreshUser();
     } catch (err: any) {
       setError(err.message);
@@ -528,33 +528,41 @@ export default function Subscription() {
                         <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
                       </Button>
                       {plan.id !== "free" && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={cancelling}
-                              className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
-                            >
-                              {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                              Cancel Auto Renewal
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle. No refund will be issued.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                              <AlertDialogAction onClick={cancelSubscription} className="bg-rose-600 hover:bg-rose-700 text-white">
-                                Yes, Cancel
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        user?.hasAutoRenew !== false ? (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={cancelling}
+                                className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
+                              >
+                                {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                                Cancel Auto Renewal
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle. No refund will be issued.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                                <AlertDialogAction onClick={cancelSubscription} className="bg-rose-600 hover:bg-rose-700 text-white">
+                                  Yes, Cancel
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        ) : (
+                          <div className="text-center pt-1">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                              Auto-Renewal: Off
+                            </span>
+                          </div>
+                        )
                       )}
                     </>
                   ) : plan.id === "enterprise" ? (

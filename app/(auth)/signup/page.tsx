@@ -789,7 +789,7 @@ function SignupContent() {
                 "Real-time dashboards",
                 "AI-generated insights",
                 "Localised intelligence",
-                "Secure & private",
+                "ISO 27001:2022 certified",
               ].map((feature, i) => (
                 <div
                   key={i}
@@ -1063,7 +1063,7 @@ function SignupContent() {
               {/* Footer */}
               <div className="mt-5 pt-5 border-t border-gray-100 dark:border-slate-800 text-center space-y-3">
                 <p className="text-xs text-gray-400 dark:text-slate-500">
-                  Secure authentication with session management
+                  🔒 ISO 27001:2022 Certified & Secure Session Managed
                 </p>
                 <p className="text-sm text-gray-600 dark:text-slate-400">
                   Have an account?{" "}

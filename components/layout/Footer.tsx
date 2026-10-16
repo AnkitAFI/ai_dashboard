@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Facebook, Twitter, Instagram, Linkedin, Shield, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { IsoBadge, IsoLogo } from "@/components/ui/iso-badge";
 
 export function Footer() {
   const pathname = usePathname();
@@ -99,14 +100,25 @@ export function Footer() {
 
           {/* Column 5 - Data Privacy Guarantee */}
           <div className="col-span-2 lg:col-span-1">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 h-full">
-              <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <h4 className="font-bold text-white text-base">Data Privacy Guarantee</h4>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 h-full flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <h4 className="font-bold text-white text-base">Data Privacy Guarantee</h4>
+                  </div>
+                  <IsoLogo className="w-9 h-9 shrink-0" />
+                </div>
+                <p className="text-sm text-[#a19bad] leading-relaxed mb-3">
+                  Insydz strictly complies with Amazon's Acceptable Use Policy (Sections 4.4 and 4.5). All market insights are derived exclusively from public marketplace data. We never aggregate, share, or pool private internal seller data to provide insights.
+                </p>
               </div>
-              <p className="text-sm text-[#a19bad] leading-relaxed">
-                Insydz strictly complies with Amazon's Acceptable Use Policy (Sections 4.4 and 4.5). All market insights are derived exclusively from public marketplace data. We never aggregate, share, or pool private internal seller data to provide insights.
-              </p>
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap text-xs text-sky-300">
+                <span className="font-semibold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  ISO/IEC 27001:2022 Certified
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -173,6 +185,8 @@ export function Footer() {
             <Link href="/terms-service" className="hover:text-white transition-colors">Terms & Conditions</Link>
             <div className="hidden sm:block">|</div>
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <div className="hidden sm:block">|</div>
+            <IsoBadge variant="compact" className="bg-white/10 text-white border-white/15 text-[11px] py-0.5 px-2" />
           </div>
         </div>
 

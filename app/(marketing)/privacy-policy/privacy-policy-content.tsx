@@ -111,18 +111,33 @@ export default function PrivacyPolicyContent() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Data Security</h2>
-            <p className="text-gray-700 dark:text-gray-300">
-              We implement industry-standard security measures to protect your information, including:
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Data Security & ISO Certification</h2>
+            <p className="text-gray-700 dark:text-gray-300 mb-3">
+              We implement industry-leading information security measures to protect your information, certified under rigorous international standards:
             </p>
+            <div className="my-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60">
+              <h3 className="font-bold text-blue-900 dark:text-blue-200 text-base mb-1">
+                ISO/IEC 27001:2022 Certified – Information Security Management System (ISMS)
+              </h3>
+              <p className="text-sm text-blue-800 dark:text-blue-300 mb-2">
+                Insydz (operated by Aavapti Technologies Private Limited) is audited and certified to comply with ISO/IEC 27001:2022 standards for the design, development, operation, and customer support of our SaaS analytics platform.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-blue-700 dark:text-blue-400 font-mono">
+                <div>• Certificate No: <strong>EGI/2610AI/5171</strong></div>
+                <div>• Accreditation: <strong>IAF & EGAC Accredited (CAB # 012212)</strong></div>
+                <div>• Standard: <strong>ISO/IEC 27001:2022</strong></div>
+                <div>• Certifying Body: <strong>Hawk Eye Certifications Pvt. Ltd.</strong></div>
+              </div>
+            </div>
             <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
-              <li>Encryption of data in transit and at rest</li>
-              <li>Secure authentication and access controls</li>
-              <li>Regular security audits and monitoring</li>
-              <li>Employee training on data protection</li>
+              <li>Encryption of data in transit (TLS/SSL) and at rest</li>
+              <li>Secure authentication, multi-factor verification, and role-based access controls</li>
+              <li>Adherence to ISO/IEC 27001:2022 Information Security Controls (SOA-ATPL Version 1.1)</li>
+              <li>Regular security audits, vulnerability assessments, and 24/7 infrastructure monitoring</li>
+              <li>Employee training on data confidentiality and marketplace privacy compliance</li>
             </ul>
             <p className="text-gray-700 dark:text-gray-300 mt-3">
-              However, no method of transmission over the internet or electronic storage is 100% secure. While we strive to protect your information, we cannot guarantee absolute security.
+              However, no method of transmission over the internet or electronic storage is 100% secure. While we strive to protect your information under ISO standards, we also encourage users to maintain robust password practices.
             </p>
           </section>
 
@@ -195,8 +210,8 @@ export default function PrivacyPolicyContent() {
             </p>
             <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl mt-4">
               <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> support@insydz.com</p>
-              <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> +91 98765 43210</p>
-              <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> New Delhi, India</p>
+              <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> +91 9217246794</p>
+              <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> 506, 5th Floor, ITHUM Tower, Block A, Industrial Area, Sector 62, Noida, Uttar Pradesh 201301</p>
             </div>
           </section>
 
