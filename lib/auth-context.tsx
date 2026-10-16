@@ -169,6 +169,7 @@ export interface User {
   mobileNumber?: string;          // ← Added
   subscriptionTier: string;
   subscriptionExpiresAt?: string | null;
+  hasAutoRenew?: boolean;
   
   aiListingsGenerated?: number;
   aiListingsMonth?: string;
@@ -266,6 +267,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           mobileNumber: data.mobile_number || "",   // ← Added
           subscriptionTier: data.subscription_tier || "free",
           subscriptionExpiresAt: data.subscription_expires_at || null,
+          hasAutoRenew: data.has_auto_renew ?? false,
           
           aiListingsGenerated: data.ai_listings_generated || 0,
           aiListingsMonth: data.ai_listings_month,

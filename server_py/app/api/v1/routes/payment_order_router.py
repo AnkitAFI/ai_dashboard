@@ -22,6 +22,7 @@ from app.db.session import get_db
 from app.api.deps import get_current_user
 from app.db.models.payment_order_model import PaymentOrder
 from app.db.models.user_model import User
+from app.models.schema_v2 import UserSubscription
 from app.models.legacy_models import PromoCode, PromoCodeSchedule, PromoCodeRedemption
 from app.schemas.payment_order_schema import BillingInfo, CreateOrderRequest, VerifyPaymentRequest
 
@@ -634,7 +635,8 @@ def create_subscription(
                 
         rzp_sub = rzp_client.subscription.create(sub_payload)
     except Exception as e:
-        raise HTTPException(502, f"Razorpay error: {e}")
+        logger.error("Razorpay subscription create error: %s", e, exc_info=True)
+        raise HTTPException(502, "Unable to initialize subscription with payment provider. Please try again.")
     
     return {
         "razorpay_subscription_id": rzp_sub["id"],
@@ -741,7 +743,8 @@ def create_payment_order(
                          "gst_number": data.billing.gst_number or ""},
         })
     except Exception as e:
-        raise HTTPException(502, f"Razorpay error: {e}")
+        logger.error("Razorpay order create error: %s", e, exc_info=True)
+        raise HTTPException(502, "Unable to initialize payment with payment provider. Please try again.")
 
     try:
         db_order = PaymentOrder(
@@ -825,7 +828,7 @@ def verify_subscription(
         if user_sub.razorpay_subscription_id and user_sub.razorpay_subscription_id != data.razorpay_subscription_id:
             try:
                 print(f"🔄 Verify: Upgrading... Cancelling old subscription: {user_sub.razorpay_subscription_id}")
-                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 0})
+                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": False})
             except Exception as e:
                 print(f"⚠️ Failed to cancel old sub: {e}")
                 
@@ -860,10 +863,15 @@ def verify_subscription(
         promo_code_id_str = notes.get("promo_code_id")
         promo_code_id = int(promo_code_id_str) if promo_code_id_str else None
 
+        # Billing details for invoice
+        cust_name = f"{getattr(current_user, 'first_name', '') or ''} {getattr(current_user, 'last_name', '') or ''}".strip() or None
+        cust_email = getattr(current_user, "email", None) or pay_entity.get("email")
+        cust_mobile = pay_entity.get("contact") or getattr(current_user, "mobile_number", None)
+
         db_order = PaymentOrder(
             user_id           = current_user.id,
             plan_id           = data.plan_id,
-            razorpay_order_id = pay_entity.get("order_id") or "sub_charge",
+            razorpay_order_id = pay_entity.get("order_id") or f"sub_{data.razorpay_subscription_id}_{int(get_ist_now().timestamp())}",
             razorpay_payment_id = data.razorpay_payment_id,
             razorpay_signature = data.razorpay_signature,
             amount            = amount_inr,
@@ -872,32 +880,54 @@ def verify_subscription(
             gst_number        = gst_number,
             currency          = "INR",
             status            = "paid",
-            invoice_number    = _generate_invoice_number(),
             expires_at        = expiry,
             created_at        = get_ist_now(),
             paid_at           = get_ist_now(),
             promo_code_id     = promo_code_id,
+            billing_full_name = cust_name,
+            billing_email     = cust_email,
+            billing_mobile    = cust_mobile,
         )
         db.add(db_order)
         db.flush()
+        db_order.invoice_number = _invoice_number(db_order.id)
         
         if promo_code_id:
-            redemption = PromoCodeRedemption(
-                promo_code_id=promo_code_id,
-                user_id=current_user.id,
-                source="checkout"
-            )
-            # Use merge or try/except to handle UniqueConstraint if webhook already wrote it
-            try:
-                db.add(redemption)
-                db.flush()
-            except Exception as e:
-                db.rollback()
-                # Ignore duplicate redemption error if already redeemed
+            already_redeemed = db.query(PromoCodeRedemption).filter(
+                PromoCodeRedemption.promo_code_id == promo_code_id,
+                PromoCodeRedemption.user_id == current_user.id
+            ).first()
+            if not already_redeemed:
+                try:
+                    redemption = PromoCodeRedemption(
+                        promo_code_id=promo_code_id,
+                        user_id=current_user.id,
+                        source="checkout"
+                    )
+                    db.add(redemption)
+                except Exception as promo_err:
+                    logger.warning("Promo redemption write failed: %s", promo_err)
                 
         db.commit()
         
         _sync_user(current_user, db_order, db)
+
+        # Email receipt
+        try:
+            _email_payment_confirmed(
+                email=cust_email or "noreply@insydz.com",
+                name=cust_name or "",
+                plan_name=PLAN_LABELS.get(data.plan_id, data.plan_id.capitalize()),
+                amount=amount_inr,
+                base_amount=base,
+                gst_amount=gst,
+                gst_number=gst_number,
+                invoice_number=db_order.invoice_number,
+                order_id=db_order.id,
+                expires_at=expiry,
+            )
+        except Exception as mail_err:
+            logger.warning("Email receipt send failed: %s", mail_err)
 
         # ── AUDIT LOG ──────────────────────────────────────────────────────────
         _sub_action = "subscription.upgraded" if _old_tier_vs not in ("free", data.plan_id) else "subscription.activated"
@@ -907,12 +937,13 @@ def verify_subscription(
         )
     except Exception as e:
         db.rollback()
-        print(f"⚠️ Verify endpoint DB error: {e}")
-        # We don't fail the request if this fails, because the webhook will eventually retry.
+        logger.error("Verify subscription endpoint error: %s", e, exc_info=True)
+        raise HTTPException(500, "Failed to record subscription. If your payment was deducted, please contact support@insydz.com.")
 
     return {
         "success": True,
-        "message": "Subscription verified and instantly unlocked."
+        "message": "Subscription verified and instantly unlocked.",
+        "order_id": db_order.id,
     }
 
 
@@ -981,12 +1012,35 @@ def verify_payment(
         order.invoice_number      = _invoice_number(order.id)
         
         if getattr(order, "promo_code_id", None):
-            redemption = PromoCodeRedemption(
-                promo_code_id=order.promo_code_id,
-                user_id=current_user.id,
-                source="checkout"
-            )
-            db.add(redemption)
+            already_redeemed = db.query(PromoCodeRedemption).filter(
+                PromoCodeRedemption.promo_code_id == order.promo_code_id,
+                PromoCodeRedemption.user_id == current_user.id
+            ).first()
+            if not already_redeemed:
+                try:
+                    redemption = PromoCodeRedemption(
+                        promo_code_id=order.promo_code_id,
+                        user_id=current_user.id,
+                        source="checkout"
+                    )
+                    db.add(redemption)
+                except Exception as promo_err:
+                    logger.warning("Promo redemption write failed: %s", promo_err)
+
+        user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
+        if not user_sub:
+            user_sub = UserSubscription(user_id=current_user.id)
+            db.add(user_sub)
+        user_sub.subscription_tier = data.plan_id
+        user_sub.subscription_expires_at = expiry
+        user_sub.ki_cycle_start = get_ist_now()
+        user_sub.razorpay_subscription_id = None
+        user_sub.ki_searches_used = 0
+        user_sub.ai_chat_used = 0
+        user_sub.analysis_used = 0
+        user_sub.sov_used = 0
+        user_sub.keyword_tracker_used = 0
+        user_sub.ai_listings_generated = 0
 
         db.flush()
         _sync_user(current_user, order, db)
@@ -1061,7 +1115,8 @@ def create_credit_order(
             "notes":    {"type": "ai_credits", "credits": data.credits, "user_id": str(current_user.id)},
         })
     except Exception as e:
-        raise HTTPException(502, f"Razorpay error: {e}")
+        logger.error("Razorpay credit order create error: %s", e, exc_info=True)
+        raise HTTPException(502, "Unable to initialize credit order with payment provider. Please try again.")
 
     try:
         db_order = PaymentOrder(
@@ -1294,7 +1349,7 @@ async def razorpay_webhook(
         if user_sub.razorpay_subscription_id and user_sub.razorpay_subscription_id != rzp_sub_id:
             try:
                 print(f"🔄 Webhook: Upgrading... Cancelling old subscription: {user_sub.razorpay_subscription_id}")
-                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 0})
+                rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": False})
             except Exception as e:
                 print(f"⚠️ Failed to cancel old sub: {e}")
                 
@@ -1458,17 +1513,25 @@ def cancel_subscription(
 ):
     user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
     if not user_sub or not user_sub.razorpay_subscription_id:
-        raise HTTPException(400, "No active subscription found")
+        return {
+            "success": True,
+            "already_cancelled": True,
+            "message": "Auto-renewal is already cancelled. Your plan will remain active until the end of your billing cycle."
+        }
         
     _cancel_sub_id  = user_sub.razorpay_subscription_id
     _cancel_tier    = user_sub.subscription_tier or current_user.subscription_tier or "unknown"
     _cancel_expires = str(user_sub.subscription_expires_at or current_user.subscription_expires_at or "")
 
     try:
-        rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": 1})
+        rzp_client.subscription.cancel(user_sub.razorpay_subscription_id, {"cancel_at_cycle_end": True})
     except Exception as e:
-        print(f"Razorpay Cancel Error: {e}")
-        # Even if Razorpay fails (maybe already cancelled), we detach it locally.
+        err_str = str(e).lower()
+        if "already cancelled" in err_str or "cancelled" in err_str or "cannot be cancelled" in err_str:
+            logger.info("Subscription %s already cancelled on Razorpay", user_sub.razorpay_subscription_id)
+        else:
+            logger.error("Razorpay Cancel Error: %s", e)
+            raise HTTPException(502, f"Failed to cancel subscription with payment provider. Please try again or contact support.")
         
     user_sub.razorpay_subscription_id = None
     db.commit()
@@ -1479,7 +1542,7 @@ def cancel_subscription(
         f"plan:{_cancel_tier}|sub:{_cancel_sub_id}|access_until:{_cancel_expires[:10]}"
     )
     
-    return {"success": True, "message": "Subscription cancelled successfully. You will not be charged again."}
+    return {"success": True, "message": "Subscription auto-renewal cancelled successfully. You will not be charged again."}
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1538,6 +1601,9 @@ def subscription_status(
     if expires_at and not is_expired and active:
         days_remaining = max(0, (expires_at - now).days)
 
+    user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
+    has_auto_renew = bool(user_sub and user_sub.razorpay_subscription_id)
+
     return {
         "user_id":           user_id,
         "subscription_tier": tier,
@@ -1545,6 +1611,7 @@ def subscription_status(
         "is_expired":        is_expired,
         "expires_at":        str(expires_at) if expires_at else None,
         "days_remaining":    days_remaining,
+        "has_auto_renew":    has_auto_renew,
     }
 
 

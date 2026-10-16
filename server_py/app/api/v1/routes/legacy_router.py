@@ -7310,6 +7310,10 @@ def get_me(
 
     current_month = datetime.now().strftime("%Y-%m")
 
+    from app.models.schema_v2 import UserSubscription
+    user_sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
+    has_auto_renew = bool(user_sub and user_sub.razorpay_subscription_id)
+
     return {
         "id": current_user.id,
         "first_name": current_user.first_name,
@@ -7322,6 +7326,7 @@ def get_me(
 
         "subscription_tier": current_user.subscription_tier,
         "subscription_expires_at": current_user.subscription_expires_at,
+        "has_auto_renew": has_auto_renew,
 
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,

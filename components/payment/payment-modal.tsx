@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import {
   X, CreditCard, Building2, CheckCircle2, AlertCircle,
   Loader2, Receipt, ChevronRight, Shield, User, Mail,
-  Phone, MapPin, FileText, Sparkles, Lock,
+  Phone, MapPin, FileText, Sparkles, Lock, RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -260,6 +260,7 @@ function PaymentModalInner({
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [invoiceId, setInvoiceId] = useState<number | null>(null);
+  const [autoRenew, setAutoRenew] = useState(true);
 
   const mountedRef = useRef(true);
   const paymentHandledRef = useRef(false);
@@ -288,6 +289,7 @@ function PaymentModalInner({
     if (isOpen) {
       setStep(0); setError(null); setDone(false); setInvoiceId(null); setErrs({});
       paymentHandledRef.current = false;
+      setAutoRenew(true);
       setPromoCode(""); setPromoDiscount(0); setPromoError(""); setPromoSuccess("");
       setForm((p) => ({ ...p, fullName: userName || p.fullName, email: userEmail || p.email }));
       setBreakup({ basePrice: plan.price, gstRate: 18, gstAmount: 0, total: plan.price });
@@ -381,8 +383,9 @@ function PaymentModalInner({
         const d = await res.json().catch(() => ({}));
         throw new Error(sanitizeApiError(d.detail, "Verification failed. Contact support."));
       }
+      const resData = await res.json().catch(() => ({}));
       if (!mountedRef.current) return;
-      setInvoiceId(dbId); setDone(true); onPaymentSuccess(plan.id);
+      setInvoiceId(resData.order_id || dbId); setDone(true); onPaymentSuccess(plan.id);
     } catch (err) {
       if (!mountedRef.current) return;
       setError(err instanceof Error ? sanitizeApiError(err.message, "Verification failed. Contact support@insydz.com") : "Verification failed. Contact support@insydz.com");
@@ -402,7 +405,7 @@ function PaymentModalInner({
       let createEndpoint = `${API_BASE}/api/payments/create-order`;
       if (isCreditMode) {
         createEndpoint = `${API_BASE}/api/payments/create-credit-order`;
-      } else if (plan.id === "basic" || plan.id === "premium") {
+      } else if ((plan.id === "basic" || plan.id === "premium") && autoRenew) {
         createEndpoint = `${API_BASE}/api/payments/create-subscription`;
       }
         
@@ -460,7 +463,11 @@ function PaymentModalInner({
       const options: any = {
         key: data.razorpay_key_id,
         name: "Insydz Analytics",
-        description: `${plan.name} Plan – Monthly`,
+        description: isCreditMode
+          ? "AI Credits Pack"
+          : autoRenew
+            ? `${plan.name} Plan – Monthly Recurring`
+            : `${plan.name} Plan – 30 Days Access`,
         prefill: { name: form.fullName, email: form.email, contact: `+91${form.mobile}` },
         notes: {
           plan_id: plan.id,
@@ -702,7 +709,11 @@ function PaymentModalInner({
                         ₹{breakup.total.toLocaleString("en-IN")}
                       </p>
                       <p className="text-sky-200 text-sm">
-                        {breakup.basePrice < plan.price ? "prorated today" : "per month"}
+                        {breakup.basePrice < plan.price
+                          ? "prorated today"
+                          : autoRenew && !isCreditMode
+                            ? "per month (recurring)"
+                            : "for 30 days access"}
                       </p>
                     </div>
                   </div>
@@ -717,6 +728,51 @@ function PaymentModalInner({
                       <p className="text-xs text-slate-400 mt-1 leading-relaxed">{form.billingAddress}</p>
                     </div>
                   </div>
+
+                  {/* AUTO-RENEWAL TOGGLE (Subscription Plans Only) */}
+                  {!isCreditMode && (
+                    <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-4 transition-all">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                            autoRenew ? "bg-sky-500 text-white shadow-sm" : "bg-slate-200 text-slate-500"
+                          }`}>
+                            <RefreshCw className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-bold text-slate-800">Auto-Renewal</p>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                autoRenew ? "bg-sky-100 text-sky-700" : "bg-slate-200 text-slate-600"
+                              }`}>
+                                {autoRenew ? "ON" : "OFF"}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {autoRenew
+                                ? "Renews automatically every month. Cancel anytime."
+                                : "One-time payment for 30 days. No recurring charges."}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={autoRenew}
+                          onClick={() => setAutoRenew((prev) => !prev)}
+                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                            autoRenew ? "bg-sky-600" : "bg-slate-300"
+                          }`}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                              autoRenew ? "translate-x-5" : "translate-x-0"
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <PriceCard breakup={breakup} hasGst={form.hasGst}
                     gstNumber={form.gstNumber} priceNote={plan.priceNote} />
@@ -740,7 +796,7 @@ function PaymentModalInner({
                                        text-white shadow-lg shadow-sky-200 transition-all duration-200">
                       {loading
                         ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Initialising…</>
-                        : <><Sparkles className="h-4 w-4 mr-2" />Pay ₹{breakup.total.toLocaleString("en-IN")}</>
+                        : <><Sparkles className="h-4 w-4 mr-2" />Pay ₹{breakup.total.toLocaleString("en-IN")}{autoRenew && !isCreditMode ? " / mo" : ""}</>
                       }
                     </Button>
                   </div>
