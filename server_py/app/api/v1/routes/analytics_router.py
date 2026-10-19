@@ -8,10 +8,12 @@ from app.services.analytics_service import AnalyticsService
 from app.api.deps import r, get_optional_user, get_current_user
 from app.models.legacy_models import UserBehaviorLog, User
 from app.models.schema_v2 import AmazonAdsCredential, AmazonSPAPICredential
+import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi.responses import StreamingResponse
 from app.services.pdf_export_service import generate_behavior_logs_pdf
+from app.services.brevo_service import BrevoService
 
 router = APIRouter(tags=["Analytics"])
 service = AnalyticsService()
@@ -350,9 +352,138 @@ def save_behavior_batch_to_db(db: Session, events_data: List[dict]):
             db.commit()
 
             # (The automated 90-day pruning logic was completely removed at your request to keep logs permanently)
+
+        # Check and trigger real-time lead notification for free-tier users visiting /subscription
+        process_subscription_leads(db, events_data)
     except Exception as e:
         db.rollback()
         print(f"Error saving behavior logs to database: {e}")
+
+
+# In-memory fallback cache for 24-hour cooldown per user
+_memory_cooldown_cache: Dict[str, datetime] = {}
+
+
+def process_subscription_leads(db: Session, events_data: List[dict]):
+    """
+    Checks if any event in the batch represents a visit or interaction with the /subscription page.
+    If so, verifies if the user is on the free tier with a valid mobile number,
+    enforces a 24-hour cooldown per user, and triggers an immediate alert email to the admin.
+    """
+    global _memory_cooldown_cache
+    try:
+        # Configurable alert recipients via environment variable (supports comma-separated emails)
+        alert_recipients = (
+            os.getenv("SUBSCRIPTION_ALERT_EMAILS")
+            or os.getenv("ADMIN_EMAIL")
+            or "syatharthdelhi@gmail.com"
+        )
+
+        # Exclude recipients and team accounts from triggering alerts on themselves
+        excluded_env = os.getenv("EXCLUDED_TRACKING_EMAILS", "")
+        EXCLUDED_EMAILS = {
+            e.strip().lower()
+            for e in f"{excluded_env},{alert_recipients}".split(",")
+            if e.strip()
+        }
+
+        for ev in events_data:
+            page_path = (ev.get("page_path") or "").strip().lower()
+            if not page_path.startswith("/subscription"):
+                continue
+
+            user_id = ev.get("user_id")
+            user_email = ev.get("user_email")
+
+            if not user_email or user_email.lower().strip() in EXCLUDED_EMAILS:
+                continue
+
+            # ── 1. Check 24-Hour Cooldown ─────────────────────────────────
+            cooldown_key = f"sub_alert_cooldown:{user_id or user_email}"
+            in_cooldown = False
+
+            # Check Redis first
+            try:
+                if r and r.get(cooldown_key):
+                    in_cooldown = True
+            except Exception:
+                pass
+
+            # Check in-memory fallback
+            if not in_cooldown and cooldown_key in _memory_cooldown_cache:
+                last_time = _memory_cooldown_cache[cooldown_key]
+                if (datetime.utcnow() - last_time).total_seconds() < 86400:
+                    in_cooldown = True
+                else:
+                    _memory_cooldown_cache.pop(cooldown_key, None)
+
+            if in_cooldown:
+                continue
+
+            # ── 2. Fetch User Record to verify Plan & Phone ─────────────
+            user_record = None
+            if user_id:
+                user_record = db.query(User).filter(User.id == user_id).first()
+            if not user_record and user_email:
+                from app.core.cryptography import HashedString
+                hasher = HashedString()
+                user_record = db.query(User).filter(User.email_hash == hasher.process_bind_param(user_email, None)).first()
+
+            if not user_record:
+                continue
+
+            # ── 3. Filter by Tier: Skip Basic, Premium, Enterprise ──────
+            tier = (getattr(user_record, "subscription_tier", "free") or "free").lower().strip()
+            if tier in ["basic", "premium", "enterprise"]:
+                continue
+
+            # ── 4. Verify Mobile Number exists ──────────────────────────
+            phone = getattr(user_record, "mobile_number", None)
+            if not phone or not str(phone).strip():
+                continue
+
+            # ── 5. Set Cooldown Lock Immediately (24h) ───────────────────
+            try:
+                if r:
+                    r.setex(cooldown_key, 86400, "1")
+            except Exception:
+                pass
+            _memory_cooldown_cache[cooldown_key] = datetime.utcnow()
+
+            # Clean up old entries periodically
+            if len(_memory_cooldown_cache) > 1000:
+                cutoff = datetime.utcnow()
+                _memory_cooldown_cache = {
+                    k: v for k, v in _memory_cooldown_cache.items()
+                    if (cutoff - v).total_seconds() < 86400
+                }
+
+            # ── 6. Trigger Email Alert via Brevo ─────────────────────────
+            user_first = getattr(user_record, "first_name", "") or ""
+            user_last = getattr(user_record, "last_name", "") or ""
+            full_name = f"{user_first} {user_last}".strip() or "Valued Customer"
+
+            ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            time_str = ist_now.strftime("%d %b %Y, %I:%M %p IST")
+
+            lead_data = {
+                "name": full_name,
+                "email": user_record.email or user_email,
+                "phone": str(phone).strip(),
+                "business_name": getattr(user_record, "business_name", None) or "Not provided",
+                "tier": tier.capitalize(),
+                "time": time_str,
+                "page_path": page_path,
+                "event_type": ev.get("event_type", "visit")
+            }
+
+            BrevoService.send_subscription_lead_alert(lead_data, alert_recipients)
+            print(f"✅ [Subscription Alert] Dispatched lead email for {lead_data['email']} ({lead_data['phone']}) to [{alert_recipients}]")
+
+            # Once an alert is sent for a user in this batch, no duplicate in same batch
+            break
+    except Exception as e:
+        print(f"⚠️ [Subscription Alert] Error processing lead alert (non-critical): {e}")
 
 
 @router.post("/behavior-tracking/batch", status_code=202)
@@ -368,9 +499,10 @@ def track_behavior_batch(
     user_id = current_user.id if current_user else None
     user_email = current_user.email if current_user else None
 
-    # Skip tracking for the admin account — we don't want to pollute behavior logs with internal usage
-    EXCLUDED_FROM_TRACKING = {"syatharthdelhi@gmail.com"}
-    if user_email in EXCLUDED_FROM_TRACKING:
+    # Skip tracking for configured internal accounts — prevents polluting behavior logs with internal usage
+    excluded_tracking_env = os.getenv("EXCLUDED_TRACKING_EMAILS") or os.getenv("ADMIN_EMAIL", "syatharthdelhi@gmail.com")
+    EXCLUDED_FROM_TRACKING = {e.strip().lower() for e in excluded_tracking_env.split(",") if e.strip()}
+    if user_email and user_email.lower().strip() in EXCLUDED_FROM_TRACKING:
         return {"status": "skipped", "count": 0}
 
     events_data = []
