@@ -375,7 +375,6 @@ def process_subscription_leads(db: Session, events_data: List[dict]):
         # Configurable alert recipients via environment variable (supports comma-separated emails)
         alert_recipients = (
             os.getenv("SUBSCRIPTION_ALERT_EMAILS")
-            or os.getenv("LEAD_ALERT_EMAILS")
             or os.getenv("ADMIN_EMAIL")
             or "syatharthdelhi@gmail.com"
         )

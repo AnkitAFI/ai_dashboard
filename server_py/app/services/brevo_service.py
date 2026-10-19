@@ -138,7 +138,7 @@ class BrevoService:
     def send_subscription_lead_alert(lead_data: dict, recipient_emails: str = None) -> bool:
         """
         Sends an instant high-priority lead notification when a free-tier user visits the subscription page.
-        Recipients can be configured via SUBSCRIPTION_ALERT_EMAILS, LEAD_ALERT_EMAILS, or ADMIN_EMAIL in .env.
+        Recipients can be configured via SUBSCRIPTION_ALERT_EMAILS or ADMIN_EMAIL in .env.
         Supports multiple comma-separated emails.
         """
         configuration = BrevoService.get_configuration()
@@ -271,7 +271,6 @@ class BrevoService:
             target_emails = (
                 recipient_emails
                 or os.environ.get("SUBSCRIPTION_ALERT_EMAILS")
-                or os.environ.get("LEAD_ALERT_EMAILS")
                 or os.environ.get("ADMIN_EMAIL")
                 or ""
             )
