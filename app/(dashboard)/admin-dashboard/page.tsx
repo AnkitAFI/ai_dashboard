@@ -774,7 +774,7 @@ import {
   Users, ShieldCheck, ShieldOff, TrendingUp,
   Wallet, IndianRupee, ChevronDown, ChevronUp,
   MessageSquare, BarChart2, Globe, Tag,
-  Activity, MousePointerClick, AlertOctagon, Clock, Download,
+  Activity, MousePointerClick, AlertOctagon, Clock, Download, ArrowLeft,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -906,6 +906,7 @@ export default function AdminDashboard() {
   const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
   const [sortField, setSortField] = useState<keyof UserRow>("created_at");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [selectedMonth, setSelectedMonth] = useState<{ date: string; dateObj: Date } | null>(null);
 
   // Tab & User Behavior logs state
   const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo" | "compliance">("overview");
@@ -1094,21 +1095,21 @@ export default function AdminDashboard() {
   const chartData = useMemo(() => {
     const data: { date: string; users: number; dateObj: Date }[] = [];
     const sortedUsers = [...users].filter(u => u.created_at).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    
+
     if (sortedUsers.length === 0) return [];
-    
+
     const earliestDate = new Date(sortedUsers[0].created_at);
     const now = new Date();
-    
+
     let curr = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), 1);
     const end = new Date(now.getFullYear(), now.getMonth(), 1);
-    
+
     while (curr <= end) {
       const monthStr = curr.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
       data.push({ date: monthStr, users: 0, dateObj: new Date(curr) });
       curr.setMonth(curr.getMonth() + 1);
     }
-    
+
     users.forEach(u => {
       if (!u.created_at) return;
       const uDate = new Date(u.created_at);
@@ -1121,6 +1122,37 @@ export default function AdminDashboard() {
 
     return data;
   }, [users]);
+
+  const dayChartData = useMemo(() => {
+    if (!selectedMonth) return [];
+
+    const year = selectedMonth.dateObj.getFullYear();
+    const month = selectedMonth.dateObj.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const days: { date: string; users: number; fullDate: string }[] = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(year, month, day);
+      days.push({
+        date: `${day}`,
+        users: 0,
+        fullDate: d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+      });
+    }
+
+    users.forEach(u => {
+      if (!u.created_at) return;
+      const uDate = new Date(u.created_at);
+      if (uDate.getFullYear() === year && uDate.getMonth() === month) {
+        const dayIndex = uDate.getDate() - 1;
+        if (days[dayIndex]) {
+          days[dayIndex].users += 1;
+        }
+      }
+    });
+
+    return days;
+  }, [selectedMonth, users]);
 
   const uniqueMonths = useMemo(() => {
     const months = new Set<string>();
@@ -1156,7 +1188,7 @@ export default function AdminDashboard() {
         filterVerified === "all" ||
         (filterVerified === "verified" && u.is_verified) ||
         (filterVerified === "unverified" && !u.is_verified);
-      const matchesActive = 
+      const matchesActive =
         filterActive === "all" ||
         (filterActive === "active" && u.is_active !== false) ||
         (filterActive === "deleted" && u.is_active === false);
@@ -1350,36 +1382,109 @@ export default function AdminDashboard() {
 
           {/* User Signups Line Graph */}
           <div className="panel fade-in" style={{ marginBottom: 20, animationDelay: "0.10s" }}>
-            <PanelHead title="User Growth" sub="New user signups per month" />
-            <div style={{ width: "100%", height: 300, marginTop: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+              <div>
+                <p style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
+                  {selectedMonth ? `User Growth — ${selectedMonth.date}` : "User Growth"}
+                </p>
+                <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+                  {selectedMonth
+                    ? `Showing day-wise signups for ${selectedMonth.date}`
+                    : "New user signups per month (click any dot to view day-wise data)"}
+                </p>
+              </div>
+              {selectedMonth && (
+                <button
+                  onClick={() => setSelectedMonth(null)}
+                  className="hdr-btn"
+                  style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12 }}
+                >
+                  <ArrowLeft size={13} /> Back to Month View
+                </button>
+              )}
+            </div>
+            <div style={{ width: "100%", height: 300, marginTop: 16 }}>
               <ResponsiveContainer>
-                <LineChart data={chartData}>
+                <LineChart
+                  data={selectedMonth ? dayChartData : chartData}
+                  onClick={(e: any) => {
+                    if (!selectedMonth && e && e.activePayload && e.activePayload.length) {
+                      const item = e.activePayload[0].payload;
+                      if (item && item.date && item.dateObj) {
+                        setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+                      }
+                    }
+                  }}
+                  style={{ cursor: selectedMonth ? "default" : "pointer" }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="date" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#94a3b8" }} 
-                    dy={10} 
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#94a3b8" }}
+                    dy={10}
+                    interval={selectedMonth ? (dayChartData.length > 25 ? 1 : 0) : 0}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#94a3b8" }} 
-                    dx={-10} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#94a3b8" }}
+                    dx={-10}
+                    allowDecimals={false}
                   />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                    itemStyle={{ color: "#1e293b", fontWeight: 600 }}
+                  <Tooltip
+                    content={({ active, payload }: any) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div
+                            style={{
+                              background: "white",
+                              padding: "8px 12px",
+                              borderRadius: 8,
+                              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                              border: "1px solid #e2e8f0",
+                              fontSize: 12,
+                            }}
+                          >
+                            <p style={{ margin: "0 0 3px", fontSize: 12, fontWeight: 600, color: "#64748b" }}>
+                              {selectedMonth ? data.fullDate : data.date}
+                            </p>
+                            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#1e293b" }}>
+                              <span style={{ color: "#6366f1" }}>{data.users}</span> {data.users === 1 ? "signup" : "signups"}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="users" 
+                  <Line
+                    type="monotone"
+                    dataKey="users"
                     name="Signups"
-                    stroke="#6366f1" 
-                    strokeWidth={3} 
-                    dot={{ fill: "#6366f1", strokeWidth: 2, r: 4 }} 
-                    activeDot={{ r: 6, strokeWidth: 0 }} 
+                    stroke="#6366f1"
+                    strokeWidth={3}
+                    dot={{
+                      fill: "#6366f1",
+                      strokeWidth: 2,
+                      r: selectedMonth ? 3 : 5,
+                      cursor: selectedMonth ? "default" : "pointer",
+                    }}
+                    activeDot={{
+                      r: selectedMonth ? 5 : 7,
+                      strokeWidth: 0,
+                      cursor: selectedMonth ? "default" : "pointer",
+                      onClick: (_e: any, payload: any) => {
+                        if (!selectedMonth && payload && payload.payload) {
+                          const item = payload.payload;
+                          if (item && item.date && item.dateObj) {
+                            setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+                          }
+                        }
+                      },
+                    }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -2156,7 +2261,7 @@ export default function AdminDashboard() {
                                           <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{os}</p>
                                         </div>
 
-{/* User */}
+                                        {/* User */}
                                         <div style={{ flex: "1 1 180px", minWidth: 160 }}>
                                           <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User</p>
                                           <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
