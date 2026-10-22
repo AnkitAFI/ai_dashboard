@@ -907,6 +907,7 @@ export default function AdminDashboard() {
   const [sortField, setSortField] = useState<keyof UserRow>("created_at");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selectedMonth, setSelectedMonth] = useState<{ date: string; dateObj: Date } | null>(null);
+  const [activeTooltipMonth, setActiveTooltipMonth] = useState<string | null>(null);
 
   // Tab & User Behavior logs state
   const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo" | "compliance">("overview");
@@ -1154,6 +1155,26 @@ export default function AdminDashboard() {
     return days;
   }, [selectedMonth, users]);
 
+  const handleMonthClick = (item: { date: string; dateObj: Date }) => {
+    if (selectedMonth) return;
+    const isHoverSupported = typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
+
+    if (isHoverSupported) {
+      // Desktop: clicking dot directly opens day-wise
+      setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+    } else {
+      // Mobile / Touchscreen:
+      // First tap shows the tooltip and displays monthly count.
+      // Second tap on the same month opens the day-wise view.
+      if (activeTooltipMonth === item.date) {
+        setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+        setActiveTooltipMonth(null);
+      } else {
+        setActiveTooltipMonth(item.date);
+      }
+    }
+  };
+
   const uniqueMonths = useMemo(() => {
     const months = new Set<string>();
     users.forEach(u => {
@@ -1390,16 +1411,42 @@ export default function AdminDashboard() {
                 <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
                   {selectedMonth
                     ? `Showing day-wise signups for ${selectedMonth.date}`
-                    : "New user signups per month (click any dot to view day-wise data)"}
+                    : "New user signups per month"}
                 </p>
               </div>
-              {selectedMonth && (
+              {selectedMonth ? (
                 <button
-                  onClick={() => setSelectedMonth(null)}
+                  onClick={() => {
+                    setSelectedMonth(null);
+                    setActiveTooltipMonth(null);
+                  }}
                   className="hdr-btn"
                   style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12 }}
                 >
                   <ArrowLeft size={13} /> Back to Month View
+                </button>
+              ) : activeTooltipMonth && (
+                <button
+                  onClick={() => {
+                    const item = chartData.find(d => d.date === activeTooltipMonth);
+                    if (item) {
+                      setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+                      setActiveTooltipMonth(null);
+                    }
+                  }}
+                  className="hdr-btn"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    fontSize: 12,
+                    color: "#6366f1",
+                    borderColor: "#c7d2fe",
+                    background: "#ede9fe",
+                    fontWeight: 600,
+                  }}
+                >
+                  View {activeTooltipMonth} Days →
                 </button>
               )}
             </div>
@@ -1411,7 +1458,7 @@ export default function AdminDashboard() {
                     if (!selectedMonth && e && e.activePayload && e.activePayload.length) {
                       const item = e.activePayload[0].payload;
                       if (item && item.date && item.dateObj) {
-                        setSelectedMonth({ date: item.date, dateObj: item.dateObj });
+                        handleMonthClick(item);
                       }
                     }
                   }}
@@ -1434,6 +1481,7 @@ export default function AdminDashboard() {
                     allowDecimals={false}
                   />
                   <Tooltip
+                    wrapperStyle={{ pointerEvents: "auto" }}
                     content={({ active, payload }: any) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
@@ -1441,19 +1489,47 @@ export default function AdminDashboard() {
                           <div
                             style={{
                               background: "white",
-                              padding: "8px 12px",
+                              padding: "9px 13px",
                               borderRadius: 8,
-                              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
                               border: "1px solid #e2e8f0",
                               fontSize: 12,
+                              minWidth: 140,
                             }}
                           >
                             <p style={{ margin: "0 0 3px", fontSize: 12, fontWeight: 600, color: "#64748b" }}>
                               {selectedMonth ? data.fullDate : data.date}
                             </p>
-                            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#1e293b" }}>
+                            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#1e293b" }}>
                               <span style={{ color: "#6366f1" }}>{data.users}</span> {data.users === 1 ? "signup" : "signups"}
                             </p>
+                            {!selectedMonth && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedMonth({ date: data.date, dateObj: data.dateObj });
+                                  setActiveTooltipMonth(null);
+                                }}
+                                style={{
+                                  marginTop: 8,
+                                  padding: "5px 10px",
+                                  border: "1px solid #c7d2fe",
+                                  borderRadius: 6,
+                                  background: "#f5f3ff",
+                                  color: "#6366f1",
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  cursor: "pointer",
+                                  width: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <span>View day-wise →</span>
+                              </button>
+                            )}
                           </div>
                         );
                       }
@@ -1476,14 +1552,6 @@ export default function AdminDashboard() {
                       r: selectedMonth ? 5 : 7,
                       strokeWidth: 0,
                       cursor: selectedMonth ? "default" : "pointer",
-                      onClick: (_e: any, payload: any) => {
-                        if (!selectedMonth && payload && payload.payload) {
-                          const item = payload.payload;
-                          if (item && item.date && item.dateObj) {
-                            setSelectedMonth({ date: item.date, dateObj: item.dateObj });
-                          }
-                        }
-                      },
                     }}
                   />
                 </LineChart>
