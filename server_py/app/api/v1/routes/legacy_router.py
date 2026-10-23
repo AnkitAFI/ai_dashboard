@@ -12743,29 +12743,38 @@ def track_sov_progress(
  
         current_share  = current_sov.get("your_brand_share") or 0.0
         now            = datetime.now()
-        start_date     = now - timedelta(days=30)
+        start_date     = now
         target_date    = now + timedelta(days=target_days)
-        days_elapsed   = max(1, (now - start_date).days)
+        days_elapsed   = 0
         days_remaining = max(0, target_days)
- 
+
         required_growth = (target_share - current_share) / target_days if target_days > 0 else 0
-        actual_growth   = current_share / days_elapsed if days_elapsed > 0 else 0
-        is_on_track     = actual_growth >= required_growth
- 
-        total_reviews = current_sov["total_reviews"]
-        total_sales   = current_sov["total_sales"]
- 
+        actual_growth   = current_share / 30.0 if current_share > 0 else 0.0
+        is_on_track     = actual_growth >= required_growth or current_share >= target_share
+
+        total_reviews = current_sov.get("total_reviews", 0) or 0
+        total_sales   = current_sov.get("total_sales", 0) or 0
+
         weekly_progress = []
-        for week in range(min(12, (days_elapsed + target_days) // 7 + 1)):
-            wdate      = start_date + timedelta(weeks=week)
-            proj_share = min(current_share + actual_growth * week * 7, 100)
+        num_weeks = max(1, (target_days + 6) // 7)
+        for week in range(num_weeks + 1):
+            day_offset = min(week * 7, target_days)
+            wdate      = start_date + timedelta(days=day_offset)
+            if target_days > 0:
+                proj_share = current_share + (target_share - current_share) * (day_offset / target_days)
+            else:
+                proj_share = target_share
+            proj_share = max(0.0, min(round(proj_share, 2), 100.0))
+
             weekly_progress.append({
                 "date":             wdate.strftime("%Y-%m-%d"),
-                "share_percentage": round(proj_share, 2),
-                "reviews":          int(total_reviews * proj_share / 100),
-                "sales":            int(total_sales   * proj_share / 100),
+                "share_percentage": proj_share,
+                "reviews":          int(total_reviews * proj_share / 100) if total_reviews else 0,
+                "sales":            int(total_sales   * proj_share / 100) if total_sales else 0,
             })
- 
+            if day_offset >= target_days:
+                break
+
         return {
             "category_name":        category_name,
             "your_brand":           your_brand,

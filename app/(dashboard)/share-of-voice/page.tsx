@@ -1666,7 +1666,7 @@ export default function ShareOfVoice() {
                       <CardContent className="p-5 flex items-center justify-between">
                         <div>
                           <p className="text-xs text-slate-500 mb-1">Status</p>
-                          <p className="text-2xl font-black text-slate-800">{progressData.is_on_track ? "On Track" : "Behind"}</p>
+                          <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{progressData.is_on_track ? "On Track" : "Behind"}</p>
                         </div>
                         {progressData.is_on_track ? <CheckCircle className="w-10 h-10 text-green-500" /> : <AlertCircle className="w-10 h-10 text-red-500" />}
                       </CardContent>
@@ -1714,7 +1714,7 @@ export default function ShareOfVoice() {
                           <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                           <XAxis dataKey="date" tick={{ fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
                           <YAxis tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
-                          <Tooltip contentStyle={getTooltipStyle(isDark)} />
+                          <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [`${v}%`, "Market Share %"]} />
                           <Line type="monotone" dataKey="share_percentage" stroke="#10b981" strokeWidth={3} name="Market Share %" dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 7 }} />
                         </LineChart>
                       </ResponsiveContainer>
