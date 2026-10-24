@@ -11499,7 +11499,8 @@ def _get_category_sov_data(
                 COALESCE(SUM(product_rating_count),   0)               AS total_reviews,
                 COALESCE(SUM(estimated_sales),        0)               AS total_sales,
                 COALESCE(AVG(CAST(product_star_rating AS FLOAT)), 0)   AS avg_rating,
-                COALESCE(AVG(product_price),          0)               AS avg_price
+                COALESCE(AVG(product_price),          0)               AS avg_price,
+                COUNT(*) OVER()                                         AS total_brands
             FROM rapidapi_flipkart_products
             WHERE category_name = :cat
               AND brand IS NOT NULL
@@ -11516,7 +11517,8 @@ def _get_category_sov_data(
                COALESCE(SUM(product_num_ratings),    0)               AS total_reviews,
                COALESCE(SUM(avg_sales_volume),       0)               AS total_sales,
                COALESCE(AVG(product_star_rating_numeric), 0)          AS avg_rating,
-               COALESCE(AVG(product_price_numeric),  0)               AS avg_price
+               COALESCE(AVG(product_price_numeric),  0)               AS avg_price,
+               COUNT(*) OVER()                                         AS total_brands
             FROM rapidapi_amazon_products
             WHERE category_name = :cat
             GROUP BY SPLIT_PART(product_title, ' ', 1)
@@ -11528,6 +11530,7 @@ def _get_category_sov_data(
     if not rows:
         return _err(f"No data found for category: {category_name}", 404)
  
+    total_brands   = safe_int(rows[0][6]) if rows and len(rows[0]) > 6 else len(rows)
     total_reviews  = sum(safe_int(r[2]) for r in rows)
     total_sales    = sum(safe_int(r[3]) for r in rows)
     total_products = sum(safe_int(r[1]) for r in rows)
@@ -11564,6 +11567,7 @@ def _get_category_sov_data(
     return {
         "success":          True,
         "category_name":    category_name,
+        "total_brands":     total_brands,
         "total_products":   total_products,
         "total_reviews":    total_reviews,
         "total_sales":      total_sales,
@@ -11871,22 +11875,28 @@ def _compute_category_trend(category_name: str, marketplace: str, db: Session) -
  
     old_avg = round(sum(incumbents) / len(incumbents), 1)
     new_avg = round(sum(challengers) / len(challengers), 1) if challengers else old_avg
- 
+
     challenger_ratio = new_avg / max(old_avg, 1.0)
- 
-    if challenger_ratio >= 0.35:
+
+    # Calibrate thresholds based on empirical e-commerce review distributions (Flipkart vs Amazon)
+    if marketplace == "flipkart":
+        grow_th, stable_th = 0.045, 0.024
+    else:
+        grow_th, stable_th = 0.025, 0.014
+
+    if challenger_ratio >= grow_th:
         trend = "Growing"
-        growth_proxy = round(min(120.0, (challenger_ratio - 0.25) * 110.0), 1)
-        signal = f"Strong category expansion — challenger brands capture {challenger_ratio*100:.0f}% of incumbent review density."
-    elif challenger_ratio >= 0.15:
+        growth_proxy = round(min(50.0, (challenger_ratio - grow_th) / grow_th * 30.0 + 5.0), 1)
+        signal = f"Strong category expansion — challenger listings capture {challenger_ratio*100:.1f}% of incumbent review density."
+    elif challenger_ratio >= stable_th:
         trend = "Stable"
-        growth_proxy = round((challenger_ratio - 0.25) * 60.0, 1)
+        growth_proxy = round(((challenger_ratio - stable_th) / max(grow_th - stable_th, 0.001)) * 3.0, 1)
         signal = "Healthy market equilibrium — balanced review distribution across incumbent and challenger listings."
     else:
         trend = "Declining"
-        growth_proxy = round(max(-40.0, (challenger_ratio - 0.25) * 120.0), 1)
-        signal = "Contracting or monopolized category — incumbents hold >85% of category review density."
- 
+        growth_proxy = round(max(-35.0, ((challenger_ratio - stable_th) / max(stable_th, 0.001)) * 25.0 - 5.0), 1)
+        signal = "Contracting or monopolized category — incumbents hold >95% of category review density."
+
     return CategoryTrend(
         trend            = trend,
         signal           = signal,
@@ -12743,29 +12753,38 @@ def track_sov_progress(
  
         current_share  = current_sov.get("your_brand_share") or 0.0
         now            = datetime.now()
-        start_date     = now - timedelta(days=30)
+        start_date     = now
         target_date    = now + timedelta(days=target_days)
-        days_elapsed   = max(1, (now - start_date).days)
+        days_elapsed   = 0
         days_remaining = max(0, target_days)
- 
+
         required_growth = (target_share - current_share) / target_days if target_days > 0 else 0
-        actual_growth   = current_share / days_elapsed if days_elapsed > 0 else 0
-        is_on_track     = actual_growth >= required_growth
- 
-        total_reviews = current_sov["total_reviews"]
-        total_sales   = current_sov["total_sales"]
- 
+        actual_growth   = current_share / 30.0 if current_share > 0 else 0.0
+        is_on_track     = actual_growth >= required_growth or current_share >= target_share
+
+        total_reviews = current_sov.get("total_reviews", 0) or 0
+        total_sales   = current_sov.get("total_sales", 0) or 0
+
         weekly_progress = []
-        for week in range(min(12, (days_elapsed + target_days) // 7 + 1)):
-            wdate      = start_date + timedelta(weeks=week)
-            proj_share = min(current_share + actual_growth * week * 7, 100)
+        num_weeks = max(1, (target_days + 6) // 7)
+        for week in range(num_weeks + 1):
+            day_offset = min(week * 7, target_days)
+            wdate      = start_date + timedelta(days=day_offset)
+            if target_days > 0:
+                proj_share = current_share + (target_share - current_share) * (day_offset / target_days)
+            else:
+                proj_share = target_share
+            proj_share = max(0.0, min(round(proj_share, 2), 100.0))
+
             weekly_progress.append({
                 "date":             wdate.strftime("%Y-%m-%d"),
-                "share_percentage": round(proj_share, 2),
-                "reviews":          int(total_reviews * proj_share / 100),
-                "sales":            int(total_sales   * proj_share / 100),
+                "share_percentage": proj_share,
+                "reviews":          int(total_reviews * proj_share / 100) if total_reviews else 0,
+                "sales":            int(total_sales   * proj_share / 100) if total_sales else 0,
             })
- 
+            if day_offset >= target_days:
+                break
+
         return {
             "category_name":        category_name,
             "your_brand":           your_brand,
@@ -13022,7 +13041,7 @@ def get_market_health(
             "marketplace":   marketplace,
             "generated_at":  datetime.utcnow().isoformat() + "Z",
             "sov_summary": {
-                "total_brands":     len(brands),
+                "total_brands":     sov.get("total_brands", len(brands)),
                 "total_products":   sov["total_products"],
                 "total_reviews":    sov["total_reviews"],
                 "total_sales":      sov["total_sales"],
