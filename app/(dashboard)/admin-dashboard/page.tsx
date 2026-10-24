@@ -916,7 +916,10 @@ export default function AdminDashboard() {
   const [behaviorSearch, setBehaviorSearch] = useState<string>("");
   const [behaviorFilterType, setBehaviorFilterType] = useState<string>("all");
   const [behaviorLoading, setBehaviorLoading] = useState<boolean>(false);
-  const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
+  const [expandedLogIds, setExpandedLogIds] = useState<Record<number, boolean>>({});
+  const toggleLogExpanded = (id: number) => {
+    setExpandedLogIds(prev => ({ ...prev, [id]: !prev[id] }));
+  };
   const [behaviorEmailFilter, setBehaviorEmailFilter] = useState<string>("");
   const [behaviorPathFilter, setBehaviorPathFilter] = useState<string>("");
   const [behaviorHidePageViews, setBehaviorHidePageViews] = useState<boolean>(false);
@@ -2070,6 +2073,7 @@ export default function AdminDashboard() {
             const q = (behaviorSearch || "").toLowerCase();
             const matchesSearch = !q ||
               (log.user_email || "").toLowerCase().includes(q) ||
+              (log.ip_address || "").toLowerCase().includes(q) ||
               (log.page_path || "").toLowerCase().includes(q) ||
               (log.properties?.track_id || "").toLowerCase().includes(q) ||
               (log.event_type || "").toLowerCase().includes(q);
@@ -2107,7 +2111,7 @@ export default function AdminDashboard() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                 <div style={{ position: "relative", flexGrow: 1, maxWidth: 260 }}>
                   <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
-                  <input value={behaviorSearch} onChange={e => setBehaviorSearch(e.target.value)} placeholder="Search email, path, track ID…" className="tbl-input" style={{ paddingLeft: 28, width: "100%" }} />
+                  <input value={behaviorSearch} onChange={e => { setBehaviorSearch(e.target.value); setBehaviorPage(0); }} placeholder="Search email, IP, path, track ID…" className="tbl-input" style={{ paddingLeft: 28, width: "100%" }} />
                 </div>
                 <select value={behaviorFilterType} onChange={e => setBehaviorFilterType(e.target.value)} className="tbl-select">
                   <option value="all">All Events</option>
@@ -2195,7 +2199,7 @@ export default function AdminDashboard() {
                         {pageLogs.length === 0 ? (
                           <tr><td colSpan={8} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No events match the current filters.</td></tr>
                         ) : pageLogs.map(log => {
-                          const isLogOpen = expandedLogId === log.id;
+                          const isLogOpen = !!expandedLogIds[log.id];
                           const eventMeta: Record<string, { color: string; bg: string; icon: React.ReactNode; label: string }> = {
                             page_view: { color: "#4f46e5", bg: "#ede9fe", icon: <Activity size={10} />, label: "Page View" },
                             page_exit: { color: "#0f766e", bg: "#ccfbf1", icon: <Clock size={10} />, label: "Exit/Dwell" },
@@ -2213,7 +2217,7 @@ export default function AdminDashboard() {
 
                           return (
                             <Fragment key={log.id}>
-                              <tr className="tbl-row" style={{ cursor: "pointer" }} onClick={() => setExpandedLogId(isLogOpen ? null : log.id)}>
+                              <tr className="tbl-row" style={{ cursor: "pointer", background: isLogOpen ? "#f8fafc" : undefined }} onClick={() => toggleLogExpanded(log.id)}>
                                 {/* # */}
                                 <td style={{ padding: "7px 10px", fontSize: 10, color: "#cbd5e1", fontFamily: "monospace", overflow: "hidden" }}>{log.id}</td>
                                 {/* Time */}
@@ -2255,7 +2259,7 @@ export default function AdminDashboard() {
                                 </td>
                               </tr>
 
-                              {/* Expanded detail row — plain English summary */}
+                              {/* Expanded detail row — modern card tiles */}
                               {isLogOpen && (() => {
                                 // Parse browser & OS from user agent
                                 const ua = log.user_agent ?? "";
@@ -2288,59 +2292,96 @@ export default function AdminDashboard() {
                                 const actionLabel =
                                   log.event_type === "page_view" ? "Visited a page" :
                                     log.event_type === "page_exit" ? "Left page (Dwell Time)" :
-                                      log.event_type === "element_click" ? "Clicked something" :
-                                        log.event_type === "rage_click" ? "Clicked repeatedly (frustrated)" :
+                                      log.event_type === "element_click" ? "Clicked an element" :
+                                        log.event_type === "rage_click" ? "Rapidly clicked (frustrated)" :
                                           log.event_type;
 
                                 // Is filterVal a navigation path?
                                 const navTarget = filterVal && String(filterVal).startsWith("/") ? String(filterVal) : null;
 
                                 const pill = (text: string, color: string, bg: string) => (
-                                  <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: bg, color, marginRight: 6, marginBottom: 4 }}>{text}</span>
+                                  <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 600, background: bg, color, marginRight: 5, marginBottom: 3 }}>{text}</span>
                                 );
 
                                 return (
                                   <tr key={`bexp-${log.id}`}>
-                                    <td colSpan={8} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
-                                      <div style={{ padding: "14px 20px", display: "flex", flexWrap: "wrap", gap: 20, alignItems: "flex-start" }}>
+                                    <td colSpan={8} style={{ padding: "12px 16px", background: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "2px solid #cbd5e1" }}>
+                                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 10 }}>
 
-                                        {/* Action sentence */}
-                                        <div style={{ flex: "1 1 260px", minWidth: 220 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>What happened</p>
-                                          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{actionLabel}</p>
-                                          <div>
+                                        {/* Card 1: Action */}
+                                        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Action</span>
+                                            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 6px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: meta.bg, color: meta.color }}>
+                                              {meta.icon}{meta.label}
+                                            </span>
+                                          </div>
+                                          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#1e293b" }}>{actionLabel}</p>
+                                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
                                             {tidLabel && pill(tidLabel, "#0284c7", "#e0f2fe")}
                                             {navTarget && pill(`→ ${navTarget}`, "#10b981", "#f0fdf4")}
-                                            {(log.event_type === "page_exit" || log.event_type === "page_view") && props.duration_seconds && pill(`⏱️ Stayed ${props.duration_seconds}s`, "#0f766e", "#ccfbf1")}
-                                            {props.text && !tidLabel && pill(String(props.text).slice(0, 40), "#64748b", "#f1f5f9")}
+                                            {(log.event_type === "page_exit" || log.event_type === "page_view") && props.duration_seconds !== undefined && pill(`⏱️ Stayed ${props.duration_seconds}s`, "#0f766e", "#ccfbf1")}
+                                            {props.text && !tidLabel && pill(String(props.text).slice(0, 35), "#64748b", "#f1f5f9")}
                                           </div>
                                         </div>
 
-                                        {/* Page */}
-                                        <div style={{ flex: "1 1 160px", minWidth: 140 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>On page</p>
-                                          <p style={{ margin: 0, fontSize: 12, color: "#475569", fontFamily: "monospace", fontWeight: 500 }}>{log.page_path}</p>
+                                        {/* Card 2: Page Route */}
+                                        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                                          <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Page Route</span>
+                                          <div style={{ background: "#f8fafc", padding: "6px 8px", borderRadius: 6, border: "1px solid #f1f5f9" }}>
+                                            <p style={{ margin: 0, fontSize: 12, color: "#334155", fontFamily: "monospace", fontWeight: 600, wordBreak: "break-all" }}>
+                                              {log.page_path}
+                                            </p>
+                                          </div>
+                                          <span style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace" }}>
+                                            Session: {log.session_id ? log.session_id.slice(0, 16) + "…" : "—"}
+                                          </span>
                                         </div>
 
-                                        {/* Device */}
-                                        <div style={{ flex: "1 1 160px", minWidth: 140 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Device</p>
-                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600 }}>{browser}</p>
-                                          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{os}</p>
-                                        </div>
-
-                                        {/* User */}
-                                        <div style={{ flex: "1 1 180px", minWidth: 160 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User</p>
-                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
-                                        </div>
-
-                                        {/* IP Address */}
-                                        <div style={{ flex: "1 1 140px", minWidth: 130 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>IP Address</p>
-                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontFamily: "monospace", fontWeight: 600 }}>
-                                            {log.ip_address || <span style={{ color: "#cbd5e1", fontWeight: 400 }}>Not recorded</span>}
+                                        {/* Card 3: Device & System */}
+                                        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                                          <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Device & Browser</span>
+                                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                            <span style={{ padding: "3px 8px", borderRadius: 6, background: "#ede9fe", color: "#6366f1", fontSize: 11, fontWeight: 600 }}>{browser}</span>
+                                            <span style={{ padding: "3px 8px", borderRadius: 6, background: "#f1f5f9", color: "#475569", fontSize: 11, fontWeight: 600 }}>{os}</span>
+                                          </div>
+                                          <p style={{ margin: 0, fontSize: 10, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={log.user_agent ?? ""}>
+                                            {log.user_agent ? (log.user_agent.length > 35 ? log.user_agent.slice(0, 35) + "…" : log.user_agent) : "Unknown agent"}
                                           </p>
+                                        </div>
+
+                                        {/* Card 4: User */}
+                                        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User Account</span>
+                                            {log.user_id && <span style={{ fontSize: 10, color: "#64748b", background: "#f1f5f9", padding: "1px 5px", borderRadius: 4 }}>ID: #{log.user_id}</span>}
+                                          </div>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>
+                                            {log.user_email || <span style={{ color: "#94a3b8", fontStyle: "italic" }}>Anonymous Visitor</span>}
+                                          </p>
+                                          <span style={{ fontSize: 10, color: "#94a3b8" }}>
+                                            Logged at {new Date(log.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                                          </span>
+                                        </div>
+
+                                        {/* Card 5: IP Address & Network */}
+                                        <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>IP Address</span>
+                                            {log.ip_address && (
+                                              <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 4, background: log.ip_address.includes(":") ? "#eff6ff" : "#f0fdf4", color: log.ip_address.includes(":") ? "#2563eb" : "#16a34a" }}>
+                                                {log.ip_address.includes(":") ? "IPv6" : "IPv4"}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <div style={{ background: "#f8fafc", padding: "5px 7px", borderRadius: 6, border: "1px solid #f1f5f9" }}>
+                                            <p style={{ margin: 0, fontSize: 11, color: "#1e293b", fontFamily: "monospace", fontWeight: 600, wordBreak: "break-all" }}>
+                                              {log.ip_address || <span style={{ color: "#cbd5e1", fontWeight: 400 }}>Not recorded</span>}
+                                            </p>
+                                          </div>
+                                          <span style={{ fontSize: 10, color: "#94a3b8" }}>
+                                            {log.ip_address ? "Client network IP" : "No network data"}
+                                          </span>
                                         </div>
 
                                       </div>
