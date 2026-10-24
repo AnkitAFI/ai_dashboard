@@ -2335,6 +2335,14 @@ export default function AdminDashboard() {
                                           <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
                                         </div>
 
+                                        {/* IP Address */}
+                                        <div style={{ flex: "1 1 140px", minWidth: 130 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>IP Address</p>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontFamily: "monospace", fontWeight: 600 }}>
+                                            {log.ip_address || <span style={{ color: "#cbd5e1", fontWeight: 400 }}>Not recorded</span>}
+                                          </p>
+                                        </div>
+
                                       </div>
                                     </td>
                                   </tr>

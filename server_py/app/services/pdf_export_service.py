@@ -267,7 +267,7 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
         elements.append(Paragraph(summary_text, mini_summary_style))
         
         # Table Header
-        table_data = [["Date", "Time", "Event Type", "Page Path", "Device/Browser"]]
+        table_data = [["Date", "Time", "Event Type", "IP Address", "Page Path", "Device/Browser"]]
         
         # Sort logs chronologically for this user
         u_logs.sort(key=lambda x: x.get('created_at', ''))
@@ -287,10 +287,12 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
                 time_str = ts_str.split(' ')[1] if ' ' in ts_str else ''
             
             event = log.get('event_type', '')
+            ip = log.get('ip_address') or '—'
             path = log.get('page_path', '')
             ua = log.get('user_agent', '')
             parsed_ua = parse_user_agent(ua)
             
+            p_ip = Paragraph(str(ip), cell_style)
             p_path = Paragraph(str(path), cell_style)
             p_ua = Paragraph(parsed_ua, cell_style)
             
@@ -298,10 +300,10 @@ def generate_behavior_logs_pdf(logs: List[dict], user_data: Dict[str, dict]) -> 
             evt_color = event_colors.get(event, '#475569')
             p_event = Paragraph(f'<font color="{evt_color}"><b>{event}</b></font>', cell_style)
             
-            table_data.append([date_str, time_str, p_event, p_path, p_ua])
+            table_data.append([date_str, time_str, p_event, p_ip, p_path, p_ua])
             
         # Table Styling
-        col_widths = [75, 75, 100, 250, 260]
+        col_widths = [65, 65, 85, 90, 225, 230]
         t = Table(table_data, colWidths=col_widths, repeatRows=1)
         
         t.setStyle(TableStyle([

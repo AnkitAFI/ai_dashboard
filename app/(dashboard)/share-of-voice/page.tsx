@@ -45,6 +45,7 @@ interface BrandShareData {
 
 interface CategorySOVResponse {
   category_name: string;
+  total_brands?: number;
   total_products: number;
   total_reviews: number;
   total_sales: number;
@@ -860,7 +861,7 @@ export default function ShareOfVoice() {
                   { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-5 h-5 sm:w-6 sm:h-6 text-purple-100" />, grad: "from-purple-600 to-pink-700", sub: "Top brand", truncate: true, desc: "The #1 top-selling brand with the most reviews and visibility in this category. This is your main competitor to learn from." },
                   ...(sovData.your_brand_share !== null
                     ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-5 h-5 sm:w-6 sm:h-6 text-amber-100" />, grad: "from-amber-600 to-orange-700", sub: "Market position", desc: "Your brand's share of total customer attention and reviews compared to all other competitors selling here." }]
-                    : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-100" />, grad: "from-cyan-600 to-blue-700", sub: "Competing brands", desc: "The total number of different brands competing for customer orders in this category." }]),
+                    : [{ label: "Total Brands", value: (sovData.total_brands ?? sovData.brands.length).toLocaleString(), icon: <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-100" />, grad: "from-cyan-600 to-blue-700", sub: "Competing brands", desc: "The total number of different brands competing for customer orders in this category." }]),
                 ].map((c, i) => (
                   <Card key={i} className={`relative bg-gradient-to-br ${c.grad} text-white border-0 rounded-3xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-transform`}>
                     <CardContent className="p-4 sm:p-5 relative">
@@ -963,10 +964,10 @@ export default function ShareOfVoice() {
                             <TrendingUp className="w-4 h-4 text-emerald-500" /> Category Trend
                           </span>
                           <CardInfoModal
-                            title="Category Sales Growth Trend"
-                            description="Compares the number of reviews on new listings versus older listings to see if customer demand in this category is growing."
+                            title="Category Demand & Competition Trend"
+                            description="Compares customer review volume across top bestsellers versus challenger listings to see if category demand is accessible to new brands or dominated by incumbents."
                             items={[
-                              { label: "Why it matters", detail: "A growing category means more customers are buying here every day, giving your brand a bigger chance to get fast sales." }
+                              { label: "Why it matters", detail: "A growing or stable category means new and challenger brands can realistically capture customer demand, whereas high incumbent concentration makes entry more difficult." }
                             ]}
                           />
                         </CardTitle>
@@ -979,19 +980,31 @@ export default function ShareOfVoice() {
                             }`}>
                             {marketHealth.trend.trend === "Growing" ? "📈" : marketHealth.trend.trend === "Declining" ? "📉" : "➡️"} {marketHealth.trend.trend}
                           </div>
-                          <span className={`text-lg font-black ${marketHealth.trend.growth_proxy_pct > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                          <span className={`text-lg font-black ${
+                            marketHealth.trend.trend === "Growing"
+                              ? "text-green-600 dark:text-green-400"
+                              : marketHealth.trend.trend === "Declining"
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-slate-700 dark:text-slate-200"
+                          }`}>
                             {marketHealth.trend.growth_proxy_pct > 0 ? "+" : ""}{marketHealth.trend.growth_proxy_pct.toFixed(1)}%
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600">{marketHealth.trend.signal}</p>
-                        <div className="flex gap-4 mt-2">
-                          <div className="text-center">
-                            <p className="text-xs text-slate-400">Old avg</p>
-                            <p className="text-sm font-bold text-slate-700">{marketHealth.trend.avg_reviews_old.toFixed(0)}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-300">{marketHealth.trend.signal}</p>
+                        <div className="flex gap-4 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                          <div>
+                            <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Top Bestsellers Avg</p>
+                            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                              {Number(marketHealth.trend.avg_reviews_old).toLocaleString()}{" "}
+                              <span className="text-xs font-normal text-slate-400 dark:text-slate-500">reviews</span>
+                            </p>
                           </div>
-                          <div className="text-center">
-                            <p className="text-xs text-slate-400">New avg</p>
-                            <p className="text-sm font-bold text-slate-700">{marketHealth.trend.avg_reviews_new.toFixed(0)}</p>
+                          <div>
+                            <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Challengers Avg</p>
+                            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                              {Number(marketHealth.trend.avg_reviews_new).toLocaleString()}{" "}
+                              <span className="text-xs font-normal text-slate-400 dark:text-slate-500">reviews</span>
+                            </p>
                           </div>
                         </div>
                       </CardContent>
