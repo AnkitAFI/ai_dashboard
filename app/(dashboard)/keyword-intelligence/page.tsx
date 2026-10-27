@@ -174,23 +174,23 @@ const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── Subscription Tier Gate ────────────────────────────────────────────────────
 
-function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
+function TierGate({ tier, feature }: { tier: "starter" | "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
-        <Lock className={`w-6 h-6 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : tier === "starter" ? "bg-emerald-50 dark:bg-emerald-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
+        <Lock className={`w-6 h-6 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "text-blue-500 dark:text-blue-400" : tier === "starter" ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"}`} />
       </div>
       <div className="text-center px-6">
         <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature} is locked</p>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : tier === "starter" ? "Available on Starter · ₹499/mo" : "Available on Basic · ₹1,999/mo"}</p>
       </div>
       <button
         onClick={() => router.push("/subscription")}
-        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : tier === "starter" ? "bg-gradient-to-r from-emerald-500 to-teal-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
           }`}
       >
-        <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}
+        <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : tier === "starter" ? "Starter" : "Basic"}
       </button>
     </div>
   );
@@ -706,7 +706,7 @@ function KeywordExplorerPanel({
 
   const handleSearch = async (overrideKeyword?: string) => {
     if (isLocked) {
-      showToast("Upgrade Required", "Keyword Research requires a Basic or Premium plan.", "error");
+      showToast("Upgrade Required", "Keyword Research requires a Starter, Basic, or Premium plan.", "error");
       return;
     }
     if (isAtLimit) {
@@ -1568,7 +1568,7 @@ function KeywordTrackerIntelligenceContent() {
               <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-center sm:self-start">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('ki.searchesUsed', 'Searches used')}</p>
-                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-blue-100 text-blue-800" : user.subscriptionTier?.toLowerCase() === "starter" ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800" : "bg-slate-100 text-slate-600"}`}>
                     {(user.subscriptionTier || "free").toUpperCase()}
                   </Badge>
                 </div>
@@ -1593,7 +1593,7 @@ function KeywordTrackerIntelligenceContent() {
           {/* Subscription gate wrapper */}
           <div className="relative">
             {(user?.subscriptionTier?.toLowerCase() || "free") === "free" && (
-              <TierGate tier="basic" feature="Keyword Research" />
+              <TierGate tier="starter" feature="Keyword Research" />
             )}
             <div className={(user?.subscriptionTier?.toLowerCase() || "free") === "free" ? "blur-sm pointer-events-none" : ""}>
               <KeywordExplorerPanel

@@ -405,7 +405,7 @@ function PaymentModalInner({
       let createEndpoint = `${API_BASE}/api/payments/create-order`;
       if (isCreditMode) {
         createEndpoint = `${API_BASE}/api/payments/create-credit-order`;
-      } else if ((plan.id === "basic" || plan.id === "premium") && autoRenew) {
+      } else if ((plan.id === "starter" || plan.id === "basic" || plan.id === "premium") && autoRenew) {
         createEndpoint = `${API_BASE}/api/payments/create-subscription`;
       }
         

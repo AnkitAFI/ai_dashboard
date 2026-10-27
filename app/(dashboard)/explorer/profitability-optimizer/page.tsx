@@ -2083,9 +2083,9 @@ export default function ProfitabilityOptimizer() {
   const [nicheProductCount, setNicheProductCount] = useState<number>(0);
   const [nicheConfidence, setNicheConfidence] = useState<string>("");
 
-  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
+  const isBasicPlus = tier === "starter" || tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
   const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
-  const saveLimit = tier === "trial" ? 3 : tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
+  const saveLimit = tier === "trial" ? 3 : tier === "free" ? 0 : tier === "starter" ? 3 : tier === "basic" ? 5 : 9999;
 
   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
@@ -2370,7 +2370,7 @@ export default function ProfitabilityOptimizer() {
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{t('profitabilityOptimizer.subtitle', 'Real margins · Live market data')}</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
+          <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : tier === "starter" ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
           {calcResult && (
@@ -2391,9 +2391,10 @@ export default function ProfitabilityOptimizer() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">{String(upgradeModal.feature)}</h3>
               <p className="text-slate-500 dark:text-slate-400 text-sm mb-5">Upgrade to unlock this feature.</p>
-              <div className="grid grid-cols-2 gap-3 mb-5 text-left text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 text-left text-xs">
                 {[
-                  { tier: "Basic · ₹1,999/mo", feats: ["Full cost waterfall", "ROI & ACOS tracking", "Smart alerts", "Return rate modelling", "AI chat"] },
+                  { tier: "Starter · ₹499/mo", feats: ["Cost waterfall", "ROI & ACOS tracking", "3 saved products", "AI advisor chat"] },
+                  { tier: "Basic · ₹1,999/mo", feats: ["Full cost waterfall", "5 saved products", "Smart alerts", "Return rate modelling", "AI advisor chat"] },
                   { tier: "Premium · ₹2,999/mo", feats: ["Scenario planner", "Live market intel", "Business health score", "AI full analysis", "Unlimited saves"] },
                 ].map((plan) => (
                   <div key={plan.tier} className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
@@ -2471,9 +2472,9 @@ export default function ProfitabilityOptimizer() {
               { id: "calc", label: t('profitabilityOptimizer.tabs.calc', 'Calculator'), icon: <Calculator className="w-4 h-4" />, min: "free" },
               { id: "scenario", label: t('profitabilityOptimizer.tabs.scenario', 'Scenarios'), icon: <BarChart3 className="w-4 h-4" />, min: "premium" },
               { id: "health", label: t('profitabilityOptimizer.tabs.health', 'Health'), icon: <Activity className="w-4 h-4" />, min: "premium" },
-              { id: "ai", label: t('profitabilityOptimizer.tabs.ai', 'AI Advisor'), icon: <Bot className="w-4 h-4" />, min: "basic" },
+              { id: "ai", label: t('profitabilityOptimizer.tabs.ai', 'AI Advisor'), icon: <Bot className="w-4 h-4" />, min: "starter" },
             ] as { id: string; label: string; icon: JSX.Element; min: string }[]).map((tab) => {
-              const locked = (tab.min === "premium" && !isPremium) || (tab.min === "basic" && !isBasicPlus);
+              const locked = (tab.min === "premium" && !isPremium) || ((tab.min === "basic" || tab.min === "starter") && !isBasicPlus);
               return (
                 <button key={tab.id}
                   onClick={() => locked ? setUpgrade({ open: true, feature: tab.label }) : handleTab(tab.id as typeof activeTab)}
@@ -2590,15 +2591,15 @@ export default function ProfitabilityOptimizer() {
                 <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">{t('profitabilityOptimizer.calculator.advanced', 'Advanced')}</p>
                 {!isBasicPlus && (
                   <span onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
-                    className="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors">Basic+</span>
+                    className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium cursor-pointer hover:bg-emerald-200 dark:hover:bg-emerald-800/40 transition-colors">Starter+</span>
                 )}
               </div>
               <SliderRow label={t('profitabilityOptimizer.calculator.returnRate', 'Return rate')} value={inputs.return_rate_pct} min={0} max={40} step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
               <SliderRow label={t('profitabilityOptimizer.calculator.storagePerUnit', 'Storage / unit')} value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
               {!isBasicPlus && (
                 <button onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
-                  className="w-full mt-3 py-2 text-xs text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center justify-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5" /> Unlock — Basic ₹1,999/mo
+                  className="w-full mt-3 py-2 text-xs text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors flex items-center justify-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5" /> Unlock — Starter ₹499/mo
                 </button>
               )}
             </CardContent>
@@ -2623,7 +2624,7 @@ export default function ProfitabilityOptimizer() {
                       {m.locked && (
                         <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center cursor-pointer rounded-2xl"
                           onClick={() => setUpgrade({ open: true, feature: m.label })}>
-                          <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1"><Lock className="w-3 h-3" /> Basic</span>
+                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1"><Lock className="w-3 h-3" /> Starter</span>
                         </div>
                       )}
                     </div>
@@ -2634,7 +2635,7 @@ export default function ProfitabilityOptimizer() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100">
                       {t('profitabilityOptimizer.calculator.costWaterfall', 'Cost waterfall')}
-                      {!isBasicPlus && <span className="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">Basic+</span>}
+                      {!isBasicPlus && <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">Starter+</span>}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">

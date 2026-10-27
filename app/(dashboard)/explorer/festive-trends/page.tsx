@@ -1040,7 +1040,7 @@ const JSON_FETCH_OPTS: RequestInit = {
 // Tier order matches backend: free=0, basic=1, premium=2, enterprise=3
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TIER_ORDER: Record<string, number> = { free: 0, basic: 1, premium: 2, enterprise: 3, trial: 2 };
+const TIER_ORDER: Record<string, number> = { free: 0, starter: 1, basic: 2, premium: 3, enterprise: 4, trial: 3 };
 
 function hasTier(userTier: string, required: string): boolean {
   return (TIER_ORDER[userTier?.toLowerCase().trim()] ?? 0) >= (TIER_ORDER[required] ?? 99);
@@ -1224,6 +1224,7 @@ const RISK_COLORS: Record<string, string> = {
 const TIER_BADGE: Record<string, string> = {
   premium:    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40",
   basic:      "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40",
+  starter:    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40",
   enterprise: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-450 dark:border-amber-900/40",
   free:       "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
 };
@@ -1465,7 +1466,7 @@ function LockedOverlay({ tier = "basic" }: { tier?: "basic" | "premium" }) {
       <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
         <Lock className="w-6 h-6 text-slate-400 dark:text-slate-500" />
       </div>
-      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">{t("festiveTrends.upgradeToBasic", "Upgrade to")} {label}</p>
+      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">{t("festiveTrends.upgradeTo", "Upgrade to")} {label}</p>
       <Button
         onClick={() => router.push("/subscription")}
         size="sm"
@@ -2013,9 +2014,9 @@ function FestiveTrendContent() {
       .finally(() => setLoadingOverview(false));
   }, [source, user?.id]);
 
-  // ── Categories — BASIC+ only ──────────────────────────────────────────────
+  // ── Categories — STARTER+ only ──────────────────────────────────────────────
   useEffect(() => {
-    if (!hasTier(userTier, "basic")) { setCategories([]); return; }
+    if (!hasTier(userTier, "starter")) { setCategories([]); return; }
     fetch(`${API_BASE}/api/festive/categories?source=${source}`, FETCH_OPTS)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then((d: { category: string }[]) => setCategories(d.map(c => c.category)))
@@ -2028,8 +2029,8 @@ function FestiveTrendContent() {
       toast({ title: "Select a category", description: "Choose a target category to analyse.", variant: "destructive" });
       return;
     }
-    if (!hasTier(userTier, "basic")) {
-      toast({ title: "Basic plan required", description: "Upgrade to Basic to run trend analysis.", variant: "destructive" });
+    if (!hasTier(userTier, "starter")) {
+      toast({ title: "Plan required", description: "Upgrade to Starter or Basic to run trend analysis.", variant: "destructive" });
       return;
     }
 
@@ -2099,7 +2100,7 @@ function FestiveTrendContent() {
   }
 
   const isPremium = hasTier(userTier, "premium");
-  const isBasic   = hasTier(userTier, "basic");
+  const isBasic   = hasTier(userTier, "starter");
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 animate-in fade-in duration-700">
@@ -2239,7 +2240,7 @@ function FestiveTrendContent() {
 
           {!isBasic && (
             <p className="text-center text-xs text-slate-400 dark:text-slate-500 font-medium">
-              Category trend analysis requires Basic or Premium plan
+              Category trend analysis requires Starter, Basic or Premium plan
             </p>
           )}
         </CardContent>

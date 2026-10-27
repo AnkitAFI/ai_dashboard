@@ -696,7 +696,8 @@ function OpportunityCard({
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isBasicPlus =
+    tier === "starter" || tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
   const isPremium = tier === "premium" || tier === "enterprise";
   const sl = getScoreLabel(opp.score, t);
   const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
@@ -921,7 +922,7 @@ function OpportunityCard({
                 onClick={() => onUpgrade("Score breakdown")}
                 className="flex items-center gap-1.5 text-xs px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-750 rounded-full shadow-sm font-medium text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-slate-600 transition-colors"
               >
-                <Lock className="w-3 h-3 text-amber-500" /> {t("whiteSpaceFinder.unlockBreakdown", "Unlock breakdown — Basic")}
+                <Lock className="w-3 h-3 text-amber-500" /> Unlock breakdown — Starter ₹499/mo
               </button>
             </div>
           </div>
@@ -1065,10 +1066,13 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/95 dark:bg-background/95 backdrop-blur-none">
         <Lock className="w-4 h-4 text-amber-500" />
         <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t("whiteSpaceFinder.resultLocked", "Result #{{position}} locked", { position })}</p>
-        <p className="text-xs text-slate-550 dark:text-slate-400">{t("whiteSpaceFinder.upgradeToUnlock", "Upgrade to Basic to unlock all results")}</p>
-        <span className="mt-1 text-xs px-5 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium shadow group-hover:shadow-md transition-all">
-          {t("whiteSpaceFinder.unlockFor", "Unlock — ₹1,999/mo")}
-        </span>
+        <p className="text-xs text-slate-550 dark:text-slate-400">Upgrade to Starter or Basic to unlock all results</p>
+        <a
+          href="/subscription"
+          className="mt-1 text-xs px-5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-medium shadow group-hover:shadow-md transition-all"
+        >
+          Unlock with Starter — ₹499/mo
+        </a>
       </div>
     </div>
   );
@@ -1077,17 +1081,16 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
 // ── Tier Feature Table ────────────────────────────────────────────────────────
 
 const getTierFeatures = (t: any) => [
-  { key: "scans", label: t("whiteSpaceFinder.scansMonth", "Scans / month"), free: "3", basic: "20", premium: t("whiteSpaceFinder.unlimited", "Unlimited") },
-  { key: "results", label: t("whiteSpaceFinder.resultsPerScan", "Results per scan"), free: "3", basic: t("whiteSpaceFinder.all", "All"), premium: t("whiteSpaceFinder.all", "All") },
-  { key: "breakdown", label: t("whiteSpaceFinder.scoreBreakdown", "Score breakdown"), free: false, basic: true, premium: true },
-  { key: "competitors", label: t("whiteSpaceFinder.competitorWeaknesses", "Competitor weaknesses"), free: false, basic: true, premium: true },
-  { key: "demand", label: t("whiteSpaceFinder.demandSignalsChart", "Demand signals chart"), free: false, basic: true, premium: true },
-  { key: "trend", label: t("whiteSpaceFinder.trendData", "Trend data (90-day)"), free: false, basic: false, premium: true },
-  { key: "entry_price", label: t("whiteSpaceFinder.entryPriceSuggestion", "Entry price suggestion"), free: false, basic: false, premium: true },
-  { key: "ai_insights", label: t("whiteSpaceFinder.aiStrategicInsights", "AI strategic insights"), free: false, basic: false, premium: true },
-  { key: "watchlist", label: t("whiteSpaceFinder.watchlist", "Watchlist"), free: true, basic: true, premium: true },
-  { key: "export", label: t("whiteSpaceFinder.csvExport", "CSV export"), free: false, basic: false, premium: true },
-  { key: "badges", label: t("whiteSpaceFinder.bestSellerGapSignal", "Best Seller gap signal"), free: false, basic: true, premium: true },
+  { key: "scans", label: t("whiteSpaceFinder.scansMonth", "Scans / month"), free: "3", starter: "5", basic: "20", premium: t("whiteSpaceFinder.unlimited", "Unlimited") },
+  { key: "results", label: t("whiteSpaceFinder.resultsPerScan", "Results per scan"), free: "3", starter: t("whiteSpaceFinder.all", "All"), basic: t("whiteSpaceFinder.all", "All"), premium: t("whiteSpaceFinder.all", "All") },
+  { key: "breakdown", label: t("whiteSpaceFinder.scoreBreakdown", "Score breakdown"), free: false, starter: true, basic: true, premium: true },
+  { key: "competitors", label: t("whiteSpaceFinder.competitorWeaknesses", "Competitor weaknesses"), free: false, starter: true, basic: true, premium: true },
+  { key: "demand", label: t("whiteSpaceFinder.demandSignalsChart", "Demand signals chart"), free: false, starter: true, basic: true, premium: true },
+  { key: "trend", label: t("whiteSpaceFinder.trendData", "Trend data (90-day)"), free: false, starter: false, basic: false, premium: true },
+  { key: "entry_price", label: t("whiteSpaceFinder.entryPriceSuggestion", "Entry price suggestion"), free: false, starter: false, basic: false, premium: true },
+  { key: "ai_insights", label: t("whiteSpaceFinder.aiStrategicInsights", "AI strategic insights"), free: false, starter: false, basic: false, premium: true },
+  { key: "watchlist", label: t("whiteSpaceFinder.watchlist", "Watchlist"), free: true, starter: true, basic: true, premium: true },
+  { key: "badges", label: t("whiteSpaceFinder.bestSellerGapSignal", "Best Seller gap signal"), free: false, starter: true, basic: true, premium: true },
 ];
 
 function TierCell({ val }: { val: boolean | string }) {
@@ -1173,10 +1176,10 @@ function WhiteSpaceFinderContent() {
 
   const tier = result?.tier ?? user?.subscriptionTier ?? "free";
   const isBasicPlus =
-    tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
+    tier === "starter" || tier === "basic" || tier === "premium" || tier === "enterprise" || tier === "trial";
   const isPremium = tier === "premium" || tier === "enterprise" || tier === "trial";
-  const scansUsed = result?.scans_used ?? 0;
-  const scansLimit = result?.scans_limit ?? 3;
+  const scansUsed = result?.scans_used ?? usageLimits?.count ?? 0;
+  const scansLimit = result?.scans_limit ?? usageLimits?.limit ?? (tier === "starter" ? 5 : tier === "free" ? 3 : 20);
   const scanPct = Math.min((scansUsed / scansLimit) * 100, 100);
 
   const showToast = (
@@ -1439,7 +1442,7 @@ function WhiteSpaceFinderContent() {
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t("whiteSpaceFinder.scansUsed", "Scans used")}</p>
-                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : tier === "starter" ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800" : "bg-slate-100 text-slate-600"}`}>
                     {tier.toUpperCase()}
                   </Badge>
                 </div>
@@ -1472,7 +1475,9 @@ function WhiteSpaceFinderContent() {
                       ? "∞"
                       : result
                         ? scansLimit
-                        : usageLimits?.limit || 3}
+                        : usageLimits?.limit && usageLimits.limit !== -1
+                          ? usageLimits.limit
+                          : (tier === "starter" ? 5 : 3)}
                   </span>
                 </div>
               </div>
@@ -1543,6 +1548,9 @@ function WhiteSpaceFinderContent() {
                       <tr className="border-b border-slate-200 dark:border-slate-800">
                         <th className="text-left p-2.5 text-xs text-slate-500 dark:text-slate-405 font-medium w-48 bg-transparent">{t("whiteSpaceFinder.feature", "Feature")}</th>
                         <th className="text-center p-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 bg-transparent">{t("whiteSpaceFinder.free", "Free")}</th>
+                        <th className="text-center p-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/25 rounded-t">
+                          Starter<br /><span className="text-[10px] font-normal">₹499{t("whiteSpaceFinder.monthText", "/mo")}</span>
+                        </th>
                         <th className="text-center p-2.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/25 rounded-t">
                           {t("whiteSpaceFinder.basic", "Basic")}<br /><span className="text-[10px] font-normal">₹1,999{t("whiteSpaceFinder.monthText", "/mo")}</span>
                         </th>
@@ -1556,6 +1564,7 @@ function WhiteSpaceFinderContent() {
                         <tr key={f.key} className="border-b border-slate-100 dark:border-slate-800/60">
                           <td className="p-2.5 text-xs text-slate-600 dark:text-slate-300 bg-transparent">{f.label}</td>
                           <td className="p-2.5 text-center bg-transparent"><TierCell val={f.free} /></td>
+                          <td className="p-2.5 text-center bg-emerald-50/40 dark:bg-emerald-950/10"><TierCell val={f.starter} /></td>
                           <td className="p-2.5 text-center bg-amber-50/40 dark:bg-amber-950/10"><TierCell val={f.basic} /></td>
                           <td className="p-2.5 text-center bg-violet-50/40 dark:bg-violet-950/10"><TierCell val={f.premium} /></td>
                         </tr>
@@ -1564,10 +1573,10 @@ function WhiteSpaceFinderContent() {
                     <tfoot>
                       <tr>
                         <td className="bg-transparent" />
-                        {(["free", "basic", "premium"] as const).map((planTier) => (
+                        {(["free", "starter", "basic", "premium"] as const).map((planTier) => (
                           <td
                             key={planTier}
-                            className={`p-3 text-center ${planTier === "basic" ? "bg-amber-50/40 dark:bg-amber-950/10" : planTier === "premium" ? "bg-violet-50/40 dark:bg-violet-950/10" : "bg-transparent"}`}
+                            className={`p-3 text-center ${planTier === "starter" ? "bg-emerald-50/40 dark:bg-emerald-950/10" : planTier === "basic" ? "bg-amber-50/40 dark:bg-amber-950/10" : planTier === "premium" ? "bg-violet-50/40 dark:bg-violet-950/10" : "bg-transparent"}`}
                           >
                             {tier === planTier ? (
                               <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/30 px-3 py-1 rounded-full border border-violet-200/55 dark:border-violet-900/35">
@@ -1576,7 +1585,9 @@ function WhiteSpaceFinderContent() {
                             ) : planTier !== "free" ? (
                               <a
                                 href="/subscription"
-                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${planTier === "basic"
+                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${planTier === "starter"
+                                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                    : planTier === "basic"
                                     ? "bg-amber-500 text-white hover:bg-amber-600"
                                     : "bg-violet-600 text-white hover:bg-violet-700"
                                   }`}
@@ -1955,14 +1966,14 @@ function WhiteSpaceFinderContent() {
                       onUpgrade={(f) =>
                         showToast(
                           "Upgrade required",
-                          `"${f}" requires Basic or above.`,
+                          `"${f}" requires Starter or above.`,
                           "error",
                         )
                       }
                     />
                   ))}
 
-                {/* Free → Basic nudge */}
+                {/* Free → Starter/Basic nudge */}
                 {!isBasicPlus && result.total_found > 0 && (
                   <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 border border-violet-200 dark:border-violet-900/30 rounded-2xl shadow-sm">
                     <CardContent className="p-6 text-center">
@@ -1973,17 +1984,23 @@ function WhiteSpaceFinderContent() {
                           : "Unlock the full opportunity analysis"}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-md mx-auto">
-                        Basic unlocks all results, score breakdowns, competitor
-                        weaknesses, demand signal charts, and the Best Seller
-                        gap indicator.
+                        Upgrade to Starter (₹499/mo) or Basic to unlock all results, score breakdowns, competitor
+                        weaknesses, and demand signal charts.
                       </p>
-                      <a
-                        href="/subscription"
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all"
-                      >
-                        <Crown className="w-4 h-4" /> Upgrade to Basic —
-                        ₹1,999/mo <ArrowRight className="w-4 h-4" />
-                      </a>
+                      <div className="flex flex-wrap items-center justify-center gap-3">
+                        <a
+                          href="/subscription"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all"
+                        >
+                          <Zap className="w-4 h-4" /> Upgrade to Starter — ₹499/mo
+                        </a>
+                        <a
+                          href="/subscription"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all"
+                        >
+                          <Crown className="w-4 h-4" /> Basic — ₹1,999/mo
+                        </a>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -2001,7 +2018,7 @@ function WhiteSpaceFinderContent() {
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                           Premium adds 90-day trend data, AI strategic insights,
-                          entry price recommendations, and CSV export.
+                          and entry price recommendations.
                         </p>
                       </div>
                       <a
@@ -2246,7 +2263,7 @@ function WhiteSpaceFinderContent() {
                               onClick={() => router.push("/subscription")}
                               className="text-xs px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-full shadow-sm font-medium text-slate-700 dark:text-slate-300 hover:border-violet-300 dark:hover:border-violet-800 hover:text-violet-650 dark:hover:text-violet-400 transition-colors"
                             >
-                              Unlock — Basic ₹1,999/mo
+                              Unlock — Starter ₹499/mo
                             </button>
                           </div>
                         </div>
@@ -2430,8 +2447,7 @@ function WhiteSpaceFinderContent() {
               </div>
               <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30 text-xs text-amber-750 dark:text-amber-400 mb-6">
                 <BookOpen className="w-4 h-4 shrink-0" />
-                Free: 3 scans / 3 results · Basic: 20 scans + all results ·
-                Premium: unlimited + AI insights
+                Free: 3 scans / 3 results · Starter: 5 scans + all results · Basic: 20 scans + all results · Premium: unlimited + AI insights
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
                 {[

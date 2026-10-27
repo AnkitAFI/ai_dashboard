@@ -425,8 +425,8 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
     ) {
       const upgradeMsg =
         currentTier === "free"
-          ? "🔒 Unlock AI Advisor with Basic or Premium plan to start chatting!"
-          : `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${currentTier === "basic" ? "Premium (unlimited)" : "a higher plan"} to continue.`;
+          ? "🔒 Unlock AI Advisor with Starter, Basic or Premium plan to start chatting!"
+          : `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${currentTier === "starter" ? "Basic" : currentTier === "basic" ? "Premium (unlimited)" : "a higher plan"} to continue.`;
 
       setMessages((prev) => [
         ...prev,
@@ -733,7 +733,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                       ? "Unlimited AI Chats"
                       : isChatLocked
                         ? currentTier === "free"
-                          ? "Unlock with Basic or Premium"
+                          ? "Unlock with Starter or Basic"
                           : "Limit Reached"
                         : `${aiUsage.used}/${aiUsage.limit} chats used`}
                 </span>
@@ -1049,7 +1049,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                         ? "Please login..."
                         : isChatLocked
                           ? currentTier === "free"
-                            ? "Unlock with Basic/Premium..."
+                            ? "Unlock with Starter/Basic..."
                             : "Limit reached..."
                           : "Type your query here..."
                     }
@@ -1116,7 +1116,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                 <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-50 dark:from-orange-950/15 to-red-50 dark:to-red-950/15 border border-orange-100 dark:border-slate-800 rounded-xl p-3 flex items-center justify-between">
                   <p className="text-xs text-orange-900 dark:text-orange-355 font-medium">
                     {currentTier === "free"
-                      ? "🔒 Unlock AI Advisor with Basic or Premium plan."
+                      ? "🔒 Unlock AI Advisor with Starter, Basic or Premium plan."
                       : `⚠️ AI Chat usage limit (${aiUsage.limit}) reached for this month`}
                   </p>
                   <a href="/subscription">

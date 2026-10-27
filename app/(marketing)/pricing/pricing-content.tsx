@@ -74,6 +74,36 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
   },
   {
+    id: "starter",
+    name: "Starter",
+    price: 499,
+    oldPrice: 999,
+    description: "per month",
+    bestFor: "New sellers launching their first products",
+    icon: <Zap className="h-6 w-6 text-emerald-500" />,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - 5 uses/month + full data",
+      "Top Competitors Score - 5 uses/month",
+      "Product Ideas - 5 uses/month",
+      "Best Price Finder - Calculator tab + Cost Waterfall",
+      "Keyword Research - 1 use/month",
+      "AI Advisor - 5 uses/month",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+    ],
+    limitations: [
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads Automation",
+    ],
+  },
+  {
     id: "basic",
     name: "Basic",
     price: 1999,
@@ -212,7 +242,7 @@ export default function PricingContent() {
 
       {/* Pricing Cards Section */}
       <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {SUBSCRIPTION_PLANS.map((plan) => (
             <Card
               key={plan.id}
@@ -310,12 +340,14 @@ export default function PricingContent() {
                 <tr>
                   <td className="p-6 text-sm font-medium">Product Tracking</td>
                   <td className="p-6 text-center text-sm">25</td>
+                  <td className="p-6 text-center text-sm">100</td>
                   <td className="p-6 text-center text-sm">500</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Unlimited</td>
                   <td className="p-6 text-center text-sm">Custom</td>
                 </tr>
                 <tr>
                   <td className="p-6 text-sm font-medium">Profit Tracker</td>
+                  <td className="p-6 text-center text-sm">Store Level</td>
                   <td className="p-6 text-center text-sm">Store Level</td>
                   <td className="p-6 text-center text-sm">Store Level</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
@@ -325,11 +357,13 @@ export default function PricingContent() {
                   <td className="p-6 text-sm font-medium">Restock Planner</td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
                 </tr>
                 <tr>
                   <td className="p-6 text-sm font-medium">Review Automator</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
@@ -339,11 +373,13 @@ export default function PricingContent() {
                   <td className="p-6 text-sm font-medium">Refund Finder</td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
                 </tr>
                 <tr>
                   <td className="p-6 text-sm font-medium">Ads Automations</td>
+                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>

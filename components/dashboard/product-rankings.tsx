@@ -329,7 +329,7 @@ export default function ProductRankings({
                   </p>
                   <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                     {currentTier === "free"
-                      ? "Upgrade to get AI-powered analysis of market trends and product performance"
+                      ? "Upgrade to Starter to get AI-powered analysis of market trends and product performance"
                       : "Get instant insights on top-performing products"}
                   </p>
                 </div>

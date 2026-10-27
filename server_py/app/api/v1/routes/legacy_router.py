@@ -9500,7 +9500,7 @@ def generate_warnings(pricing: Dict, competition: Dict, base_cost: float) -> Lis
 # ─────────────────────────────────────────────────────────────────────────────
  
 def get_analysis_limit(tier: str) -> float:
-    return {"free": 1, "basic": 20, "premium": float("inf"), "enterprise": float("inf"), "trial": 3}.get(tier.lower(), 1)
+    return {"free": 1, "starter": 5, "basic": 20, "premium": float("inf"), "enterprise": float("inf"), "trial": 3}.get(tier.lower(), 1)
  
  
 # ─────────────────────────────────────────────────────────────────────────────
@@ -10743,7 +10743,7 @@ def update_user_subscription(
             )
         
         # Validate subscription tier
-        valid_tiers = ['free', 'basic', 'premium', 'enterprise']
+        valid_tiers = ['free', 'starter', 'basic', 'premium', 'enterprise']
         if data.subscription_tier not in valid_tiers:
             raise HTTPException(
                 status_code=400, 
@@ -11168,7 +11168,7 @@ def admin_update_subscription(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        valid_tiers = ['free', 'basic', 'premium', 'enterprise']
+        valid_tiers = ['free', 'starter', 'basic', 'premium', 'enterprise']
         if data.subscription_tier not in valid_tiers:
             raise HTTPException(
                 status_code=400, 
@@ -11242,6 +11242,7 @@ DB_TIMEOUT_MS = 8_000
  
 SOV_TIER_LIMITS: Dict[str, int] = {
     "free":       1,
+    "starter":    5,
     "basic":      10,
     "premium":    -1,
     "enterprise": -1,
@@ -11462,7 +11463,7 @@ def _check_and_increment_sov(user_id: Optional[int], db: Session) -> None:
     if not user:
         return
     tier          = (user.subscription_tier or "free").lower()
-    limit         = SOV_TIER_LIMITS.get(tier, 3)
+    limit         = SOV_TIER_LIMITS.get(tier, 5 if tier == "starter" else 1)
     current_month = datetime.now().strftime("%Y-%m")
     if user.sov_month != current_month:
         user.sov_used  = 0
@@ -12554,7 +12555,7 @@ async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="User not found")
         user = sync_and_check_subscription_status(user, db)
         tier          = (user.subscription_tier or "free").lower()
-        limit         = SOV_TIER_LIMITS.get(tier, 3)
+        limit         = SOV_TIER_LIMITS.get(tier, 5 if tier == "starter" else 1)
         current_month = datetime.now().strftime("%Y-%m")
         count     = user.sov_used or 0
         remaining = (limit - count) if limit != -1 else -1

@@ -1,17 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
 import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infinity as InfinityIcon, Shield, } from "lucide-react";
+import {
+  Check,
+  X,
+  Crown,
+  Zap,
+  Building2,
+  Loader2,
+  AlertCircle,
+  Sparkles,
+  Infinity as InfinityIcon,
+  Shield,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -32,7 +55,7 @@ interface SubscriptionPlan {
 }
 
 interface BillingPreview {
-  scenario: string;   // already_active | upgrade_full | upgrade_prorated | new_subscription
+  scenario: string; // already_active | upgrade_full | upgrade_prorated | new_subscription
   charge: number;
   full_price: number;
   explanation: string;
@@ -61,6 +84,35 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     limitations: [
       "Keyword Research",
       "AI Advisor",
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads Automation",
+    ],
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    price: 499,
+    oldPrice: 999,
+    description: "Essential insights for budding sellers",
+    icon: <Zap className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - 5 uses/month + full data",
+      "Top Competitors Score - 5 uses/month",
+      "Product Ideas - 5 uses/month",
+      "Best Price Finder - Calculator tab + Cost Waterfall",
+      "Keyword Research - 1 use/month",
+      "AI Advisor - 5 uses/month",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+    ],
+    limitations: [
       "Original Profit and Margins",
       "Restock Planner",
       "Review Automator",
@@ -135,7 +187,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "All Premium features",
       "White-label options",
       "Premium support",
-      "Custom integrations"
+      "Custom integrations",
     ],
     limitations: [],
   },
@@ -193,27 +245,37 @@ const PLAN_STYLES: Record<
     upgradeBtn: "bg-slate-500 hover:bg-slate-600 text-white",
     discountBadge: "bg-slate-500",
   },
+  starter: {
+    iconBg: "bg-emerald-100 dark:bg-emerald-950/45 text-emerald-700 dark:text-emerald-400",
+    ring: "",
+    upgradeBtn:
+      "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white shadow-emerald-200 dark:shadow-none",
+    discountBadge: "bg-emerald-600",
+  },
   basic: {
     iconBg: "bg-sky-100 dark:bg-sky-950/45 text-sky-700 dark:text-sky-450",
     ring: "ring-2 ring-sky-500 ring-offset-2 dark:ring-offset-slate-900",
-    upgradeBtn: "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200 dark:shadow-none",
+    upgradeBtn:
+      "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200 dark:shadow-none",
     discountBadge: "bg-sky-600",
   },
   premium: {
     iconBg: "bg-amber-100 dark:bg-amber-950/45 text-amber-700 dark:text-amber-400",
     ring: "",
-    upgradeBtn: "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200 dark:shadow-none",
+    upgradeBtn:
+      "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200 dark:shadow-none",
     discountBadge: "bg-amber-500",
   },
   enterprise: {
     iconBg: "bg-indigo-100 dark:bg-indigo-950/45 text-indigo-700 dark:text-indigo-400",
     ring: "",
-    upgradeBtn: "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200 dark:shadow-none",
+    upgradeBtn:
+      "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200 dark:shadow-none",
     discountBadge: "bg-indigo-600",
   },
 };
 
-const PLAN_ORDER = ["free", "basic", "premium", "enterprise"];
+const PLAN_ORDER = ["free", "starter", "basic", "premium", "enterprise"];
 
 export default function Subscription() {
   const { t } = useTranslation();
@@ -229,6 +291,27 @@ export default function Subscription() {
   const [previewLoadingPlan, setPreviewLoadingPlan] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
 
+  // Card expand/collapse states
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const allExpanded = SUBSCRIPTION_PLANS.every((p) => expandedCards[p.id]);
+
+  const toggleCardExpanded = (planId: string) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [planId]: !prev[planId],
+    }));
+  };
+
+  const toggleAllCards = () => {
+    const next = !allExpanded;
+    const newState: Record<string, boolean> = {};
+    SUBSCRIPTION_PLANS.forEach((p) => {
+      newState[p.id] = next;
+    });
+    setExpandedCards(newState);
+  };
+
   const cancelSubscription = async () => {
     setCancelling(true);
     setError(null);
@@ -236,12 +319,14 @@ export default function Subscription() {
     try {
       const res = await fetch(`${API_BASE}/api/payments/cancel-subscription`, {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to cancel subscription");
 
-      setSuccess(data.message || "Subscription auto-renewal cancelled successfully. It will not auto-renew.");
+      setSuccess(
+        data.message || "Subscription auto-renewal cancelled successfully. It will not auto-renew."
+      );
       await refreshUser();
     } catch (err: any) {
       setError(err.message);
@@ -294,7 +379,11 @@ export default function Subscription() {
       }
       preview = await res.json();
     } catch (err) {
-      setError(err instanceof Error ? sanitizeApiError(err.message, "Billing details unavailable. Please refresh.") : "Billing details unavailable. Please refresh.");
+      setError(
+        err instanceof Error
+          ? sanitizeApiError(err.message, "Billing details unavailable. Please refresh.")
+          : "Billing details unavailable. Please refresh."
+      );
       setPreviewLoadingPlan(null);
       return;
     } finally {
@@ -312,9 +401,9 @@ export default function Subscription() {
       setPaymentPlan({
         id: plan.id,
         name: plan.name,
-        price: preview.charge,       // prorated amount, not list price
+        price: preview.charge, // prorated amount, not list price
         description: plan.description,
-        priceNote: preview.explanation,  // shown in PriceCard
+        priceNote: preview.explanation, // shown in PriceCard
       });
     }
   };
@@ -336,9 +425,13 @@ export default function Subscription() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-full border-4 border-sky-100 border-t-sky-600
-                          animate-spin mx-auto" />
-          <p className="text-slate-600 font-medium">{t('subscription.loadingPlans', 'Loading subscription plans...')}</p>
+          <div
+            className="w-12 h-12 rounded-full border-4 border-sky-100 border-t-sky-600
+                          animate-spin mx-auto"
+          />
+          <p className="text-slate-600 font-medium">
+            {t("subscription.loadingPlans", "Loading subscription plans...")}
+          </p>
         </div>
       </div>
     );
@@ -349,13 +442,17 @@ export default function Subscription() {
       <div className="flex items-center justify-center min-h-[400px]">
         <Card className="w-full max-w-md shadow-xl rounded-3xl">
           <CardHeader>
-            <CardTitle>{t('subscription.authRequired', 'Authentication Required')}</CardTitle>
-            <CardDescription>{t('subscription.loginToView', 'Please login to view subscription plans')}</CardDescription>
+            <CardTitle>{t("subscription.authRequired", "Authentication Required")}</CardTitle>
+            <CardDescription>
+              {t("subscription.loginToView", "Please login to view subscription plans")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => (window.location.href = "/login")}
-              className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
-              {t('subscription.goToLogin', 'Go to Login')}
+            <Button
+              onClick={() => (window.location.href = "/login")}
+              className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold"
+            >
+              {t("subscription.goToLogin", "Go to Login")}
             </Button>
           </CardContent>
         </Card>
@@ -363,18 +460,118 @@ export default function Subscription() {
     );
   }
 
-  const usagePct = aiUsage.limit > 0 ? Math.min((aiUsage.used / aiUsage.limit) * 100, 100) : 0;
-  const limitReached = aiUsage.limit > 0 && aiUsage.used >= aiUsage.limit;
   const currentRank = PLAN_ORDER.indexOf(currentTier);
   const isUpgradeable = (planId: string) => PLAN_ORDER.indexOf(planId) > currentRank;
 
+  // Reusable CTA button renderer
+  const renderPlanCTA = (plan: SubscriptionPlan) => {
+    const isCurrentPlan = plan.id === currentTier;
+    const canUpgrade = isUpgradeable(plan.id);
+    const isThisLoading = previewLoadingPlan === plan.id;
+    const styles = PLAN_STYLES[plan.id] || PLAN_STYLES.free;
+
+    if (isCurrentPlan) {
+      return (
+        <div className="flex flex-col gap-1.5 w-full">
+          <Button
+            disabled
+            className="w-full h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-300 dark:border-emerald-700/80 text-emerald-700 dark:text-emerald-400 font-bold text-xs cursor-not-allowed opacity-100 shadow-none"
+          >
+            <Check className="h-3.5 w-3.5 mr-1.5 stroke-[2.5]" />
+            {t("subscription.currentPlan", "Current Plan")}
+          </Button>
+          {plan.id !== "free" &&
+            (user?.hasAutoRenew !== false ? (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={cancelling}
+                    className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 mx-auto w-fit h-7 px-2"
+                  >
+                    {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                    Cancel Auto Renewal
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to cancel your auto-renewing subscription? Your current premium
+                      access will continue until the end of your billing cycle. No refund will be issued.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={cancelSubscription}
+                      className="bg-rose-600 hover:bg-rose-700 text-white"
+                    >
+                      Yes, Cancel
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <div className="text-center pt-0.5">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                  Auto-Renewal: Off
+                </span>
+              </div>
+            ))}
+        </div>
+      );
+    }
+
+    if (plan.id === "enterprise") {
+      return (
+        <Button
+          variant="outline"
+          className="w-full h-11 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold text-xs transition-colors"
+          onClick={() => (window.location.href = "mailto:support@insydz.com")}
+        >
+          {t("subscription.contactSales", "Contact Sales")}
+        </Button>
+      );
+    }
+
+    if (canUpgrade) {
+      return (
+        <Button
+          className={cn(
+            "w-full h-11 rounded-xl font-bold text-xs shadow-md transition-all duration-200",
+            styles.upgradeBtn
+          )}
+          onClick={() => handleUpgrade(plan.id)}
+          disabled={loading || previewLoadingPlan !== null}
+        >
+          {isThisLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <Sparkles className="h-3.5 w-3.5 mr-1" />
+              {t("subscription.upgradeTo", "Upgrade to")} {plan.name}
+            </>
+          )}
+        </Button>
+      );
+    }
+
+    return (
+      <div className="w-full h-11 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+          {t("subscription.lowerThanCurrent", "Lower tier")}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-10">
-
       {/* Alerts */}
       {error && (
-        <Alert variant="destructive"
-          className="mx-auto max-w-4xl rounded-2xl border-rose-200 bg-rose-50">
+        <Alert variant="destructive" className="mx-auto max-w-4xl rounded-2xl border-rose-200 bg-rose-50">
           <AlertCircle className="h-4 w-4 text-rose-500" />
           <AlertDescription className="text-rose-700">{error}</AlertDescription>
         </Alert>
@@ -386,57 +583,80 @@ export default function Subscription() {
         </Alert>
       )}
 
-      {/* Hero Header */}
-      <div className="text-left space-y-1">
-        <h1 className="page-title">
-          {t('subscription.title', 'My Plan')}
-        </h1>
-        <p className="page-subtitle">
-          {t('subscription.subtitle', 'Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.')}
-        </p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div className="text-left space-y-1">
+          <h1 className="page-title">{t("subscription.title", "My Plan")}</h1>
+          <p className="page-subtitle">
+            {t(
+              "subscription.subtitle",
+              "Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth."
+            )}
+          </p>
+        </div>
+
+        {/* Quick expand/collapse button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleAllCards}
+          className="h-9 px-3 rounded-xl text-xs font-semibold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-1.5"
+        >
+          {allExpanded ? (
+            <>
+              <ChevronUp className="h-3.5 w-3.5 text-slate-500" />
+              <span>{t("subscription.collapseAll", "Collapse Details")}</span>
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-3.5 w-3.5 text-slate-500" />
+              <span>{t("subscription.expandAll", "Expand All Details")}</span>
+            </>
+          )}
+        </Button>
       </div>
 
-      {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      {/* PLAN CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-[94rem] mx-auto items-start">
         {SUBSCRIPTION_PLANS.map((plan) => {
           const isCurrentPlan = plan.id === currentTier;
-          const canUpgrade = isUpgradeable(plan.id);
-          const isThisLoading = previewLoadingPlan === plan.id;
           const styles = PLAN_STYLES[plan.id] || PLAN_STYLES.free;
+          const isExpanded = expandedCards[plan.id] ?? false;
+
+          const INITIAL_VISIBLE_COUNT = 5;
+          const visibleFeatures = isExpanded ? plan.features : plan.features.slice(0, INITIAL_VISIBLE_COUNT);
+          const remainingFeaturesCount = Math.max(0, plan.features.length - INITIAL_VISIBLE_COUNT);
+          const hiddenItemsCount = remainingFeaturesCount + plan.limitations.length;
 
           return (
-            <Card key={plan.id}
+            <Card
+              key={plan.id}
               className={cn(
                 "relative flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
                 styles.ring,
                 isCurrentPlan
                   ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850"
                   : "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
-              )}>
-
-              {plan.isPopular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                  <Badge className="bg-gradient-to-r from-sky-500 to-blue-600
-                                    text-white px-4 py-1.5 shadow-lg rounded-full
-                                    flex items-center gap-1 text-xs font-bold">
-                    <Sparkles className="h-3 w-3" /> {t('subscription.mostPopular', 'Most Popular')}
+              )}
+            >
+              {/* Symmetrically Centered Top Badge */}
+              {isCurrentPlan ? (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
+                  <Badge className="bg-emerald-600 text-white px-3.5 py-1 shadow-md rounded-full flex items-center gap-1.5 text-xs font-bold ring-2 ring-emerald-200 dark:ring-emerald-900">
+                    <Check className="h-3 w-3 stroke-[2.5]" /> {t("subscription.current", "Current Plan")}
                   </Badge>
                 </div>
-              )}
-
-              {isCurrentPlan && (
-                <div className="absolute -top-3.5 right-4 z-10">
-                  <Badge className="bg-green-500 text-white px-3 py-1.5 shadow-lg
-                                    rounded-full flex items-center gap-1 text-xs font-bold">
-                    <Check className="h-3 w-3" /> {t('subscription.current', 'Current')}
+              ) : plan.isPopular ? (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
+                  <Badge className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3.5 py-1 shadow-md rounded-full flex items-center gap-1.5 text-xs font-bold ring-2 ring-sky-200 dark:ring-sky-900">
+                    <Sparkles className="h-3 w-3" /> {t("subscription.mostPopular", "Most Popular")}
                   </Badge>
                 </div>
-              )}
+              ) : null}
 
-              <CardHeader className="text-center pb-4 pt-7">
-                <div className="flex justify-center mb-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center
-                                   justify-center ${styles.iconBg}`}>
+              <CardHeader className="text-center pb-3 pt-7">
+                <div className="flex justify-center mb-3">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${styles.iconBg}`}>
                     {plan.icon}
                   </div>
                 </div>
@@ -446,24 +666,24 @@ export default function Subscription() {
                 </CardTitle>
 
                 {plan.id !== "enterprise" ? (
-                  <div className="flex items-baseline justify-center gap-1.5 mt-2 mb-1">
+                  <div className="flex items-baseline justify-center gap-1.5 mt-1.5 mb-1">
                     {plan.oldPrice && (
-                      <span className={cn("text-lg line-through", isDark ? "text-slate-500" : "text-slate-400")}>
+                      <span className={cn("text-base line-through", isDark ? "text-slate-500" : "text-slate-400")}>
                         ₹{plan.oldPrice.toLocaleString("en-IN")}
                       </span>
                     )}
                     <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
-                      {plan.price === 0 ? t('subscription.free', 'Free') : `₹${plan.price!.toLocaleString("en-IN")}`}
+                      {plan.price === 0 ? t("subscription.free", "Free") : `₹${plan.price!.toLocaleString("en-IN")}`}
                     </span>
                     {plan.price !== 0 && (
-                      <span className={cn("text-sm font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
-                        {t('subscription.month', '/month')}
+                      <span className={cn("text-xs font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
+                        {t("subscription.month", "/month")}
                       </span>
                     )}
                   </div>
                 ) : (
-                  <div className={cn("text-xl font-extrabold mt-2 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
-                    {t('subscription.customPricing', 'Custom Pricing')}
+                  <div className={cn("text-xl font-extrabold mt-1.5 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
+                    {t("subscription.customPricing", "Custom Pricing")}
                   </div>
                 )}
 
@@ -475,127 +695,79 @@ export default function Subscription() {
                   </div>
                 )}
 
-                <CardDescription className={cn("text-xs mt-2", isDark ? "text-slate-400" : "text-slate-500")}>
+                <CardDescription className={cn("text-xs mt-2 line-clamp-2", isDark ? "text-slate-400" : "text-slate-500")}>
                   {plan.description}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="space-y-4 flex flex-col flex-1 pb-6">
+              <CardContent className="space-y-4 flex flex-col flex-1 pb-6 pt-1">
+                {/* Features & Limitations */}
                 <div className="space-y-2 flex-1">
-                  {plan.features.map((feature, index) => {
-                    const isObj = typeof feature === 'object';
-                    const title = isObj ? feature.title : feature as string;
+                  {visibleFeatures.map((feature, index) => {
+                    const isObj = typeof feature === "object";
+                    const title = isObj ? feature.title : (feature as string);
                     const detail = isObj ? feature.detail : null;
 
                     return (
                       <div key={index} className="flex items-start gap-2 w-full">
-                        <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Check className="h-2.5 w-2.5 text-green-600 dark:text-green-450" />
+                        <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Check className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
                         </div>
                         {detail ? (
                           <details className="group cursor-pointer flex-1">
-                            <summary className="list-none outline-none text-sm border-b border-dashed border-slate-300 dark:border-slate-600 pb-0.5 w-fit">
+                            <summary className="list-none outline-none text-xs border-b border-dashed border-slate-300 dark:border-slate-600 pb-0.5 w-fit font-medium">
                               <span className={cn(isDark ? "text-slate-300" : "text-slate-700")}>{title}</span>
                             </summary>
-                            <div className="pt-1.5 pb-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed pr-2">
+                            <div className="pt-1.5 pb-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed pr-2">
                               {detail}
                             </div>
                           </details>
                         ) : (
-                          <span className={cn("text-sm", isDark ? "text-slate-300" : "text-slate-700")}>{title}</span>
+                          <span className={cn("text-xs leading-snug font-medium", isDark ? "text-slate-300" : "text-slate-700")}>
+                            {title}
+                          </span>
                         )}
                       </div>
                     );
                   })}
-                  {plan.limitations.map((limitation, index) => (
-                    <div key={index} className="flex items-start gap-2 opacity-40">
-                      <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <X className="h-2.5 w-2.5 text-slate-400" />
+
+                  {/* Limitations (shown when card is expanded) */}
+                  {isExpanded &&
+                    plan.limitations.map((limitation, index) => (
+                      <div key={index} className="flex items-start gap-2 opacity-50">
+                        <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <X className="h-2.5 w-2.5 text-slate-400" />
+                        </div>
+                        <span className={cn("text-xs leading-snug line-through", isDark ? "text-slate-400" : "text-slate-500")}>
+                          {limitation}
+                        </span>
                       </div>
-                      <span className={cn("text-sm line-through", isDark ? "text-slate-400" : "text-slate-500")}>{limitation}</span>
-                    </div>
-                  ))}
+                    ))}
+
+                  {/* Interactive inline toggle button */}
+                  {hiddenItemsCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleCardExpanded(plan.id)}
+                      className={cn(
+                        "w-full py-1.5 px-2.5 rounded-xl border border-dashed transition-all duration-200 text-xs font-semibold flex items-center justify-center gap-1.5 mt-2",
+                        isExpanded
+                          ? "border-slate-300 dark:border-slate-700 bg-slate-100/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300"
+                          : "border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-sky-950/30 text-sky-700 dark:text-sky-350 hover:bg-sky-100/70 dark:hover:bg-sky-900/50"
+                      )}
+                    >
+                      <span>
+                        {isExpanded
+                          ? t("subscription.showLess", "Show less")
+                          : t("subscription.showMoreFeatures", `+ ${hiddenItemsCount} more features & limits`)}
+                      </span>
+                      {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                    </button>
+                  )}
                 </div>
 
                 {/* CTA button */}
-                <div className="pt-2 flex flex-col gap-2">
-                  {isCurrentPlan ? (
-                    <>
-                      <Button disabled
-                        className="w-full h-11 rounded-xl bg-green-50 border-2
-                                         border-green-200 text-green-700 font-bold
-                                         text-sm cursor-not-allowed opacity-100">
-                        <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
-                      </Button>
-                      {plan.id !== "free" && (
-                        user?.hasAutoRenew !== false ? (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                disabled={cancelling}
-                                className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 mx-auto w-fit"
-                              >
-                                {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                                Cancel Auto Renewal
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to cancel your auto-renewing subscription? Your current premium access will continue until the end of your billing cycle. No refund will be issued.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                                <AlertDialogAction onClick={cancelSubscription} className="bg-rose-600 hover:bg-rose-700 text-white">
-                                  Yes, Cancel
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        ) : (
-                          <div className="text-center pt-1">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                              Auto-Renewal: Off
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </>
-                  ) : plan.id === "enterprise" ? (
-                    <Button variant="outline"
-                      className="w-full h-11 rounded-xl border-2 border-indigo-200
-                                       text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
-                      onClick={() => window.location.href = "mailto:support@insydz.com"}>
-                      {t('subscription.contactSales', 'Contact Sales')}
-                    </Button>
-
-                  ) : canUpgrade ? (
-                    <Button
-                      className={`w-full h-11 rounded-xl font-bold text-sm shadow-lg
-                                  transition-all duration-200 ${styles.upgradeBtn}`}
-                      onClick={() => handleUpgrade(plan.id)}
-                      disabled={loading || previewLoadingPlan !== null}
-                    >
-                      {isThisLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <><Sparkles className="h-3.5 w-3.5 mr-1.5" />{t('subscription.upgradeTo', 'Upgrade to')} {plan.name}</>
-                      )}
-                    </Button>
-
-                  ) : (
-                    <div className="w-full h-11 rounded-xl bg-slate-50 border border-slate-200
-                                    flex items-center justify-center">
-                      <span className="text-xs text-slate-400 font-medium">
-                        {t('subscription.lowerThanCurrent', 'Lower than current plan')}
-                      </span>
-                    </div>
-                  )}
-                </div>
+                <div className="pt-2">{renderPlanCTA(plan)}</div>
               </CardContent>
             </Card>
           );
@@ -605,11 +777,19 @@ export default function Subscription() {
       {/* Trust Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl mx-auto">
         {TRUST_ITEMS.map((item, i) => (
-          <div key={i} className={cn(
-            "rounded-2xl border shadow-sm p-4 flex flex-col gap-2",
-            isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
-          )}>
-            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", isDark ? "bg-slate-800" : "bg-slate-50")}>
+          <div
+            key={i}
+            className={cn(
+              "rounded-2xl border shadow-sm p-4 flex flex-col gap-2",
+              isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
+            )}
+          >
+            <div
+              className={cn(
+                "w-9 h-9 rounded-xl flex items-center justify-center",
+                isDark ? "bg-slate-800" : "bg-slate-50"
+              )}
+            >
               {item.icon}
             </div>
             <p className={cn("text-sm font-bold", isDark ? "text-slate-200" : "text-slate-800")}>{item.label}</p>
@@ -621,14 +801,17 @@ export default function Subscription() {
       {/* FAQ */}
       <div className="mt-4 max-w-4xl mx-auto">
         <h3 className={cn("text-xl font-extrabold mb-6 text-center", isDark ? "text-slate-100" : "text-slate-900")}>
-          {t('subscription.faq', 'Frequently Asked Questions')}
+          {t("subscription.faq", "Frequently Asked Questions")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {FAQ.map((item, i) => (
-            <div key={i} className={cn(
-              "rounded-2xl border shadow-sm p-5 hover:shadow-md transition-shadow",
-              isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
-            )}>
+            <div
+              key={i}
+              className={cn(
+                "rounded-2xl border shadow-sm p-5 hover:shadow-md transition-shadow",
+                isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
+              )}
+            >
               <h4 className={cn("font-bold mb-2 text-sm", isDark ? "text-slate-200" : "text-slate-800")}>{item.q}</h4>
               <p className={cn("text-sm leading-relaxed", isDark ? "text-slate-400" : "text-slate-500")}>{item.a}</p>
             </div>
