@@ -1,5 +1,7 @@
 "use client";
 
+import SellerSetupModal from "@/components/seller/seller-setup-modal";
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE_URL } from "@/lib/config";
@@ -7,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { 
   AlertCircle, CheckCircle2, Loader2, Link as LinkIcon, 
-  Unlink, Menu, Calculator, Package, Star, ShieldCheck, ArrowRight, Activity, Zap, TrendingUp, Info
+  Unlink, Menu, Calculator, Package, Star, ShieldCheck, ArrowRight, Activity, Zap, TrendingUp, Info, Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -43,6 +45,7 @@ export default function AmazonStoreSetupPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [maxAccounts, setMaxAccounts] = useState(1);
   const [canAddMore, setCanAddMore] = useState(true);
+  const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
 
   const { theme, resolvedTheme } = useTheme();
   const { toggle } = useSidebar();
@@ -349,6 +352,31 @@ export default function AmazonStoreSetupPage() {
            </div>
         </div>
 
+        {/* Assisted Onboarding Offer Card */}
+        {!isConnected && (
+          <div className={`p-6 rounded-[20px] border-2 transition-all ${isDark ? 'bg-slate-900/90 border-blue-900/50' : 'bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-white border-blue-200/80'} shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6`}>
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm">
+                <Sparkles className="w-3.5 h-3.5" /> Includes 5 Free Product Listings
+              </div>
+              <h2 className={`text-xl sm:text-2xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                Don&apos;t have an Amazon or Flipkart Seller Account yet?
+              </h2>
+              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'} leading-relaxed`}>
+                Let our team create your seller store, assist with brand approval, and set up your first 5 product listings. Just ₹999 per platform.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+              <Button
+                onClick={() => setIsSetupModalOpen(true)}
+                className="w-full sm:w-auto h-11 px-6 rounded-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20"
+              >
+                Get Account Setup & 5 Listings <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Connected Accounts Status (Only show if connected) */}
         {isConnected && (
           <div className="flex flex-col gap-5">
@@ -469,6 +497,10 @@ export default function AmazonStoreSetupPage() {
             ))}
           </div>
         </div>
+        <SellerSetupModal
+          isOpen={isSetupModalOpen}
+          onClose={() => setIsSetupModalOpen(false)}
+        />
       </main>
     </div>
   );

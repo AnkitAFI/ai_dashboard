@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Check, X, Loader2, AlertCircle, Crown, Zap, Building2, ArrowRight,
-  Menu, X as XIcon, Sun, Moon, ChevronDown, ShoppingBag, Store,
+  Menu, X as XIcon, Sun, Moon, ChevronDown, ChevronUp, ShoppingBag, Store,
   Briefcase, Users, Target, Package, BarChart3, MessageCircle,
   Bell, Search, TrendingDown, TrendingUp, Code, Globe, Trophy,
-  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid, Facebook, Instagram, Linkedin, Twitter
+  ArrowLeft, BookOpen, Video, FileText, Flame, Mail, LayoutGrid, Facebook, Instagram, Linkedin, Twitter, Sparkles
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 
 interface SubscriptionPlan {
   id: string;
@@ -77,7 +76,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: "starter",
     name: "Starter",
     price: 499,
-    oldPrice: 999,
     description: "per month",
     bestFor: "New sellers launching their first products",
     icon: <Zap className="h-6 w-6 text-emerald-500" />,
@@ -206,9 +204,20 @@ const FAQS = [
   },
 ];
 
-
 export default function PricingContent() {
   const router = useRouter();
+
+  // Card expand/collapse states (matching subscription page)
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const toggleCardExpanded = (planId: string) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [planId]: !prev[planId],
+    }));
+  };
+
+  const INITIAL_VISIBLE_COUNT = 5;
 
   const handleGetStarted = () => {
     router.push("/login");
@@ -216,10 +225,6 @@ export default function PricingContent() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Navigation */}
-
-      {/* Hero Section */}
-
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 relative overflow-hidden">
         {/* Decorative blobs */}
@@ -242,77 +247,137 @@ export default function PricingContent() {
 
       {/* Pricing Cards Section */}
       <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
-        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {SUBSCRIPTION_PLANS.map((plan) => (
-            <Card
-              key={plan.id}
-              className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
-                ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10'
-                : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
-                }`}
-            >
-              <CardHeader className="text-center pb-2">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
-                  }`}>
-                  {plan.icon}
-                </div>
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <div className="mt-4 flex items-baseline justify-center">
-                  {plan.price !== undefined ? (
-                    <>
-                      <span className="text-4xl font-extrabold tracking-tight">₹{plan.price.toLocaleString()}</span>
-                      <span className="ml-1 text-slate-500 font-medium">/{plan.id === 'free' ? 'forever' : 'mo'}</span>
-                    </>
-                  ) : (
-                    <span className="text-2xl font-bold">Contact Us</span>
+        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-start">
+          {SUBSCRIPTION_PLANS.map((plan) => {
+            const isExpanded = expandedCards[plan.id] ?? false;
+            const visibleFeatures = isExpanded ? plan.features : plan.features.slice(0, INITIAL_VISIBLE_COUNT);
+            const remainingFeaturesCount = Math.max(0, plan.features.length - INITIAL_VISIBLE_COUNT);
+            const hiddenItemsCount = remainingFeaturesCount + plan.limitations.length;
+
+            return (
+              <Card
+                key={plan.id}
+                className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
+                  ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10'
+                  : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
+                  }`}
+              >
+                <CardHeader className="text-center pb-2">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${plan.isPopular ? 'bg-orange-500 text-white' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
+                    }`}>
+                    {plan.icon}
+                  </div>
+                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                  <div className="mt-4 flex items-baseline justify-center">
+                    {plan.price !== undefined ? (
+                      <>
+                        <span className="text-4xl font-extrabold tracking-tight">₹{plan.price.toLocaleString()}</span>
+                        <span className="ml-1 text-slate-500 font-medium">/{plan.id === 'free' ? 'forever' : 'mo'}</span>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-bold">Contact Us</span>
+                    )}
+                  </div>
+                  {plan.oldPrice && (
+                    <div className="text-slate-400 line-through text-sm font-medium">₹{plan.oldPrice.toLocaleString()}</div>
                   )}
-                </div>
-                {plan.oldPrice && (
-                  <div className="text-slate-400 line-through text-sm font-medium">₹{plan.oldPrice.toLocaleString()}</div>
-                )}
-                {plan.badge && (
-                  <div className="mt-2 text-xs font-bold text-orange-600 uppercase tracking-wider">{plan.badge}</div>
-                )}
-                <CardDescription className="mt-4 min-h-[40px]">{plan.description}</CardDescription>
-              </CardHeader>
+                  {plan.badge && (
+                    <div className="mt-2 text-xs font-bold text-orange-600 uppercase tracking-wider">{plan.badge}</div>
+                  )}
+                  <CardDescription className="mt-4 min-h-[40px]">{plan.description}</CardDescription>
+                </CardHeader>
 
-              <CardContent className="flex-1 flex flex-col pt-6">
-                <div className="mb-6">
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Best For</div>
-                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{plan.bestFor}</p>
-                </div>
+                <CardContent className="flex-1 flex flex-col pt-6">
+                  <div className="mb-6">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Best For</div>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{plan.bestFor}</p>
+                  </div>
 
-                <div className="space-y-4 mb-8">
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">What's Included</div>
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{feature}</span>
-                    </div>
-                  ))}
-                  {plan.limitations.map((limitation, i) => (
-                    <div key={i} className="flex items-start opacity-40">
-                      <X className="h-5 w-5 text-slate-400 mr-3 flex-shrink-0" />
-                      <span className="text-sm text-slate-400 line-through">{limitation}</span>
-                    </div>
-                  ))}
-                </div>
+                  <div className="space-y-4 mb-8 flex-1">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">What's Included</div>
+                    {visibleFeatures.map((feature, i) => (
+                      <div key={i} className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{feature}</span>
+                      </div>
+                    ))}
+                    {isExpanded &&
+                      plan.limitations.map((limitation, i) => (
+                        <div key={i} className="flex items-start opacity-40">
+                          <X className="h-5 w-5 text-slate-400 mr-3 flex-shrink-0" />
+                          <span className="text-sm text-slate-400 line-through">{limitation}</span>
+                        </div>
+                      ))}
 
-                <div className="mt-auto">
-                  <Button
-                    className={`w-full h-12 rounded-xl font-bold text-base transition-all ${plan.isPopular
-                      ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20'
-                      : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
-                      }`}
-                    onClick={() => router.push("/login")}
-                  >
-                    {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    {hiddenItemsCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => toggleCardExpanded(plan.id)}
+                        className={`w-full py-2 px-3 rounded-xl border border-dashed transition-all duration-200 text-xs font-semibold flex items-center justify-center gap-1.5 mt-2 ${
+                          isExpanded
+                            ? 'border-slate-300 dark:border-slate-700 bg-slate-100/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300'
+                            : 'border-orange-200 dark:border-orange-900/60 bg-orange-50/60 dark:bg-orange-950/30 text-orange-700 dark:text-orange-300 hover:bg-orange-100/70 dark:hover:bg-orange-900/50'
+                        }`}
+                      >
+                        <span>
+                          {isExpanded
+                            ? 'Show less'
+                            : `+ ${hiddenItemsCount} more features & limits`}
+                        </span>
+                        {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="mt-auto">
+                    <Button
+                      className={`w-full h-12 rounded-xl font-bold text-base transition-all ${plan.isPopular
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20'
+                        : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
+                        }`}
+                      onClick={() => router.push("/login")}
+                    >
+                      {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Done-For-You Launchpad Add-on Section */}
+      <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="rounded-3xl p-6 sm:p-10 border-2 border-blue-200 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-3 max-w-2xl text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm">
+              <Sparkles className="w-3.5 h-3.5" /> Seller Account Setup
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Don&apos;t have an Amazon or Flipkart account yet?
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+              Our team sets up your seller account on <strong>Amazon India, Flipkart, and Meesho</strong> and lists your first <strong>5 products</strong> — so you can start selling online without any hassle.
+            </p>
+            <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1"><Check className="w-4 h-4 text-emerald-500" /> ₹999 per platform</span>
+              <span className="flex items-center gap-1"><Check className="w-4 h-4 text-emerald-500" /> Includes 5 Free Listings</span>
+              <span className="flex items-center gap-1"><Check className="w-4 h-4 text-emerald-500" /> WhatsApp Support & Setup</span>
+            </div>
+          </div>
+          <div className="shrink-0 text-center lg:text-right w-full lg:w-auto">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-3">
+              ₹999 <span className="text-sm font-normal text-slate-500">/ platform (One-time)</span>
+            </div>
+            <Button
+              onClick={() => router.push("/login?redirect=/seller/store")}
+              className="h-12 px-8 rounded-xl font-bold text-base bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/25 transition-all w-full sm:w-auto"
+            >
+              Get Account Setup & 5 Listings <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -385,7 +450,6 @@ export default function PricingContent() {
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
                   <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
                 </tr>
-
               </tbody>
             </table>
           </div>

@@ -33,6 +33,8 @@ import {
   FileCheck2,
   Bell,
   Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 const FONT_STACK =
@@ -610,12 +612,183 @@ function Step3Animation() {
   );
 }
 
+const LANDING_PRICING_PLANS = [
+  {
+    id: "free",
+    name: "Free",
+    price: 0,
+    priceSuffix: "/forever",
+    description: "Forever",
+    bestFor: "New & growing sellers exploring insights",
+    badge: "No Credit Card Required",
+    icon: Zap,
+    iconBg: "bg-[#e3edff] dark:bg-blue-900/40",
+    iconColor: "text-[#1e40af] dark:text-blue-400",
+    buttonText: "Get started free",
+    buttonVariant: "secondary" as const,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - 3 uses/month + limited data",
+      "Top Competitors Score - 1 use/month",
+      "Product Ideas - 1 use/month",
+      "Best Price Finder - Calculator tab only",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+    ],
+    limitations: [
+      "Keyword Research",
+      "AI Advisor",
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads Automation",
+    ],
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    price: 499,
+    priceSuffix: "/mo",
+    description: "per month",
+    bestFor: "New sellers launching their first products",
+    icon: Zap,
+    iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    buttonText: "Upgrade to Starter",
+    buttonVariant: "secondary" as const,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - 5 uses/month + full data",
+      "Top Competitors Score - 5 uses/month",
+      "Product Ideas - 5 uses/month",
+      "Best Price Finder - Calculator tab + Cost Waterfall",
+      "Keyword Research - 1 use/month",
+      "AI Advisor - 5 uses/month",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+    ],
+    limitations: [
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads Automation",
+    ],
+  },
+  {
+    id: "basic",
+    name: "Basic",
+    price: 1999,
+    oldPrice: 3999,
+    priceSuffix: "/mo",
+    description: "per month",
+    bestFor: "Solo sellers getting serious",
+    isPopular: true,
+    icon: Crown,
+    iconBg: "bg-violet-100 dark:bg-violet-900/40",
+    iconColor: "text-violet-700 dark:text-violet-300",
+    buttonText: "Upgrade to Basic",
+    buttonVariant: "primary" as const,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - 20 uses/month + full data",
+      "Top Competitors Score - 10 uses/month",
+      "Product Ideas - 20 uses/month",
+      "Best Price Finder - Calculator tab + Cost Waterfall",
+      "Keyword Research - 2 uses/month",
+      "AI Advisor - 20 uses/month",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+    ],
+    limitations: [
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads Automation",
+    ],
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    price: 2999,
+    oldPrice: 7999,
+    priceSuffix: "/mo",
+    description: "per month",
+    bestFor: "Full-time Amazon & Flipkart sellers",
+    icon: Crown,
+    iconBg: "bg-[#fef3c7] dark:bg-amber-900/20",
+    iconColor: "text-[#92400e]",
+    buttonText: "Upgrade to Premium",
+    buttonVariant: "dark" as const,
+    features: [
+      "Basic Explorer Dashboard for Flipkart and Amazon",
+      "Explore Categories",
+      "Best Sellers",
+      "Niche Finder - Unlimited uses/month + full data",
+      "Top Competitors Score - Unlimited uses/month",
+      "Product Ideas - Unlimited uses/month",
+      "Best Price Finder - Calculator tab + Cost Waterfall + Scenarios + AI",
+      "Keyword Research - 20 uses/month",
+      "AI Advisor - Unlimited uses/month",
+      "Amazon Seller Integration",
+      "Amazon Ads Integration",
+      "View Campaigns, Orders and Revenue",
+      "Original Profit and Margins",
+      "Restock Planner",
+      "Review Automator",
+      "Refund Finder",
+      "Amazon Ads - Bid Automation, Campaign Scheduling, Auto-Boost Winning Placements, Auto-Negate Bleeding Search Terms, Smart Budget Scaling",
+    ],
+    limitations: [],
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    isCustom: true,
+    description: "Custom pricing",
+    bestFor: "Tailored solutions for large businesses",
+    icon: Building2,
+    iconBg: "bg-[#f3f0fa] dark:bg-violet-900/20",
+    iconColor: "text-[#3b3552] dark:text-gray-300",
+    buttonText: "Contact sales",
+    buttonVariant: "secondary" as const,
+    buttonHref: "/about/contact-us",
+    features: [
+      "All Premium features",
+      "White-label options",
+      "Premium support",
+      "Multiple client accounts",
+    ],
+    limitations: [],
+  },
+];
+
 export default function LandingContent() {
   const router = useRouter();
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   // Default to "Ad Automation" as it is the first tab.
   const [activeFeatureTab, setActiveFeatureTab] = useState("ads");
   const activeTab = featureTabs.find((t) => t.key === activeFeatureTab) ?? featureTabs[0];
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const toggleCardExpanded = (planId: string) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [planId]: !prev[planId],
+    }));
+  };
+  const INITIAL_VISIBLE_COUNT = 5;
+
 
   const handleGetStarted = () => {
     router.push("/login");
@@ -1565,7 +1738,7 @@ export default function LandingContent() {
 
       {/* Pricing Section */}
       <section id="Pricing" className="scroll-mt-20 bg-white dark:bg-gray-950 py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[94rem] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-16 flex max-w-2xl flex-col items-center gap-4 text-center">
             <Eyebrow>PRICING</Eyebrow>
             <h2 className="text-3xl font-extrabold leading-[1.2] tracking-[-0.03em] sm:text-4xl lg:text-[44px] lg:whitespace-nowrap">
@@ -1576,159 +1749,138 @@ export default function LandingContent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {/* Free */}
-            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e3edff] dark:bg-blue-900/40">
-                <Zap className="h-5 w-5 text-[#1e40af] dark:text-blue-400" />
-              </span>
-              <span className="text-lg font-extrabold">Free</span>
-              <div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹0</span>
-                  <span className="text-sm text-[#8a849c]">/month</span>
-                </div>
-                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Perfect for getting started</p>
-              </div>
-              <SecondaryButton onClick={handleGetStarted} className="w-full">
-                Get started free
-              </SecondaryButton>
-              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
-                {[
-                  "Basic Explorer Dashboard for Flipkart and Amazon",
-                  "Explore Categories",
-                  "Best Sellers",
-                  "Niche Finder - 3 uses/month + limited data",
-                  "Top Competitors Score - 1 use/month",
-                  "Product Ideas - 1 use/month",
-                  "Best Price Finder - Calculator tab only",
-                  "Amazon Seller Integration",
-                  "Amazon Ads Integration",
-                  "View Campaigns, Orders and Revenue",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {LANDING_PRICING_PLANS.map((plan) => {
+              const isExpanded = expandedCards[plan.id] ?? false;
+              const visibleFeatures = isExpanded ? plan.features : plan.features.slice(0, INITIAL_VISIBLE_COUNT);
+              const remainingFeaturesCount = Math.max(0, plan.features.length - INITIAL_VISIBLE_COUNT);
+              const hiddenItemsCount = remainingFeaturesCount + plan.limitations.length;
+              const IconComp = plan.icon;
 
-            {/* Basic — Most Popular */}
-            <div className="relative flex flex-col gap-5 rounded-[24px] border-2 border-violet-600 p-8 shadow-[0_24px_60px_rgba(124,58,237,0.18)]">
-              <span className="absolute -top-[15px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-4 py-1.5 text-xs font-extrabold text-white">
-                MOST POPULAR
-              </span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/40">
-                <Crown className="h-5 w-5 text-violet-700 dark:text-violet-300" />
-              </span>
-              <span className="text-lg font-extrabold">Basic</span>
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹1,999</span>
-                  <span className="text-sm text-[#8a849c]">/month</span>
-                  <span className="text-sm text-[#8a849c] line-through">₹3,999</span>
-                </div>
-                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Ideal for growing businesses</p>
-              </div>
-              <PrimaryButton onClick={() => handlePlanSelect("basic")} className="w-full">
-                Upgrade to Basic
-              </PrimaryButton>
-              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
-                {[
-                  "Basic Explorer Dashboard for Flipkart and Amazon",
-                  "Explore Categories",
-                  "Best Sellers",
-                  "Niche Finder - 20 uses/month + full data",
-                  "Top Competitors Score - 10 uses/month",
-                  "Product Ideas - 20 uses/month",
-                  "Best Price Finder - Calculator tab + Cost Waterfall",
-                  "Keyword Research - 2 uses/month",
-                  "AI Advisor - 20 uses/month",
-                  "Amazon Seller Integration",
-                  "Amazon Ads Integration",
-                  "View Campaigns, Orders and Revenue",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              return (
+                <div
+                  key={plan.id}
+                  className={
+                    plan.isPopular
+                      ? "relative flex flex-col gap-5 rounded-[24px] border-2 border-violet-600 p-8 shadow-[0_24px_60px_rgba(124,58,237,0.18)] bg-white dark:bg-gray-950"
+                      : "flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] dark:border-slate-800 p-8 bg-white dark:bg-gray-950"
+                  }
+                >
+                  {plan.isPopular && (
+                    <span className="absolute -top-[15px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-violet-600 to-pink-600 px-4 py-1.5 text-xs font-extrabold text-white">
+                      MOST POPULAR
+                    </span>
+                  )}
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${plan.iconBg}`}>
+                    <IconComp className={`h-5 w-5 ${plan.iconColor}`} />
+                  </span>
+                  <span className="text-lg font-extrabold">{plan.name}</span>
+                  <div>
+                    {plan.isCustom ? (
+                      <div className="text-3xl font-extrabold tracking-[-0.02em]">Custom</div>
+                    ) : (
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-extrabold tracking-[-0.02em]">
+                          ₹{plan.price?.toLocaleString("en-IN")}
+                        </span>
+                        <span className="text-sm text-[#8a849c]">{plan.priceSuffix}</span>
+                        {plan.oldPrice && (
+                          <span className="text-sm text-[#8a849c] line-through">
+                            ₹{plan.oldPrice.toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {plan.badge && (
+                      <div className="mt-1 text-xs font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                        {plan.badge}
+                      </div>
+                    )}
+                    <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">{plan.description}</p>
+                  </div>
 
-            {/* Premium */}
-            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fef3c7] dark:bg-amber-900/20">
-                <Crown className="h-5 w-5 text-[#92400e]" />
-              </span>
-              <span className="text-lg font-extrabold">Premium</span>
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold tracking-[-0.02em]">₹2,999</span>
-                  <span className="text-sm text-[#8a849c]">/month</span>
-                  <span className="text-sm text-[#8a849c] line-through">₹7,999</span>
-                </div>
-                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">For serious professionals</p>
-              </div>
-              <button
-                onClick={() => handlePlanSelect("premium")}
-                className="w-full rounded-full bg-[#1a1033] px-6 py-[15px] text-[15px] font-extrabold text-white transition-opacity hover:opacity-90"
-              >
-                Upgrade to Premium
-              </button>
-              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
-                {[
-                  "Basic Explorer Dashboard for Flipkart and Amazon",
-                  "Explore Categories",
-                  "Best Sellers",
-                  "Niche Finder - Unlimited uses/month + full data",
-                  "Top Competitors Score - Unlimited uses/month",
-                  "Product Ideas - Unlimited uses/month",
-                  "Best Price Finder - Calculator tab + Cost Waterfall + Scenarios + AI",
-                  "Keyword Research - 20 uses/month",
-                  "AI Advisor - Unlimited uses/month",
-                  "Amazon Seller Integration",
-                  "Amazon Ads Integration",
-                  "View Campaigns, Orders and Revenue",
-                  "Original Profit and Margins",
-                  "Restock Planner",
-                  "Review Automator",
-                  "Refund Finder",
-                  "Amazon Ads - Bid Automation, Campaign Scheduling, Auto-Boost Winning Placements, Auto-Negate Bleeding Search Terms, Smart Budget Scaling",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  {plan.bestFor && (
+                    <div className="border-t border-[#f0ebf8] dark:border-slate-800 pt-3">
+                      <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                        Best For
+                      </div>
+                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        {plan.bestFor}
+                      </p>
+                    </div>
+                  )}
 
-            {/* Enterprise */}
-            <div className="flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] p-8">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f3f0fa] dark:bg-violet-900/20">
-                <Building2 className="h-5 w-5 text-[#3b3552] dark:text-gray-300" />
-              </span>
-              <span className="text-lg font-extrabold">Enterprise</span>
-              <div>
-                <div className="text-3xl font-extrabold tracking-[-0.02em]">Custom</div>
-                <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">Tailored for SMBs and agencies</p>
-              </div>
-              <SecondaryButton href="/about/contact-us" className="w-full">
-                Contact sales
-              </SecondaryButton>
-              <ul className="flex flex-col gap-2.5 border-t border-[#f0ebf8] pt-5 text-sm text-[#4b4560] dark:text-gray-300">
-                {["Everything in Premium", "White label options", "Premium support", "Multiple client accounts"].map(
-                  (item, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                      <span>{item}</span>
-                    </li>
-                  ),
-                )}
-              </ul>
-            </div>
+                  {plan.buttonVariant === "primary" ? (
+                    <PrimaryButton onClick={() => handlePlanSelect(plan.id)} className="w-full">
+                      {plan.buttonText}
+                    </PrimaryButton>
+                  ) : plan.buttonVariant === "dark" ? (
+                    <button
+                      onClick={() => handlePlanSelect(plan.id)}
+                      className="w-full rounded-full bg-[#1a1033] px-6 py-[15px] text-[15px] font-extrabold text-white transition-opacity hover:opacity-90"
+                    >
+                      {plan.buttonText}
+                    </button>
+                  ) : (
+                    <SecondaryButton
+                      href={plan.buttonHref}
+                      onClick={
+                        plan.buttonHref
+                          ? undefined
+                          : plan.id === "free"
+                          ? handleGetStarted
+                          : () => handlePlanSelect(plan.id)
+                      }
+                      className="w-full"
+                    >
+                      {plan.buttonText}
+                    </SecondaryButton>
+                  )}
+
+                  <div className="flex flex-col gap-2.5 border-t border-[#f0ebf8] dark:border-slate-800 pt-5 text-sm text-[#4b4560] dark:text-gray-300">
+                    <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                      What's Included
+                    </div>
+                    {visibleFeatures.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                    {isExpanded &&
+                      plan.limitations.map((item, i) => (
+                        <div key={i} className="flex items-start gap-2 opacity-40">
+                          <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-400" />
+                          <span className="line-through">{item}</span>
+                        </div>
+                      ))}
+
+                    {hiddenItemsCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => toggleCardExpanded(plan.id)}
+                        className={`w-full py-2 px-3 rounded-xl border border-dashed transition-all duration-200 text-xs font-semibold flex items-center justify-center gap-1.5 mt-2 ${
+                          isExpanded
+                            ? "border-slate-300 dark:border-slate-700 bg-slate-100/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300"
+                            : "border-violet-200 dark:border-violet-900/60 bg-violet-50/60 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 hover:bg-violet-100/70 dark:hover:bg-violet-900/50"
+                        }`}
+                      >
+                        <span>
+                          {isExpanded
+                            ? "Show less"
+                            : `+ ${hiddenItemsCount} more features & limits`}
+                        </span>
+                        {isExpanded ? (
+                          <ChevronUp className="h-3.5 w-3.5" />
+                        ) : (
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

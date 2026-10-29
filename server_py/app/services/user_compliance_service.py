@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 from app.models.schema_v2 import (
     UserAuth, UserProfile, UserBusinessInfo, UserSubscription,
-    UserAppState, DeletedUser, DataSubjectRequest
+    UserAppState, DeletedUser, DataSubjectRequest, SellerServiceOrder
 )
 from app.models.legacy_models import PaymentOrder, UserBehaviorLog
 
@@ -33,6 +33,15 @@ def execute_right_to_be_forgotten(db: Session, user_id: int, reason: str = "user
             "billing_mobile": None,
             "billing_company": None,
             "billing_address": None
+        })
+
+        # 2b. Scrub PII from seller_service_orders (DPDP & GDPR Compliance)
+        db.query(SellerServiceOrder).filter(SellerServiceOrder.user_id == user_id).update({
+            "contact_full_name": None,
+            "contact_mobile": None,
+            "contact_mobile_hash": None,
+            "gst_number": None,
+            "user_agent": None,
         })
         
         # 3. Schedule analytics deletion (user_behavior_logs)

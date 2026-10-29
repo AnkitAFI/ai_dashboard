@@ -250,3 +250,30 @@ export type Product = typeof products.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type DemoBooking = typeof demoBookings.$inferSelect;
+
+
+export const sellerServiceOrders = pgTable("seller_service_orders", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => usersAuth.id, { onDelete: "set null" }),
+  platforms: jsonb("platforms").notNull(),
+  amount: integer("amount").notNull(),
+  currency: varchar("currency", { length: 10 }).default("INR"),
+  contactFullName: text("contact_full_name"),
+  contactMobile: text("contact_mobile"),
+  contactMobileHash: varchar("contact_mobile_hash", { length: 255 }),
+  gstNumber: text("gst_number"),
+  ipHash: varchar("ip_hash", { length: 255 }),
+  userAgent: text("user_agent"),
+  termsVersion: varchar("terms_version", { length: 30 }).default("v1.0_seller_terms"),
+  consentAgreed: boolean("consent_agreed").default(true),
+  razorpayOrderId: varchar("razorpay_order_id", { length: 100 }).unique(),
+  razorpayPaymentId: varchar("razorpay_payment_id", { length: 100 }),
+  razorpaySignature: varchar("razorpay_signature", { length: 256 }),
+  status: varchar("status", { length: 20 }).default("created"),
+  keyVersion: smallint("key_version").default(1),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+});
+
+export const insertSellerServiceOrderSchema = createInsertSchema(sellerServiceOrders);
+export type SellerServiceOrder = typeof sellerServiceOrders.$inferSelect;

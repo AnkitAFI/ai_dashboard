@@ -95,7 +95,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: "starter",
     name: "Starter",
     price: 499,
-    oldPrice: 999,
+
     description: "Essential insights for budding sellers",
     icon: <Zap className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />,
     features: [
@@ -772,30 +772,6 @@ export default function Subscription() {
             </Card>
           );
         })}
-      </div>
-
-      {/* Trust Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl mx-auto">
-        {TRUST_ITEMS.map((item, i) => (
-          <div
-            key={i}
-            className={cn(
-              "rounded-2xl border shadow-sm p-4 flex flex-col gap-2",
-              isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
-            )}
-          >
-            <div
-              className={cn(
-                "w-9 h-9 rounded-xl flex items-center justify-center",
-                isDark ? "bg-slate-800" : "bg-slate-50"
-              )}
-            >
-              {item.icon}
-            </div>
-            <p className={cn("text-sm font-bold", isDark ? "text-slate-200" : "text-slate-800")}>{item.label}</p>
-            <p className={cn("text-xs leading-relaxed", isDark ? "text-slate-400" : "text-slate-450")}>{item.desc}</p>
-          </div>
-        ))}
       </div>
 
       {/* FAQ */}
