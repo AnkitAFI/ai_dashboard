@@ -480,89 +480,98 @@ export default function Subscription() {
             <Check className="h-3.5 w-3.5 mr-1.5 stroke-[2.5]" />
             {t("subscription.currentPlan", "Current Plan")}
           </Button>
-          {plan.id !== "free" &&
-            (user?.hasAutoRenew !== false ? (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={cancelling}
-                    className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 mx-auto w-fit h-7 px-2"
-                  >
-                    {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
-                    Cancel Auto Renewal
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to cancel your auto-renewing subscription? Your current premium
-                      access will continue until the end of your billing cycle. No refund will be issued.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={cancelSubscription}
-                      className="bg-rose-600 hover:bg-rose-700 text-white"
+          <div className="min-h-[26px] flex items-center justify-center">
+            {plan.id !== "free" &&
+              (user?.hasAutoRenew !== false ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={cancelling}
+                      className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 mx-auto w-fit h-7 px-2"
                     >
-                      Yes, Cancel
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            ) : (
-              <div className="text-center pt-0.5">
+                      {cancelling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                      Cancel Auto Renewal
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Cancel Auto Renewal?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to cancel your auto-renewing subscription? Your current premium
+                        access will continue until the end of your billing cycle. No refund will be issued.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={cancelSubscription}
+                        className="bg-rose-600 hover:bg-rose-700 text-white"
+                      >
+                        Yes, Cancel
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                   Auto-Renewal: Off
                 </span>
-              </div>
-            ))}
+              ))}
+          </div>
         </div>
       );
     }
 
     if (plan.id === "enterprise") {
       return (
-        <Button
-          variant="outline"
-          className="w-full h-11 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold text-xs transition-colors"
-          onClick={() => (window.location.href = "mailto:support@insydz.com")}
-        >
-          {t("subscription.contactSales", "Contact Sales")}
-        </Button>
+        <div className="flex flex-col gap-1.5 w-full">
+          <Button
+            variant="outline"
+            className="w-full h-11 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-bold text-xs transition-colors"
+            onClick={() => (window.location.href = "mailto:support@insydz.com")}
+          >
+            {t("subscription.contactSales", "Contact Sales")}
+          </Button>
+          <div className="min-h-[26px]" />
+        </div>
       );
     }
 
     if (canUpgrade) {
       return (
-        <Button
-          className={cn(
-            "w-full h-11 rounded-xl font-bold text-xs shadow-md transition-all duration-200",
-            styles.upgradeBtn
-          )}
-          onClick={() => handleUpgrade(plan.id)}
-          disabled={loading || previewLoadingPlan !== null}
-        >
-          {isThisLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              <Sparkles className="h-3.5 w-3.5 mr-1" />
-              {t("subscription.upgradeTo", "Upgrade to")} {plan.name}
-            </>
-          )}
-        </Button>
+        <div className="flex flex-col gap-1.5 w-full">
+          <Button
+            className={cn(
+              "w-full h-11 rounded-xl font-bold text-xs shadow-md transition-all duration-200",
+              styles.upgradeBtn
+            )}
+            onClick={() => handleUpgrade(plan.id)}
+            disabled={loading || previewLoadingPlan !== null}
+          >
+            {isThisLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <Sparkles className="h-3.5 w-3.5 mr-1" />
+                {t("subscription.upgradeTo", "Upgrade to")} {plan.name}
+              </>
+            )}
+          </Button>
+          <div className="min-h-[26px]" />
+        </div>
       );
     }
 
     return (
-      <div className="w-full h-11 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
-          {t("subscription.lowerThanCurrent", "Lower tier")}
-        </span>
+      <div className="flex flex-col gap-1.5 w-full">
+        <div className="w-full h-11 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+            {t("subscription.lowerThanCurrent", "Lower tier")}
+          </span>
+        </div>
+        <div className="min-h-[26px]" />
       </div>
     );
   };
@@ -617,7 +626,7 @@ export default function Subscription() {
       </div>
 
       {/* PLAN CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-[94rem] mx-auto items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-[94rem] mx-auto items-stretch pt-4">
         {SUBSCRIPTION_PLANS.map((plan) => {
           const isCurrentPlan = plan.id === currentTier;
           const styles = PLAN_STYLES[plan.id] || PLAN_STYLES.free;
@@ -632,7 +641,7 @@ export default function Subscription() {
             <Card
               key={plan.id}
               className={cn(
-                "relative flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
+                "relative flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
                 styles.ring,
                 isCurrentPlan
                   ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850"
@@ -665,31 +674,35 @@ export default function Subscription() {
                   {plan.name}
                 </CardTitle>
 
-                {plan.id !== "enterprise" ? (
-                  <div className="flex items-baseline justify-center gap-1.5 mt-1.5 mb-1">
-                    <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
-                      {plan.price === 0 ? t("subscription.free", "Free") : `₹${plan.price!.toLocaleString("en-IN")}`}
-                    </span>
-                    {plan.price !== 0 && (
-                      <span className={cn("text-xs font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
-                        {t("subscription.month", "/month")}
+                <div className="h-9 flex items-baseline justify-center gap-1.5 mt-1.5 mb-1">
+                  {plan.id !== "enterprise" ? (
+                    <>
+                      <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
+                        {plan.price === 0 ? t("subscription.free", "Free") : `₹${plan.price!.toLocaleString("en-IN")}`}
                       </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className={cn("text-xl font-extrabold mt-1.5 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
-                    {t("subscription.customPricing", "Custom Pricing")}
-                  </div>
-                )}
+                      {plan.price !== 0 && (
+                        <span className={cn("text-xs font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
+                          {t("subscription.month", "/month")}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className={cn("text-xl font-extrabold self-center", isDark ? "text-indigo-400" : "text-indigo-700")}>
+                      {t("subscription.customPricing", "Custom Pricing")}
+                    </span>
+                  )}
+                </div>
 
-                <CardDescription className={cn("text-xs mt-2 line-clamp-2", isDark ? "text-slate-400" : "text-slate-500")}>
-                  {plan.description}
-                </CardDescription>
+                <div className="h-10 flex items-center justify-center">
+                  <CardDescription className={cn("text-xs line-clamp-2 text-center", isDark ? "text-slate-400" : "text-slate-500")}>
+                    {plan.description}
+                  </CardDescription>
+                </div>
               </CardHeader>
 
               <CardContent className="space-y-4 flex flex-col flex-1 pb-6 pt-1">
                 {/* Features & Limitations */}
-                <div className="space-y-2 flex-1">
+                <div className="space-y-2 flex-1 flex flex-col">
                   {visibleFeatures.map((feature, index) => {
                     const isObj = typeof feature === "object";
                     const title = isObj ? feature.title : (feature as string);
@@ -754,7 +767,7 @@ export default function Subscription() {
                 </div>
 
                 {/* CTA button */}
-                <div className="pt-2">{renderPlanCTA(plan)}</div>
+                <div className="pt-2 mt-auto">{renderPlanCTA(plan)}</div>
               </CardContent>
             </Card>
           );

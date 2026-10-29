@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { analytics } from "@/lib/analytics";
 import { useSessionState } from "@/hooks/use-session-state";
 import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
@@ -311,6 +312,54 @@ export default function ProductTracker() {
   const [baseCost, setBaseCost] = useSessionState("pt_baseCost", "");
   const [loading, setLoading] = useState(false);
 
+  const lastTrackedNameRef = useRef<string>("");
+  const productNameRef = useRef<string>("");
+  const categoryRef = useRef<string>("");
+  const sourceRef = useRef<string>("amazon");
+
+  useEffect(() => {
+    productNameRef.current = productName;
+    categoryRef.current = category;
+    sourceRef.current = source;
+  }, [productName, category, source]);
+
+  // Track if user types product name and leaves page or closes tab before analyzing
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = productNameRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedNameRef.current) {
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "product_name_input",
+          category: categoryRef.current || null,
+          marketplace: sourceRef.current,
+          page: "product_tracker",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedNameRef.current = q;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+      handlePageLeave();
+    };
+  }, []);
+
   const [apiResponse, setApiResponse] = useSessionState<ApiResponse | null>("pt_apiResponse", null);
   const [notFoundMessage, setNotFoundMessage] = useState<string | null>(null);
   const result = apiResponse?.data ?? null;
@@ -387,6 +436,20 @@ export default function ProductTracker() {
     if (userId && !canAnalyze) {
       setShowUpgradeModal(true);
       showToast("Analysis Limit Reached", `You've used all ${usageLimits?.limit} analyses this month.`, "error");
+      analytics.track("product_search", {
+        query: productName,
+        filter_value: productName,
+        track_id: "analyze-btn",
+        category,
+        marketplace: source,
+        status: "limit_reached",
+        analyses_limit: usageLimits?.limit,
+        analyses_count: usageLimits?.count,
+        results_count: 0,
+        has_results: false,
+        trigger: "analyze_button",
+        page: "product_tracker",
+      });
       return;
     }
     if (!productName || !category) {
@@ -405,6 +468,7 @@ export default function ProductTracker() {
       if (!ok) return;
     }
 
+    lastTrackedNameRef.current = productName.trim();
     setLoading(true);
     setApiResponse(null);
     setNotFoundMessage(null);
@@ -413,7 +477,7 @@ export default function ProductTracker() {
       const res = await fetch(`${API_BASE_URL}/product-tracker/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        cache: 'no-store',
+        cache: "no-store",
         body: JSON.stringify({
           product_name: productName,
           category,
@@ -429,15 +493,85 @@ export default function ProductTracker() {
         const err = body as ApiErrorResponse;
         if (res.status === 404 || err.detail?.toLowerCase().includes("no products found")) {
           setNotFoundMessage(err.detail || `No products found for "${productName}" in "${category}" on ${source === "both" ? "Amazon India and Flipkart India" : source === "amazon" ? "Amazon India" : "Flipkart India"}. Try a simpler product name or different category.`);
+          analytics.track("product_search", {
+            query: productName,
+            filter_value: productName,
+            track_id: "analyze-btn",
+            category,
+            marketplace: source,
+            base_cost: cost || undefined,
+            status: "no_products_found",
+            results_count: 0,
+            has_results: false,
+            top_results: [],
+            trigger: "analyze_button",
+            page: "product_tracker",
+          });
           return;
         }
         if (err.error_code === "QUOTA_EXCEEDED") setShowUpgradeModal(true);
+        analytics.track("product_search", {
+          query: productName,
+          filter_value: productName,
+          track_id: "analyze-btn",
+          category,
+          marketplace: source,
+          base_cost: cost || undefined,
+          status: err.error_code || "error",
+          results_count: 0,
+          has_results: false,
+          trigger: "analyze_button",
+          page: "product_tracker",
+        });
         showToast("Analysis Failed", err.detail || "Couldn't complete analysis. Please try again.", "error");
         return;
       }
 
       const envelope = body as ApiResponse;
       setApiResponse(envelope);
+
+      const d = envelope.data;
+      const sampleSize = envelope.confidence_score?.sample_size ?? d?.competition?.total_competitors ?? 0;
+      const totalCompetitors = d?.competition?.total_competitors ?? 0;
+      const resultsCount = sampleSize > 0 ? sampleSize : totalCompetitors;
+
+      const topResults: string[] = [];
+      if (d?.competition?.top_competitor?.name) {
+        topResults.push(d.competition.top_competitor.name);
+      }
+      if (d?.final_verdict?.verdict_label) {
+        topResults.push(`Verdict: ${d.final_verdict.verdict_label} (${d.final_verdict.opportunity_score}/100)`);
+      } else if (d?.pricing?.recommended_price) {
+        topResults.push(`Rec. Price: ₹${d.pricing.recommended_price.toLocaleString()}`);
+      }
+      if (d?.sales?.market_demand) {
+        topResults.push(`Demand: ${d.sales.market_demand}`);
+      }
+
+      analytics.track("product_search", {
+        query: productName,
+        filter_value: productName,
+        track_id: "analyze-btn",
+        category,
+        marketplace: source,
+        base_cost: cost || undefined,
+        results_count: resultsCount,
+        has_results: resultsCount > 0 || !!d,
+        top_results: topResults,
+        recommended_price: d?.pricing?.recommended_price,
+        profit_margin: d?.pricing?.profit_margin,
+        total_competitors: totalCompetitors,
+        top_competitor: d?.competition?.top_competitor?.name || null,
+        opportunity_score: d?.final_verdict?.opportunity_score ?? null,
+        verdict: d?.final_verdict?.verdict_label ?? null,
+        market_demand: d?.sales?.market_demand ?? null,
+        estimated_monthly_sales: d?.sales?.estimated_monthly_sales ?? null,
+        confidence_score: envelope.confidence_score?.score ?? null,
+        source_type: envelope.source_type,
+        status: "success",
+        trigger: "analyze_button",
+        page: "product_tracker",
+      });
 
       if (userId) await fetchUsageLimits();
 
@@ -446,6 +580,18 @@ export default function ProductTracker() {
       setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
 
     } catch (err: any) {
+      analytics.track("product_search", {
+        query: productName,
+        filter_value: productName,
+        track_id: "analyze-btn",
+        category,
+        marketplace: source,
+        status: "network_error",
+        results_count: 0,
+        has_results: false,
+        trigger: "analyze_button",
+        page: "product_tracker",
+      });
       showToast("Network Error", "Connection issue. Please retry shortly.", "error");
       console.error("Analyse error:", err);
     } finally {
@@ -660,6 +806,7 @@ export default function ProductTracker() {
                 disabled={loading || (!!userId && !canAnalyze)}
                 className={`w-full ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"} text-white`}
                 data-track-id="analyze-btn"
+                data-filter-value={productName}
               >
                 {loading ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('pr.analyzingMarket', 'Analyzing Market...')}</>

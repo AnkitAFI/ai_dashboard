@@ -881,7 +881,33 @@ export default function LandingContent() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-3 text-center text-[15px] font-semibold text-[#5f5875] dark:text-gray-400">
+            {/* Mobile View (iPhone 16 etc.) */}
+            <div className="flex flex-col items-center justify-center gap-y-2 pt-3 text-center text-xs font-semibold text-[#5f5875] dark:text-gray-400 sm:hidden">
+              {/* Row 1 on mobile: sellers + reviews with green ticks */}
+              <div className="flex items-center justify-center gap-x-4">
+                <span className="inline-flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 stroke-[2.5]" />
+                  <span>
+                    <strong className="text-[#1a1033] dark:text-gray-50">5,000+</strong> sellers
+                  </span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 stroke-[2.5]" />
+                  <span>
+                    <strong className="text-[#1a1033] dark:text-gray-50">2.5L+</strong> reviews analysed
+                  </span>
+                </span>
+              </div>
+
+              {/* Row 2 on mobile: free plan guarantee with green tick */}
+              <div className="inline-flex items-center justify-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 stroke-[2.5]" />
+                <span>Free plan, no credit card needed</span>
+              </div>
+            </div>
+
+            {/* Desktop / Tablet View (Original layout with avatars and dot dividers) */}
+            <div className="hidden sm:flex items-center justify-center gap-x-6 pt-3 text-center text-[15px] font-semibold text-[#5f5875] dark:text-gray-400">
               <span className="flex items-center gap-2.5">
                 <span className="flex">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-violet-100 dark:bg-violet-900/40 text-xs font-extrabold text-violet-700 dark:text-violet-300">
@@ -1749,7 +1775,7 @@ export default function LandingContent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 items-stretch gap-5 pt-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {LANDING_PRICING_PLANS.map((plan) => {
               const isExpanded = expandedCards[plan.id] ?? false;
               const visibleFeatures = isExpanded ? plan.features : plan.features.slice(0, INITIAL_VISIBLE_COUNT);
@@ -1762,8 +1788,8 @@ export default function LandingContent() {
                   key={plan.id}
                   className={
                     plan.isPopular
-                      ? "relative flex flex-col gap-5 rounded-[24px] border-2 border-violet-600 p-8 shadow-[0_24px_60px_rgba(124,58,237,0.18)] bg-white dark:bg-gray-950"
-                      : "flex flex-col gap-5 rounded-[24px] border border-[#eee9f7] dark:border-slate-800 p-8 bg-white dark:bg-gray-950"
+                      ? "relative flex flex-col h-full gap-5 rounded-[24px] border-2 border-violet-600 p-8 shadow-[0_24px_60px_rgba(124,58,237,0.18)] bg-white dark:bg-gray-950"
+                      : "flex flex-col h-full gap-5 rounded-[24px] border border-[#eee9f7] dark:border-slate-800 p-8 bg-white dark:bg-gray-950"
                   }
                 >
                   {plan.isPopular && (
@@ -1776,22 +1802,26 @@ export default function LandingContent() {
                   </span>
                   <span className="text-lg font-extrabold">{plan.name}</span>
                   <div>
-                    {plan.isCustom ? (
-                      <div className="text-3xl font-extrabold tracking-[-0.02em]">Custom</div>
-                    ) : (
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-extrabold tracking-[-0.02em]">
-                          ₹{plan.price?.toLocaleString("en-IN")}
-                        </span>
-                        <span className="text-sm text-[#8a849c]">{plan.priceSuffix}</span>
-                      </div>
-                    )}
-                    {plan.badge && (
-                      <div className="mt-1 text-xs font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
-                        {plan.badge}
-                      </div>
-                    )}
-                    <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300">{plan.description}</p>
+                    <div className="h-10 flex items-baseline gap-2">
+                      {plan.isCustom ? (
+                        <div className="text-3xl font-extrabold tracking-[-0.02em] self-center">Custom</div>
+                      ) : (
+                        <>
+                          <span className="text-4xl font-extrabold tracking-[-0.02em]">
+                            ₹{plan.price?.toLocaleString("en-IN")}
+                          </span>
+                          <span className="text-sm text-[#8a849c]">{plan.priceSuffix}</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="h-5 mt-1 flex items-center">
+                      {plan.badge ? (
+                        <div className="text-xs font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                          {plan.badge}
+                        </div>
+                      ) : null}
+                    </div>
+                    <p className="mt-1 text-sm text-[#4b4560] dark:text-gray-300 h-5 flex items-center">{plan.description}</p>
                   </div>
 
                   {plan.bestFor && (
@@ -1799,62 +1829,66 @@ export default function LandingContent() {
                       <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                         Best For
                       </div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-h-[2.5rem] flex items-center">
                         {plan.bestFor}
                       </p>
                     </div>
                   )}
 
-                  {plan.buttonVariant === "primary" ? (
-                    <PrimaryButton onClick={() => handlePlanSelect(plan.id)} className="w-full">
-                      {plan.buttonText}
-                    </PrimaryButton>
-                  ) : plan.buttonVariant === "dark" ? (
-                    <button
-                      onClick={() => handlePlanSelect(plan.id)}
-                      className="w-full rounded-full bg-[#1a1033] px-6 py-[15px] text-[15px] font-extrabold text-white transition-opacity hover:opacity-90"
-                    >
-                      {plan.buttonText}
-                    </button>
-                  ) : (
-                    <SecondaryButton
-                      href={plan.buttonHref}
-                      onClick={
-                        plan.buttonHref
-                          ? undefined
-                          : plan.id === "free"
-                          ? handleGetStarted
-                          : () => handlePlanSelect(plan.id)
-                      }
-                      className="w-full"
-                    >
-                      {plan.buttonText}
-                    </SecondaryButton>
-                  )}
+                  <div className="w-full">
+                    {plan.buttonVariant === "primary" ? (
+                      <PrimaryButton onClick={() => handlePlanSelect(plan.id)} className="w-full">
+                        {plan.buttonText}
+                      </PrimaryButton>
+                    ) : plan.buttonVariant === "dark" ? (
+                      <button
+                        onClick={() => handlePlanSelect(plan.id)}
+                        className="w-full rounded-full bg-[#1a1033] px-6 py-[15px] text-[15px] font-extrabold text-white transition-opacity hover:opacity-90"
+                      >
+                        {plan.buttonText}
+                      </button>
+                    ) : (
+                      <SecondaryButton
+                        href={plan.buttonHref}
+                        onClick={
+                          plan.buttonHref
+                            ? undefined
+                            : plan.id === "free"
+                            ? handleGetStarted
+                            : () => handlePlanSelect(plan.id)
+                        }
+                        className="w-full"
+                      >
+                        {plan.buttonText}
+                      </SecondaryButton>
+                    )}
+                  </div>
 
-                  <div className="flex flex-col gap-2.5 border-t border-[#f0ebf8] dark:border-slate-800 pt-5 text-sm text-[#4b4560] dark:text-gray-300">
+                  <div className="flex flex-col gap-2.5 border-t border-[#f0ebf8] dark:border-slate-800 pt-5 text-sm text-[#4b4560] dark:text-gray-300 flex-1">
                     <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
                       What's Included
                     </div>
-                    {visibleFeatures.map((item, i) => (
-                      <div key={i} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                    {isExpanded &&
-                      plan.limitations.map((item, i) => (
-                        <div key={i} className="flex items-start gap-2 opacity-40">
-                          <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-400" />
-                          <span className="line-through">{item}</span>
+                    <div className="space-y-2.5 flex-1 flex flex-col">
+                      {visibleFeatures.map((item, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                          <span>{item}</span>
                         </div>
                       ))}
+                      {isExpanded &&
+                        plan.limitations.map((item, i) => (
+                          <div key={i} className="flex items-start gap-2 opacity-40">
+                            <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-400" />
+                            <span className="line-through">{item}</span>
+                          </div>
+                        ))}
+                    </div>
 
                     {hiddenItemsCount > 0 && (
                       <button
                         type="button"
                         onClick={() => toggleCardExpanded(plan.id)}
-                        className={`w-full py-2 px-3 rounded-xl border border-dashed transition-all duration-200 text-xs font-semibold flex items-center justify-center gap-1.5 mt-2 ${
+                        className={`w-full py-2 px-3 rounded-xl border border-dashed transition-all duration-200 text-xs font-semibold flex items-center justify-center gap-1.5 mt-auto pt-2 ${
                           isExpanded
                             ? "border-slate-300 dark:border-slate-700 bg-slate-100/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300"
                             : "border-violet-200 dark:border-violet-900/60 bg-violet-50/60 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 hover:bg-violet-100/70 dark:hover:bg-violet-900/50"

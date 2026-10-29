@@ -67,6 +67,7 @@ import {
 } from "lucide-react";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 
 const API = API_BASE_URL + "/api";
 
@@ -1131,6 +1132,46 @@ function WhiteSpaceFinderContent() {
   const [showTierTable, setShowTierTable] = useState(false);
   const [categories, setCategories] = useState<string[]>(["all"]);
 
+  const lastTrackedQueryRef = useRef<string>("");
+  const queryRef = useRef<string>("");
+  useEffect(() => { queryRef.current = query; }, [query]);
+
+  // Track if user types in search box and leaves page or closes tab before scanning
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = queryRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedQueryRef.current) {
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "ws_search_input",
+          platform,
+          category,
+          page: "niche_finder",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedQueryRef.current = q;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+    };
+  }, [platform, category]);
+
   const [watchlistItems, setWatchlistItems] = useState<WatchlistItem[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
 
@@ -1257,19 +1298,53 @@ function WhiteSpaceFinderContent() {
         category: category === "all" ? null : category,
         platform,
       });
-      setResult(res.data as ScanResult);
+      const data = res.data as ScanResult;
+      setResult(data);
       setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
+
+      const opps = data.opportunities || [];
+      const topNiches = opps.slice(0, 3).map((o) => o.product_niche).filter(Boolean);
+
+      analytics.track("product_search", {
+        query: query.trim(),
+        filter_value: query.trim(),
+        track_id: "ws-scan-btn",
+        results_count: data.total_found ?? opps.length,
+        has_results: (data.total_found ?? opps.length) > 0,
+        top_results: topNiches,
+        platform,
+        category,
+        scans_used: data.scans_used,
+        scans_limit: data.scans_limit,
+        page: "niche_finder",
+        trigger: "scan_button",
+      });
+      lastTrackedQueryRef.current = query.trim();
     } catch (e: unknown) {
       const status = (e as { response?: { status?: number } })?.response
         ?.status;
-      if (status === 403) {
-        showToast(
-          "Limit reached",
-          "You've used all scans this month. Upgrade for more.",
-          "error",
-        );
-      } else if (status === 429) {
-        setError("Monthly scan limit reached. Upgrade for more scans.");
+      if (status === 403 || status === 429) {
+        analytics.track("product_search", {
+          query: query.trim(),
+          filter_value: query.trim(),
+          track_id: "ws-scan-btn",
+          results_count: 0,
+          has_results: false,
+          status: "limit_reached",
+          platform,
+          category,
+          page: "niche_finder",
+          trigger: "scan_limit_hit",
+        });
+        if (status === 403) {
+          showToast(
+            "Limit reached",
+            "You've used all scans this month. Upgrade for more.",
+            "error",
+          );
+        } else {
+          setError("Monthly scan limit reached. Upgrade for more scans.");
+        }
       } else {
         setError(extractErr(e));
       }
@@ -1639,6 +1714,7 @@ function WhiteSpaceFinderContent() {
                 <button
                   id="ws-scan-btn"
                   data-track-id="ws-scan-btn"
+                  data-filter-value={query}
                   onClick={runScan}
                   disabled={loading || !query.trim()}
                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-w-[130px] justify-center"
@@ -1854,6 +1930,8 @@ function WhiteSpaceFinderContent() {
                       {liveSuggestions.map((sugg) => (
                         <button
                           key={sugg}
+                          data-track-id="ws_suggestion_tag"
+                          data-filter-value={sugg}
                           onClick={() => {
                             setQuery(sugg);
                             setTimeout(() => {

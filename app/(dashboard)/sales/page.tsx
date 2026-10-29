@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 
 // Unified interface for both Flipkart & Amazon
 interface TrendingProduct {
@@ -64,11 +65,96 @@ export default function Sales() {
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<TrendingProduct | null>(null);
 
+  // Refs for page-leave tracking (avoid stale closures in event listeners)
+  const lastTrackedQueryRef = useRef<string>("");
+  const searchQueryRef = useRef<string>("");
+  const sourceRef = useRef<string>(source);
+  const categoryRef = useRef<string>(selectedCategory);
+  const productsRef = useRef<TrendingProduct[]>(products);
+
+  useEffect(() => { productsRef.current = products; }, [products]);
+
+  // Keep refs in sync with state
+  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
+  useEffect(() => { sourceRef.current = source; }, [source]);
+  useEffect(() => { categoryRef.current = selectedCategory; }, [selectedCategory]);
+
+  // Track search when user leaves the page or closes tab before 400ms debounce fires
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = searchQueryRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedQueryRef.current) {
+        const matches = (productsRef.current || []).filter(p =>
+          (p.title || p.product_title || "").toLowerCase().includes(q.toLowerCase())
+        );
+        const topResults = matches.slice(0, 3).map(p => (p.title || p.product_title || "").trim()).filter(Boolean);
+
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "product_search_input",
+          results_count: matches.length,
+          has_results: matches.length > 0,
+          top_results: topResults,
+          source: sourceRef.current,
+          category: categoryRef.current,
+          page: "top_selling_products",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedQueryRef.current = q;
+        // Crucial: immediately flush the batch on tab close / leave
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+    };
+  }, []);
+
   // Debounce searchQuery by 400ms
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
       setCurrentPage(1);
+      const q = searchQuery.trim();
+      // Only track if meaningful AND different from last tracked (avoids noise on partial erase)
+      if (q.length >= 2 && q !== lastTrackedQueryRef.current) {
+        const matches = products.filter(p =>
+          (p.title || p.product_title || "").toLowerCase().includes(q.toLowerCase())
+        );
+        const topResults = matches.slice(0, 3).map(p => (p.title || p.product_title || "").trim()).filter(Boolean);
+
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "product_search_input",
+          results_count: matches.length,
+          has_results: matches.length > 0,
+          top_results: topResults,
+          source,
+          category: selectedCategory,
+          page: "top_selling_products",
+          trigger: "debounce",
+        });
+        lastTrackedQueryRef.current = q;
+      }
+      // Reset last tracked when user fully clears the search box
+      if (q.length === 0) {
+        lastTrackedQueryRef.current = "";
+      }
     }, 400);
     return () => clearTimeout(timer);
   }, [searchQuery]);

@@ -2118,6 +2118,7 @@ export default function AdminDashboard() {
                   <option value="page_view">Page Views</option>
                   <option value="element_click">Clicks</option>
                   <option value="rage_click">Rage Clicks</option>
+                  <option value="product_search">Searches</option>
                 </select>
                 <select value={String(behaviorLimit)} onChange={handleLimitChange} className="tbl-select">
                   <option value="100">Last 100</option>
@@ -2205,6 +2206,7 @@ export default function AdminDashboard() {
                             page_exit: { color: "#0f766e", bg: "#ccfbf1", icon: <Clock size={10} />, label: "Exit/Dwell" },
                             element_click: { color: "#0284c7", bg: "#e0f2fe", icon: <MousePointerClick size={10} />, label: "Click" },
                             rage_click: { color: "#dc2626", bg: "#fee2e2", icon: <AlertOctagon size={10} />, label: "Rage" },
+                            product_search: { color: "#7c3aed", bg: "#f3e8ff", icon: <Search size={10} />, label: "Search" },
                           };
                           const meta = eventMeta[log.event_type] ?? { color: "#64748b", bg: "#f1f5f9", icon: null, label: log.event_type };
                           const props = log.properties || {};
@@ -2294,7 +2296,8 @@ export default function AdminDashboard() {
                                     log.event_type === "page_exit" ? "Left page (Dwell Time)" :
                                       log.event_type === "element_click" ? "Clicked an element" :
                                         log.event_type === "rage_click" ? "Rapidly clicked (frustrated)" :
-                                          log.event_type;
+                                          log.event_type === "product_search" ? `Searched "${props.query || filterVal || ""}"` :
+                                            log.event_type;
 
                                 // Is filterVal a navigation path?
                                 const navTarget = filterVal && String(filterVal).startsWith("/") ? String(filterVal) : null;
@@ -2321,7 +2324,22 @@ export default function AdminDashboard() {
                                             {tidLabel && pill(tidLabel, "#0284c7", "#e0f2fe")}
                                             {navTarget && pill(`→ ${navTarget}`, "#10b981", "#f0fdf4")}
                                             {(log.event_type === "page_exit" || log.event_type === "page_view") && props.duration_seconds !== undefined && pill(`⏱️ Stayed ${props.duration_seconds}s`, "#0f766e", "#ccfbf1")}
+                                            {log.event_type === "product_search" && props.results_count !== undefined && (
+                                              props.results_count === 0
+                                                ? pill("0 results (No matches)", "#dc2626", "#fee2e2")
+                                                : pill(`${props.results_count} results found`, "#059669", "#d1fae5")
+                                            )}
+                                            {log.event_type === "product_search" && props.trigger && pill(`Trigger: ${props.trigger}`, "#6366f1", "#ede9fe")}
+                                            {Array.isArray(props.top_results) && props.top_results.length > 0 && pill(`Top: ${props.top_results.slice(0, 2).join(", ")}`, "#334155", "#f1f5f9")}
+                                            {log.event_type === "rage_click" && props.click_count && pill(`⚡ ${props.click_count} rapid clicks`, "#dc2626", "#fee2e2")}
                                             {props.text && !tidLabel && pill(String(props.text).slice(0, 35), "#64748b", "#f1f5f9")}
+                                            {!props.text && !tidLabel && (log.event_type === "element_click" || log.event_type === "rage_click") && pill(
+                                              props.aria_label
+                                                ? `"${props.aria_label}"`
+                                                : `<${(props.tagName || "element").toLowerCase()}> ${props.className ? `.${String(props.className).split(" ")[0].slice(0, 20)}` : ""}`.trim(),
+                                              "#64748b",
+                                              "#f1f5f9"
+                                            )}
                                           </div>
                                         </div>
 

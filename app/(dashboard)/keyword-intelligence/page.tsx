@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense, useRef } from "react";
 import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import {
@@ -24,6 +24,7 @@ import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
@@ -639,6 +640,45 @@ function KeywordExplorerPanel({
   const [loading, setLoading] = useState(false);
   const [data, setData] = useSessionState<KeywordExplorerResponse | null>("ki_data", null);
 
+  const lastTrackedKeywordRef = useRef<string>("");
+  const keywordRef = useRef<string>("");
+  useEffect(() => { keywordRef.current = keyword; }, [keyword]);
+
+  // Track if user types in search box and leaves page or closes tab before analyzing
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = keywordRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedKeywordRef.current) {
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "keyword_search_input",
+          platform,
+          page: "keyword_research",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedKeywordRef.current = q;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+    };
+  }, [platform]);
+
   const [trackTarget, setTrackTarget] = useState<string | null>(null);
 
   const [strategyText, setStrategyText] = useState<string>("");
@@ -705,18 +745,37 @@ function KeywordExplorerPanel({
   };
 
   const handleSearch = async (overrideKeyword?: string) => {
+    const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
+    if (!searchVal) {
+      showToast("Error", "Please enter a search query.", "error");
+      return;
+    }
+
     if (isLocked) {
+      analytics.track("product_search", {
+        query: searchVal,
+        filter_value: searchVal,
+        track_id: "analyze-btn",
+        status: "locked_upgrade_required",
+        platform,
+        page: "keyword_research",
+        trigger: "analyze_locked",
+      });
       showToast("Upgrade Required", "Keyword Research requires a Starter, Basic, or Premium plan.", "error");
       return;
     }
     if (isAtLimit) {
+      analytics.track("product_search", {
+        query: searchVal,
+        filter_value: searchVal,
+        track_id: "analyze-btn",
+        status: "limit_reached",
+        search_limit: searchLimit,
+        platform,
+        page: "keyword_research",
+        trigger: "analyze_limit_hit",
+      });
       showToast("Limit Reached", `You've used all ${searchLimit} searches for this month. Upgrade for more.`, "error");
-      return;
-    }
-
-    const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
-    if (!searchVal) {
-      showToast("Error", "Please enter a search query.", "error");
       return;
     }
 
@@ -736,6 +795,26 @@ function KeywordExplorerPanel({
         // ── Increment usage on the backend ──────────────────────────────
         await incrementUsage();
         fetchStrategy(searchVal, platform);
+
+        const variations = Array.isArray(resJson.variations) ? resJson.variations : [];
+        const topVariations = variations.slice(0, 3).map((v: any) => v.keyword).filter(Boolean);
+
+        analytics.track("product_search", {
+          query: searchVal,
+          filter_value: searchVal,
+          track_id: "analyze-btn",
+          results_count: variations.length,
+          has_results: (resJson.search_volume > 0 || variations.length > 0),
+          top_results: topVariations,
+          search_volume: resJson.search_volume || 0,
+          difficulty: resJson.difficulty || 0,
+          intent: resJson.intent || null,
+          cpc: resJson.cpc || 0,
+          platform,
+          page: "keyword_research",
+          trigger: overrideKeyword ? "variation_click" : "analyze_button",
+        });
+        lastTrackedKeywordRef.current = searchVal;
       } else {
         showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
       }
@@ -795,6 +874,7 @@ function KeywordExplorerPanel({
               onClick={() => handleSearch()}
               disabled={loading || isLocked || isAtLimit || keyword.trim().length < 2}
               data-track-id="analyze-btn"
+              data-filter-value={keyword}
             >
               {loading ? (
                 <>

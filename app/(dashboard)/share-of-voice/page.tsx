@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useSessionState } from "@/hooks/use-session-state";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
@@ -25,6 +25,7 @@ import {
 } from "recharts";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 import {
   Select,
   SelectContent,
@@ -462,6 +463,46 @@ export default function ShareOfVoice() {
   const [aiInsights, setAiInsights] = useState<any>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [usageLimits, setUsageLimits] = useState<UsageLimits | null>(null);
+
+  const lastTrackedBrandRef = useRef<string>("");
+  const brandRef = useRef<string>("");
+  useEffect(() => { brandRef.current = yourBrand; }, [yourBrand]);
+
+  // Track if user types in yourBrand and leaves page or closes tab
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const b = brandRef.current.trim();
+      if (b.length >= 2 && b !== lastTrackedBrandRef.current) {
+        analytics.track("product_search", {
+          query: b,
+          filter_value: b,
+          track_id: "your_brand_input",
+          marketplace,
+          category: selectedCategory || null,
+          page: "top_competitors_sov",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedBrandRef.current = b;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+    };
+  }, [marketplace, selectedCategory]);
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -536,6 +577,27 @@ export default function ShareOfVoice() {
         setSovData(res.data);
         if (userId) await fetchUsageLimits();
 
+        const sovRes = res.data;
+        const brandList = Array.isArray(sovRes.brands) ? sovRes.brands : [];
+        const topBrands = brandList.slice(0, 3).map((b: any) => b.brand_name || b.brand || b.name).filter(Boolean);
+        const searchQuery = yourBrand ? `${selectedCategory} (${yourBrand})` : selectedCategory;
+
+        analytics.track("product_search", {
+          query: searchQuery,
+          filter_value: searchQuery,
+          track_id: "analyze_category_sov_btn",
+          results_count: sovRes.total_brands ?? brandList.length,
+          has_results: (sovRes.total_brands ?? brandList.length) > 0,
+          top_results: topBrands,
+          marketplace,
+          category: selectedCategory,
+          your_brand: yourBrand || null,
+          market_leader: sovRes.market_leader || null,
+          total_products: sovRes.total_products || 0,
+          page: "top_competitors_sov",
+          trigger: "analyze_button",
+        });
+
         const promises: Promise<any>[] = [
           fetchMarketHealth(),
         ];
@@ -549,7 +611,21 @@ export default function ShareOfVoice() {
       }
     } catch (err: any) {
       const msg = sanitizeApiError(err.response?.data?.detail || err.message, "Market data unavailable. Please retry shortly.");
-      if (err.response?.status === 403) setShowUpgradeModal(true);
+      if (err.response?.status === 403) {
+        analytics.track("product_search", {
+          query: yourBrand ? `${selectedCategory} (${yourBrand})` : selectedCategory,
+          filter_value: yourBrand ? `${selectedCategory} (${yourBrand})` : selectedCategory,
+          track_id: "analyze_category_sov_btn",
+          results_count: 0,
+          has_results: false,
+          status: "limit_reached",
+          marketplace,
+          category: selectedCategory,
+          page: "top_competitors_sov",
+          trigger: "analyze_limit_hit",
+        });
+        setShowUpgradeModal(true);
+      }
       setError(msg);
       showToast("Analysis Failed", msg, "error");
     } finally { setLoading(false); }
@@ -793,6 +869,7 @@ export default function ShareOfVoice() {
                     className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-600 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 shadow-md" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
                       }`}
                     data-track-id="analyze_category_sov_btn"
+                    data-filter-value={yourBrand ? `${selectedCategory} (${yourBrand})` : selectedCategory}
                   >
                     {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> {t('sov.analyzing', 'Analyzing…')}</>
                       : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> {t('sov.limitReached', 'Limit Reached')}</>

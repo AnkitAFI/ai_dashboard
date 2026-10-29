@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { analytics } from "@/lib/analytics";
 import { useSessionState } from "@/hooks/use-session-state";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
@@ -340,6 +341,50 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const inputMessageRef = useRef<string>("");
+  const selectedSourceRef = useRef<string>("flipkart");
+  const lastTrackedQueryRef = useRef<string>("");
+
+  useEffect(() => {
+    inputMessageRef.current = inputMessage;
+    selectedSourceRef.current = selectedSource;
+  }, [inputMessage, selectedSource]);
+
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = inputMessageRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedQueryRef.current) {
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "ai_advisor_query_input",
+          marketplace: selectedSourceRef.current,
+          page: "ai_advisor",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedQueryRef.current = q;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+      handlePageLeave();
+    };
+  }, []);
+
   const isFullScreen = variant === "fullscreen";
   const isAuthenticated = !!user;
   const isChatLocked =
@@ -402,10 +447,28 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
   // ─────────────────────────────────────────
   // SEND
   // ─────────────────────────────────────────
-  const sendMessage = async (messageText?: string) => {
+  const sendMessage = async (
+    messageText?: string,
+    triggerType: "advisor_send_button" | "quick_suggestion_chip" | "followup_chip" = messageText ? "quick_suggestion_chip" : "advisor_send_button",
+  ) => {
     if (isTyping || isStreaming) return;
 
+    const text = (messageText || inputMessage).trim();
+
     if (!isAuthenticated) {
+      if (text) {
+        analytics.track("product_search", {
+          query: text,
+          filter_value: text,
+          track_id: "ai_advisor_send_btn",
+          marketplace: selectedSource,
+          status: "unauthenticated",
+          results_count: 0,
+          has_results: false,
+          trigger: triggerType,
+          page: "ai_advisor",
+        });
+      }
       setMessages((prev) => [
         ...prev,
         {
@@ -423,6 +486,21 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
       limits.maxAIChatMessagesPerMonth < UNLIMITED &&
       aiUsage.used >= aiUsage.limit
     ) {
+      if (text) {
+        analytics.track("product_search", {
+          query: text,
+          filter_value: text,
+          track_id: "ai_advisor_send_btn",
+          marketplace: selectedSource,
+          status: "limit_reached",
+          chats_used: aiUsage.used,
+          chats_limit: aiUsage.limit,
+          results_count: 0,
+          has_results: false,
+          trigger: triggerType,
+          page: "ai_advisor",
+        });
+      }
       const upgradeMsg =
         currentTier === "free"
           ? "🔒 Unlock AI Advisor with Starter, Basic or Premium plan to start chatting!"
@@ -440,8 +518,8 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
       return;
     }
 
-    const text = (messageText || inputMessage).trim();
     if (!text) return;
+    lastTrackedQueryRef.current = text;
 
     setMessages((prev) => [
       ...prev,
@@ -462,6 +540,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
     setIsTyping(true);
     const streamId = `stream-${Date.now()}`;
     let firstToken = true;
+    let fullResponseText = "";
 
     await streamMessage(
       {
@@ -474,6 +553,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
 
       // onToken
       (token) => {
+        fullResponseText += token;
         if (firstToken) {
           firstToken = false;
           setIsTyping(false);
@@ -526,12 +606,72 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
               : m,
           ),
         );
+
+        // Track completed AI Advisor query and its response output
+        const topResults: string[] = [];
+        if (extracted_product) {
+          topResults.push(`Product: ${extracted_product}`);
+        } else if (mode && MODE_LABELS[mode]) {
+          topResults.push(`Mode: ${MODE_LABELS[mode].label}`);
+        }
+
+        if (market_score?.overall_score !== undefined) {
+          topResults.push(`Score: ${market_score.overall_score}/100 (${market_score.verdict || "Evaluated"})`);
+        } else if (intents && intents.length > 0) {
+          topResults.push(`Intent: ${intents[0]}`);
+        } else if (fullResponseText) {
+          const cleanSnippet = fullResponseText.replace(/[\n\r#*`]/g, " ").trim().slice(0, 45);
+          if (cleanSnippet) topResults.push(cleanSnippet);
+        }
+
+        const resultsCount = market_score?.total_listings ?? (fullResponseText ? 1 : 0);
+
+        analytics.track("product_search", {
+          query: text,
+          filter_value: text,
+          track_id: triggerType === "quick_suggestion_chip"
+            ? "advisor_quick_suggestion"
+            : triggerType === "followup_chip"
+              ? "advisor_followup_chip"
+              : "ai_advisor_send_btn",
+          marketplace: selectedSource,
+          results_count: resultsCount,
+          has_results: true,
+          top_results: topResults,
+          mode: mode || null,
+          intents: intents || [],
+          extracted_product: extracted_product || null,
+          market_score: market_score ? {
+            overall_score: market_score.overall_score,
+            verdict: market_score.verdict,
+            avg_price: market_score.avg_price,
+            avg_rating: market_score.avg_rating,
+            avg_sales: market_score.avg_sales,
+            total_listings: market_score.total_listings,
+          } : null,
+          followup_questions_count: followup_questions?.length ?? 0,
+          response_snippet: fullResponseText.slice(0, 160),
+          status: "success",
+          trigger: triggerType,
+          page: "ai_advisor",
+        });
       },
 
       // onError
       () => {
         setIsTyping(false);
         setIsStreaming(false);
+        analytics.track("product_search", {
+          query: text,
+          filter_value: text,
+          track_id: "ai_advisor_send_btn",
+          marketplace: selectedSource,
+          status: "stream_error",
+          results_count: 0,
+          has_results: false,
+          trigger: triggerType,
+          page: "ai_advisor",
+        });
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== streamId),
           {
@@ -909,7 +1049,9 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                                 {msg.followupQuestions.map((q) => (
                                   <button
                                     key={q}
-                                    onClick={() => sendMessage(q)}
+                                    onClick={() => sendMessage(q, "followup_chip")}
+                                    data-track-id="advisor_followup_chip"
+                                    data-filter-value={q}
                                     disabled={
                                       isTyping || isStreaming || isChatLocked
                                     }
@@ -1010,7 +1152,9 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                     {QUICK_QUESTIONS.map((q) => (
                       <button
                         key={q}
-                        onClick={() => sendMessage(q)}
+                        onClick={() => sendMessage(q, "quick_suggestion_chip")}
+                        data-track-id="advisor_quick_suggestion"
+                        data-filter-value={q}
                         className="flex items-center gap-1.5 text-[11px] sm:text-xs px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 sm:shrink bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 transition-all rounded-full shadow-sm font-medium whitespace-nowrap"
                       >
                         {getSuggestionIcon(q)}
@@ -1026,7 +1170,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                     onValueChange={setSelectedSource}
                     disabled={isChatLocked}
                   >
-                    <SelectTrigger className="w-28 sm:w-40 text-[11px] sm:text-xs bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 h-9 sm:h-11 rounded-full border-0 shadow-none hover:bg-slate-100 dark:hover:bg-slate-700 focus:ring-0 focus:ring-offset-0 shrink-0 px-2 sm:px-3">
+                    <SelectTrigger data-track-id="advisor_source_select" data-filter-value={selectedSource} className="w-28 sm:w-40 text-[11px] sm:text-xs bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 h-9 sm:h-11 rounded-full border-0 shadow-none hover:bg-slate-100 dark:hover:bg-slate-700 focus:ring-0 focus:ring-offset-0 shrink-0 px-2 sm:px-3">
                       <SelectValue placeholder="Source" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-150 shadow-xl">
@@ -1071,6 +1215,8 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
 
                   <Button
                     onClick={() => (isStreaming ? abort() : sendMessage())}
+                    data-track-id="ai_advisor_send_btn"
+                    data-filter-value={inputMessage}
                     disabled={
                       isChatLocked ||
                       isTyping ||
