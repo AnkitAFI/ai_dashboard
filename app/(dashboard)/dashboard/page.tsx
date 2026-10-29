@@ -12,6 +12,8 @@ import AIRecommendations from "@/components/dashboard/ai-recommendations";
 import SellerDashboardView from "@/components/dashboard/seller-dashboard-view";
 import ExplorerHeroBanner from "@/components/dashboard/explorer-hero-banner";
 import GuidedJourneyBar from "@/components/dashboard/guided-journey-bar";
+import SellerSetupModal from "@/components/seller/seller-setup-modal";
+import { Button } from "@/components/ui/button";
 import {
   TrendingDown,
   TrendingUp,
@@ -20,6 +22,8 @@ import {
   AlertCircle,
   Crown,
   Monitor,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
@@ -53,6 +57,7 @@ function DashboardContent() {
   const router = useRouter();
   const { selectedAlert, isAlertDialogOpen, closeAlertDialog } = useAlerts();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
 
   const [sidebarMode, setSidebarMode] = useState<string>("explorer");
 
@@ -246,6 +251,37 @@ function DashboardContent() {
       ) : (
         <div className="flex flex-col gap-4 sm:gap-5">
           <ExplorerHeroBanner selectedSource={selectedSource} />
+          
+          {/* Minimal Assisted Seller Setup Strip (Explorer Mode) */}
+          <div className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl border border-blue-200/70 dark:border-blue-900/40 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-white dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                    Don&apos;t have an Amazon or Flipkart seller account yet?
+                  </h4>
+                  <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                    Includes 5 Free Listings
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                  Let our team create your seller store and set up your first 5 listings. Just ₹999 per platform.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setIsSetupModalOpen(true)}
+              size="sm"
+              className="h-8 px-3.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs shrink-0 w-full sm:w-auto flex items-center justify-center gap-1.5"
+            >
+              Get Account Setup <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+
           <ExplorerKpiCards selectedSource={selectedSource} />
           
           {/* Middle Grid: Fast-Selling Products & Best Opportunity Categories */}
@@ -264,6 +300,11 @@ function DashboardContent() {
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
         onComplete={handleOnboardingComplete}
+      />
+
+      <SellerSetupModal
+        isOpen={isSetupModalOpen}
+        onClose={() => setIsSetupModalOpen(false)}
       />
     </div>
   );

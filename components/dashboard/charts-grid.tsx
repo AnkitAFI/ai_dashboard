@@ -119,7 +119,7 @@ function ChartCard({
                   {currentTier === "free"
                     ? t(
                         "charts.upgradeFree",
-                        "Upgrade to Basic for AI-powered chart summaries and deeper insights",
+                        "Upgrade to Starter for AI-powered chart summaries and deeper insights",
                       )
                     : t(
                         "charts.upgradePremium",
@@ -135,7 +135,7 @@ function ChartCard({
                 >
                   <Crown className="w-3 h-3 mr-1" />
                   {t("charts.upgradeBtn", "Upgrade to")}{" "}
-                  {currentTier === "free" ? "Basic" : "Premium"}
+                  {currentTier === "free" ? "Starter" : "Basic"}
                 </Button>
               </div>
             </div>

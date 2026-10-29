@@ -3,9 +3,14 @@
 import Chatbot from "@/components/chatbot/chatbot";
 import { Sparkles, Bot } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/lib/auth-context";
+import { Badge } from "@/components/ui/badge";
 
 export default function AiAdvisor() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const tier = (user?.subscriptionTier || "free").toLowerCase();
+
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
       {/* Header Info */}
@@ -15,9 +20,26 @@ export default function AiAdvisor() {
             <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 animate-pulse" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text truncate">
-              {t("aiAdvisor.title", "Insydz Advisor")}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text truncate">
+                {t("aiAdvisor.title", "Insydz Advisor")}
+              </h1>
+              <Badge
+                className={`text-xs font-semibold ${
+                  tier === "enterprise"
+                    ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800"
+                    : tier === "premium"
+                      ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300"
+                      : tier === "basic"
+                        ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300"
+                        : tier === "starter"
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {tier.toUpperCase()}
+              </Badge>
+            </div>
             <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium">
               {t(
                 "aiAdvisor.subtitle",

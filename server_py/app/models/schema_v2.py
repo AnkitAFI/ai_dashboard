@@ -642,3 +642,37 @@ class DemoBooking(Base):
     time_slot = Column(String(50), nullable=False) # e.g. "11:00 AM"
     consent_given = Column(Boolean, default=True, nullable=False) # GDPR proof of consent
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class SellerServiceOrder(Base):
+    __tablename__ = "seller_service_orders"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), nullable=True)
+    platforms = Column(JSONB, nullable=False)   # e.g. ["amazon", "flipkart"]
+    amount = Column(Integer, nullable=False)    # e.g. 999, 1998, 2997
+    currency = Column(String(10), default="INR")
+
+    # DPDP / GDPR Encrypted PII (AES-256-GCM)
+    contact_full_name = Column(EncryptedString(), nullable=True)
+    contact_mobile = Column(EncryptedString(), nullable=True)
+    contact_mobile_hash = Column(HashedString(255), index=True, nullable=True)
+    gst_number = Column(EncryptedString(), nullable=True)
+
+    # Compliance & Legal Audit
+    ip_hash = Column(HashedString(255), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    terms_version = Column(String(30), default="v1.0_seller_terms")
+    consent_agreed = Column(Boolean, default=True)
+
+    # Payment Tracking
+    razorpay_order_id = Column(String(100), unique=True, index=True, nullable=True)
+    razorpay_payment_id = Column(String(100), nullable=True)
+    razorpay_signature = Column(String(256), nullable=True)
+    status = Column(String(20), default="created", nullable=False) # 'created' | 'paid'
+
+    key_version = Column(SmallInteger, default=1)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    paid_at = Column(DateTime(timezone=True), nullable=True)
+
+    auth = relationship("UserAuth", backref="seller_service_orders")

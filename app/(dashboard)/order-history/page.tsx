@@ -64,6 +64,12 @@ const STATUS_CONFIG: Record<
     badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
     rowBg: "bg-amber-50/40",
   },
+  created: {
+    label: "Pending",
+    icon: <Clock className="h-4 w-4" />,
+    badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
+    rowBg: "bg-amber-50/40",
+  },
   failed: {
     label: "Failed",
     icon: <XCircle className="h-4 w-4" />,
@@ -80,6 +86,7 @@ const STATUS_CONFIG: Record<
 
 const PLAN_BADGE: Record<string, string> = {
   free: "bg-slate-100 text-slate-600",
+  starter: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
   basic: "bg-sky-100 text-sky-700",
   premium: "bg-amber-100 text-amber-700",
   enterprise: "bg-indigo-100 text-indigo-700",
@@ -179,7 +186,7 @@ function OrderDetailModal({
         <div className={cn(
           "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold border",
           order.status === "paid" ? "bg-emerald-100 border-emerald-250 text-emerald-700 dark:bg-emerald-950/35 dark:border-emerald-900/60 dark:text-emerald-400" :
-          order.status === "pending" ? "bg-amber-100 border-amber-250 text-amber-700 dark:bg-amber-950/35 dark:border-amber-900/60 dark:text-amber-400" :
+          order.status === "pending" || order.status === "created" ? "bg-amber-100 border-amber-250 text-amber-700 dark:bg-amber-950/35 dark:border-amber-900/60 dark:text-amber-400" :
           order.status === "failed" ? "bg-rose-100 border-rose-250 text-rose-700 dark:bg-rose-950/35 dark:border-rose-900/60 dark:text-rose-400" :
           "bg-sky-100 border-sky-250 text-sky-700 dark:bg-sky-950/35 dark:border-sky-900/60 dark:text-sky-400"
         )}>
@@ -195,6 +202,8 @@ function OrderDetailModal({
               "font-bold capitalize px-2 py-0.5 rounded-full text-xs",
               order.plan_id === "premium" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400" :
               order.plan_id === "basic" ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400" :
+              order.plan_id === "starter" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400" :
+              order.plan_id === "enterprise" ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400" :
               "bg-slate-100 text-slate-650 dark:bg-slate-800 dark:text-slate-350"
             )}>
               {order.plan_id}
@@ -348,7 +357,7 @@ export default function OrderHistory() {
 
   const totalPaid = orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.amount, 0);
   const paidCount = orders.filter((o) => o.status === "paid").length;
-  const pendingCount = orders.filter((o) => o.status === "pending").length;
+  const pendingCount = orders.filter((o) => o.status === "pending" || o.status === "created").length;
 
   // ── Render
 
@@ -501,6 +510,8 @@ export default function OrderHistory() {
                         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize",
                         order.plan_id === "premium" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400" :
                         order.plan_id === "basic" ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400" :
+                        order.plan_id === "starter" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400" :
+                        order.plan_id === "enterprise" ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400" :
                         "bg-slate-100 text-slate-650 dark:bg-slate-800 dark:text-slate-350"
                       )}>
                         {order.plan_id}
@@ -532,7 +543,7 @@ export default function OrderHistory() {
                       <span className={cn(
                         "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border",
                         order.status === "paid" ? "bg-emerald-100 border-emerald-250 text-emerald-700 dark:bg-emerald-950/35 dark:border-emerald-900/65 dark:text-emerald-450" :
-                        order.status === "pending" ? "bg-amber-100 border-amber-250 text-amber-700 dark:bg-amber-950/35 dark:border-amber-900/65 dark:text-amber-450" :
+                        order.status === "pending" || order.status === "created" ? "bg-amber-100 border-amber-250 text-amber-700 dark:bg-amber-950/35 dark:border-amber-900/65 dark:text-amber-450" :
                         order.status === "failed" ? "bg-rose-100 border-rose-250 text-rose-700 dark:bg-rose-950/35 dark:border-rose-900/65 dark:text-rose-450" :
                         "bg-sky-100 border-sky-250 text-sky-700 dark:bg-sky-950/35 dark:border-sky-900/65 dark:text-sky-455"
                       )}>

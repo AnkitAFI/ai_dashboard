@@ -39,7 +39,8 @@ type BlogCategory =
   | "Review Intelligence"
   | "Festive Trends"
   | "Case Studies"
-  | "Platform Updates";
+  | "Platform Updates"
+  | "Seller Growth";
 
 type Article = {
   id: string;
@@ -57,6 +58,22 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "38",
+    title:
+      "How Can You Increase Sales on Amazon India Without Increasing Ad Spend?",
+    excerpt:
+      "When sales stall, the usual reaction is to raise the ad budget. That works only if the listing turns clicks into orders. If it does not, every extra rupee buys more visitors who leave.",
+    category: "Seller Growth",
+    readTime: "6 min read",
+    image:
+      "/images/blogs/38-increase-sales-amazon-india-without-ad-spend/38_blog_image_1.webp",
+    featuredImage:
+      "/images/blogs/38-increase-sales-amazon-india-without-ad-spend/38_blog_cover_image.webp",
+    route:
+      "/resources/expert-blog/increase-sales-amazon-india-without-ad-spend",
+    popular: true,
+  },
+  {
     id: "37",
     title:
       "How to Sell on Amazon (Step by Step Tutorial): Amazon FBA for Beginners",
@@ -66,8 +83,6 @@ const articles: Article[] = [
     readTime: "7 min read",
     image:
       "/images/blogs/37-how-to-sell-on-amazon-india-fba-beginners-2026/37_blog_image_1.webp",
-    featuredImage:
-      "/images/blogs/37-how-to-sell-on-amazon-india-fba-beginners-2026/37_blog_cover_image.webp",
     route:
       "/resources/expert-blog/how-to-sell-on-amazon-india-fba-beginners-2026",
     popular: true,

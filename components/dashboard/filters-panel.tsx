@@ -12,6 +12,7 @@ import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-rea
 import { useFilters, Filters } from "./filters-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -158,6 +159,7 @@ export default function FiltersPanel() {
   // Get next tier name
   const getNextTierForTopN = (value: number): string => {
     if (value <= 5) return "Free";
+    if (value <= 10) return "Starter";
     if (value <= 20) return "Basic";
     if (value <= 100) return "Premium";
     return "Enterprise";
@@ -171,7 +173,19 @@ export default function FiltersPanel() {
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
             {t('filters.title', 'Filters & Settings')}
-            <Badge variant="outline" className="text-xs ml-2 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700">
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-xs ml-2 border",
+                currentTier === "starter"
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
+                  : currentTier === "basic"
+                  ? "bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300"
+                  : currentTier === "premium"
+                  ? "bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300"
+                  : "bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+              )}
+            >
               {currentTier.toUpperCase()}
             </Badge>
           </CardTitle>
@@ -364,18 +378,27 @@ export default function FiltersPanel() {
               <div className="space-y-2">
                 {currentTier === "free" && (
                   <>
-                    <div className="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-blue-900">Basic - ₹1999/month</p>
-                      <ul className="text-xs text-blue-700 space-y-1 mt-1 ml-4">
+                    <div className="border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-emerald-900 dark:text-emerald-300">Starter - ₹499/month</p>
+                      <ul className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1 mt-1 ml-4">
+                        <li>✓ Top 10 products (2x more)</li>
+                        <li>✓ AI chart summaries & insights</li>
+                        <li>✓ 10 notifications limit</li>
+                        <li>✓ Export data to CSV/Excel</li>
+                      </ul>
+                    </div>
+                    <div className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-blue-900 dark:text-blue-300">Basic - ₹1999/month</p>
+                      <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 mt-1 ml-4">
                         <li>✓ Top 20 products (4x more)</li>
-                        <li>✓ AI chart summaries</li>
+                        <li>✓ 20 full analyses & 20 AI chats</li>
                         <li>✓ 15 notifications</li>
                         <li>✓ Export data</li>
                       </ul>
                     </div>
-                    <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-purple-900">Premium - ₹2999/month ⭐</p>
-                      <ul className="text-xs text-purple-700 space-y-1 mt-1 ml-4">
+                    <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
+                      <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
                         <li>✓ Top 100 products (20x more)</li>
                         <li>✓ Real-time data & alerts</li>
                         <li>✓ Unlimited notifications</li>
@@ -385,10 +408,33 @@ export default function FiltersPanel() {
                   </>
                 )}
 
+                {currentTier === "starter" && (
+                  <>
+                    <div className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-blue-900 dark:text-blue-300">Basic - ₹1999/month</p>
+                      <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 mt-1 ml-4">
+                        <li>✓ Top 20 products (2x more)</li>
+                        <li>✓ 20 full analyses & 20 AI chats</li>
+                        <li>✓ 15 notifications</li>
+                        <li>✓ Daily report frequency</li>
+                      </ul>
+                    </div>
+                    <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
+                      <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
+                        <li>✓ Top 100 products (10x more)</li>
+                        <li>✓ Real-time data & alerts</li>
+                        <li>✓ Unlimited notifications & analyses</li>
+                        <li>✓ Advanced analytics</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
                 {currentTier === "basic" && (
-                  <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
-                    <p className="font-semibold text-sm text-purple-900">Premium - ₹1999/month ⭐</p>
-                    <ul className="text-xs text-purple-700 space-y-1 mt-1 ml-4">
+                  <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
+                    <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
+                    <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
                       <li>✓ Top 100 products (5x more)</li>
                       <li>✓ Real-time data & alerts</li>
                       <li>✓ Unlimited notifications</li>

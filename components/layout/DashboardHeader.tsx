@@ -40,6 +40,7 @@ import {
   NotificationDetails,
 } from "@/components/dashboard/alert-context";
 import { API_BASE_URL } from "@/lib/config";
+import { cn } from "@/lib/utils";
 // import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 // Types are now imported from alert-context
@@ -169,7 +170,19 @@ export function DashboardHeader({
               id: "upgrade-prompt",
               type: "upgrade",
               severity: "info",
-              message: `🔒 You've reached your ${limits.maxNotifications} notification limit. Upgrade to ${currentTier === "free" ? "Basic" : "Premium"} for ${currentTier === "free" ? "15" : "unlimited"} alerts.`,
+              message: `🔒 You've reached your ${limits.maxNotifications} notification limit. Upgrade to ${
+                currentTier === "free"
+                  ? "Starter"
+                  : currentTier === "starter"
+                  ? "Basic"
+                  : "Premium"
+              } for ${
+                currentTier === "free"
+                  ? "10"
+                  : currentTier === "starter"
+                  ? "15"
+                  : "unlimited"
+              } alerts.`,
               time: "Now",
             },
           ]);
@@ -257,7 +270,18 @@ export function DashboardHeader({
           </h2>
           <p className="page-subtitle text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
             {displaySubtitle} •{" "}
-            <span className="font-semibold text-sky-600 dark:text-sky-400">
+            <span
+              className={cn(
+                "font-semibold",
+                currentTier === "starter"
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : currentTier === "basic"
+                  ? "text-blue-600 dark:text-blue-400"
+                  : currentTier === "premium"
+                  ? "text-purple-600 dark:text-purple-400"
+                  : "text-sky-600 dark:text-sky-400"
+              )}
+            >
               {currentTier.toUpperCase()}
             </span>
           </p>

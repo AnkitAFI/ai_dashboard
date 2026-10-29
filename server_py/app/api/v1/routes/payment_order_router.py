@@ -42,6 +42,7 @@ BREVO_SENDER_NAME       = os.getenv("BREVO_SENDER_NAME",  "Insydz")
 APP_NAME                = os.getenv("APP_NAME", "Insydz")
 APP_URL                 = os.getenv("APP_URL",  "https://insydz.com")
 
+RAZORPAY_PLAN_STARTER   = os.getenv("RAZORPAY_PLAN_STARTER")
 RAZORPAY_PLAN_BASIC     = os.getenv("RAZORPAY_PLAN_BASIC")
 RAZORPAY_PLAN_PREMIUM   = os.getenv("RAZORPAY_PLAN_PREMIUM")
 
@@ -53,9 +54,9 @@ _brevo_config = sib_api_v3_sdk.Configuration()
 _brevo_config.api_key["api-key"] = BREVO_API_KEY
 
 # Plans ordered lowest → highest. Index = rank.
-PLAN_HIERARCHY: list[str] = ["free", "basic", "premium", "enterprise"]
-PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 2999, "enterprise": 0}
-PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free", "enterprise": "Enterprise"}
+PLAN_HIERARCHY: list[str] = ["free", "starter", "basic", "premium", "enterprise"]
+PLAN_PRICES:    dict[str, int] = {"starter": 499, "basic": 1999, "premium": 2999, "enterprise": 0}
+PLAN_LABELS:    dict[str, str] = {"starter": "Starter", "basic": "Basic", "premium": "Premium", "free": "Free", "enterprise": "Enterprise"}
 
 GST_RATE          = 18   # percent
 SUBSCRIPTION_DAYS = 30   # one billing cycle
@@ -549,7 +550,7 @@ def create_subscription(
     if data.plan_id not in PLAN_PRICES:
         raise HTTPException(400, f"Unknown plan: {data.plan_id}")
         
-    rzp_plan_id = RAZORPAY_PLAN_BASIC if data.plan_id == "basic" else RAZORPAY_PLAN_PREMIUM if data.plan_id == "premium" else None
+    rzp_plan_id = RAZORPAY_PLAN_STARTER if data.plan_id == "starter" else RAZORPAY_PLAN_BASIC if data.plan_id == "basic" else RAZORPAY_PLAN_PREMIUM if data.plan_id == "premium" else None
     if not rzp_plan_id:
         raise HTTPException(400, f"Recurring subscription not available for {data.plan_id}")
 

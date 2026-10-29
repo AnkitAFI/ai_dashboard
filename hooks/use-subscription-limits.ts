@@ -45,9 +45,31 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxTopN: 5,
     hasChartAISummaries: false,
     maxNotifications: 5,
-    maxFullAnalysesPerMonth: 5, // ✅ 5 product analyses per month
+    maxFullAnalysesPerMonth: 1, // ✅ 1 product analysis per month
     maxAIChatMessagesPerMonth: 0, // 0 AI chat messages for free tier (must pay)
     maxKeywordIntelligenceSearchesPerMonth: 0, // ✅ Fully locked for free tier
+  },
+  starter: {
+    productTrackingLimit: 250,
+    hasAdvancedAI: true,
+    hasRealTimeData: false,
+    hasRealTimeAlerts: false,
+    hasPrioritySupport: false,
+    hasAdvancedAnalytics: false,
+    hasCustomIntegrations: false,
+    hasCompetitorAnalysis: true,
+    reportFrequency: 'weekly',
+    hasAIChatbot: true,
+    hasDedicatedManager: false,
+    canExportData: true,
+    maxDashboardWidgets: 6,
+    maxSavedReports: 5,
+    maxTopN: 10,
+    hasChartAISummaries: true,
+    maxNotifications: 10,
+    maxFullAnalysesPerMonth: 5, // ✅ 5 product analyses per month
+    maxAIChatMessagesPerMonth: 5, // ✅ 5 AI advisor messages per month
+    maxKeywordIntelligenceSearchesPerMonth: 1, // ✅ 1 keyword intelligence search per month
   },
   basic: {
     productTrackingLimit: 1000,
@@ -238,21 +260,26 @@ export function useSubscriptionLimits() {
   const getUpgradeMessage = (
     limitType: 'productAnalyses' | 'AIChatMessages' | 'widgets' | 'reports'
   ): string => {
-    const nextTier = currentTier === 'free' ? 'Basic' : 'Premium';
+    const nextTier =
+      currentTier === 'free' ? 'Starter' : currentTier === 'starter' ? 'Basic' : 'Premium';
 
     switch (limitType) {
       case 'productAnalyses':
-        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '20' : 'unlimited'
-          } product analyses per month`;
+        return `Upgrade to ${nextTier} for ${
+          currentTier === 'free' ? '10' : currentTier === 'starter' ? '20' : 'unlimited'
+        } product analyses per month`;
       case 'AIChatMessages':
-        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '20' : 'unlimited'
-          } AI chat messages per month`;
+        return `Upgrade to ${nextTier} for ${
+          currentTier === 'free' ? '5' : currentTier === 'starter' ? '20' : 'unlimited'
+        } AI chat messages per month`;
       case 'widgets':
-        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '8' : 'unlimited'
-          } dashboard widgets`;
+        return `Upgrade to ${nextTier} for ${
+          currentTier === 'free' ? '6' : currentTier === 'starter' ? '8' : 'unlimited'
+        } dashboard widgets`;
       case 'reports':
-        return `Upgrade to ${nextTier} for ${currentTier === 'free' ? '10' : 'unlimited'
-          } saved reports`;
+        return `Upgrade to ${nextTier} for ${
+          currentTier === 'free' ? '5' : currentTier === 'starter' ? '10' : 'unlimited'
+        } saved reports`;
       default:
         return `Upgrade to ${nextTier} for more features`;
     }

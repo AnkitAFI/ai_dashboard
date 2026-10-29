@@ -173,7 +173,7 @@ def get_optional_user_id(session_id: str = Cookie(None)) -> Optional[str]:
     return None
 
 
-_TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3, "trial": 2}
+_TIER_ORDER = {"free": 0, "starter": 1, "basic": 2, "premium": 3, "enterprise": 4, "trial": 3}
 
 
 def _get_user_tier(user_id: Optional[str], db: Session) -> str:
@@ -971,7 +971,7 @@ def tier_info(
     return {
         "tier":       tier,
         "user_id":    user_id,
-        "is_basic":   _has_tier(tier, "basic"),
+        "is_basic":   _has_tier(tier, "starter"),
         "is_premium": _has_tier(tier, "premium"),
     }
 
@@ -984,12 +984,12 @@ def festive_overview(
 ):
     """
     FREE — Top 3 trending categories by sales velocity.
-    basic+ users see all 3 categories unlocked; free/anonymous see only index 0.
+    starter+ users see all 3 categories unlocked; free/anonymous see only index 0.
     Tier read from DB directly — never trusts the frontend.
     """
     source    = _validate_source(source)
     user_tier = _get_user_tier(user_id, db)
-    unlocked  = _has_tier(user_tier, "basic")
+    unlocked  = _has_tier(user_tier, "starter")
 
     cats = (
         _flipkart_category_overview(db)
@@ -1013,7 +1013,7 @@ def festive_overview(
         "top_categories":  top3,
         "next_festival":   upcoming[0] if upcoming else None,
         "user_tier":       user_tier,
-        "upgrade_message": "Upgrade to Basic (₹1,999/mo) to unlock all categories and 90-day trend charts.",
+        "upgrade_message": "Upgrade to Starter or Basic to unlock all categories and 90-day trend charts.",
     }
 
 
@@ -1024,10 +1024,10 @@ def trend_analysis(
     user_id:       str     = Depends(get_current_user_id),
     db:            Session = Depends(get_db),
 ):
-    """BASIC — Full 90-day price + velocity trend for a category."""
+    """STARTER+ — Full 90-day price + velocity trend for a category."""
     source        = _validate_source(source)
     category_name = _validate_category(category_name)
-    _check_tier(user_id, "basic", db)
+    _check_tier(user_id, "starter", db)
 
     if source == "flipkart":
         trend      = _flipkart_price_trend(category_name, db)
@@ -1072,10 +1072,10 @@ def stock_risk(
     user_id:       str     = Depends(get_current_user_id),
     db:            Session = Depends(get_db),
 ):
-    """BASIC — Stock-out risk score for a specific category."""
+    """STARTER+ — Stock-out risk score for a specific category."""
     source        = _validate_source(source)
     category_name = _validate_category(category_name)
-    _check_tier(user_id, "basic", db)
+    _check_tier(user_id, "starter", db)
 
     risk = (
         _stock_risk_flipkart(category_name, db)
@@ -1181,9 +1181,9 @@ def list_categories(
     user_id: Optional[str] = Depends(get_current_user_id),
     db:      Session       = Depends(get_db),
 ):
-    """BASIC — All unique category names for a given source (for dropdown population)."""
+    """STARTER+ — All unique category names for a given source (for dropdown population)."""
     source = _validate_source(source)
-    _check_tier(user_id, "basic", db)
+    _check_tier(user_id, "starter", db)
 
     try:
         if source == "flipkart":

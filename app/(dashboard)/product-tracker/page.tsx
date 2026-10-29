@@ -356,7 +356,8 @@ export default function ProductTracker() {
   const getUpgradeMessage = () => {
     if (!usageLimits) return "";
     const tier = usageLimits.subscription_tier.toLowerCase();
-    if (tier === "free") return "Upgrade to Basic for 20 analyses per month";
+    if (tier === "free") return "Upgrade to Starter for 5 analyses per month";
+    if (tier === "starter") return "Upgrade to Basic for 20 analyses per month";
     if (tier === "basic") return "Upgrade to Premium for unlimited analyses";
     return "Upgrade for more features";
   };
@@ -559,7 +560,7 @@ export default function ProductTracker() {
               <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-start sm:self-auto">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('pr.analysesUsed', 'Analyses used')}</p>
-                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : usageLimits.subscription_tier.toLowerCase() === "starter" ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800" : "bg-slate-100 text-slate-600"}`}>
                     {(usageLimits.subscription_tier || "free").toUpperCase()}
                   </Badge>
                 </div>

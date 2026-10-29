@@ -154,7 +154,7 @@ function EditableCell({
   return (
     <div className="flex items-center justify-end gap-2 group">
       <span>{type === "currency" ? `₹${value.toFixed(2)}` : value}</span>
-      {tier === "free" || tier === "basic" ? (
+      {tier === "free" || tier === "basic" || tier === "starter" ? (
         <div title="Upgrade to Premium to manually edit bids and budgets">
           <Lock className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
         </div>

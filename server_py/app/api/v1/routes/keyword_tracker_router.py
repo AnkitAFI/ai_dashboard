@@ -327,6 +327,6 @@ def get_tier_limits(tier: str):
     Returns the feature limits for a given tier.
     Public endpoint — no auth needed. Used by frontend pricing pages.
     """
-    if tier.lower() not in ("free", "basic", "premium", "enterprise"):
-        raise HTTPException(status_code=400, detail={"error_code": "INVALID_TIER", "message": "Tier must be free, basic, or premium."})
+    if tier.lower() not in ("free", "starter", "basic", "premium", "enterprise"):
+        raise HTTPException(status_code=400, detail={"error_code": "INVALID_TIER", "message": "Tier must be free, starter, basic, premium, or enterprise."})
     return svc.get_tier_limits(tier)
