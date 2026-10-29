@@ -613,21 +613,21 @@ export default function SellerSetupModal({ isOpen, onClose, onSuccess }: SellerS
                       </span>
                     </div>
 
-                    {/* 3-Point Statutory Legal Checklist / Disclaimer */}
+                    {/* 3-Point Terms & Conditions */}
                     <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-2 sm:p-2.5 space-y-1.5 text-[9.5px] sm:text-[10px] text-slate-500 dark:text-slate-400">
                       <div className="font-semibold text-slate-700 dark:text-slate-300 text-[10px] sm:text-[10.5px]">
-                        Facilitation & Statutory Policy Agreement:
+                        Terms & Conditions
                       </div>
                       <div className="max-h-20 sm:max-h-24 overflow-y-auto pr-1 space-y-1">
                         <ol className="list-decimal list-outside pl-3.5 space-y-1 leading-normal">
                           <li>
-                            <strong>Platform Discretion & Zero-Liability:</strong> Account approvals, verifications, and listing status remain at the sole, independent discretion of third-party marketplace authorities (Amazon, Flipkart, Meesho). Insydz acts strictly as an administrative facilitator and assumes no liability for account suspensions, rejections, policy restrictions, or operational actions by marketplaces.
+                            <strong>Platform Approval:</strong> Account approval and listing activation depend on the respective marketplace (Amazon, Flipkart, or Meesho). Insydz assists with the onboarding process but does not control marketplace decisions.
                           </li>
                           <li>
-                            <strong>Non-Refundable Processing Surcharge:</strong> The service fee of ₹999 per platform constitutes an administrative processing charge and is strictly non-refundable once documentation onboarding has commenced, irrespective of marketplace verification outcomes.
+                            <strong>Processing Fee:</strong> The service fee is non-refundable once document processing has started, regardless of the marketplace&apos;s approval or rejection.
                           </li>
                           <li>
-                            <strong>Merchant Representation & Document Integrity:</strong> The subscriber indemnifies and warrants the legal authenticity and statutory compliance of all furnished trade credentials (PAN, GSTIN, identity, and catalog data) under applicable commercial regulations.
+                            <strong>Document Responsibility:</strong> The subscriber is responsible for providing genuine and accurate documents, whatsoever required by the platforms including PAN, GSTIN, identity proof, and product details, in compliance with applicable laws.
                           </li>
                         </ol>
                       </div>
@@ -639,7 +639,7 @@ export default function SellerSetupModal({ isOpen, onClose, onSuccess }: SellerS
                           className="rounded h-3.5 w-3.5"
                         />
                         <span className="text-[10.5px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                          I have read and agree to the 3 policy terms outlined above
+                          I have read and agree to the terms & conditions outlined above
                         </span>
                       </label>
                     </div>
