@@ -1784,11 +1784,6 @@ export default function LandingContent() {
                           ₹{plan.price?.toLocaleString("en-IN")}
                         </span>
                         <span className="text-sm text-[#8a849c]">{plan.priceSuffix}</span>
-                        {plan.oldPrice && (
-                          <span className="text-sm text-[#8a849c] line-through">
-                            ₹{plan.oldPrice.toLocaleString("en-IN")}
-                          </span>
-                        )}
                       </div>
                     )}
                     {plan.badge && (

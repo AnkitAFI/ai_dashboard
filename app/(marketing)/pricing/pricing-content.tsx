@@ -278,9 +278,6 @@ export default function PricingContent() {
                       <span className="text-2xl font-bold">Contact Us</span>
                     )}
                   </div>
-                  {plan.oldPrice && (
-                    <div className="text-slate-400 line-through text-sm font-medium">₹{plan.oldPrice.toLocaleString()}</div>
-                  )}
                   {plan.badge && (
                     <div className="mt-2 text-xs font-bold text-orange-600 uppercase tracking-wider">{plan.badge}</div>
                   )}

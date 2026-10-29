@@ -667,11 +667,6 @@ export default function Subscription() {
 
                 {plan.id !== "enterprise" ? (
                   <div className="flex items-baseline justify-center gap-1.5 mt-1.5 mb-1">
-                    {plan.oldPrice && (
-                      <span className={cn("text-base line-through", isDark ? "text-slate-500" : "text-slate-400")}>
-                        ₹{plan.oldPrice.toLocaleString("en-IN")}
-                      </span>
-                    )}
                     <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
                       {plan.price === 0 ? t("subscription.free", "Free") : `₹${plan.price!.toLocaleString("en-IN")}`}
                     </span>
@@ -684,14 +679,6 @@ export default function Subscription() {
                 ) : (
                   <div className={cn("text-xl font-extrabold mt-1.5 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
                     {t("subscription.customPricing", "Custom Pricing")}
-                  </div>
-                )}
-
-                {plan.oldPrice && plan.price !== undefined && (
-                  <div className="flex justify-center mt-1">
-                    <Badge className={cn("text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white", styles.discountBadge)}>
-                      {Math.round(((plan.oldPrice - plan.price) / plan.oldPrice) * 100)}% OFF
-                    </Badge>
                   </div>
                 )}
 
