@@ -18,6 +18,7 @@ import { getCategoryIconComponent, cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 
 interface Product {
   product_name: string;
@@ -52,6 +53,46 @@ export default function CategoryProducts() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
   const limit = 12;
+
+  const lastTrackedQueryRef = useRef<string>("");
+  const searchQueryRef = useRef<string>("");
+  useEffect(() => { searchQueryRef.current = searchQuery; }, [searchQuery]);
+
+  // Track search when user leaves the page or closes tab before 400ms debounce fires
+  useEffect(() => {
+    const handlePageLeave = () => {
+      const q = searchQueryRef.current.trim();
+      if (q.length >= 2 && q !== lastTrackedQueryRef.current) {
+        analytics.track("product_search", {
+          query: q,
+          filter_value: q,
+          track_id: "category_product_search_input",
+          category: decodeURIComponent((category as string) || ""),
+          source: (source as string) || "",
+          page: "category_products",
+          trigger: "page_leave_or_close",
+        });
+        lastTrackedQueryRef.current = q;
+        analytics.flush();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handlePageLeave();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", handlePageLeave);
+    window.addEventListener("beforeunload", handlePageLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", handlePageLeave);
+      window.removeEventListener("beforeunload", handlePageLeave);
+    };
+  }, [category, source]);
 
   // Debounce searchQuery by 400ms
   useEffect(() => {
@@ -103,8 +144,32 @@ export default function CategoryProducts() {
         } else {
           setProducts([]);
         }
+        const count = typeof res.data.total_count === "number" ? res.data.total_count : (Array.isArray(res.data.products) ? res.data.products.length : 0);
         if (typeof res.data.total_count === "number") {
           setTotalCount(res.data.total_count);
+        }
+
+        // Track what user searched and the results returned
+        if (debouncedSearch && debouncedSearch.trim().length >= 2 && debouncedSearch.trim() !== lastTrackedQueryRef.current) {
+          const q = debouncedSearch.trim();
+          const fetchedProducts = Array.isArray(res.data.products) ? res.data.products : [];
+          const topResults = fetchedProducts.slice(0, 3).map((p: Product) => p.product_name).filter(Boolean);
+
+          analytics.track("product_search", {
+            query: q,
+            filter_value: q,
+            track_id: "category_product_search_input",
+            results_count: count,
+            has_results: count > 0,
+            top_results: topResults,
+            category: decodedCategory,
+            source: (source as string) || "",
+            page: "category_products",
+            trigger: "debounce",
+          });
+          lastTrackedQueryRef.current = q;
+        } else if (!debouncedSearch) {
+          lastTrackedQueryRef.current = "";
         }
       })
       .catch(() => setError("Failed to fetch products"))
@@ -274,6 +339,8 @@ export default function CategoryProducts() {
                               `/product/${encodeURIComponent(p.product_name)}?source=${source}&category=${category}&page=${page}`
                             )
                           }
+                          data-track-id="category_product_row"
+                          data-filter-value={p.product_name}
                           className="text-blue-600 hover:text-blue-800 cursor-pointer underline-offset-2 hover:underline transition"
                         >
                           {p.product_name}

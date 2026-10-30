@@ -1265,7 +1265,9 @@ export default function Settings() {
               <p className="text-xs text-muted-foreground italic py-2">No consent records found.</p>
             ) : (
               <div className="space-y-4">
-                {consents.map((consent, idx) => (
+                {consents
+                  .filter(c => ["terms_of_service", "privacy_policy", "data_processing", "marketing_emails"].includes(c.consent_type))
+                  .map((consent, idx) => (
                   <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 border rounded-lg bg-card shadow-sm">
                     <div>
                       <Label className="capitalize">{consent.consent_type.replace(/_/g, ' ')}</Label>

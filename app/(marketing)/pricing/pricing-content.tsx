@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import {
   Card,
   CardContent,
@@ -204,6 +204,178 @@ const FAQS = [
   },
 ];
 
+interface FeatureComparisonRow {
+  name: string;
+  free: string | boolean;
+  starter: string | boolean;
+  basic: string | boolean;
+  premium: string | boolean;
+  enterprise: string | boolean;
+}
+
+const FEATURE_COMPARISON_ROWS: FeatureComparisonRow[] = [
+  {
+    name: "Basic Explorer Dashboard for Flipkart and Amazon",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Explore Categories",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Best Sellers",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Niche Finder",
+    free: "3 uses/month + limited data",
+    starter: "5 uses/month + full data",
+    basic: "20 uses/month + full data",
+    premium: "Unlimited uses/month + full data",
+    enterprise: "Included",
+  },
+  {
+    name: "Top Competitors Score",
+    free: "1 use/month",
+    starter: "5 uses/month",
+    basic: "10 uses/month",
+    premium: "Unlimited uses/month",
+    enterprise: "Included",
+  },
+  {
+    name: "Product Ideas",
+    free: "1 use/month",
+    starter: "5 uses/month",
+    basic: "20 uses/month",
+    premium: "Unlimited uses/month",
+    enterprise: "Included",
+  },
+  {
+    name: "Best Price Finder",
+    free: "Calculator tab only",
+    starter: "Calculator tab + Cost Waterfall",
+    basic: "Calculator tab + Cost Waterfall",
+    premium: "Calculator tab + Cost Waterfall + Scenarios + AI",
+    enterprise: "Included",
+  },
+  {
+    name: "Keyword Research",
+    free: false,
+    starter: "1 use/month",
+    basic: "2 uses/month",
+    premium: "20 uses/month",
+    enterprise: "Included",
+  },
+  {
+    name: "AI Advisor",
+    free: false,
+    starter: "5 uses/month",
+    basic: "20 uses/month",
+    premium: "Unlimited uses/month",
+    enterprise: "Included",
+  },
+  {
+    name: "Amazon Seller Integration",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Amazon Ads Integration",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "View Campaigns, Orders and Revenue",
+    free: true,
+    starter: true,
+    basic: true,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Original Profit and Margins",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Restock Planner",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Review Automator",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Refund Finder",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: true,
+    enterprise: true,
+  },
+  {
+    name: "Amazon Ads Automation",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: "Bid, Scheduling, Placements, Auto-Negate, Smart Budget",
+    enterprise: true,
+  },
+  {
+    name: "White-label options",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: false,
+    enterprise: true,
+  },
+  {
+    name: "Premium support",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: false,
+    enterprise: true,
+  },
+  {
+    name: "Custom integrations",
+    free: false,
+    starter: false,
+    basic: false,
+    premium: false,
+    enterprise: true,
+  },
+];
+
 export default function PricingContent() {
   const router = useRouter();
 
@@ -247,7 +419,7 @@ export default function PricingContent() {
 
       {/* Pricing Cards Section */}
       <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
-        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-start">
+        <div className="max-w-[90rem] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-stretch">
           {SUBSCRIPTION_PLANS.map((plan) => {
             const isExpanded = expandedCards[plan.id] ?? false;
             const visibleFeatures = isExpanded ? plan.features : plan.features.slice(0, INITIAL_VISIBLE_COUNT);
@@ -257,7 +429,7 @@ export default function PricingContent() {
             return (
               <Card
                 key={plan.id}
-                className={`flex flex-col border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
+                className={`flex flex-col h-full border-2 transition-all duration-300 hover:shadow-2xl ${plan.isPopular
                   ? 'border-orange-500 scale-105 shadow-xl shadow-orange-500/10'
                   : 'border-slate-100 dark:border-slate-800 hover:border-orange-200'
                   }`}
@@ -268,25 +440,27 @@ export default function PricingContent() {
                     {plan.icon}
                   </div>
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <div className="mt-4 flex items-baseline justify-center">
+                  <div className="mt-4 flex items-baseline justify-center h-10">
                     {plan.price !== undefined ? (
                       <>
                         <span className="text-4xl font-extrabold tracking-tight">₹{plan.price.toLocaleString()}</span>
                         <span className="ml-1 text-slate-500 font-medium">/{plan.id === 'free' ? 'forever' : 'mo'}</span>
                       </>
                     ) : (
-                      <span className="text-2xl font-bold">Contact Us</span>
+                      <span className="text-2xl font-bold self-center">Contact Us</span>
                     )}
                   </div>
-                  {plan.badge && (
-                    <div className="mt-2 text-xs font-bold text-orange-600 uppercase tracking-wider">{plan.badge}</div>
-                  )}
-                  <CardDescription className="mt-4 min-h-[40px]">{plan.description}</CardDescription>
+                  <div className="h-6 mt-2 flex items-center justify-center">
+                    {plan.badge ? (
+                      <div className="text-xs font-bold text-orange-600 uppercase tracking-wider">{plan.badge}</div>
+                    ) : null}
+                  </div>
+                  <CardDescription className="mt-4 min-h-[40px] flex items-center justify-center">{plan.description}</CardDescription>
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col pt-6">
-                  <div className="mb-6">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Best For</div>
+                  <div className="mb-6 min-h-[64px]">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Best For</div>
                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{plan.bestFor}</p>
                   </div>
 
@@ -389,64 +563,71 @@ export default function PricingContent() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="p-6 text-sm font-bold text-slate-400 uppercase tracking-widest bg-slate-50/50 dark:bg-gray-900/50 w-1/3">Feature</th>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-gray-900/70">
+                  <th className="p-4 sm:p-6 text-sm font-bold text-slate-400 uppercase tracking-widest w-1/3">Feature</th>
                   {SUBSCRIPTION_PLANS.map(plan => (
-                    <th key={plan.id} className="p-6 text-center text-sm font-bold uppercase tracking-widest">
+                    <th key={plan.id} className="p-4 sm:p-6 text-center text-sm font-bold uppercase tracking-widest">
                       <span className={plan.isPopular ? 'text-orange-600' : ''}>{plan.name}</span>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                <tr>
-                  <td className="p-6 text-sm font-medium">Product Tracking</td>
-                  <td className="p-6 text-center text-sm">25</td>
-                  <td className="p-6 text-center text-sm">100</td>
-                  <td className="p-6 text-center text-sm">500</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Unlimited</td>
-                  <td className="p-6 text-center text-sm">Custom</td>
-                </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Profit Tracker</td>
-                  <td className="p-6 text-center text-sm">Store Level</td>
-                  <td className="p-6 text-center text-sm">Store Level</td>
-                  <td className="p-6 text-center text-sm">Store Level</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">ASIN Level</td>
-                </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Restock Planner</td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Review Automator</td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600"><Check className="h-5 w-5 text-orange-600 mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Refund Finder</td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Up to 18 months</td>
-                </tr>
-                <tr>
-                  <td className="p-6 text-sm font-medium">Ads Automations</td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm"><X className="h-5 w-5 text-slate-300 mx-auto" /></td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
-                  <td className="p-6 text-center text-sm font-bold text-orange-600">Full Access</td>
-                </tr>
+                {FEATURE_COMPARISON_ROWS.map((feat, fIdx) => {
+                  const renderVal = (val: string | boolean, isPopularCol: boolean) => {
+                    if (val === true) {
+                      return (
+                        <Check
+                          className={`h-5 w-5 mx-auto ${
+                            isPopularCol ? "text-orange-600" : "text-emerald-600 dark:text-emerald-400"
+                          }`}
+                        />
+                      );
+                    }
+                    if (val === false) {
+                      return <X className="h-5 w-5 text-slate-300 dark:text-slate-600 mx-auto" />;
+                    }
+                    const isHighlighted =
+                      typeof val === "string" && (val.includes("Unlimited") || val === "Included");
+                    return (
+                      <span
+                        className={`text-xs sm:text-sm ${
+                          isHighlighted
+                            ? "font-bold text-orange-600 dark:text-orange-400"
+                            : "font-medium text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        {val}
+                      </span>
+                    );
+                  };
+
+                  return (
+                    <tr
+                      key={fIdx}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition-colors"
+                    >
+                      <td className="p-4 sm:p-5 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100">
+                        {feat.name}
+                      </td>
+                      <td className="p-4 sm:p-5 text-center text-xs sm:text-sm">
+                        {renderVal(feat.free, false)}
+                      </td>
+                      <td className="p-4 sm:p-5 text-center text-xs sm:text-sm">
+                        {renderVal(feat.starter, false)}
+                      </td>
+                      <td className="p-4 sm:p-5 text-center text-xs sm:text-sm bg-orange-50/30 dark:bg-orange-950/10">
+                        {renderVal(feat.basic, true)}
+                      </td>
+                      <td className="p-4 sm:p-5 text-center text-xs sm:text-sm">
+                        {renderVal(feat.premium, false)}
+                      </td>
+                      <td className="p-4 sm:p-5 text-center text-xs sm:text-sm">
+                        {renderVal(feat.enterprise, false)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
