@@ -359,3 +359,60 @@ def get_my_service_orders(
         for o in orders
     ]
 
+
+@router.get("/admin/orders")
+def get_admin_seller_orders(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Returns all seller setup orders for admin inspection (strictly excluding Razorpay IDs)."""
+    ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "syatharthdelhi@gmail.com")
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    orders = (
+        db.query(SellerServiceOrder)
+        .order_by(SellerServiceOrder.created_at.desc())
+        .all()
+    )
+
+    results = []
+    for o in orders:
+        user_email = o.auth.profile.email if o.auth and o.auth.profile else None
+        results.append({
+            "id": o.id,
+            "user_id": o.user_id,
+            "user_email": user_email or "N/A",
+            "contact_full_name": o.contact_full_name or "N/A",
+            "contact_mobile": o.contact_mobile or "N/A",
+            "gst_number": o.gst_number,
+            "platforms": o.platforms or [],
+            "amount": o.amount,
+            "currency": o.currency or "INR",
+            "status": o.status,
+            "created_at": o.created_at.isoformat() if o.created_at else None,
+            "paid_at": o.paid_at.isoformat() if o.paid_at else None,
+        })
+
+    paid_orders = [o for o in results if o["status"] == "paid"]
+    unpaid_orders = [o for o in results if o["status"] != "paid"]
+    total_revenue = sum(o["amount"] for o in paid_orders)
+    platform_counts = {"amazon": 0, "flipkart": 0, "meesho": 0}
+    for o in paid_orders:
+        for p in o["platforms"]:
+            p_key = p.lower()
+            if p_key in platform_counts:
+                platform_counts[p_key] += 1
+
+    return {
+        "status": "success",
+        "orders": results,
+        "summary": {
+            "total_orders": len(results),
+            "paid_orders": len(paid_orders),
+            "unpaid_orders": len(unpaid_orders),
+            "total_revenue": total_revenue,
+            "platform_counts": platform_counts,
+        },
+    }
+

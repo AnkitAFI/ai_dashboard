@@ -7563,6 +7563,7 @@ def get_admin_stats(
 
     # users by tier
     free_users = db.query(models.User).filter(models.User.subscription_tier == 'free').count()
+    starter_users = db.query(models.User).filter(models.User.subscription_tier == 'starter').count()
     basic_users = db.query(models.User).filter(models.User.subscription_tier == 'basic').count()
     premium_users = db.query(models.User).filter(models.User.subscription_tier == 'premium').count()
 
@@ -7687,6 +7688,7 @@ def get_admin_stats(
             "ads_connected_users": ads_connected_count,
             "by_tier": {
                 "free": free_users,
+                "starter": starter_users,
                 "basic": basic_users,
                 "premium": premium_users,
             }
