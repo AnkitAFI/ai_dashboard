@@ -50,8 +50,8 @@ class AmazonAdsService:
 
     def _get_api_url(self) -> str:
         """Get the base API URL for the India/APAC region."""
-        # Since the app focuses exclusively on India, we hardcode the APAC endpoint
-        return "https://advertising-api-fe.amazon.com"
+        # Amazon Ads routes India (IN) marketplace under the Europe (EU) endpoint
+        return "https://advertising-api-eu.amazon.com"
 
     async def get_headers(self, profile_id: Optional[str] = None) -> dict:
         await self._refresh_token_if_needed()
@@ -246,8 +246,14 @@ class AmazonAdsService:
                 
             return resp.json()
 
+    def _format_report_date(self, date_str: str) -> str:
+        """Format YYYYMMDD to YYYY-MM-DD for Amazon Ads v3 Reporting API."""
+        if len(date_str) == 8 and date_str.isdigit():
+            return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
+        return date_str
+
     async def request_campaign_report(self, profile_id: str, report_date: str) -> Optional[str]:
-        """Request a standard sponsored products campaign report for a specific date (YYYYMMDD)."""
+        """Request a standard sponsored products campaign report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
         try:
@@ -256,13 +262,26 @@ class AmazonAdsService:
             logger.error("Circuit breaker active, skipping report request")
             return None
             
-        url = f"{self._get_api_url()}/v2/sp/campaigns/report"
+        url = f"{self._get_api_url()}/reporting/reports"
         headers = await self.get_headers(profile_id=profile_id)
+        headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
-        # Payload for v2 reporting API
+        date_formatted = self._format_report_date(report_date)
         data = {
-            "reportDate": report_date,
-            "metrics": "campaignName,campaignStatus,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+            "name": f"SP Campaign Report {date_formatted}",
+            "startDate": date_formatted,
+            "endDate": date_formatted,
+            "configuration": {
+                "adProduct": "SPONSORED_PRODUCTS",
+                "groupBy": ["campaign"],
+                "columns": [
+                    "date", "campaignId", "campaignName", "campaignStatus",
+                    "impressions", "clicks", "cost", "purchases1d", "purchases7d", "sales7d"
+                ],
+                "reportTypeId": "spCampaigns",
+                "timeUnit": "DAILY",
+                "format": "GZIP_JSON"
+            }
         }
         
         async with httpx.AsyncClient() as client:
@@ -281,7 +300,7 @@ class AmazonAdsService:
             return result.get("reportId")
 
     async def request_keyword_report(self, profile_id: str, report_date: str) -> Optional[str]:
-        """Request a standard sponsored products keyword report for a specific date (YYYYMMDD)."""
+        """Request a standard sponsored products keyword report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
         try:
@@ -290,12 +309,26 @@ class AmazonAdsService:
             logger.error("Circuit breaker active, skipping keyword report request")
             return None
             
-        url = f"{self._get_api_url()}/v2/sp/keywords/report"
+        url = f"{self._get_api_url()}/reporting/reports"
         headers = await self.get_headers(profile_id=profile_id)
+        headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
+        date_formatted = self._format_report_date(report_date)
         data = {
-            "reportDate": report_date,
-            "metrics": "campaignId,keywordId,keywordText,matchType,state,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+            "name": f"SP Targeting Report {date_formatted}",
+            "startDate": date_formatted,
+            "endDate": date_formatted,
+            "configuration": {
+                "adProduct": "SPONSORED_PRODUCTS",
+                "groupBy": ["targeting"],
+                "columns": [
+                    "date", "campaignId", "keywordId", "targeting", "matchType",
+                    "impressions", "clicks", "cost", "purchases1d", "purchases7d", "sales7d"
+                ],
+                "reportTypeId": "spTargeting",
+                "timeUnit": "DAILY",
+                "format": "GZIP_JSON"
+            }
         }
         
         async with httpx.AsyncClient() as client:
@@ -313,7 +346,7 @@ class AmazonAdsService:
             return result.get("reportId")
 
     async def request_search_term_report(self, profile_id: str, report_date: str) -> Optional[str]:
-        """Request a standard sponsored products search term report for a specific date (YYYYMMDD)."""
+        """Request a standard sponsored products search term report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
         try:
@@ -322,12 +355,26 @@ class AmazonAdsService:
             logger.error("Circuit breaker active, skipping search term report request")
             return None
             
-        url = f"{self._get_api_url()}/v2/sp/searchTerms/report"
+        url = f"{self._get_api_url()}/reporting/reports"
         headers = await self.get_headers(profile_id=profile_id)
+        headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
+        date_formatted = self._format_report_date(report_date)
         data = {
-            "reportDate": report_date,
-            "metrics": "campaignId,adGroupId,keywordId,keywordText,matchType,searchTerm,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+            "name": f"SP Search Term Report {date_formatted}",
+            "startDate": date_formatted,
+            "endDate": date_formatted,
+            "configuration": {
+                "adProduct": "SPONSORED_PRODUCTS",
+                "groupBy": ["searchTerm"],
+                "columns": [
+                    "date", "campaignId", "adGroupId", "keywordId", "keywordText", "matchType",
+                    "searchTerm", "impressions", "clicks", "cost", "purchases1d", "purchases7d", "sales7d"
+                ],
+                "reportTypeId": "spSearchTerm",
+                "timeUnit": "DAILY",
+                "format": "GZIP_JSON"
+            }
         }
         
         async with httpx.AsyncClient() as client:
@@ -345,7 +392,7 @@ class AmazonAdsService:
             return result.get("reportId")
 
     async def request_placement_report(self, profile_id: str, report_date: str) -> Optional[str]:
-        """Request a sponsored products placement report for a specific date (YYYYMMDD)."""
+        """Request a sponsored products placement report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
         try:
@@ -354,13 +401,26 @@ class AmazonAdsService:
             logger.error("Circuit breaker active, skipping placement report request")
             return None
             
-        url = f"{self._get_api_url()}/v2/sp/campaigns/report"
+        url = f"{self._get_api_url()}/reporting/reports"
         headers = await self.get_headers(profile_id=profile_id)
+        headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
+        date_formatted = self._format_report_date(report_date)
         data = {
-            "reportDate": report_date,
-            "segment": "placement",
-            "metrics": "campaignId,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+            "name": f"SP Placement Report {date_formatted}",
+            "startDate": date_formatted,
+            "endDate": date_formatted,
+            "configuration": {
+                "adProduct": "SPONSORED_PRODUCTS",
+                "groupBy": ["campaignPlacement"],
+                "columns": [
+                    "date", "campaignId", "placementClassification",
+                    "impressions", "clicks", "cost", "purchases1d", "purchases7d", "sales7d"
+                ],
+                "reportTypeId": "spCampaigns",
+                "timeUnit": "DAILY",
+                "format": "GZIP_JSON"
+            }
         }
         
         async with httpx.AsyncClient() as client:
@@ -378,13 +438,13 @@ class AmazonAdsService:
             return result.get("reportId")
 
     async def poll_report_status(self, profile_id: str, report_id: str) -> Optional[str]:
-        """Poll for report completion with exponential backoff."""
+        """Poll for report completion with exponential backoff (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
-        url = f"{self._get_api_url()}/v2/reports/{report_id}"
+        url = f"{self._get_api_url()}/reporting/reports/{report_id}"
         
-        # Exponential backoff: 10s, 20s, 30s
-        for delay in [10, 20, 30]:
+        # Exponential backoff: 10s, 15s, 20s, 30s
+        for delay in [10, 15, 20, 30]:
             await asyncio.sleep(delay)
             headers = await self.get_headers(profile_id=profile_id)
             
@@ -403,10 +463,10 @@ class AmazonAdsService:
                 if resp.status_code == 200:
                     result = resp.json()
                     status = result.get("status")
-                    if status == "SUCCESS":
-                        return result.get("location")
-                    elif status == "FAILURE":
-                        logger.error(f"Report {report_id} failed to generate.")
+                    if status in ("COMPLETED", "SUCCESS"):
+                        return result.get("url") or result.get("location")
+                    elif status in ("FAILED", "FAILURE"):
+                        logger.error(f"Report {report_id} failed to generate: {result.get('failureReason')}")
                         return None
                         
         logger.warning(f"Report {report_id} did not complete in time.")
@@ -419,24 +479,32 @@ class AmazonAdsService:
         from sqlalchemy.dialects.postgresql import insert
         
         headers = await self.get_headers(profile_id=profile_id)
+        # S3 pre-signed URLs already contain authentication in query parameters.
+        # Sending Bearer Authorization to S3 causes a 400 Bad Request error.
+        download_headers = {} if ("X-Amz-Signature" in location or "AWSAccessKeyId" in location) else headers
         
         async with httpx.AsyncClient() as client:
-            resp = await client.get(location, headers=headers)
+            resp = await client.get(location, headers=download_headers)
             if resp.status_code != 200:
-                logger.error("Failed to download report.")
+                logger.error(f"Failed to download report: {resp.status_code} {resp.text}")
                 return
                 
             try:
                 content = gzip.decompress(resp.content)
                 data = json.loads(content)
-            except Exception as e:
-                logger.error(f"Failed to decompress/parse report: {e}")
-                return
+            except Exception:
+                try:
+                    data = json.loads(resp.text)
+                except Exception as e:
+                    logger.error(f"Failed to decompress/parse report: {e}")
+                    return
                 
             report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
             
             for row in data:
                 campaign_id = str(row.get("campaignId"))
+                if not campaign_id or campaign_id == "None":
+                    continue
                 
                 record = self.db.query(AmazonAdsCampaignPerformance).filter(
                     AmazonAdsCampaignPerformance.profile_id == profile_id,
@@ -444,29 +512,37 @@ class AmazonAdsService:
                     AmazonAdsCampaignPerformance.date == report_date
                 ).first()
                 
-                sales = float(row.get("purchases7d", 0)) # Using 7d as standard attribution
+                sales = float(row.get("sales7d") or row.get("purchases7d") or row.get("purchases1d") or row.get("sales1d") or 0)
                 spend = float(row.get("cost", 0))
+                impressions = int(row.get("impressions", 0))
+                clicks = int(row.get("clicks", 0))
+                orders = int(row.get("purchases7d") or row.get("purchases1d") or 0)
+                campaign_name = row.get("campaignName", "")
+                campaign_status = row.get("campaignStatus", "")
                 
                 if record:
-                    record.impressions = int(row.get("impressions", 0))
-                    record.clicks = int(row.get("clicks", 0))
+                    record.impressions = impressions
+                    record.clicks = clicks
                     record.spend = spend
-                    record.sales = float(row.get("purchases1d", 0))
-                    record.campaign_name = row.get("campaignName")
-                    record.campaign_status = row.get("campaignStatus")
+                    record.sales = sales
+                    record.orders = orders
+                    if campaign_name:
+                        record.campaign_name = campaign_name
+                    if campaign_status:
+                        record.campaign_status = campaign_status
                 else:
                     db_record = AmazonAdsCampaignPerformance(
                         user_id=self.user_id,
                         profile_id=profile_id,
                         campaign_id=campaign_id,
                         date=report_date,
-                        campaign_name=row.get("campaignName", ""),
-                        campaign_status=row.get("campaignStatus", ""),
-                        impressions=int(row.get("impressions", 0)),
-                        clicks=int(row.get("clicks", 0)),
+                        campaign_name=campaign_name,
+                        campaign_status=campaign_status,
+                        impressions=impressions,
+                        clicks=clicks,
                         spend=spend,
                         sales=sales,
-                        orders=int(row.get("purchases7d", 0))
+                        orders=orders
                     )
                     self.db.add(db_record)
                 
@@ -480,24 +556,30 @@ class AmazonAdsService:
         from app.models.schema_v2 import AmazonAdsKeywordPerformance
         
         headers = await self.get_headers(profile_id=profile_id)
+        download_headers = {} if ("X-Amz-Signature" in location or "AWSAccessKeyId" in location) else headers
         
         async with httpx.AsyncClient() as client:
-            resp = await client.get(location, headers=headers)
+            resp = await client.get(location, headers=download_headers)
             if resp.status_code != 200:
-                logger.error("Failed to download keyword report.")
+                logger.error(f"Failed to download keyword report: {resp.status_code}")
                 return
                 
             try:
                 content = gzip.decompress(resp.content)
                 data = json.loads(content)
-            except Exception as e:
-                logger.error(f"Failed to decompress/parse keyword report: {e}")
-                return
+            except Exception:
+                try:
+                    data = json.loads(resp.text)
+                except Exception as e:
+                    logger.error(f"Failed to decompress/parse keyword report: {e}")
+                    return
                 
             report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
             
             for row in data:
-                keyword_id = str(row.get("keywordId"))
+                keyword_id = str(row.get("keywordId") or row.get("targetingId") or "")
+                if not keyword_id or keyword_id == "None":
+                    continue
                 
                 record = self.db.query(AmazonAdsKeywordPerformance).filter(
                     AmazonAdsKeywordPerformance.profile_id == profile_id,
@@ -505,28 +587,39 @@ class AmazonAdsService:
                     AmazonAdsKeywordPerformance.date == report_date
                 ).first()
                 
+                impressions = int(row.get("impressions", 0))
+                clicks = int(row.get("clicks", 0))
+                spend = float(row.get("cost", 0.0))
+                sales = float(row.get("sales7d") or row.get("purchases1d") or 0.0)
+                orders = int(row.get("purchases7d") or row.get("purchases1d") or 0)
+                state = row.get("state") or row.get("keywordStatus") or ""
+                keyword_text = row.get("targeting") or row.get("keyword") or row.get("keywordText") or row.get("targetingText", "")
+                match_type = row.get("matchType", "")
+                
                 if record:
-                    record.impressions = row.get("impressions", 0)
-                    record.clicks = row.get("clicks", 0)
-                    record.spend = row.get("cost", 0.0)
-                    record.sales = row.get("purchases1d", 0.0)
-                    record.state = row.get("state", "")
+                    record.impressions = impressions
+                    record.clicks = clicks
+                    record.spend = spend
+                    record.sales = sales
+                    record.orders = orders
+                    if state:
+                        record.state = state
                     continue
                     
                 db_record = AmazonAdsKeywordPerformance(
                     user_id=self.user_id,
                     profile_id=profile_id,
-                    campaign_id=str(row.get("campaignId")),
+                    campaign_id=str(row.get("campaignId", "")),
                     keyword_id=keyword_id,
                     date=report_date,
-                    keyword_text=row.get("keywordText", ""),
-                    match_type=row.get("matchType", ""),
-                    state=row.get("state", ""),
-                    impressions=row.get("impressions", 0),
-                    clicks=row.get("clicks", 0),
-                    spend=row.get("cost", 0.0),
-                    sales=row.get("purchases1d", 0.0),
-                    orders=row.get("purchases1d", 0)
+                    keyword_text=keyword_text,
+                    match_type=match_type,
+                    state=state,
+                    impressions=impressions,
+                    clicks=clicks,
+                    spend=spend,
+                    sales=sales,
+                    orders=orders
                 )
                 self.db.add(db_record)
                 
@@ -539,26 +632,30 @@ class AmazonAdsService:
         from app.models.schema_v2 import AmazonAdsSearchTermPerformance
         
         headers = await self.get_headers(profile_id=profile_id)
+        download_headers = {} if ("X-Amz-Signature" in location or "AWSAccessKeyId" in location) else headers
         
         async with httpx.AsyncClient() as client:
-            resp = await client.get(location, headers=headers)
+            resp = await client.get(location, headers=download_headers)
             if resp.status_code != 200:
-                logger.error("Failed to download search term report.")
+                logger.error(f"Failed to download search term report: {resp.status_code}")
                 return
                 
             try:
                 content = gzip.decompress(resp.content)
                 data = json.loads(content)
-            except Exception as e:
-                logger.error(f"Failed to decompress/parse search term report: {e}")
-                return
+            except Exception:
+                try:
+                    data = json.loads(resp.text)
+                except Exception as e:
+                    logger.error(f"Failed to decompress/parse search term report: {e}")
+                    return
                 
             report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
             
             for row in data:
                 search_term = row.get("searchTerm", "")
-                keyword_id = str(row.get("keywordId", ""))
-                if not search_term or not keyword_id:
+                keyword_id = str(row.get("keywordId") or row.get("targetingId") or "")
+                if not search_term or not keyword_id or keyword_id == "None":
                     continue
                     
                 record = self.db.query(AmazonAdsSearchTermPerformance).filter(
@@ -568,28 +665,35 @@ class AmazonAdsService:
                     AmazonAdsSearchTermPerformance.date == report_date
                 ).first()
                 
+                impressions = int(row.get("impressions", 0))
+                clicks = int(row.get("clicks", 0))
+                spend = float(row.get("cost", 0.0))
+                sales = float(row.get("sales7d") or row.get("purchases1d") or 0.0)
+                orders = int(row.get("purchases7d") or row.get("purchases1d") or 0)
+                
                 if record:
-                    record.impressions = row.get("impressions", 0)
-                    record.clicks = row.get("clicks", 0)
-                    record.spend = row.get("cost", 0.0)
-                    record.sales = row.get("purchases1d", 0.0)
+                    record.impressions = impressions
+                    record.clicks = clicks
+                    record.spend = spend
+                    record.sales = sales
+                    record.orders = orders
                     continue
                     
                 db_record = AmazonAdsSearchTermPerformance(
                     user_id=self.user_id,
                     profile_id=profile_id,
-                    campaign_id=str(row.get("campaignId")),
-                    ad_group_id=str(row.get("adGroupId")),
+                    campaign_id=str(row.get("campaignId", "")),
+                    ad_group_id=str(row.get("adGroupId", "")),
                     keyword_id=keyword_id,
                     date=report_date,
                     search_term=search_term,
-                    keyword_text=row.get("keywordText", ""),
+                    keyword_text=row.get("keywordText") or row.get("keyword", ""),
                     match_type=row.get("matchType", ""),
-                    impressions=row.get("impressions", 0),
-                    clicks=row.get("clicks", 0),
-                    spend=row.get("cost", 0.0),
-                    sales=row.get("purchases1d", 0.0),
-                    orders=row.get("purchases1d", 0)
+                    impressions=impressions,
+                    clicks=clicks,
+                    spend=spend,
+                    sales=sales,
+                    orders=orders
                 )
                 self.db.add(db_record)
                 
@@ -606,23 +710,31 @@ class AmazonAdsService:
         await rate_limiter.wait_for_token("reports")
         
         headers = await self.get_headers(profile_id=profile_id)
+        download_headers = {} if ("X-Amz-Signature" in location or "AWSAccessKeyId" in location) else headers
         
         async with httpx.AsyncClient() as client:
-            resp = await client.get(location, headers=headers)
+            resp = await client.get(location, headers=download_headers)
             if resp.status_code != 200:
                 logger.error(f"Failed to download placement report: {resp.text}")
                 return
                 
-            decompressed = gzip.decompress(resp.content)
-            data = json.loads(decompressed)
+            try:
+                decompressed = gzip.decompress(resp.content)
+                data = json.loads(decompressed)
+            except Exception:
+                try:
+                    data = json.loads(resp.text)
+                except Exception as e:
+                    logger.error(f"Failed to decompress/parse placement report: {e}")
+                    return
             
             report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
             
             for row in data:
-                campaign_id = str(row.get("campaignId"))
-                placement = row.get("placement")
+                campaign_id = str(row.get("campaignId", ""))
+                placement = row.get("placementClassification") or row.get("placement", "")
                 
-                if not campaign_id or not placement:
+                if not campaign_id or not placement or campaign_id == "None":
                     continue
                     
                 record = self.db.query(AmazonAdsPlacementPerformance).filter(
@@ -632,11 +744,18 @@ class AmazonAdsService:
                     AmazonAdsPlacementPerformance.date == report_date
                 ).first()
                 
+                impressions = int(row.get("impressions", 0))
+                clicks = int(row.get("clicks", 0))
+                spend = float(row.get("cost", 0.0))
+                sales = float(row.get("sales7d") or row.get("purchases1d") or 0.0)
+                orders = int(row.get("purchases7d") or row.get("purchases1d") or 0)
+                
                 if record:
-                    record.impressions = row.get("impressions", 0)
-                    record.clicks = row.get("clicks", 0)
-                    record.spend = row.get("cost", 0.0)
-                    record.sales = row.get("purchases1d", 0.0)
+                    record.impressions = impressions
+                    record.clicks = clicks
+                    record.spend = spend
+                    record.sales = sales
+                    record.orders = orders
                     continue
                     
                 db_record = AmazonAdsPlacementPerformance(
@@ -645,11 +764,11 @@ class AmazonAdsService:
                     campaign_id=campaign_id,
                     date=report_date,
                     placement=placement,
-                    impressions=row.get("impressions", 0),
-                    clicks=row.get("clicks", 0),
-                    spend=row.get("cost", 0.0),
-                    sales=row.get("purchases1d", 0.0),
-                    orders=row.get("purchases1d", 0)
+                    impressions=impressions,
+                    clicks=clicks,
+                    spend=spend,
+                    sales=sales,
+                    orders=orders
                 )
                 self.db.add(db_record)
                 

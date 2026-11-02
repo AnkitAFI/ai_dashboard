@@ -628,8 +628,8 @@ const LANDING_PRICING_PLANS = [
     buttonVariant: "secondary" as const,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Preview 4 products per category",
+      "Best Sellers - Preview 5 products (sales blurred)",
       "Niche Finder - 3 uses/month + limited data",
       "Top Competitors Score - 1 use/month",
       "Product Ideas - 1 use/month",
@@ -639,6 +639,8 @@ const LANDING_PRICING_PLANS = [
       "View Campaigns, Orders and Revenue",
     ],
     limitations: [
+      "Full Top 500 Best Sellers & Search",
+      "Complete Category Catalog & Search",
       "Keyword Research",
       "AI Advisor",
       "Original Profit and Margins",
@@ -662,8 +664,8 @@ const LANDING_PRICING_PLANS = [
     buttonVariant: "secondary" as const,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - 5 uses/month + full data",
       "Top Competitors Score - 5 uses/month",
       "Product Ideas - 5 uses/month",
@@ -698,8 +700,8 @@ const LANDING_PRICING_PLANS = [
     buttonVariant: "primary" as const,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - 20 uses/month + full data",
       "Top Competitors Score - 10 uses/month",
       "Product Ideas - 20 uses/month",
@@ -733,8 +735,8 @@ const LANDING_PRICING_PLANS = [
     buttonVariant: "dark" as const,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - Unlimited uses/month + full data",
       "Top Competitors Score - Unlimited uses/month",
       "Product Ideas - Unlimited uses/month",

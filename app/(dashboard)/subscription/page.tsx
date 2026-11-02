@@ -71,8 +71,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Zap className="h-6 w-6" />,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Preview 4 products per category",
+      "Best Sellers - Preview 5 products (sales blurred)",
       "Niche Finder - 3 uses/month + limited data",
       "Top Competitors Score - 1 use/month",
       "Product Ideas - 1 use/month",
@@ -82,6 +82,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "View Campaigns, Orders and Revenue",
     ],
     limitations: [
+      "Full Top 500 Best Sellers & Search",
+      "Complete Category Catalog & Search",
       "Keyword Research",
       "AI Advisor",
       "Original Profit and Margins",
@@ -100,8 +102,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Zap className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - 5 uses/month + full data",
       "Top Competitors Score - 5 uses/month",
       "Product Ideas - 5 uses/month",
@@ -130,8 +132,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     isPopular: true,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - 20 uses/month + full data",
       "Top Competitors Score - 10 uses/month",
       "Product Ideas - 20 uses/month",
@@ -159,8 +161,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     icon: <Crown className="h-6 w-6 text-yellow-500" />,
     features: [
       "Basic Explorer Dashboard for Flipkart and Amazon",
-      "Explore Categories",
-      "Best Sellers",
+      "Explore Categories - Complete catalog & search across all pages",
+      "Best Sellers - Full Top 500 with sales, search & Rank #1",
       "Niche Finder - Unlimited uses/month + full data",
       "Top Competitors Score - Unlimited uses/month",
       "Product Ideas - Unlimited uses/month",

@@ -12,8 +12,8 @@ router = APIRouter(prefix="/amazon-ads", tags=["Amazon Ads"])
 logger = logging.getLogger(__name__)
 
 # Amazon Ads API uses region-specific LWA endpoints.
-# For India/APAC, it is apac.account.amazon.com
-AMAZON_OAUTH_URL = "https://apac.account.amazon.com/ap/oa"
+# For India/Europe, it is eu.account.amazon.com
+AMAZON_OAUTH_URL = "https://eu.account.amazon.com/ap/oa"
 AMAZON_TOKEN_URL = "https://api.amazon.com/auth/o2/token" # Token endpoint is global
 REDIRECT_URI = settings.AMAZON_LWA_REDIRECT_URI
 
