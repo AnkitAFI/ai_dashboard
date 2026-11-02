@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Lock, Sparkles, Crown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Lock, Sparkles, Crown, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
@@ -13,8 +16,12 @@ import {
 } from "@/hooks/use-subscription-limits";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
+import { analytics } from "@/lib/analytics";
 
 interface TrendingProduct {
+  id?: number | string;
+  asin?: string;
+  pid?: string;
   product_title?: string;
   title?: string;
   daily_sales?: number;
@@ -23,39 +30,40 @@ interface TrendingProduct {
   estimated_sales?: number;
   avg_price?: number;
   product_price?: number;
+  category_name?: string;
 }
 
-const scaleFlipkartProducts = (data: any[]) => {
-  if (!data) return [];
-  return data.map((p) => {
-    const adjusted = { ...p };
-    if (adjusted.daily_sales)
-      adjusted.daily_sales = Math.round(adjusted.daily_sales / 450);
-    if (adjusted.total_daily_sales)
-      adjusted.total_daily_sales = Math.round(adjusted.total_daily_sales / 450);
-    if (adjusted.estimated_sales)
-      adjusted.estimated_sales = Math.round(adjusted.estimated_sales / 450);
-    if (typeof adjusted.sales_volume === "string") {
-      const num =
-        parseFloat(adjusted.sales_volume.replace(/[^0-9.]/g, "")) || 0;
-      adjusted.sales_volume = Math.round(num / 450);
-    } else if (typeof adjusted.sales_volume === "number") {
-      adjusted.sales_volume = Math.round(adjusted.sales_volume / 450);
-    }
-    return adjusted;
-  });
+const parseSalesVolume = (salesText?: string | number, avgSales?: number): number => {
+  if (typeof salesText === "number") return salesText;
+  if (avgSales) return avgSales;
+  if (!salesText) return 0;
+  const match = salesText.match(/([\d.]+)([KMB])?/i);
+  if (!match) return 0;
+  const num = parseFloat(match[1]);
+  const multiplier = match[2]?.toUpperCase();
+  switch (multiplier) {
+    case 'K': return num * 1000;
+    case 'M': return num * 1000000;
+    case 'B': return num * 1000000000;
+    default: return num;
+  }
 };
 
 function ProductCard({
   product,
   index,
   source,
+  isFreeTier,
+  onUpgrade,
 }: {
   product: TrendingProduct;
   index: number;
   source: string;
+  isFreeTier?: boolean;
+  onUpgrade?: (reason: string) => void;
 }) {
   const { t } = useTranslation();
+  const isMysteryRow = isFreeTier && index === 0;
 
   // Color accents per rank item index
   const cardGradients = [
@@ -74,8 +82,12 @@ function ProductCard({
   const defaultCircleBadge =
     "bg-slate-500 text-white dark:bg-slate-800 dark:text-slate-400 dark:border dark:border-slate-700/60";
 
-  const cardStyle = index < 3 ? cardGradients[index] : defaultCardGradient;
-  const circleStyle = index < 3 ? circleBadges[index] : defaultCircleBadge;
+  const cardStyle = isMysteryRow
+    ? "bg-amber-500/[0.03] dark:bg-amber-500/[0.04] border-l-2 border-l-amber-500 border-amber-200/60 dark:border-amber-800/40"
+    : index < 3 ? cardGradients[index] : defaultCardGradient;
+  const circleStyle = isMysteryRow
+    ? "bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-300 dark:border-amber-600 text-amber-500"
+    : index < 3 ? circleBadges[index] : defaultCircleBadge;
 
   const productName =
     product.product_title || product.title || "Unknown Product";
@@ -88,15 +100,33 @@ function ProductCard({
     0;
   const salesVolume =
     typeof salesVolumeRaw === "string"
-      ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, "")) || 0
+      ? parseSalesVolume(salesVolumeRaw)
       : salesVolumeRaw;
 
   const price = product.avg_price || product.product_price || 0;
 
+  const formatSalesDisplay = (salesNum: number): string => {
+    if (salesNum >= 1000000) return `${(salesNum / 1000000).toFixed(1)}M`;
+    if (salesNum >= 1000) return `${(salesNum / 1000).toFixed(1)}K`;
+    return salesNum.toLocaleString();
+  };
+
   return (
     <div
+      onClick={() => {
+        if (isFreeTier) {
+          if (isMysteryRow) {
+            onUpgrade?.(
+              `Reveal Rank #1: See the exact title, ${source === "flipkart" ? "PID" : "ASIN"}, and sales volume upon upgrading.`
+            );
+          } else {
+            onUpgrade?.("Upgrade to unlock exact sales counts across all products.");
+          }
+        }
+      }}
       className={cn(
         "flex items-center justify-between p-3 rounded-xl gap-3 border transition-all duration-200 shadow-2xs hover:shadow-xs",
+        isFreeTier && "cursor-pointer",
         cardStyle,
       )}
     >
@@ -107,18 +137,35 @@ function ProductCard({
             circleStyle,
           )}
         >
-          {index + 1}
+          {isMysteryRow ? <Crown className="w-3.5 h-3.5 text-amber-500" /> : index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <p
-            className="font-semibold text-xs sm:text-sm truncate text-slate-900 dark:text-slate-100"
-            title={productName.replace(/"/g, "")}
-          >
-            {productName.replace(/"/g, "")}
-          </p>
+          {isMysteryRow ? (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-slate-200">
+                #1 Selling Product ({source === "flipkart" ? "Flipkart" : "Amazon"})
+              </span>
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                <Lock className="w-2.5 h-2.5" /> Locked
+              </span>
+            </div>
+          ) : (
+            <p
+              className="font-semibold text-xs sm:text-sm truncate text-slate-900 dark:text-slate-100"
+              title={productName.replace(/"/g, "")}
+            >
+              {productName.replace(/"/g, "")}
+            </p>
+          )}
           <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-            {Math.round(salesVolume).toLocaleString()}{" "}
-            {t("sales.sales", "Sales").toLowerCase()} • ₹{price.toFixed(0)}
+            {isFreeTier ? (
+              <span className="filter blur-[4px] select-none opacity-70 inline-block" title="Upgrade to reveal sales count">
+                {formatSalesDisplay(salesVolume)}
+              </span>
+            ) : (
+              formatSalesDisplay(salesVolume)
+            )}{" "}
+            {t("sales.sales", "Sales").toLowerCase()} • ₹{typeof price === "number" ? price.toFixed(0) : price}
           </p>
         </div>
       </div>
@@ -139,23 +186,35 @@ export default function ProductRankings({
 }: {
   selectedSource: string;
 }) {
+  const router = useRouter();
   const { t } = useTranslation();
   const BASE_URL = API_BASE_URL;
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
+  const isFreeTier = currentTier === "free";
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>([]);
+  const [amazonProducts, setAmazonProducts] = useState<TrendingProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeTriggerReason, setUpgradeTriggerReason] = useState("");
+
+  const triggerUpgrade = (reason: string) => {
+    setUpgradeTriggerReason(reason);
+    setShowUpgradeModal(true);
+    analytics.track("upgrade_prompt_viewed", {
+      feature: "market_movers_card",
+      reason,
+      tier: currentTier,
+    });
+  };
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
-  const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>(
-    [],
-  );
-  const [amazonProducts, setAmazonProducts] = useState<TrendingProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const buildQueryParams = () => {
     const params = new URLSearchParams();
@@ -164,18 +223,18 @@ export default function ProductRankings({
       params.append("category", filters.category);
     }
 
-    if (filters.priceRange[0] > 0) {
+    if (filters.priceRange && filters.priceRange[0] > 0) {
       params.append("min_price", filters.priceRange[0].toString());
     }
-    if (filters.priceRange[1] < 5000000) {
+    if (filters.priceRange && filters.priceRange[1] < 5000000) {
       params.append("max_price", filters.priceRange[1].toString());
     }
 
-    if (filters.rating > 0) {
+    if (filters.rating && filters.rating > 0) {
       params.append("min_rating", filters.rating.toString());
     }
 
-    if (filters.dateRange !== "all") {
+    if (filters.dateRange && filters.dateRange !== "all") {
       params.append("date_range", filters.dateRange);
     }
 
@@ -194,18 +253,18 @@ export default function ProductRankings({
     const fetchTrendingProducts = async () => {
       setIsLoading(true);
       try {
-        const table = filters.table || selectedSource;
+        const table = (filters.table || selectedSource || "amazon").toLowerCase();
         const queryParams = buildQueryParams();
-        const topN = filters.topN || 10;
+        const topN = filters.topN || 5;
 
         if (table === "both") {
           const halfN = Math.ceil(topN / 2);
           const [flipkartRes, amazonRes] = await Promise.all([
             fetch(
-              `${BASE_URL}/rapidapi/flipkart/top-sales?limit=${halfN}&${queryParams}`,
+              `${BASE_URL}/top?table=rapidapi_flipkart_products&n=500${queryParams ? '&' + queryParams : ''}`,
             ),
             fetch(
-              `${BASE_URL}/rapidapi/top-sales?limit=${halfN}&${queryParams}`,
+              `${BASE_URL}/rapidapi/top-sales?limit=500${queryParams ? '&' + queryParams : ''}`,
             ),
           ]);
 
@@ -214,22 +273,105 @@ export default function ProductRankings({
             amazonRes.json(),
           ]);
 
-          setFlipkartProducts(scaleFlipkartProducts(flipkartJson.data) || []);
-          setAmazonProducts(amazonJson.data || []);
+          const rawFlipkart = Array.isArray(flipkartJson.data || flipkartJson) ? (flipkartJson.data || flipkartJson) : [];
+          const rawAmazon = Array.isArray(amazonJson.data || amazonJson) ? (amazonJson.data || amazonJson) : [];
+
+          const sortedFlipkart = [...rawFlipkart].sort((a: any, b: any) => {
+            const sA = Math.round(parseSalesVolume(a.sales_volume, a.avg_sales_volume ?? a.estimated_sales) / 125);
+            const sB = Math.round(parseSalesVolume(b.sales_volume, b.avg_sales_volume ?? b.estimated_sales) / 125);
+            return sB - sA;
+          });
+
+          const sortedAmazon = [...rawAmazon].sort((a: any, b: any) => {
+            const sA = parseSalesVolume(a.sales_volume, a.avg_sales_volume ?? a.estimated_sales);
+            const sB = parseSalesVolume(b.sales_volume, b.avg_sales_volume ?? b.estimated_sales);
+            return sB - sA;
+          });
+
+          setFlipkartProducts(sortedFlipkart.slice(0, halfN).map((p: any) => ({
+            ...p,
+            product_title: p.title || p.product_title,
+            title: p.title || p.product_title,
+            daily_sales: Math.round(parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? p.estimated_sales) / 125),
+            sales_volume: p.sales_volume,
+            avg_price: typeof p.price === "number" && !isNaN(p.price) && p.price > 0
+              ? p.price
+              : typeof p.product_price === "number" && !isNaN(p.product_price) && p.product_price > 0
+              ? p.product_price
+              : parseFloat(p.product_price) || p.avg_price || 0,
+            product_price: p.price || p.product_price,
+            category_name: p.category || p.category_name || "General",
+          })));
+
+          setAmazonProducts(sortedAmazon.slice(0, halfN).map((p: any) => ({
+            ...p,
+            product_title: p.title || p.product_title,
+            title: p.title || p.product_title,
+            daily_sales: parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? p.estimated_sales),
+            sales_volume: p.sales_volume,
+            avg_price: typeof p.price === "number" && !isNaN(p.price) && p.price > 0
+              ? p.price
+              : typeof p.product_price === "number" && !isNaN(p.product_price) && p.product_price > 0
+              ? p.product_price
+              : parseFloat(p.product_price) || p.avg_price || 0,
+            product_price: p.price || p.product_price,
+            category_name: p.category || p.category_name || p.categories || "General",
+          })));
         } else if (table === "amazon" || table === "rapidapi_amazon_products") {
           const res = await fetch(
-            `${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`,
+            `${BASE_URL}/rapidapi/top-sales?limit=500${queryParams ? '&' + queryParams : ''}`,
           );
           const json = await res.json();
+          const rawAmazon = Array.isArray(json.data || json) ? (json.data || json) : [];
+          const sortedAmazon = [...rawAmazon].sort((a: any, b: any) => {
+            const sA = parseSalesVolume(a.sales_volume, a.avg_sales_volume ?? a.estimated_sales);
+            const sB = parseSalesVolume(b.sales_volume, b.avg_sales_volume ?? b.estimated_sales);
+            return sB - sA;
+          });
+
           setFlipkartProducts([]);
-          setAmazonProducts(json.data || []);
+          setAmazonProducts(sortedAmazon.slice(0, topN).map((p: any) => ({
+            ...p,
+            product_title: p.title || p.product_title,
+            title: p.title || p.product_title,
+            daily_sales: parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? p.estimated_sales),
+            sales_volume: p.sales_volume,
+            avg_price: typeof p.price === "number" && !isNaN(p.price) && p.price > 0
+              ? p.price
+              : typeof p.product_price === "number" && !isNaN(p.product_price) && p.product_price > 0
+              ? p.product_price
+              : parseFloat(p.product_price) || p.avg_price || 0,
+            product_price: p.price || p.product_price,
+            category_name: p.category || p.category_name || p.categories || "General",
+          })));
         } else {
+          // Flipkart
           const res = await fetch(
-            `${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`,
+            `${BASE_URL}/top?table=rapidapi_flipkart_products&n=500${queryParams ? '&' + queryParams : ''}`,
           );
           const json = await res.json();
-          setFlipkartProducts(scaleFlipkartProducts(json.data) || []);
+          const rawFlipkart = Array.isArray(json.data || json) ? (json.data || json) : [];
+          const sortedFlipkart = [...rawFlipkart].sort((a: any, b: any) => {
+            const sA = Math.round(parseSalesVolume(a.sales_volume, a.avg_sales_volume ?? a.estimated_sales) / 125);
+            const sB = Math.round(parseSalesVolume(b.sales_volume, b.avg_sales_volume ?? b.estimated_sales) / 125);
+            return sB - sA;
+          });
+
           setAmazonProducts([]);
+          setFlipkartProducts(sortedFlipkart.slice(0, topN).map((p: any) => ({
+            ...p,
+            product_title: p.title || p.product_title,
+            title: p.title || p.product_title,
+            daily_sales: Math.round(parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? p.estimated_sales) / 125),
+            sales_volume: p.sales_volume,
+            avg_price: typeof p.price === "number" && !isNaN(p.price) && p.price > 0
+              ? p.price
+              : typeof p.product_price === "number" && !isNaN(p.product_price) && p.product_price > 0
+              ? p.product_price
+              : parseFloat(p.product_price) || p.avg_price || 0,
+            product_price: p.price || p.product_price,
+            category_name: p.category || p.category_name || "General",
+          })));
         }
       } catch (error) {
         console.error("Error fetching trending products:", error);
@@ -367,6 +509,8 @@ export default function ProductRankings({
                         product={product}
                         index={index}
                         source="flipkart"
+                        isFreeTier={isFreeTier}
+                        onUpgrade={triggerUpgrade}
                       />
                     ))}
                   </>
@@ -384,6 +528,8 @@ export default function ProductRankings({
                         product={product}
                         index={index}
                         source="amazon"
+                        isFreeTier={isFreeTier}
+                        onUpgrade={triggerUpgrade}
                       />
                     ))}
                   </>
@@ -396,6 +542,8 @@ export default function ProductRankings({
                   product={product}
                   index={index}
                   source={isAmazon ? "amazon" : "flipkart"}
+                  isFreeTier={isFreeTier}
+                  onUpgrade={triggerUpgrade}
                 />
               ))
             ) : (
@@ -411,6 +559,60 @@ export default function ProductRankings({
           </div>
         </CardContent>
       </Card>
+
+      {/* Upgrade Modal for Free Tier Users */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="max-w-md p-6 rounded-2xl border shadow-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100">
+          <DialogHeader className="text-center space-y-2.5 pt-2">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-orange-500/25">
+              <Crown className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-lg font-bold text-center tracking-tight">
+              Unlock Top Market Movers
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-xs mx-auto leading-relaxed">
+              {upgradeTriggerReason || "Access exact sales volumes, reveal Rank #1, and unlock full AI market analysis."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2.5 my-3">
+            {[
+              "Exact sales volume unblurred for all market movers",
+              "Reveal Rank #1 product title, ASIN/PID, and store link",
+              "AI-powered market analysis and competitor trend intelligence",
+              "Access all 500 top-selling products across all 50 pages"
+            ].map((benefit, idx) => (
+              <div
+                key={idx}
+                className="flex items-start gap-2.5 p-2.5 rounded-xl border text-xs transition-colors bg-slate-50 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="font-medium leading-snug">{benefit}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2 pt-1">
+            <Button
+              onClick={() => {
+                setShowUpgradeModal(false);
+                router.push("/subscription");
+              }}
+              className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-2.5 rounded-xl shadow-md text-xs sm:text-sm active:scale-95 transition-all"
+            >
+              <Crown className="w-4 h-4 mr-2" />
+              View Plans & Upgrade
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowUpgradeModal(false)}
+              className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 h-8"
+            >
+              Maybe Later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

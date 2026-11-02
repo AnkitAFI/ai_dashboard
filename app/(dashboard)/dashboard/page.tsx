@@ -253,9 +253,9 @@ function DashboardContent() {
           <ExplorerHeroBanner selectedSource={selectedSource} />
           
           {/* Minimal Assisted Seller Setup Strip (Explorer Mode) */}
-          <div className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl border border-blue-200/70 dark:border-blue-900/40 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-white dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl border border-sky-300 dark:border-sky-800 bg-sky-50/90 dark:bg-slate-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                 <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="min-w-0">
@@ -263,7 +263,7 @@ function DashboardContent() {
                   <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
                     Don&apos;t have an Amazon or Flipkart seller account yet?
                   </h4>
-                  <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                     Includes 5 Free Listings
                   </span>
                 </div>
