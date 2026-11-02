@@ -2,12 +2,13 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, TrendingUp, Package, ExternalLink, ShoppingBag, ShieldCheck } from "lucide-react";
+import { Star, TrendingUp, Package, ExternalLink, ShoppingBag, ShieldCheck, Lock } from "lucide-react";
 import { Dialog as ShadcnDialog, DialogContent as ShadcnContent, DialogTitle as ShadcnTitle } from "@/components/ui/dialog";
 
 export interface FastProduct {
   id?: number | string;
   asin?: string;
+  pid?: string;
   product_title?: string;
   title?: string;
   product_photo?: string;
@@ -19,18 +20,23 @@ export interface FastProduct {
   reviews?: number;
   rating?: number;
   source?: string;
+  product_url?: string;
 }
 
 interface ProductDetailModalProps {
   product: FastProduct | null;
   isOpen: boolean;
   onClose: () => void;
+  isFreeTier?: boolean;
+  onUpgrade?: (reason: string) => void;
 }
 
 export default function ProductDetailModal({
   product,
   isOpen,
   onClose,
+  isFreeTier = false,
+  onUpgrade,
 }: ProductDetailModalProps) {
   if (!product) return null;
 
@@ -67,9 +73,18 @@ export default function ProductDetailModal({
               />
             </div>
             <div className="flex-1 min-w-0 space-y-1">
-              <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
-                {source.toUpperCase()} LISTING
-              </Badge>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
+                  {source.toUpperCase()} LISTING
+                </Badge>
+                {(product.asin || product.pid) && (
+                  <Badge variant="outline" className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+                    {isFreeTier
+                      ? (source === "flipkart" ? "PID: 🔒 Locked" : "ASIN: 🔒 Locked")
+                      : (source === "flipkart" ? `PID: ${product.pid || product.asin}` : `ASIN: ${product.asin}`)}
+                  </Badge>
+                )}
+              </div>
               <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
                 {title}
               </h3>
@@ -86,7 +101,14 @@ export default function ProductDetailModal({
             <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/60 dark:border-slate-800 text-center">
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Est. Daily Sales</p>
               <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 mt-0.5">
-                {formatNum(dailySales)} <span className="text-[10px] font-normal text-slate-500">units/day</span>
+                {isFreeTier ? (
+                  <span className="filter blur-[4px] select-none opacity-70 inline-block" title="Upgrade to reveal sales count">
+                    {formatNum(dailySales)}
+                  </span>
+                ) : (
+                  formatNum(dailySales)
+                )}{" "}
+                <span className="text-[10px] font-normal text-slate-500">units/day</span>
               </p>
             </div>
 
@@ -112,7 +134,7 @@ export default function ProductDetailModal({
               <ShieldCheck className="w-4 h-4 text-sky-600" /> Market Intelligence Insight
             </h4>
             <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-              This SKU exhibits high sales velocity ({formatNum(dailySales)} units/day). Margin headroom is strong at the current ₹{price} price point.
+              This SKU exhibits high sales velocity ({isFreeTier ? "•••••" : formatNum(dailySales)} units/day). Margin headroom is strong at the current ₹{price.toLocaleString()} price point.
             </p>
           </div>
 
@@ -121,18 +143,33 @@ export default function ProductDetailModal({
             <Button variant="outline" onClick={onClose} className="flex-1 text-xs font-bold h-9">
               Close
             </Button>
-            <Button
-              className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-sky-700 dark:hover:bg-sky-600 dark:border dark:border-sky-500/40 text-white text-xs font-bold h-9 gap-1.5 shadow-md shadow-blue-500/20 dark:shadow-none"
-              onClick={() => {
-                const url = source === "flipkart" 
-                  ? `https://www.flipkart.com/search?q=${encodeURIComponent(title)}`
-                  : `https://www.amazon.in/dp/${product.asin || ""}`;
-                window.open(url, "_blank");
-              }}
-            >
-              <span>View Marketplace SKU</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Button>
+            {isFreeTier ? (
+              <Button
+                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold h-9 gap-1.5 shadow-md shadow-blue-500/20"
+                onClick={() => {
+                  onClose();
+                  if (onUpgrade) {
+                    onUpgrade(`Unlock direct marketplace listing links and ${source === "flipkart" ? "PID" : "ASIN"} tracking by upgrading.`);
+                  }
+                }}
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>Unlock Direct {source === "flipkart" ? "Flipkart" : "Amazon"} Link</span>
+              </Button>
+            ) : (
+              <Button
+                className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-sky-700 dark:hover:bg-sky-600 dark:border dark:border-sky-500/40 text-white text-xs font-bold h-9 gap-1.5 shadow-md shadow-blue-500/20 dark:shadow-none"
+                onClick={() => {
+                  const url = source === "flipkart" 
+                    ? (product.product_url || `https://www.flipkart.com/search?q=${encodeURIComponent(title)}`)
+                    : (product.product_url || `https://www.amazon.in/dp/${product.asin || ""}`);
+                  window.open(url, "_blank");
+                }}
+              >
+                <span>View Marketplace SKU</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Button>
+            )}
           </div>
         </div>
       </ShadcnContent>

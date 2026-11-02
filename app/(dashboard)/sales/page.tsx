@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X, Filter, ExternalLink, Lock, Crown, Sparkles, CheckCircle2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFilters } from "@/components/dashboard/filters-context";
 import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
 import { cn } from "@/lib/utils";
 import SmartSearchInput from "@/components/ui/smart-search-input";
@@ -48,12 +49,22 @@ interface TrendingProduct {
   product_photo?: string;
 }
 
-export default function Sales() {
+function SalesContent() {
   const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { filters, setFilters } = useFilters();
+
+  const sourceParam = searchParams?.get("source");
+  const initialSource: "flipkart" | "amazon" =
+    sourceParam === "flipkart" || sourceParam === "amazon"
+      ? sourceParam
+      : (filters.table?.toLowerCase().includes("flipkart") ? "flipkart" : "amazon");
+
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<TrendingProduct[]>([]);
-  const [source, setSource] = useState<"flipkart" | "amazon">("flipkart");
+  const [source, setSource] = useState<"flipkart" | "amazon">(initialSource);
   const [sortField, setSortField] = useState<"reviews" | "price" | "rating" | "sales">("sales");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [loading, setLoading] = useState(true);
@@ -66,11 +77,28 @@ export default function Sales() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<TrendingProduct | null>(null);
-  const router = useRouter();
   const { currentTier } = useSubscriptionLimits();
   const isFreeTier = currentTier === "free";
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeTriggerReason, setUpgradeTriggerReason] = useState<string>("");
+
+  // Reactively sync source whenever searchParams or filters change
+  useEffect(() => {
+    const s = searchParams?.get("source");
+    if (s === "flipkart" || s === "amazon") {
+      setSource((prev) => (prev !== s ? s : prev));
+      setFilters((prev) => (prev.table === s ? prev : { ...prev, table: s }));
+    } else if (filters.table) {
+      const fallback = filters.table.toLowerCase().includes("flipkart") ? "flipkart" : "amazon";
+      setSource((prev) => (prev !== fallback ? fallback : prev));
+    }
+  }, [searchParams, filters.table, setFilters]);
+
+  const handleSourceChange = (newSource: "flipkart" | "amazon") => {
+    setSource(newSource);
+    setFilters((prev) => ({ ...prev, table: newSource }));
+    router.replace(`/sales?source=${newSource}`);
+  };
 
   const triggerUpgrade = (reason: string) => {
     setUpgradeTriggerReason(reason);
@@ -182,14 +210,72 @@ export default function Sales() {
 
   // Fetch categories & reset selection when source changes
   useEffect(() => {
+    let ignore = false;
     setSelectedCategory("All Categories");
     setCurrentPage(1);
-    fetchCategories();
+    setCategoriesLoading(true);
+
+    const url =
+      source === "flipkart"
+        ? `${API_BASE_URL}/rapidapi_flipkart_products/categories`
+        : `${API_BASE_URL}/rapidapi_amazon_products/categories`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (!ignore) {
+          const data = Array.isArray(res.data) ? res.data : [];
+          const names = data
+            .map((c: { category_name?: string; category?: string }) => c.category_name || c.category || "")
+            .filter((name: string) => name.trim() !== "");
+          setCategories(names);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setCategories([]);
+      })
+      .finally(() => {
+        if (!ignore) setCategoriesLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [source]);
 
   // Re-fetch products when source or selected category changes
   useEffect(() => {
-    fetchData();
+    let ignore = false;
+    setLoading(true);
+
+    const categoryParam =
+      selectedCategory && selectedCategory !== "All Categories"
+        ? `&category=${encodeURIComponent(selectedCategory)}`
+        : "";
+
+    const url =
+      source === "flipkart"
+        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500${categoryParam}`
+        : `${API_BASE_URL}/rapidapi/top-sales?limit=500${categoryParam}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (!ignore) {
+          const data = res.data.data || res.data;
+          setProducts(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setError("Failed to fetch top products");
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [source, selectedCategory]);
 
   const isDark = mounted && resolvedTheme === "dark";
@@ -243,47 +329,6 @@ export default function Sales() {
     return [];
   };
 
-  const fetchCategories = () => {
-    setCategoriesLoading(true);
-    const url =
-      source === "flipkart"
-        ? `${API_BASE_URL}/rapidapi_flipkart_products/categories`
-        : `${API_BASE_URL}/rapidapi_amazon_products/categories`;
-
-    axios
-      .get(url)
-      .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        const names = data
-          .map((c: { category_name?: string; category?: string }) => c.category_name || c.category || "")
-          .filter((name: string) => name.trim() !== "");
-        setCategories(names);
-      })
-      .catch(() => setCategories([]))
-      .finally(() => setCategoriesLoading(false));
-  };
-
-  const fetchData = () => {
-    setLoading(true);
-    const categoryParam =
-      selectedCategory && selectedCategory !== "All Categories"
-        ? `&category=${encodeURIComponent(selectedCategory)}`
-        : "";
-
-    const url =
-      source === "flipkart"
-        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500${categoryParam}`
-        : `${API_BASE_URL}/rapidapi/top-sales?limit=500${categoryParam}`;
-
-    axios
-      .get(url)
-      .then((res) => {
-        const data = res.data.data || res.data;
-        setProducts(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setError("Failed to fetch top products"))
-      .finally(() => setLoading(false));
-  };
 
   const getFieldValue = (p: TrendingProduct, field: string) => {
     switch (field) {
@@ -488,7 +533,7 @@ export default function Sales() {
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={source}
-            onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
+            onChange={(e) => handleSourceChange(e.target.value as "flipkart" | "amazon")}
             className={cn(
               "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-xs sm:text-sm",
               isDark 
@@ -1070,5 +1115,22 @@ export default function Sales() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function Sales() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-[400px] items-center justify-center text-slate-400">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+            <p>Loading top product data...</p>
+          </div>
+        </div>
+      }
+    >
+      <SalesContent />
+    </Suspense>
   );
 }

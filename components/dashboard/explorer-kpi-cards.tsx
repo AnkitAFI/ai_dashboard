@@ -56,6 +56,10 @@ export default function ExplorerKpiCards({ selectedSource }: ExplorerKpiCardsPro
     fetchKPIData();
   }, [selectedSource, filters.table]);
 
+  const activeSource = (filters.table || selectedSource || "amazon").toLowerCase();
+  const isFlipkart = activeSource.includes("flipkart");
+  const targetSource = isFlipkart ? "flipkart" : "amazon";
+
   const cards = [
     {
       id: "demand",
@@ -75,7 +79,7 @@ export default function ExplorerKpiCards({ selectedSource }: ExplorerKpiCardsPro
       label: "Products",
       sublabel: "worth investigating",
       ctaText: "View Products",
-      ctaHref: "/sales",
+      ctaHref: `/sales?source=${targetSource}`,
       icon: BarChart3,
       iconBg: "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/70 dark:text-emerald-400",
       cardBg: "bg-gradient-to-br from-emerald-50/90 via-teal-50/40 to-white dark:from-slate-900/90 dark:to-slate-800/80 border-emerald-200/60 dark:border-slate-800",
