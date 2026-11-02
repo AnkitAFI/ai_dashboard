@@ -32,6 +32,7 @@ import {
   Tag,
   FileCheck2,
   Bell,
+  Store,
   Sparkles,
   ChevronDown,
   ChevronUp,
@@ -82,11 +83,11 @@ const heroBadges = [
     rotate: -2,
   },
   {
-    icon: Bell,
+    icon: Store,
     iconBg: "bg-[#ffedd5] dark:bg-orange-900/40",
     iconColor: "text-[#9a3412] dark:text-orange-400",
-    title: "Smart alerts",
-    subtitle: "On WhatsApp, 24/7",
+    title: "Ecommerce account creation",
+    subtitle: "Amazon, Flipkart & Meesho",
     rotate: 3,
   },
 ];
@@ -861,9 +862,8 @@ export default function LandingContent() {
               </span>
             </h1>
 
-            <p className="max-w-2xl text-lg font-medium leading-relaxed text-[#4b4560] dark:text-gray-300">
-              Ad automation, keyword research, competitor analysis, price and listing
-              optimization. Every everyday selling task, in one simple dashboard.
+            <p className="max-w-3xl text-lg font-medium leading-relaxed text-[#4b4560] dark:text-gray-300 [text-wrap:balance]">
+              Ad automation, keyword research, ecommerce account creation services, competitor analysis, price and listing optimization. Every selling task, in one simple dashboard.
             </p>
 
             <div className="flex flex-col items-center gap-4 pt-2 sm:flex-row">
@@ -1138,11 +1138,11 @@ export default function LandingContent() {
                 delay={0.9}
               />
               <FloatingBadge
-                icon={Bell}
+                icon={Store}
                 iconBg="bg-[#ffedd5] dark:bg-orange-900/40"
                 iconColor="text-[#9a3412] dark:text-orange-400"
-                title="Smart alerts"
-                subtitle="On WhatsApp, 24/7"
+                title="Ecommerce account creation"
+                subtitle="Amazon, Flipkart & Meesho"
                 rotate={3}
                 delay={1.5}
               />
