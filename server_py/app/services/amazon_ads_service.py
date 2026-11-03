@@ -368,7 +368,7 @@ class AmazonAdsService:
                 "adProduct": "SPONSORED_PRODUCTS",
                 "groupBy": ["searchTerm"],
                 "columns": [
-                    "date", "campaignId", "adGroupId", "keywordId", "keywordText", "matchType",
+                    "date", "campaignId", "adGroupId", "keywordId", "keyword", "matchType",
                     "searchTerm", "impressions", "clicks", "cost", "purchases1d", "purchases7d", "sales7d"
                 ],
                 "reportTypeId": "spSearchTerm",
@@ -444,7 +444,7 @@ class AmazonAdsService:
         url = f"{self._get_api_url()}/reporting/reports/{report_id}"
         
         # Exponential backoff: 10s, 15s, 20s, 30s
-        for delay in [10, 15, 20, 30]:
+        for delay in [15, 20, 25, 30, 30, 30, 30]:
             await asyncio.sleep(delay)
             headers = await self.get_headers(profile_id=profile_id)
             
@@ -463,6 +463,7 @@ class AmazonAdsService:
                 if resp.status_code == 200:
                     result = resp.json()
                     status = result.get("status")
+                    logger.info(f"Report {report_id} status: {status}")
                     if status in ("COMPLETED", "SUCCESS"):
                         return result.get("url") or result.get("location")
                     elif status in ("FAILED", "FAILURE"):
