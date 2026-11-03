@@ -15,7 +15,12 @@ from app.models.schema_v2 import (
     AmazonSPAPIReviewRules,
     AmazonSPAPIOrderReviewLog,
     AmazonSPAPIRefundReconciliation,
-    AmazonSPAPIReportQueue
+    AmazonSPAPIReportQueue,
+    AmazonSPAPIListingItem,
+    AmazonSPAPIListingHistory,
+    AmazonSPAPIListingDraft,
+    AmazonSPAPIListingSyncQueue,
+    AmazonSPAPIUploadedMedia
 )
 from app.api.deps import get_current_user
 from app.core.config import settings
@@ -169,6 +174,22 @@ def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_curren
     target = next((c for c in all_creds if c.selling_partner_id == selling_partner_id), None)
     
     if target:
+        # Clean up physical uploaded files on disk for DPDP/GDPR
+        try:
+            import os
+            media_files = db.query(AmazonSPAPIUploadedMedia).filter(
+                AmazonSPAPIUploadedMedia.user_id == current_user.id,
+                AmazonSPAPIUploadedMedia.selling_partner_id == selling_partner_id
+            ).all()
+            for m in media_files:
+                if m.file_path and os.path.exists(m.file_path):
+                    try:
+                        os.remove(m.file_path)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.warning(f"Failed to delete physical media files: {e}")
+
         # 1. DPDP/GDPR Compliance: Wipe all historical data for this selling_partner_id
         models_to_wipe = [
             AmazonSPAPIOrder,
@@ -181,7 +202,12 @@ def disconnect_sp_api(selling_partner_id: str, current_user = Depends(get_curren
             AmazonSPAPIReviewRules,
             AmazonSPAPIOrderReviewLog,
             AmazonSPAPIRefundReconciliation,
-            AmazonSPAPIReportQueue
+            AmazonSPAPIReportQueue,
+            AmazonSPAPIListingItem,
+            AmazonSPAPIListingHistory,
+            AmazonSPAPIListingDraft,
+            AmazonSPAPIListingSyncQueue,
+    AmazonSPAPIUploadedMedia
         ]
         
         for model in models_to_wipe:

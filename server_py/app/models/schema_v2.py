@@ -676,3 +676,139 @@ class SellerServiceOrder(Base):
     paid_at = Column(DateTime(timezone=True), nullable=True)
 
     auth = relationship("UserAuth", backref="seller_service_orders")
+
+
+# ── Listing Optimization & Creator Studio Models ──────────────────────────────
+class AmazonSPAPIListingItem(Base):
+    """Catalog items synced from Amazon for optimization & suppression detection."""
+    __tablename__ = "amazon_sp_api_listing_items"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    sku = Column(String(100), nullable=False, index=True)
+    asin = Column(String(50), nullable=False, index=True)
+    product_type = Column(String(100), nullable=True)
+    
+    # Active Copy
+    title = Column(String(1000), nullable=True)
+    bullets = Column(JSONB, nullable=True)           # ["bullet 1", "bullet 2", ...]
+    description = Column(Text, nullable=True)
+    backend_search_terms = Column(String(1000), nullable=True)
+    main_image_url = Column(String(1000), nullable=True)
+    
+    # Intelligence Metrics
+    health_score = Column(Integer, default=0)        # 0 to 100
+    is_suppressed = Column(Boolean, default=False)   # True if Amazon search suppressed
+    suppression_reasons = Column(JSONB, nullable=True) # ["MISSING_IMAGE", "TITLE_TOO_LONG"]
+    issues_json = Column(JSONB, nullable=True)        # Full SP-API issues payload
+    
+    # Keyword Budget
+    search_term_bytes = Column(Integer, default=0)   # UTF-8 byte count (<= 250)
+    has_title_keyword_overlap = Column(Boolean, default=False)
+    wasted_overlap_words = Column(JSONB, nullable=True)
+    
+    last_synced_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('selling_partner_id', 'sku', name='uix_sp_listing_items_sku'),
+    )
+
+
+class AmazonSPAPIListingHistory(Base):
+    """Snapshots of listing copy before edits to support 1-click SP-API rollback and non-repudiation."""
+    __tablename__ = "amazon_sp_api_listing_history"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    sku = Column(String(100), nullable=False, index=True)
+    asin = Column(String(50), nullable=False, index=True)
+    
+    snapshot_data = Column(JSONB, nullable=False)    # {title, bullets, description, backend_search_terms}
+    changed_by = Column(String(50), default="USER") # USER or ROLLBACK
+    reason = Column(String(255), nullable=True)
+    
+    # Non-Repudiation Audit Details
+    client_ip = Column(String(50), nullable=True)
+    user_agent = Column(String(500), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AmazonSPAPIListingDraft(Base):
+    """In-progress new product listing drafts before publishing live to Amazon."""
+    __tablename__ = "amazon_sp_api_listing_drafts"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    sku = Column(String(100), nullable=False, index=True)
+    product_type = Column(String(100), nullable=False)
+    
+    draft_data = Column(JSONB, nullable=False)        # Form fields: title, bullets, pricing, images, attributes
+    status = Column(String(50), default="DRAFT")     # DRAFT, QUEUED, SUBMITTED, REJECTED
+    amazon_submission_id = Column(String(100), nullable=True)
+    submission_errors = Column(JSONB, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonSPAPIProductTypeSchema(Base):
+    """Global schema cache protecting against app key suspension on category queries."""
+    __tablename__ = "amazon_sp_api_product_type_schemas"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    marketplace_id = Column(String(20), default="A21TJRUUN4KGV", index=True)
+    product_type = Column(String(100), nullable=False, index=True)
+    schema_json = Column(JSONB, nullable=False)       # Official Amazon category schema
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint('marketplace_id', 'product_type', name='uix_sp_pt_schema'),
+    )
+
+
+class AmazonSPAPIListingSyncQueue(Base):
+    """Global FIFO Queue ensuring 100% adherence to createReport rate limits at scale."""
+    __tablename__ = "amazon_sp_api_listing_sync_queue"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    
+    status = Column(String(50), default="PENDING")   # PENDING, PROCESSING, COMPLETED, FAILED
+    report_id = Column(String(100), nullable=True)
+    attempt_count = Column(Integer, default=0)
+    scheduled_for = Column(DateTime(timezone=True), server_default=func.now())
+    processed_at = Column(DateTime(timezone=True), nullable=True)
+    error_message = Column(Text, nullable=True)
+
+
+class AmazonSPAPIUploadedMedia(Base):
+    """Stores product listing images uploaded directly from seller devices."""
+    __tablename__ = "amazon_sp_api_uploaded_media"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    sku = Column(String(100), nullable=True, index=True)
+    
+    original_filename = Column(String(255), nullable=False)
+    stored_filename = Column(String(255), nullable=False, unique=True, index=True)
+    file_path = Column(String(500), nullable=False)
+    public_url = Column(String(1000), nullable=False)
+    mime_type = Column(String(100), nullable=False)
+    file_size_bytes = Column(Integer, nullable=False)
+    width = Column(Integer, nullable=True)
+    height = Column(Integer, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

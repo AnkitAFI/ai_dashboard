@@ -163,6 +163,7 @@ const SELLER_SECTIONS: NavSection[] = [
       { href: "/seller/restock", label: "Restock Planner", icon: Package },
       { href: "/seller/reviews", label: "Review Automator", icon: Star },
       { href: "/seller/reimbursements", label: "Refund Finder", icon: ShieldCheck },
+      { href: "/seller/listing-optimizer", label: "Listing Optimizer", icon: Sparkles },
     ],
   },
   {

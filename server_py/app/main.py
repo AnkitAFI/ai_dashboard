@@ -59,6 +59,15 @@ app.include_router(api_router, prefix="/api")
 # Register legacy router at the ROOT for 100% functional parity (e.g. /users/login)
 app.include_router(legacy_router)
 
+from fastapi.staticfiles import StaticFiles
+
+# ── Static uploads mount (product listing images) ──────────────────────────────
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(_BASE_DIR, "static")
+LISTING_IMAGES_DIR = os.path.join(STATIC_DIR, "listing_images")
+os.makedirs(LISTING_IMAGES_DIR, exist_ok=True)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "API is running"}
