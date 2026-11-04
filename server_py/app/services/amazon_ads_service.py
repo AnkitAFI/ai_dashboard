@@ -444,7 +444,7 @@ class AmazonAdsService:
         url = f"{self._get_api_url()}/reporting/reports/{report_id}"
         
         # Exponential backoff: 10s, 15s, 20s, 30s
-        for delay in [15, 20, 25, 30, 30, 30, 30]:
+        for delay in [20, 25, 30, 30, 35, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40]:
             await asyncio.sleep(delay)
             headers = await self.get_headers(profile_id=profile_id)
             
