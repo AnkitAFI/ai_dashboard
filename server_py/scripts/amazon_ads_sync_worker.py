@@ -3,6 +3,7 @@
 Amazon Ads Background Sync Worker
 Fetches campaign performance for Amazon Ads profiles.
 Designed for scalability with Batching and Incremental Sync logic.
+Strictly rate limited and compliant with Amazon Ads v3 Reporting API limits.
 """
 
 import sys
@@ -29,7 +30,7 @@ BATCH_SIZE = 10
 BATCH_DELAY_SECONDS = 10
 
 async def sync_profile(db, profile):
-    """Sync a single profile's reports."""
+    """Sync a single profile's reports using Amazon Ads v3 native date ranges."""
     logger.info(f"Syncing profile {profile.profile_id} for user {profile.user_id}")
     ads_service = AmazonAdsService(db, profile.user_id)
     
@@ -37,110 +38,109 @@ async def sync_profile(db, profile):
     latest_record = db.query(func.max(AmazonAdsCampaignPerformance.date)).filter(
         AmazonAdsCampaignPerformance.profile_id == profile.profile_id
     ).scalar()
+    
     # Subscription Tier check
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == profile.user_id).first()
     tier = sub.subscription_tier.lower() if sub and sub.subscription_tier else "free"
     expected_history_days = 60 if tier in ["premium", "enterprise", "trial"] else 30
     
     today = datetime.utcnow().date()
-    dates_to_sync = []
+    yesterday = today - timedelta(days=1)
+    
+    # Amazon Ads v3 allows up to 31 days per report request with timeUnit: DAILY
+    date_ranges = []
     
     if latest_record:
-        # Forward Sync
-        start_date = today - timedelta(days=1)
-        if latest_record.date() < start_date:
-            days_behind = (today - latest_record.date()).days
-            days_to_fetch = min(days_behind, 7)
-            for i in range(1, days_to_fetch + 1):
-                dates_to_sync.append(today - timedelta(days=i))
+        latest_date = latest_record.date() if hasattr(latest_record, "date") else latest_record
+        if latest_date < yesterday:
+            days_behind = (today - latest_date).days
+            fetch_days = min(days_behind, 30)
+            date_ranges.append((today - timedelta(days=fetch_days), yesterday))
         else:
-            dates_to_sync.append(today - timedelta(days=1))
+            date_ranges.append((yesterday, yesterday))
             
-        # Backfill Logic (Upgrades)
+        # Backfill check if account upgraded
         oldest_record = db.query(func.min(AmazonAdsCampaignPerformance.date)).filter(
             AmazonAdsCampaignPerformance.profile_id == profile.profile_id
         ).scalar()
-        
         if oldest_record:
-            oldest_date = oldest_record.date()
+            oldest_date = oldest_record.date() if hasattr(oldest_record, "date") else oldest_record
             days_have = (today - oldest_date).days
             if days_have < expected_history_days:
                 days_short = expected_history_days - days_have
-                backfill_limit = min(days_short, 7) # Max 7 days per run
-                logger.info(f"Backfilling {backfill_limit} older days to meet {expected_history_days} day target.")
-                
-                creds = db.query(AmazonAdsCredential).filter(AmazonAdsCredential.user_id == profile.user_id).first()
-                if creds and creds.sync_status != "BACKFILLING":
-                    creds.sync_status = "BACKFILLING"
-                    db.commit()
-                
-                for i in range(1, backfill_limit + 1):
-                    backfill_date = oldest_date - timedelta(days=i)
-                    if backfill_date not in dates_to_sync:
-                        dates_to_sync.append(backfill_date)
-            else:
-                creds = db.query(AmazonAdsCredential).filter(AmazonAdsCredential.user_id == profile.user_id).first()
-                if creds and creds.sync_status == "BACKFILLING":
-                    creds.sync_status = "COMPLETED"
-                    db.commit()
+                chunk_days = min(days_short, 30)
+                backfill_start = oldest_date - timedelta(days=chunk_days)
+                backfill_end = oldest_date - timedelta(days=1)
+                date_ranges.append((backfill_start, backfill_end))
     else:
-        # Initial sync: Fetch based on subscription tier
+        # Initial sync: Fetch based on subscription tier (max 30 days per chunk)
         logger.info(f"User {profile.user_id} is on {tier} tier. Initial fetch set to {expected_history_days} days.")
-        
-        for i in range(1, expected_history_days + 1):
-            dates_to_sync.append(today - timedelta(days=i))
+        if expected_history_days > 30:
+            # Chunk 1: most recent 30 days
+            date_ranges.append((today - timedelta(days=30), yesterday))
+            # Chunk 2: older 30 days
+            date_ranges.append((today - timedelta(days=expected_history_days), today - timedelta(days=31)))
+        else:
+            date_ranges.append((today - timedelta(days=expected_history_days), yesterday))
             
-    logger.info(f"Profile {profile.profile_id} needs {len(dates_to_sync)} days of data.")
+    logger.info(f"Profile {profile.profile_id} will sync {len(date_ranges)} range chunk(s).")
     
-    for sync_date in dates_to_sync:
-        date_str = sync_date.strftime("%Y%m%d")
-        logger.info(f"Requesting report for {profile.profile_id} on {date_str}")
+    for start_dt, end_dt in date_ranges:
+        start_str = start_dt.strftime("%Y%m%d")
+        end_str = end_dt.strftime("%Y%m%d")
+        logger.info(f"Syncing range {start_str} to {end_str} for profile {profile.profile_id}")
         
-        report_id = await ads_service.request_campaign_report(profile.profile_id, date_str)
+        # 1. Campaign Report
+        logger.info(f"Requesting campaign report for {profile.profile_id} ({start_str} - {end_str})")
+        report_id = await ads_service.request_campaign_report(profile.profile_id, start_str, end_str)
         if not report_id:
-            logger.warning(f"Could not get campaign report ID for {profile.profile_id} on {date_str}")
+            logger.warning(f"Could not get campaign report ID for {profile.profile_id} ({start_str} - {end_str})")
         else:
             location = await ads_service.poll_report_status(profile.profile_id, report_id)
             if location:
-                await ads_service.download_and_parse_report(location, profile.profile_id, date_str)
+                await ads_service.download_and_parse_report(location, profile.profile_id, start_str)
             else:
                 logger.warning(f"Campaign report {report_id} did not finish successfully.")
-                
-        # 2. Sync Keyword Data for the same date
-        logger.info(f"Requesting keyword report for {profile.profile_id} on {date_str}")
-        kw_report_id = await ads_service.request_keyword_report(profile.profile_id, date_str)
+        await asyncio.sleep(2)  # Protect single-concurrency limit between requests
+        
+        # 2. Keyword Report
+        logger.info(f"Requesting keyword report for {profile.profile_id} ({start_str} - {end_str})")
+        kw_report_id = await ads_service.request_keyword_report(profile.profile_id, start_str, end_str)
         if not kw_report_id:
-            logger.warning(f"Could not get keyword report ID for {profile.profile_id} on {date_str}")
+            logger.warning(f"Could not get keyword report ID for {profile.profile_id} ({start_str} - {end_str})")
         else:
             kw_location = await ads_service.poll_report_status(profile.profile_id, kw_report_id)
             if kw_location:
-                await ads_service.download_and_parse_keyword_report(kw_location, profile.profile_id, date_str)
+                await ads_service.download_and_parse_keyword_report(kw_location, profile.profile_id, start_str)
             else:
                 logger.warning(f"Keyword report {kw_report_id} did not finish successfully.")
-                
-        # 3. Sync Search Term Data for the same date
-        logger.info(f"Requesting search term report for {profile.profile_id} on {date_str}")
-        st_report_id = await ads_service.request_search_term_report(profile.profile_id, date_str)
+        await asyncio.sleep(2)
+        
+        # 3. Search Term Report
+        logger.info(f"Requesting search term report for {profile.profile_id} ({start_str} - {end_str})")
+        st_report_id = await ads_service.request_search_term_report(profile.profile_id, start_str, end_str)
         if not st_report_id:
-            logger.warning(f"Could not get search term report ID for {profile.profile_id} on {date_str}")
+            logger.warning(f"Could not get search term report ID for {profile.profile_id} ({start_str} - {end_str})")
         else:
             st_location = await ads_service.poll_report_status(profile.profile_id, st_report_id)
             if st_location:
-                await ads_service.download_and_parse_search_term_report(st_location, profile.profile_id, date_str)
+                await ads_service.download_and_parse_search_term_report(st_location, profile.profile_id, start_str)
             else:
                 logger.warning(f"Search term report {st_report_id} did not finish successfully.")
-                
-        # 4. Sync Placement Data for the same date
-        logger.info(f"Requesting placement report for {profile.profile_id} on {date_str}")
-        pl_report_id = await ads_service.request_placement_report(profile.profile_id, date_str)
+        await asyncio.sleep(2)
+        
+        # 4. Placement Report
+        logger.info(f"Requesting placement report for {profile.profile_id} ({start_str} - {end_str})")
+        pl_report_id = await ads_service.request_placement_report(profile.profile_id, start_str, end_str)
         if not pl_report_id:
-            logger.warning(f"Could not get placement report ID for {profile.profile_id} on {date_str}")
+            logger.warning(f"Could not get placement report ID for {profile.profile_id} ({start_str} - {end_str})")
         else:
             pl_location = await ads_service.poll_report_status(profile.profile_id, pl_report_id)
             if pl_location:
-                await ads_service.download_and_parse_placement_report(pl_location, profile.profile_id, date_str)
+                await ads_service.download_and_parse_placement_report(pl_location, profile.profile_id, start_str)
             else:
                 logger.warning(f"Placement report {pl_report_id} did not finish successfully.")
+        await asyncio.sleep(2)
         
     logger.info(f"Completed sync for profile {profile.profile_id}")
 
