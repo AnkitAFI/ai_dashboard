@@ -252,7 +252,7 @@ class AmazonAdsService:
             return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         return date_str
 
-    async def request_campaign_report(self, profile_id: str, report_date: str) -> Optional[str]:
+    async def request_campaign_report(self, profile_id: str, report_date: str, end_date: Optional[str] = None) -> Optional[str]:
         """Request a standard sponsored products campaign report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
@@ -266,11 +266,12 @@ class AmazonAdsService:
         headers = await self.get_headers(profile_id=profile_id)
         headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
-        date_formatted = self._format_report_date(report_date)
+        start_formatted = self._format_report_date(report_date)
+        end_formatted = self._format_report_date(end_date or report_date)
         data = {
-            "name": f"SP Campaign Report {date_formatted}",
-            "startDate": date_formatted,
-            "endDate": date_formatted,
+            "name": f"SP Campaign Report {start_formatted}_{end_formatted}",
+            "startDate": start_formatted,
+            "endDate": end_formatted,
             "configuration": {
                 "adProduct": "SPONSORED_PRODUCTS",
                 "groupBy": ["campaign"],
@@ -299,7 +300,7 @@ class AmazonAdsService:
             result = resp.json()
             return result.get("reportId")
 
-    async def request_keyword_report(self, profile_id: str, report_date: str) -> Optional[str]:
+    async def request_keyword_report(self, profile_id: str, report_date: str, end_date: Optional[str] = None) -> Optional[str]:
         """Request a standard sponsored products keyword report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
@@ -313,11 +314,12 @@ class AmazonAdsService:
         headers = await self.get_headers(profile_id=profile_id)
         headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
-        date_formatted = self._format_report_date(report_date)
+        start_formatted = self._format_report_date(report_date)
+        end_formatted = self._format_report_date(end_date or report_date)
         data = {
-            "name": f"SP Targeting Report {date_formatted}",
-            "startDate": date_formatted,
-            "endDate": date_formatted,
+            "name": f"SP Targeting Report {start_formatted}_{end_formatted}",
+            "startDate": start_formatted,
+            "endDate": end_formatted,
             "configuration": {
                 "adProduct": "SPONSORED_PRODUCTS",
                 "groupBy": ["targeting"],
@@ -345,7 +347,7 @@ class AmazonAdsService:
             result = resp.json()
             return result.get("reportId")
 
-    async def request_search_term_report(self, profile_id: str, report_date: str) -> Optional[str]:
+    async def request_search_term_report(self, profile_id: str, report_date: str, end_date: Optional[str] = None) -> Optional[str]:
         """Request a standard sponsored products search term report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
@@ -359,11 +361,12 @@ class AmazonAdsService:
         headers = await self.get_headers(profile_id=profile_id)
         headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
-        date_formatted = self._format_report_date(report_date)
+        start_formatted = self._format_report_date(report_date)
+        end_formatted = self._format_report_date(end_date or report_date)
         data = {
-            "name": f"SP Search Term Report {date_formatted}",
-            "startDate": date_formatted,
-            "endDate": date_formatted,
+            "name": f"SP Search Term Report {start_formatted}_{end_formatted}",
+            "startDate": start_formatted,
+            "endDate": end_formatted,
             "configuration": {
                 "adProduct": "SPONSORED_PRODUCTS",
                 "groupBy": ["searchTerm"],
@@ -391,7 +394,7 @@ class AmazonAdsService:
             result = resp.json()
             return result.get("reportId")
 
-    async def request_placement_report(self, profile_id: str, report_date: str) -> Optional[str]:
+    async def request_placement_report(self, profile_id: str, report_date: str, end_date: Optional[str] = None) -> Optional[str]:
         """Request a sponsored products placement report for a specific date (v3 API)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
         
@@ -405,11 +408,12 @@ class AmazonAdsService:
         headers = await self.get_headers(profile_id=profile_id)
         headers["Content-Type"] = "application/vnd.createasyncreportrequest.v3+json"
         
-        date_formatted = self._format_report_date(report_date)
+        start_formatted = self._format_report_date(report_date)
+        end_formatted = self._format_report_date(end_date or report_date)
         data = {
-            "name": f"SP Placement Report {date_formatted}",
-            "startDate": date_formatted,
-            "endDate": date_formatted,
+            "name": f"SP Placement Report {start_formatted}_{end_formatted}",
+            "startDate": start_formatted,
+            "endDate": end_formatted,
             "configuration": {
                 "adProduct": "SPONSORED_PRODUCTS",
                 "groupBy": ["campaignPlacement"],
@@ -444,7 +448,7 @@ class AmazonAdsService:
         url = f"{self._get_api_url()}/reporting/reports/{report_id}"
         
         # Exponential backoff: 10s, 15s, 20s, 30s
-        for delay in [20, 25, 30, 30, 35, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40]:
+        for delay in [20, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50, 60, 60, 60, 60, 60]:
             await asyncio.sleep(delay)
             headers = await self.get_headers(profile_id=profile_id)
             
@@ -500,17 +504,28 @@ class AmazonAdsService:
                     logger.error(f"Failed to decompress/parse report: {e}")
                     return
                 
-            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            try:
+                fallback_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            except Exception:
+                fallback_date = datetime.utcnow().date()
             
             for row in data:
                 campaign_id = str(row.get("campaignId"))
+                row_date_str = row.get("date")
+                if row_date_str:
+                    try:
+                        row_date = datetime.strptime(row_date_str, "%Y-%m-%d").date() if "-" in row_date_str else datetime.strptime(row_date_str, "%Y%m%d").date()
+                    except Exception:
+                        row_date = fallback_date
+                else:
+                    row_date = fallback_date
                 if not campaign_id or campaign_id == "None":
                     continue
                 
                 record = self.db.query(AmazonAdsCampaignPerformance).filter(
                     AmazonAdsCampaignPerformance.profile_id == profile_id,
                     AmazonAdsCampaignPerformance.campaign_id == campaign_id,
-                    AmazonAdsCampaignPerformance.date == report_date
+                    AmazonAdsCampaignPerformance.date == row_date
                 ).first()
                 
                 sales = float(row.get("sales7d") or row.get("purchases7d") or row.get("purchases1d") or row.get("sales1d") or 0)
@@ -536,7 +551,7 @@ class AmazonAdsService:
                         user_id=self.user_id,
                         profile_id=profile_id,
                         campaign_id=campaign_id,
-                        date=report_date,
+                        date=row_date,
                         campaign_name=campaign_name,
                         campaign_status=campaign_status,
                         impressions=impressions,
@@ -575,17 +590,28 @@ class AmazonAdsService:
                     logger.error(f"Failed to decompress/parse keyword report: {e}")
                     return
                 
-            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            try:
+                fallback_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            except Exception:
+                fallback_date = datetime.utcnow().date()
             
             for row in data:
                 keyword_id = str(row.get("keywordId") or row.get("targetingId") or "")
+                row_date_str = row.get("date")
+                if row_date_str:
+                    try:
+                        row_date = datetime.strptime(row_date_str, "%Y-%m-%d").date() if "-" in row_date_str else datetime.strptime(row_date_str, "%Y%m%d").date()
+                    except Exception:
+                        row_date = fallback_date
+                else:
+                    row_date = fallback_date
                 if not keyword_id or keyword_id == "None":
                     continue
                 
                 record = self.db.query(AmazonAdsKeywordPerformance).filter(
                     AmazonAdsKeywordPerformance.profile_id == profile_id,
                     AmazonAdsKeywordPerformance.keyword_id == keyword_id,
-                    AmazonAdsKeywordPerformance.date == report_date
+                    AmazonAdsKeywordPerformance.date == row_date
                 ).first()
                 
                 impressions = int(row.get("impressions", 0))
@@ -612,7 +638,7 @@ class AmazonAdsService:
                     profile_id=profile_id,
                     campaign_id=str(row.get("campaignId", "")),
                     keyword_id=keyword_id,
-                    date=report_date,
+                    date=row_date,
                     keyword_text=keyword_text,
                     match_type=match_type,
                     state=state,
@@ -651,11 +677,22 @@ class AmazonAdsService:
                     logger.error(f"Failed to decompress/parse search term report: {e}")
                     return
                 
-            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            try:
+                fallback_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            except Exception:
+                fallback_date = datetime.utcnow().date()
             
             for row in data:
                 search_term = row.get("searchTerm", "")
                 keyword_id = str(row.get("keywordId") or row.get("targetingId") or "")
+                row_date_str = row.get("date")
+                if row_date_str:
+                    try:
+                        row_date = datetime.strptime(row_date_str, "%Y-%m-%d").date() if "-" in row_date_str else datetime.strptime(row_date_str, "%Y%m%d").date()
+                    except Exception:
+                        row_date = fallback_date
+                else:
+                    row_date = fallback_date
                 if not search_term or not keyword_id or keyword_id == "None":
                     continue
                     
@@ -663,7 +700,7 @@ class AmazonAdsService:
                     AmazonAdsSearchTermPerformance.profile_id == profile_id,
                     AmazonAdsSearchTermPerformance.search_term == search_term,
                     AmazonAdsSearchTermPerformance.keyword_id == keyword_id,
-                    AmazonAdsSearchTermPerformance.date == report_date
+                    AmazonAdsSearchTermPerformance.date == row_date
                 ).first()
                 
                 impressions = int(row.get("impressions", 0))
@@ -686,7 +723,7 @@ class AmazonAdsService:
                     campaign_id=str(row.get("campaignId", "")),
                     ad_group_id=str(row.get("adGroupId", "")),
                     keyword_id=keyword_id,
-                    date=report_date,
+                    date=row_date,
                     search_term=search_term,
                     keyword_text=row.get("keywordText") or row.get("keyword", ""),
                     match_type=row.get("matchType", ""),
@@ -729,11 +766,22 @@ class AmazonAdsService:
                     logger.error(f"Failed to decompress/parse placement report: {e}")
                     return
             
-            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            try:
+                fallback_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            except Exception:
+                fallback_date = datetime.utcnow().date()
             
             for row in data:
                 campaign_id = str(row.get("campaignId", ""))
                 placement = row.get("placementClassification") or row.get("placement", "")
+                row_date_str = row.get("date")
+                if row_date_str:
+                    try:
+                        row_date = datetime.strptime(row_date_str, "%Y-%m-%d").date() if "-" in row_date_str else datetime.strptime(row_date_str, "%Y%m%d").date()
+                    except Exception:
+                        row_date = fallback_date
+                else:
+                    row_date = fallback_date
                 
                 if not campaign_id or not placement or campaign_id == "None":
                     continue
@@ -742,7 +790,7 @@ class AmazonAdsService:
                     AmazonAdsPlacementPerformance.profile_id == profile_id,
                     AmazonAdsPlacementPerformance.campaign_id == campaign_id,
                     AmazonAdsPlacementPerformance.placement == placement,
-                    AmazonAdsPlacementPerformance.date == report_date
+                    AmazonAdsPlacementPerformance.date == row_date
                 ).first()
                 
                 impressions = int(row.get("impressions", 0))
@@ -763,7 +811,7 @@ class AmazonAdsService:
                     user_id=self.user_id,
                     profile_id=profile_id,
                     campaign_id=campaign_id,
-                    date=report_date,
+                    date=row_date,
                     placement=placement,
                     impressions=impressions,
                     clicks=clicks,
