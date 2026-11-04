@@ -45,18 +45,30 @@ export default function FiltersPanel() {
   const { t } = useTranslation();
   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext, maxTopN } = useFilters();
   const { currentTier, limits, canAccessFeature } = useSubscriptionLimits();
+  const isFreeTier = currentTier === "free";
 
   // Local state for temporary filter changes (before applying)
   const [localFilters, setLocalFilters] = useState<FilterState>(appliedFiltersContext);
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalType, setModalType] = useState<"category" | "topN">("category");
   const [attemptedTopN, setAttemptedTopN] = useState<number | null>(null);
+  const [attemptedCategory, setAttemptedCategory] = useState<string | null>(null);
 
   // Sync local filters with context on mount
   useEffect(() => {
     setLocalFilters(appliedFiltersContext);
   }, []);
+
+  // Auto-reset category to "All Categories" for free tier users
+  useEffect(() => {
+    if (isFreeTier && (localFilters.category !== "All Categories" || appliedFiltersContext.category !== "All Categories")) {
+      const reset = { ...localFilters, category: "All Categories" };
+      setLocalFilters(reset);
+      setAppliedFiltersContext((prev) => ({ ...prev, category: "All Categories" }));
+    }
+  }, [isFreeTier]);
 
   // ------------------ Fetch Categories ------------------
   const fetchCategories = async (table: string) => {
@@ -67,9 +79,9 @@ export default function FiltersPanel() {
 
       setCategories(["All Categories", ...cats]);
 
-      // Reset category if current not in list
+      // Reset category if current not in list or if user is on free tier
       setLocalFilters(prev => {
-        if (!["All Categories", ...cats].includes(prev.category)) {
+        if (isFreeTier || !["All Categories", ...cats].includes(prev.category)) {
           return { ...prev, category: "All Categories" };
         }
         return prev;
@@ -108,18 +120,23 @@ export default function FiltersPanel() {
   };
 
   const applyFilters = () => {
+    // Free tier cannot filter by specific categories
+    const finalFilters = isFreeTier
+      ? { ...localFilters, category: "All Categories" }
+      : localFilters;
+
     // Update the actual context with local filters
-    setAppliedFiltersContext(localFilters);
+    setAppliedFiltersContext(finalFilters);
 
     // Generate applied filters badges
     const applied: string[] = [];
-    applied.push(`Table: ${localFilters.table}`);
-    if (localFilters.category !== "All Categories") applied.push(`Category: ${localFilters.category}`);
-    if (localFilters.priceRange[0] > 0 || localFilters.priceRange[1] < 5000000)
-      applied.push(`Price: ${formatPrice(localFilters.priceRange[0])} - ${formatPrice(localFilters.priceRange[1])}`);
-    if (localFilters.rating > 0) applied.push(`Rating: ${localFilters.rating}+ stars`);
-    if (localFilters.showTrendingOnly) applied.push("Trending Only");
-    if (localFilters.topN !== 10) applied.push(`Top ${localFilters.topN} Products`);
+    applied.push(`Table: ${finalFilters.table}`);
+    if (finalFilters.category !== "All Categories") applied.push(`Category: ${finalFilters.category}`);
+    if (finalFilters.priceRange[0] > 0 || finalFilters.priceRange[1] < 5000000)
+      applied.push(`Price: ${formatPrice(finalFilters.priceRange[0])} - ${formatPrice(finalFilters.priceRange[1])}`);
+    if (finalFilters.rating > 0) applied.push(`Rating: ${finalFilters.rating}+ stars`);
+    if (finalFilters.showTrendingOnly) applied.push("Trending Only");
+    if (finalFilters.topN !== 10) applied.push(`Top ${finalFilters.topN} Products`);
 
     setAppliedFilters(applied);
   };
@@ -140,16 +157,30 @@ export default function FiltersPanel() {
     setAppliedFiltersContext(updatedFilters);
   };
 
+  // Handle Category change with subscription check
+  const handleCategoryChange = (val: string) => {
+    if (isFreeTier && val !== "All Categories") {
+      setAttemptedCategory(val);
+      setModalType("category");
+      setShowUpgradeModal(true);
+      return;
+    }
+    setAttemptedCategory(null);
+    updateLocalFilter("category", val);
+  };
+
   // Handle Top N change with subscription check
   const handleTopNChange = (value: string) => {
     const numValue = parseInt(value);
 
     if (numValue > limits.maxTopN) {
       setAttemptedTopN(numValue);
-      setShowUpgradeDialog(true);
+      setModalType("topN");
+      setShowUpgradeModal(true);
       return;
     }
 
+    setAttemptedTopN(null);
     updateLocalFilter("topN", numValue);
   };
 
@@ -232,17 +263,47 @@ export default function FiltersPanel() {
 
             {/* Category Selector */}
             <div className="space-y-2">
-              <Label>{t('filters.category', 'Category')}</Label>
-              <Select value={localFilters.category} onValueChange={(v) => updateLocalFilter("category", v)}>
+              <div className="flex items-center justify-between">
+                <Label>{t('filters.category', 'Category')}</Label>
+                {isFreeTier && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3 text-amber-500" />
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">Locked</span>
+                  </span>
+                )}
+              </div>
+              <Select value={localFilters.category} onValueChange={handleCategoryChange}>
                 <SelectTrigger className="w-full" data-track-id="filters_category_select" data-filter-value={localFilters.category}>
                   <SelectValue placeholder={t('filters.selectCategory', 'Select category')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat} data-track-id="filters_category_option" data-filter-value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
+                  {categories.map((cat) => {
+                    const isLocked = isFreeTier && cat !== "All Categories";
+                    return (
+                      <SelectItem
+                        key={cat}
+                        value={cat}
+                        className={isLocked ? "opacity-75" : ""}
+                        data-track-id="filters_category_option"
+                        data-filter-value={cat}
+                      >
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span>{cat}</span>
+                          {isLocked && (
+                            <span className="flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400 font-medium ml-2">
+                              <Lock className="h-3 w-3" />
+                              Locked
+                            </span>
+                          )}
+                          {!isLocked && cat === "All Categories" && isFreeTier && (
+                            <span className="text-[11px] text-muted-foreground font-normal ml-2">
+                              (Free Preview)
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -318,8 +379,6 @@ export default function FiltersPanel() {
                   })}
                 </SelectContent>
               </Select>
-
-
             </div>
           </div>
 
@@ -339,144 +398,47 @@ export default function FiltersPanel() {
         </CardContent>
       </Card>
 
-      {/* Upgrade Dialog */}
-      <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Crown className="w-6 h-6 text-purple-600" />
-              Upgrade to View More Products
+      {/* Small Upgrade Modal */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="max-w-sm p-6 rounded-2xl border shadow-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100">
+          <DialogHeader className="text-center space-y-2 pt-1">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">
+              <Crown className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-base sm:text-lg font-bold text-center tracking-tight">
+              {modalType === "category" ? "Unlock Category Filtering" : "Unlock More Products"}
             </DialogTitle>
-            <DialogDescription>
-              {attemptedTopN
-                ? `You tried to select Top ${attemptedTopN}, but your ${currentTier} plan is limited to Top ${limits.maxTopN}`
-                : `Your ${currentTier} plan is limited to Top ${limits.maxTopN} products`
-              }
+            <DialogDescription className="text-xs text-slate-600 dark:text-slate-400 text-center leading-relaxed">
+              {modalType === "category" ? (
+                <>
+                  Filtering by <span className="font-semibold text-slate-900 dark:text-white">&ldquo;{attemptedCategory}&rdquo;</span> is locked on the Free plan. Upgrade to <span className="font-semibold text-emerald-600 dark:text-emerald-400">Starter</span> to search and filter products across all categories.
+                </>
+              ) : (
+                <>
+                  Viewing <span className="font-semibold text-slate-900 dark:text-white">Top {attemptedTopN}</span> products is locked on the Free plan. Upgrade to <span className="font-semibold text-emerald-600 dark:text-emerald-400">Starter</span> to unlock more top-selling products.
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            {/* Current Plan Info */}
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-slate-900">
-                  Current Plan: {currentTier.toUpperCase()}
-                </p>
-                <Badge variant="outline" className="text-xs">Active</Badge>
-              </div>
-              <p className="text-sm text-slate-700">
-                <strong>Your Limit:</strong> Top {limits.maxTopN} products
-              </p>
-            </div>
-
-            {/* Feature Comparison */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-sm text-slate-800">
-                📊 Upgrade Options:
-              </h4>
-
-              <div className="space-y-2">
-                {currentTier === "free" && (
-                  <>
-                    <div className="border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-emerald-900 dark:text-emerald-300">Starter - ₹499/month</p>
-                      <ul className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1 mt-1 ml-4">
-                        <li>✓ Top 10 products (2x more)</li>
-                        <li>✓ AI chart summaries & insights</li>
-                        <li>✓ 10 notifications limit</li>
-                        <li>✓ Export data to CSV/Excel</li>
-                      </ul>
-                    </div>
-                    <div className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-blue-900 dark:text-blue-300">Basic - ₹1999/month</p>
-                      <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 mt-1 ml-4">
-                        <li>✓ Top 20 products (4x more)</li>
-                        <li>✓ 20 full analyses & 20 AI chats</li>
-                        <li>✓ 15 notifications</li>
-                        <li>✓ Export data</li>
-                      </ul>
-                    </div>
-                    <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
-                      <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
-                        <li>✓ Top 100 products (20x more)</li>
-                        <li>✓ Real-time data & alerts</li>
-                        <li>✓ Unlimited notifications</li>
-                        <li>✓ Advanced analytics</li>
-                      </ul>
-                    </div>
-                  </>
-                )}
-
-                {currentTier === "starter" && (
-                  <>
-                    <div className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-blue-900 dark:text-blue-300">Basic - ₹1999/month</p>
-                      <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 mt-1 ml-4">
-                        <li>✓ Top 20 products (2x more)</li>
-                        <li>✓ 20 full analyses & 20 AI chats</li>
-                        <li>✓ 15 notifications</li>
-                        <li>✓ Daily report frequency</li>
-                      </ul>
-                    </div>
-                    <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
-                      <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
-                        <li>✓ Top 100 products (10x more)</li>
-                        <li>✓ Real-time data & alerts</li>
-                        <li>✓ Unlimited notifications & analyses</li>
-                        <li>✓ Advanced analytics</li>
-                      </ul>
-                    </div>
-                  </>
-                )}
-
-                {currentTier === "basic" && (
-                  <div className="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/30 p-3 rounded-r-lg">
-                    <p className="font-semibold text-sm text-purple-900 dark:text-purple-300">Premium - ₹2999/month ⭐</p>
-                    <ul className="text-xs text-purple-700 dark:text-purple-400 space-y-1 mt-1 ml-4">
-                      <li>✓ Top 100 products (5x more)</li>
-                      <li>✓ Real-time data & alerts</li>
-                      <li>✓ Unlimited notifications</li>
-                      <li>✓ Advanced analytics</li>
-                      <li>✓ AI chatbot support</li>
-                    </ul>
-                  </div>
-                )}
-
-                {currentTier === "premium" && (
-                  <div className="border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg">
-                    <p className="font-semibold text-sm text-amber-900">Enterprise - Custom 👑</p>
-                    <ul className="text-xs text-amber-700 space-y-1 mt-1 ml-4">
-                      <li>✓ Unlimited products</li>
-                      <li>✓ Dedicated account manager</li>
-                      <li>✓ Custom integrations</li>
-                      <li>✓ 24/7 priority support</li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex gap-3 pt-2">
-              <Button
-                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                onClick={() => window.location.href = "/subscription"}
-                data-track-id="filters_upgrade_now_dialog_btn"
-              >
-                <Crown className="w-4 h-4 mr-2" />
-                Upgrade Now
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setShowUpgradeDialog(false)}
-                data-track-id="filters_maybe_later_dialog_btn"
-              >
-                Maybe Later
-              </Button>
-            </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={() => {
+                setShowUpgradeModal(false);
+                window.location.href = "/subscription";
+              }}
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-2.5 rounded-xl shadow-md text-xs sm:text-sm active:scale-95 transition-all"
+            >
+              <Crown className="w-4 h-4 mr-1.5" />
+              Upgrade to Starter (₹499/mo)
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowUpgradeModal(false)}
+              className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 h-8"
+            >
+              Maybe Later
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
