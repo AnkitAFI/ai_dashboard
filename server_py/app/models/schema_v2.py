@@ -812,3 +812,64 @@ class AmazonSPAPIUploadedMedia(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+
+class AmazonSPAPIListingQuotaWallet(Base):
+    """
+    Dedicated, isolated wallet and quota tracking strictly for creating new listings.
+    Zero collision with any existing tables or columns.
+    """
+    __tablename__ = "amazon_sp_api_listing_quota_wallets"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), unique=True, nullable=False, index=True)
+    free_listings_used = Column(Integer, default=0, nullable=False)
+    cycle_start_date = Column(DateTime(timezone=True), nullable=True) # Tracks renewal date
+    wallet_balance_inr = Column(Numeric(10, 2), default=0.00, nullable=False)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonSPAPIListingWalletTransaction(Base):
+    """
+    Audit ledger for every wallet recharge and ₹50 listing creation deduction.
+    """
+    __tablename__ = "amazon_sp_api_listing_wallet_transactions"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    transaction_type = Column(String(50), nullable=False) # 'RECHARGE', 'LISTING_CREATION_FEE'
+    amount = Column(Numeric(10, 2), nullable=False) # E.g. +250.00 or -50.00
+    balance_after = Column(Numeric(10, 2), nullable=False)
+    sku = Column(String(255), nullable=True)
+    razorpay_order_id = Column(String(100), nullable=True)
+    razorpay_payment_id = Column(String(100), nullable=True)
+    description = Column(String(255), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AmazonSPAPIScheduledListing(Base):
+    """
+    Dedicated table for scheduled listing launches.
+    Allows sellers to prepare products in advance and automatically publish at a future date/time.
+    Zero alterations to existing tables. Full DPDP/GDPR CASCADE deletion compliance.
+    """
+    __tablename__ = "amazon_sp_api_scheduled_listings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
+    selling_partner_id = Column(String(255), nullable=False, index=True)
+    sku = Column(String(100), nullable=False, index=True)
+    product_type = Column(String(100), nullable=False)
+    payload = Column(JSONB, nullable=False)
+    scheduled_time = Column(DateTime(timezone=True), nullable=False, index=True)
+    status = Column(String(50), default="SCHEDULED", index=True)  # SCHEDULED, PUBLISHING, PUBLISHED, FAILED, CANCELLED
+    published_at = Column(DateTime(timezone=True), nullable=True)
+    error_message = Column(Text, nullable=True)
+    amazon_submission_id = Column(String(100), nullable=True)
+    fee_charged = Column(Numeric(10, 2), default=0.00, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+

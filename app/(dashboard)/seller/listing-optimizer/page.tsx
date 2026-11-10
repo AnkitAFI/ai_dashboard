@@ -28,7 +28,10 @@ import {
   ChevronRight,
   UploadCloud,
   ImageIcon,
-  Trash2
+  Trash2,
+  CreditCard,
+  ShieldCheck,
+  Calendar
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +48,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import SyncPendingBanner from "@/components/seller/sync-pending-banner";
+
+const loadRazorpay = (): Promise<boolean> =>
+  new Promise((resolve) => {
+    if (typeof window !== "undefined" && (window as any).Razorpay) return resolve(true);
+    if (document.getElementById("rzp-sdk")) return resolve(true);
+    const s = document.createElement("script");
+    s.id = "rzp-sdk";
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
 
 interface ListingItem {
   id: number;
@@ -79,6 +94,23 @@ interface HistoryRecord {
   };
   changed_by: string;
   reason: string;
+  created_at: string;
+}
+
+interface ScheduledListing {
+  id: number;
+  sku: string;
+  product_type: string;
+  title: string;
+  brand: string;
+  price: number;
+  initial_quantity: number;
+  main_image_url?: string | null;
+  scheduled_time: string;
+  status: string;
+  published_at?: string | null;
+  error_message?: string | null;
+  amazon_submission_id?: string | null;
   created_at: string;
 }
 
@@ -136,10 +168,39 @@ export default function ListingOptimizerPage() {
   const [creatorImageUrl, setCreatorImageUrl] = useState("");
   const [creatorImageFile, setCreatorImageFile] = useState<File | null>(null);
   const [creatorImagePreview, setCreatorImagePreview] = useState<string>("");
-  const [creatorImageMeta, setCreatorImageMeta] = useState<{ width?: number; height?: number; filename?: string } | null>(null);
+  const [creatorImageMeta, setCreatorImageMeta] = useState<{
+    width?: number;
+    height?: number;
+    filename?: string;
+    is_pure_white?: boolean;
+    background_rgb?: [number, number, number];
+    background_warning?: string | null;
+  } | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPublishing, setIsPublishing] = useState(false);
+
+  // Creator Quota & Dedicated Wallet State
+  const [creatorQuota, setCreatorQuota] = useState<{
+    quota_limit: number;
+    free_listings_used: number;
+    free_listings_remaining: number;
+    wallet_balance_inr: number;
+    cycle_reset_date: string;
+    cost_per_extra_listing: number;
+    razorpay_key_id: string;
+  } | null>(null);
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+  const [isRechargingWallet, setIsRechargingWallet] = useState(false);
+  const [topUpCount, setTopUpCount] = useState(1);
+
+  // Scheduled Launches State
+  const [scheduledListings, setScheduledListings] = useState<ScheduledListing[]>([]);
+  const [mainTab, setMainTab] = useState<"catalog" | "scheduled">("catalog");
+  const [isScheduling, setIsScheduling] = useState(false);
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("09:00");
 
   const isDark = resolvedTheme === "dark";
 
@@ -156,6 +217,8 @@ export default function ListingOptimizerPage() {
   useEffect(() => {
     if (selectedSpId) {
       fetchCatalogData(selectedSpId);
+      fetchCreatorQuota(selectedSpId);
+      fetchScheduledListings(selectedSpId);
     }
   }, [selectedSpId]);
 
@@ -195,6 +258,136 @@ export default function ListingOptimizerPage() {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCreatorQuota = async (spId?: string) => {
+    const targetSpId = spId || selectedSpId;
+    if (!targetSpId) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${targetSpId}/creator-quota`, {
+        credentials: "include"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCreatorQuota(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch creator quota:", err);
+    }
+  };
+
+  const fetchScheduledListings = async (spId: string) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${spId}/scheduled`, {
+        credentials: "include"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setScheduledListings(data.scheduled_listings || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch scheduled listings:", err);
+    }
+  };
+
+  const handleRechargeWallet = async (amount: number) => {
+    if (!selectedSpId) return;
+    setIsRechargingWallet(true);
+    try {
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        toast({
+          title: "Payment Gateway Error",
+          description: "Unable to load Razorpay payment gateway. Please check your internet connection.",
+          variant: "destructive"
+        });
+        setIsRechargingWallet(false);
+        return;
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${selectedSpId}/wallet/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ amount })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to initialize wallet recharge.");
+      }
+
+      const orderData = await res.json();
+
+      const options = {
+        key: orderData.razorpay_key_id,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "Insydz Listing Studio",
+        description: `Wallet Top-Up (+₹${amount}) for extra Amazon listings`,
+        order_id: orderData.razorpay_order_id,
+        prefill: {
+          name: user?.name || "Store Owner",
+          email: user?.email || "",
+          contact: ""
+        },
+        theme: {
+          color: "#4f46e5"
+        },
+        handler: async (response: any) => {
+          try {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${selectedSpId}/wallet/verify-payment`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                amount
+              })
+            });
+
+            if (!verifyRes.ok) {
+              const verifyErr = await verifyRes.json().catch(() => ({}));
+              throw new Error(verifyErr.detail || "Payment verification failed.");
+            }
+
+            const verifyData = await verifyRes.json();
+            toast({
+              title: "💳 Wallet Recharged",
+              description: `Successfully added ₹${amount} to your listing wallet. Current Balance: ₹${verifyData.wallet_balance_inr.toFixed(2)}.`
+            });
+
+            setIsTopUpModalOpen(false);
+            fetchCreatorQuota();
+          } catch (verErr: any) {
+            toast({
+              title: "Verification Error",
+              description: verErr.message || "Payment verification failed. Please contact support.",
+              variant: "destructive"
+            });
+          } finally {
+            setIsRechargingWallet(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsRechargingWallet(false);
+          }
+        }
+      };
+
+      const rzpInstance = new (window as any).Razorpay(options);
+      rzpInstance.open();
+    } catch (err: any) {
+      toast({
+        title: "Recharge Failed",
+        description: err.message || "Could not process wallet top-up.",
+        variant: "destructive"
+      });
+      setIsRechargingWallet(false);
     }
   };
 
@@ -377,21 +570,164 @@ export default function ListingOptimizerPage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        if (res.status === 402) {
+          setIsTopUpModalOpen(true);
+        }
         throw new Error(err.detail || "Amazon rejected new listing creation.");
       }
+
+      const resData = await res.json().catch(() => ({}));
 
       toast({
         title: "🎉 Listing Published!",
         description: `Successfully submitted SKU ${creatorSku} to Amazon! Your product is being added to your catalog.`
       });
 
+      if (resData?.fee_charged > 0) {
+        toast({
+          title: "💳 Wallet Deducted",
+          description: `₹${resData.fee_charged.toFixed(2)} deducted from wallet for extra listing creation. Remaining: ₹${resData.wallet_balance_inr?.toFixed(2) || "0.00"}.`
+        });
+      }
+
       setIsCreatorOpen(false);
       setCreatorStep(1);
       fetchCatalogData(selectedSpId);
+      fetchCreatorQuota(selectedSpId);
     } catch (e: any) {
       toast({ title: "Creation Failed", description: e.message, variant: "destructive" });
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  const setQuickSchedule = (type: "tomorrow" | "friday" | "saturday") => {
+    const now = new Date();
+    let target = new Date();
+    if (type === "tomorrow") {
+      target.setDate(now.getDate() + 1);
+      setScheduleTime("09:00");
+    } else if (type === "friday") {
+      const day = now.getDay();
+      const diff = (5 - day + 7) % 7 || 7;
+      target.setDate(now.getDate() + diff);
+      setScheduleTime("08:00");
+    } else if (type === "saturday") {
+      const day = now.getDay();
+      const diff = (6 - day + 7) % 7 || 7;
+      target.setDate(now.getDate() + diff);
+      setScheduleTime("10:00");
+    }
+    const yyyy = target.getFullYear();
+    const mm = String(target.getMonth() + 1).padStart(2, "0");
+    const dd = String(target.getDate()).padStart(2, "0");
+    setScheduleDate(`${yyyy}-${mm}-${dd}`);
+  };
+
+  const handleScheduleListing = async () => {
+    if (!creatorSku || !creatorTitle || !creatorBrand) {
+      toast({ title: "Missing Required Fields", description: "SKU, Title, and Brand Name are mandatory.", variant: "destructive" });
+      return;
+    }
+
+    if (!scheduleDate || !scheduleTime) {
+      toast({ title: "Launch Time Required", description: "Please pick the date and time when this product should launch.", variant: "destructive" });
+      return;
+    }
+
+    const dt = new Date(`${scheduleDate}T${scheduleTime}:00`);
+    if (isNaN(dt.getTime()) || dt.getTime() <= Date.now() + 60000) {
+      toast({ title: "Invalid Launch Time", description: "Scheduled launch time must be at least 2 minutes in the future.", variant: "destructive" });
+      return;
+    }
+
+    const byteLen = new TextEncoder().encode(creatorKeywords).length;
+    if (byteLen > 250) {
+      toast({ title: "Keyword Limit Exceeded", description: `Search keywords exceed the 250-character limit (Current: ${byteLen}).`, variant: "destructive" });
+      return;
+    }
+
+    setIsScheduling(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${selectedSpId}/schedule/${creatorSku}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          sku: creatorSku,
+          product_type: creatorCategory,
+          brand: creatorBrand,
+          title: creatorTitle,
+          bullets: creatorBullets.filter(b => b.trim()),
+          description: creatorDesc,
+          backend_search_terms: creatorKeywords,
+          price: creatorPrice,
+          initial_quantity: creatorQty,
+          barcode_type: creatorBarcodeType,
+          barcode_value: creatorBarcodeValue || null,
+          main_image_url: creatorImageUrl || null,
+          scheduled_time: dt.toISOString()
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to schedule product launch.");
+      }
+
+      toast({
+        title: "📅 Launch Scheduled!",
+        description: `Successfully scheduled ${creatorSku} to automatically publish on ${dt.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} at ${dt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}.`
+      });
+
+      setIsCreatorOpen(false);
+      setCreatorStep(1);
+      setShowSchedulePicker(false);
+      fetchScheduledListings(selectedSpId);
+      setMainTab("scheduled");
+    } catch (e: any) {
+      toast({ title: "Scheduling Failed", description: e.message, variant: "destructive" });
+    } finally {
+      setIsScheduling(false);
+    }
+  };
+
+  const handleCancelScheduled = async (id: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${selectedSpId}/scheduled/${id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to cancel scheduled launch.");
+      }
+      toast({ title: "Launch Cancelled", description: "Scheduled product launch was cancelled successfully." });
+      fetchScheduledListings(selectedSpId);
+    } catch (e: any) {
+      toast({ title: "Cancellation Failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const handlePublishScheduledNow = async (id: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-sp-api/listings/${selectedSpId}/scheduled/${id}/publish-now`, {
+        method: "POST",
+        credentials: "include"
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        if (res.status === 402) {
+          setIsTopUpModalOpen(true);
+        }
+        throw new Error(err.detail || "Failed to publish listing.");
+      }
+      toast({ title: "🎉 Published Live!", description: "Product has been successfully submitted to Amazon." });
+      fetchScheduledListings(selectedSpId);
+      fetchCatalogData(selectedSpId);
+      fetchCreatorQuota(selectedSpId);
+    } catch (e: any) {
+      toast({ title: "Launch Failed", description: e.message, variant: "destructive" });
     }
   };
 
@@ -443,13 +779,24 @@ export default function ListingOptimizerPage() {
       setCreatorImageMeta({
         width: data.width,
         height: data.height,
-        filename: data.filename
+        filename: data.filename,
+        is_pure_white: data.is_pure_white,
+        background_rgb: data.background_rgb,
+        background_warning: data.background_warning
       });
 
-      toast({
-        title: "✓ Photo Uploaded",
-        description: `Successfully uploaded ${data.filename} (${data.width} × ${data.height} pixels).`
-      });
+      if (data.is_pure_white === false) {
+        toast({
+          title: "⚠️ Photo Background Warning",
+          description: data.background_warning || "Photo background is off-white or has shadows. Clean white background required.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "✓ Photo Uploaded & Verified",
+          description: `Successfully uploaded ${data.filename}. Clean white background verified.`
+        });
+      }
     } catch (err: any) {
       toast({
         title: "Upload Failed",
@@ -536,6 +883,9 @@ export default function ListingOptimizerPage() {
               onClick={() => {
                 setCreatorStep(1);
                 handleRemoveUploadedImage();
+                fetchCreatorQuota(selectedSpId);
+                setShowSchedulePicker(false);
+                setQuickSchedule("tomorrow");
                 setIsCreatorOpen(true);
               }}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full font-bold shadow-sm"
@@ -654,8 +1004,28 @@ export default function ListingOptimizerPage() {
             </Card>
           </div>
 
-          {/* Product Quality Table */}
-          <Card className={`rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+          {/* Main View Switcher: Active Catalog vs Scheduled Launches */}
+          <div className="flex items-center gap-3 mb-6">
+            <Button
+              variant={mainTab === "catalog" ? "default" : "outline"}
+              onClick={() => setMainTab("catalog")}
+              className={`rounded-full text-xs font-bold gap-2 h-9 px-4 ${mainTab === "catalog" ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : ''}`}
+            >
+              Active Amazon Catalog ({items.length})
+            </Button>
+            <Button
+              variant={mainTab === "scheduled" ? "default" : "outline"}
+              onClick={() => setMainTab("scheduled")}
+              className={`rounded-full text-xs font-bold gap-2 h-9 px-4 ${mainTab === "scheduled" ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : ''}`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              Scheduled Launches ({scheduledListings.filter(s => s.status === "SCHEDULED").length})
+            </Button>
+          </div>
+
+          {mainTab === "catalog" ? (
+            /* Product Quality Table */
+            <Card className={`rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
             <CardHeader className="pb-4 border-b">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -788,6 +1158,172 @@ export default function ListingOptimizerPage() {
               </table>
             </CardContent>
           </Card>
+          ) : (
+            /* Scheduled Product Launches Table */
+            <Card className={`rounded-2xl border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <CardHeader className="pb-4 border-b">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-indigo-500" /> Scheduled Product Launches
+                    </CardTitle>
+                    <CardDescription>
+                      Products prepared in advance that will automatically publish to Amazon at their scheduled date and time.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      setIsCreatorOpen(true);
+                      setCreatorStep(1);
+                      setShowSchedulePicker(true);
+                      setQuickSchedule("tomorrow");
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold text-xs h-9 gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" /> Schedule Another Product
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className={`text-xs uppercase bg-muted/40 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <tr>
+                      <th className="px-6 py-4">Product Details</th>
+                      <th className="px-6 py-4">Price &amp; Stock</th>
+                      <th className="px-6 py-4">Target Launch Date &amp; Time</th>
+                      <th className="px-6 py-4">Launch Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {scheduledListings.length > 0 ? (
+                      scheduledListings.map((sched) => (
+                        <tr key={sched.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              {sched.main_image_url ? (
+                                <img src={sched.main_image_url} alt="" className="w-10 h-10 rounded-lg object-contain bg-white border p-0.5 shrink-0" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                                  No Photo
+                                </div>
+                              )}
+                              <div className="max-w-xs">
+                                <div className="font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                  SKU: {sched.sku} • {sched.product_type}
+                                </div>
+                                <div className="text-xs text-foreground truncate font-medium mt-0.5" title={sched.title}>
+                                  {sched.title || "Untitled Product"}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs font-semibold">
+                            ₹{sched.price} <span className="text-muted-foreground font-normal">({sched.initial_quantity} units)</span>
+                          </td>
+                          <td className="px-6 py-4 text-xs">
+                            <div className="font-bold text-foreground flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                              {new Date(sched.scheduled_time).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                            </div>
+                            <div className="text-[11px] text-muted-foreground mt-0.5">
+                              at {new Date(sched.scheduled_time).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs">
+                            {sched.status === "SCHEDULED" ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                <Clock className="w-3 h-3" /> Scheduled
+                              </span>
+                            ) : sched.status === "PUBLISHING" ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                                <Loader2 className="w-3 h-3 animate-spin" /> Publishing...
+                              </span>
+                            ) : sched.status === "PUBLISHED" ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                <CheckCircle2 className="w-3 h-3" /> Published Live
+                              </span>
+                            ) : sched.status === "FAILED" ? (
+                              <div>
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                                  <AlertTriangle className="w-3 h-3" /> Launch Failed
+                                </span>
+                                {sched.error_message && (
+                                  <div className="text-[10px] text-red-600 dark:text-red-400 mt-1 max-w-xs">
+                                    {sched.error_message}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">{sched.status}</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {sched.status === "SCHEDULED" && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handlePublishScheduledNow(sched.id)}
+                                    className="rounded-full text-xs h-7 bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+                                  >
+                                    <Zap className="w-3 h-3 mr-1" /> Launch Now
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleCancelScheduled(sched.id)}
+                                    className="rounded-full text-xs h-7 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </>
+                              )}
+                              {sched.status === "FAILED" && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handlePublishScheduledNow(sched.id)}
+                                  className="rounded-full text-xs h-7 bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+                                >
+                                  Retry Launch
+                                </Button>
+                              )}
+                              {sched.status === "PUBLISHED" && (
+                                <span className="text-xs text-muted-foreground font-medium">
+                                  Live on Amazon
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="py-12 text-center text-muted-foreground">
+                          <Calendar className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                          <p className="font-bold text-sm text-foreground">No upcoming product launches scheduled</p>
+                          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                            Prepare your products in advance and pick a launch date and time. Our system will automatically publish them to Amazon on your schedule.
+                          </p>
+                          <Button
+                            onClick={() => {
+                              setIsCreatorOpen(true);
+                              setCreatorStep(1);
+                              setShowSchedulePicker(true);
+                              setQuickSchedule("tomorrow");
+                            }}
+                            className="mt-4 rounded-full text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white"
+                          >
+                            <Plus className="w-3.5 h-3.5 mr-1.5" /> Schedule Your First Product
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
 
@@ -1170,7 +1706,8 @@ export default function ListingOptimizerPage() {
                   />
 
                   {creatorImageUrl || creatorImagePreview ? (
-                    <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                    <>
+                      <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                       <div className="flex items-center gap-3">
                         <img
                           src={creatorImagePreview || creatorImageUrl}
@@ -1195,6 +1732,18 @@ export default function ListingOptimizerPage() {
                           <div className="text-[11px] text-muted-foreground mt-0.5">
                             Tip: Pure white background recommended for Amazon listings.
                           </div>
+                          {creatorImageMeta?.is_pure_white === true && (
+                            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                              Clean white background verified • Safe from Amazon search hiding
+                            </div>
+                          )}
+                          {creatorImageMeta?.is_pure_white === false && (
+                            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-bold">
+                              <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+                              Off-white or grey background detected
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1221,6 +1770,17 @@ export default function ListingOptimizerPage() {
                         </Button>
                       </div>
                     </div>
+
+                    {creatorImageMeta?.is_pure_white === false && (
+                      <div className="mt-2.5 p-3 rounded-xl border border-amber-300 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="leading-relaxed">
+                          <span className="font-bold">⚠️ Photo Warning: </span>
+                          {creatorImageMeta.background_warning || "Photo background is off-white or has shadows. Amazon strictly requires a pure clean white background for your main product photo. An off-white background will cause Amazon to hide your product from buyer search results."}
+                        </div>
+                      </div>
+                    )}
+                  </>
                   ) : (
                     <div
                       onClick={() => !isUploadingImage && fileInputRef.current?.click()}
@@ -1255,23 +1815,198 @@ export default function ListingOptimizerPage() {
             )}
 
             {creatorStep === 5 && (
-              <div className={`p-4 rounded-xl border text-xs space-y-3 ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                <div className="font-bold text-sm text-foreground">Listing Summary &amp; Final Check:</div>
-                <div className="flex items-center gap-3 py-1">
-                  {creatorImageUrl || creatorImagePreview ? (
-                    <img src={creatorImagePreview || creatorImageUrl} alt="Product" className="w-12 h-12 rounded-lg object-contain bg-white border p-1 shrink-0" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">No Photo</div>
-                  )}
-                  <div>
-                    <div className="font-bold text-foreground">{creatorTitle || "Untitled Product"}</div>
-                    <div className="text-muted-foreground">{creatorBrand} • {creatorCategory} • SKU: {creatorSku}</div>
+              <div className="space-y-4">
+                {/* Quota & Dedicated Wallet Banner */}
+                <div className={`p-4 rounded-xl border ${
+                  (creatorQuota?.free_listings_remaining || 0) > 0
+                    ? (isDark ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700')
+                    : (creatorQuota?.wallet_balance_inr || 0) >= 50
+                    ? (isDark ? 'bg-indigo-950/20 border-indigo-800 text-indigo-400' : 'bg-indigo-50 border-indigo-200 text-indigo-700')
+                    : (isDark ? 'bg-amber-950/20 border-amber-800 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-800')
+                }`}>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold flex items-center gap-1.5">
+                      {(creatorQuota?.free_listings_remaining || 0) > 0 ? (
+                        <>🎁 Free Monthly Allowance</>
+                      ) : (creatorQuota?.wallet_balance_inr || 0) >= 50 ? (
+                        <>💳 Paid Extra Listing</>
+                      ) : (
+                        <>⚠️ Free Monthly Listings Used</>
+                      )}
+                    </span>
+                    <span className="font-semibold">
+                      Wallet Balance: ₹{(creatorQuota?.wallet_balance_inr || 0).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="text-xs mt-2 leading-relaxed">
+                    {(creatorQuota?.free_listings_remaining || 0) > 0 ? (
+                      <div>
+                        You have <b>{creatorQuota?.free_listings_remaining} of {creatorQuota?.quota_limit} free listings remaining</b> this month. Refreshes on your next plan renewal. This listing will be published for <b>free</b>.
+                      </div>
+                    ) : (creatorQuota?.wallet_balance_inr || 0) >= 50 ? (
+                      <div>
+                        You have used your {creatorQuota?.quota_limit} free listings for this month. An extra listing fee of <b>₹50</b> will be deducted from your wallet when published.
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p>
+                          You have used all {creatorQuota?.quota_limit} free listings included with your plan. Extra listings are <b>₹50 per product</b>.
+                        </p>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsTopUpModalOpen(true)}
+                          className="rounded-full text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold"
+                        >
+                          💳 Add Money to Wallet (₹50 per listing)
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div><b>Barcode:</b> {creatorBarcodeValue || (creatorBarcodeType === "exemption" ? "Brand Exemption Approved" : "None")}</div>
-                <div><b>Price:</b> ₹{creatorPrice} • <b>Available Stock:</b> {creatorQty} units</div>
-                <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg font-medium">
-                  ✓ Ready to Publish: All required Amazon product details and device photo are complete.
+
+                {/* Summary Card */}
+                <div className={`p-4 rounded-xl border text-xs space-y-3 ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className="font-bold text-sm text-foreground">Listing Summary &amp; Final Check:</div>
+                  <div className="flex items-center gap-3 py-1">
+                    {creatorImageUrl || creatorImagePreview ? (
+                      <img src={creatorImagePreview || creatorImageUrl} alt="Product" className="w-12 h-12 rounded-lg object-contain bg-white border p-1 shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">No Photo</div>
+                    )}
+                    <div>
+                      <div className="font-bold text-foreground">{creatorTitle || "Untitled Product"}</div>
+                      <div className="text-muted-foreground">{creatorBrand} • {creatorCategory} • SKU: {creatorSku}</div>
+                    </div>
+                  </div>
+                  <div><b>Barcode:</b> {creatorBarcodeValue || (creatorBarcodeType === "exemption" ? "Brand Exemption Approved" : "None")}</div>
+                  <div><b>Price:</b> ₹{creatorPrice} • <b>Available Stock:</b> {creatorQty} units</div>
+                  {creatorImageMeta?.is_pure_white === false ? (
+                    <div className="p-3 bg-amber-500/10 border border-amber-300 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 rounded-lg font-medium text-xs flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="leading-relaxed">
+                        <b>Photo Warning:</b> {creatorImageMeta.background_warning || "The uploaded photo has an off-white background or shadows. Amazon strictly requires a pure white background and may hide this product from customer search results."}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg font-medium">
+                      ✓ Ready to Publish: All required Amazon product details and clean product photo are complete.
+                    </div>
+                  )}
+                </div>
+
+                {/* Launch Timing Selector */}
+                <div className={`p-4 rounded-xl border space-y-3 ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-sm text-foreground">Launch Timing</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        Publish to your live Amazon catalog immediately or set a future launch date &amp; time.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowSchedulePicker(false)}
+                      className={`flex items-center justify-center gap-2 p-3 rounded-lg border text-xs font-bold transition-all ${
+                        !showSchedulePicker
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                          : isDark
+                          ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Zap className="w-4 h-4" /> Publish Immediately
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowSchedulePicker(true);
+                        if (!scheduleDate) setQuickSchedule("tomorrow");
+                      }}
+                      className={`flex items-center justify-center gap-2 p-3 rounded-lg border text-xs font-bold transition-all ${
+                        showSchedulePicker
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                          : isDark
+                          ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Calendar className="w-4 h-4" /> Schedule for Later
+                    </button>
+                  </div>
+
+                  {showSchedulePicker && (
+                    <div className={`p-3.5 rounded-lg border space-y-3 mt-2 ${isDark ? 'bg-indigo-950/20 border-indigo-900/50' : 'bg-indigo-50/70 border-indigo-200'}`}>
+                      <div className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" /> Select Launch Date &amp; Time
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        Your listing will remain safely staged until this exact moment, then automatically published to Amazon. You can cancel or launch early anytime from the Scheduled Launches tab.
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span className="text-[11px] text-muted-foreground font-medium">Quick presets:</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setQuickSchedule("tomorrow")}
+                          className="h-7 text-[11px] rounded-full border-indigo-200 dark:border-indigo-800"
+                        >
+                          Tomorrow 9:00 AM
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setQuickSchedule("friday")}
+                          className="h-7 text-[11px] rounded-full border-indigo-200 dark:border-indigo-800"
+                        >
+                          Friday 8:00 AM (Festive)
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setQuickSchedule("saturday")}
+                          className="h-7 text-[11px] rounded-full border-indigo-200 dark:border-indigo-800"
+                        >
+                          Saturday 10:00 AM (Weekend)
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <div>
+                          <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Launch Date</label>
+                          <Input
+                            type="date"
+                            value={scheduleDate}
+                            onChange={(e) => setScheduleDate(e.target.value)}
+                            min={new Date().toISOString().split("T")[0]}
+                            className="text-xs h-9"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Launch Time</label>
+                          <Input
+                            type="time"
+                            value={scheduleTime}
+                            onChange={(e) => setScheduleTime(e.target.value)}
+                            className="text-xs h-9"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="text-[11px] text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 p-2.5 rounded border border-emerald-500/20 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>No fees are deducted right now. Your monthly free allowance or wallet balance is only consumed when the listing actually publishes to Amazon.</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1285,12 +2020,124 @@ export default function ListingOptimizerPage() {
               <Button onClick={() => setCreatorStep(s => s + 1)} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold">
                 Continue <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
-            ) : (
+            ) : showSchedulePicker ? (
+              <Button
+                onClick={handleScheduleListing}
+                disabled={isScheduling || !scheduleDate || !scheduleTime}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+              >
+                {isScheduling ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calendar className="w-4 h-4 mr-2" />}
+                Schedule Launch {scheduleDate ? `for ${scheduleDate} ${scheduleTime}` : 'for Later'}
+              </Button>
+            ) : (creatorQuota?.free_listings_remaining || 0) > 0 ? (
               <Button onClick={handlePublishNewProduct} disabled={isPublishing} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
                 {isPublishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
-                Publish Listing to Amazon
+                Publish Listing to Amazon (Free)
+              </Button>
+            ) : (creatorQuota?.wallet_balance_inr || 0) >= 50 ? (
+              <Button onClick={handlePublishNewProduct} disabled={isPublishing} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold">
+                {isPublishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
+                Deduct ₹50 &amp; Publish to Amazon
+              </Button>
+            ) : (
+              <Button onClick={() => setIsTopUpModalOpen(true)} className="bg-amber-600 hover:bg-amber-700 text-white font-bold">
+                <CreditCard className="w-4 h-4 mr-2" /> Add Money to Wallet &amp; Publish (₹50)
               </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Wallet Top-Up Modal */}
+      <Dialog open={isTopUpModalOpen} onOpenChange={setIsTopUpModalOpen}>
+        <DialogContent className={`max-w-md p-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white'}`}>
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-indigo-500" /> Add Money to Listing Wallet
+            </DialogTitle>
+            <DialogDescription className="text-xs pt-1">
+              Publish extra product listings beyond your monthly plan at ₹50 per product.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-4 text-xs">
+            <div className={`p-3 rounded-xl border flex justify-between items-center ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              <span className="text-muted-foreground font-medium">Current Wallet Balance:</span>
+              <span className="font-bold text-sm text-foreground">₹{(creatorQuota?.wallet_balance_inr || 0).toFixed(2)}</span>
+            </div>
+
+            {/* Manual Quantity Selector & Quick Chips */}
+            <div className={`p-4 rounded-xl border space-y-3 ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-sm text-foreground">How many listings do you want to add?</div>
+                  <div className="text-[11px] text-muted-foreground">₹50 per product</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setTopUpCount(c => Math.max(1, c - 1))}
+                    className="w-8 h-8 rounded-full p-0 font-bold text-sm"
+                  >
+                    -
+                  </Button>
+                  <span className="font-bold text-base w-8 text-center text-foreground">{topUpCount}</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setTopUpCount(c => Math.min(50, c + 1))}
+                    className="w-8 h-8 rounded-full p-0 font-bold text-sm"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+
+              {/* Quick Select Buttons */}
+              <div className="flex gap-2 flex-wrap pt-1">
+                <span className="text-[11px] text-muted-foreground self-center mr-1">Quick Select:</span>
+                {[1, 2, 3, 5, 10].map(count => (
+                  <Button
+                    key={count}
+                    type="button"
+                    size="sm"
+                    variant={topUpCount === count ? "default" : "outline"}
+                    onClick={() => setTopUpCount(count)}
+                    className="rounded-full text-xs h-7 px-3 font-semibold"
+                  >
+                    {count} {count === 1 ? 'Product' : 'Products'} (₹{count * 50})
+                  </Button>
+                ))}
+              </div>
+
+              {/* Total Calculation */}
+              <div className="border-t pt-2.5 flex justify-between items-center text-xs">
+                <span className="font-medium text-muted-foreground">Total Amount:</span>
+                <span className="text-base font-bold text-indigo-600 dark:text-indigo-400">
+                  ₹{topUpCount * 50}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-muted-foreground pt-1 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+              100% Secure • Instant balance update via UPI, Google Pay, PhonePe, Cards &amp; NetBanking.
+            </div>
+          </div>
+
+          <DialogFooter className="border-t pt-4 flex justify-between items-center">
+            <Button variant="ghost" onClick={() => setIsTopUpModalOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => handleRechargeWallet(topUpCount * 50)}
+              disabled={isRechargingWallet}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full"
+            >
+              {isRechargingWallet ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
+              Pay ₹{topUpCount * 50} &amp; Add to Wallet ({topUpCount} {topUpCount === 1 ? 'Product' : 'Products'})
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
