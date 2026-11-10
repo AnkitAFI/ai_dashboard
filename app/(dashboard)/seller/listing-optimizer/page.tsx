@@ -79,7 +79,6 @@ interface HistoryRecord {
   };
   changed_by: string;
   reason: string;
-  client_ip: string;
   created_at: string;
 }
 
@@ -325,7 +324,7 @@ export default function ListingOptimizerPage() {
 
       toast({
         title: "⏪ Version Restored",
-        description: `Successfully restored version #${historyId} to your Amazon store.`
+        description: "Successfully restored your previous listing version to your Amazon store."
       });
 
       setActiveItem(null);
@@ -520,15 +519,15 @@ export default function ListingOptimizerPage() {
               onChange={(e) => setSelectedSpId(e.target.value)}
               className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}
             >
-              {accounts.map(acc => (
+              {accounts.map((acc, idx) => (
                 <option key={acc.selling_partner_id} value={acc.selling_partner_id}>
-                  Store: {acc.selling_partner_id.substring(0, 8)}... ({acc.region})
+                  Amazon India Store {idx + 1} {acc.selling_partner_id ? `(Seller ID: ${acc.selling_partner_id})` : ""}
                 </option>
               ))}
             </select>
           ) : accounts.length === 1 ? (
             <div className={`px-4 py-2 rounded-lg border text-sm font-medium ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
-              Store: {accounts[0].selling_partner_id.substring(0, 8)}...
+              Amazon India {accounts[0].selling_partner_id ? `(Seller ID: ${accounts[0].selling_partner_id})` : "Store"}
             </div>
           ) : null}
 

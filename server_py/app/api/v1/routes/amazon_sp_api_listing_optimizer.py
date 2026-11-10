@@ -268,8 +268,6 @@ def get_listing_history(
                 "snapshot_data": h.snapshot_data,
                 "changed_by": h.changed_by,
                 "reason": h.reason,
-                "client_ip": h.client_ip,
-                "user_agent": h.user_agent,
                 "created_at": h.created_at.isoformat() if h.created_at else None
             }
             for h in history
@@ -474,7 +472,7 @@ async def rollback_listing_version(
     db.add(audit)
     db.commit()
     
-    return {"status": "success", "message": f"Successfully rolled back to snapshot #{history_id}."}
+    return {"status": "success", "message": "Successfully restored previous listing version."}
 
 # --- 3. Categories & Schema Caching (Scale Protected) ---
 
