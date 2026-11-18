@@ -40,7 +40,8 @@ type BlogCategory =
   | "Festive Trends"
   | "Case Studies"
   | "Platform Updates"
-  | "Seller Growth";
+  | "Seller Growth"
+  | "Seller Guide";
 
 type Article = {
   id: string;
@@ -58,6 +59,21 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "39",
+    title:
+      "How to Start an Online Selling Business in India: A Beginner's Guide",
+    excerpt:
+      "A step by step roadmap covering GST, documents, where to sell, real costs and your first 30 days, checked against 2026 rules.",
+    category: "Seller Guide",
+    readTime: "7 min read",
+    image:
+      "/images/blogs/39-how-to-start-online-selling-business-india/39_blog_image_1.webp",
+    featuredImage:
+      "/images/blogs/39-how-to-start-online-selling-business-india/39_blog_cover_image.webp",
+    route: "/resources/expert-blog/how-to-start-online-selling-business-india",
+    popular: true,
+  },
+  {
     id: "38",
     title:
       "How Can You Increase Sales on Amazon India Without Increasing Ad Spend?",
@@ -67,8 +83,6 @@ const articles: Article[] = [
     readTime: "6 min read",
     image:
       "/images/blogs/38-increase-sales-amazon-india-without-ad-spend/38_blog_image_1.webp",
-    featuredImage:
-      "/images/blogs/38-increase-sales-amazon-india-without-ad-spend/38_blog_cover_image.webp",
     route:
       "/resources/expert-blog/increase-sales-amazon-india-without-ad-spend",
     popular: true,
