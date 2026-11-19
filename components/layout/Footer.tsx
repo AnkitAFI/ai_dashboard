@@ -157,22 +157,29 @@ export function Footer() {
         {/* Bottom Strip */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
 
-          {/* Social Icons Left */}
-          <div className="flex space-x-4">
-            <a title="Insydz on Facebook" href="https://www.facebook.com/profile.php?id=61586202582209" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-              <Facebook className="w-4 h-4" />
-            </a>
-            <a title="Insydz on Twitter / X" href="https://x.com/growwithinsydz" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-              <Twitter className="w-4 h-4" />
-            </a>
-            <a title="Insydz on Instagram" href="https://www.instagram.com/growwithinsydz/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-              <Instagram className="w-4 h-4" />
-            </a>
-            <a title="Insydz on LinkedIn" href="https://www.linkedin.com/company/insydz/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-              <Linkedin className="w-4 h-4" />
-            </a>
-            <a title="Insydz on YouTube" href="https://www.youtube.com/@growwith_Insydz" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white hover:text-red-400">
-              <Youtube className="w-4 h-4" />
+          {/* Social Icons + LaunchBuff Badge Left */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex space-x-4">
+              <a title="Insydz on Facebook" href="https://www.facebook.com/profile.php?id=61586202582209" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a title="Insydz on Twitter / X" href="https://x.com/growwithinsydz" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a title="Insydz on Instagram" href="https://www.instagram.com/growwithinsydz/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a title="Insydz on LinkedIn" href="https://www.linkedin.com/company/insydz/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a title="Insydz on YouTube" href="https://www.youtube.com/@growwith_Insydz" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white hover:text-red-400">
+                <Youtube className="w-4 h-4" />
+              </a>
+            </div>
+
+            {/* LaunchBuff Badge */}
+            <a href="https://launchbuff.com/products/insydz-xvnh17" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
+              <img src="https://launchbuff.com/badge-featured-light.svg" alt="Featured on LaunchBuff" width="128" height="40" className="opacity-90 hover:opacity-100 transition-opacity" />
             </a>
           </div>
 
