@@ -22,8 +22,18 @@ def _clean_asin(val: Any) -> Optional[str]:
     if val is None:
         return None
     s = str(val).strip().upper()
+    if not s:
+        return None
+    # Strip quotes, semicolons, commas, whitespace
+    s = s.strip("\"' \t\r\n;,()")
     if ASIN_REGEX.match(s):
         return s
+    # Extract from full Amazon URL or string
+    match = re.search(r"\b([A-Z0-9]{10})\b", s)
+    if match:
+        cand = match.group(1).upper()
+        if cand not in {"COMPETITOR", "PROPERTIES", "OPTIONAL"}:
+            return cand
     return None
 
 
@@ -31,7 +41,7 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
     """
     Parses an uploaded Excel (.xlsx, .xls) or CSV sheet.
     Column 1: Our ASIN
-    Columns 2..11: Competitor ASINs (up to 10)
+    Columns 2..11: Competitor ASINs (up to 10, optional)
     """
     rows = []
     # If file is a zip/xlsx archive (magic bytes PK\x03\x04)
@@ -54,14 +64,30 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
     else:
         # File is CSV / plain text
         text = ""
-        for encoding in ("utf-8-sig", "utf-8", "latin-1"):
+        for encoding in ("utf-8-sig", "utf-8", "utf-16", "latin-1", "cp1252"):
             try:
-                text = file_bytes.decode(encoding)
-                break
-            except UnicodeDecodeError:
+                decoded = file_bytes.decode(encoding)
+                if "\x00" not in decoded:
+                    text = decoded
+                    break
+            except Exception:
                 continue
         if text:
-            reader = csv.reader(io.StringIO(text))
+            # Detect delimiter (comma, semicolon, tab)
+            delimiter = ","
+            first_line = text.split("\n")[0] if "\n" in text else text
+            if ";" in first_line and "," not in first_line:
+                delimiter = ";"
+            elif "\t" in first_line and "," not in first_line:
+                delimiter = "\t"
+            else:
+                try:
+                    dialect = csv.Sniffer().sniff(text[:2048], delimiters=",;\t|")
+                    delimiter = dialect.delimiter
+                except Exception:
+                    delimiter = ","
+
+            reader = csv.reader(io.StringIO(text), delimiter=delimiter)
             rows = list(reader)
 
     if not rows:
@@ -72,6 +98,8 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
     first_row_str = " ".join([str(c or "").lower() for c in rows[0]])
     if "asin" in first_row_str or "competitor" in first_row_str or "our" in first_row_str:
         start_idx = 1
+
+    logger.info(f"📑 [PARSE_EXCEL] Total raw rows: {len(rows)}, header skipped: {start_idx == 1}")
 
     parsed_rows = []
     for r_idx in range(start_idx, len(rows)):
@@ -89,12 +117,11 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
             if clean_c and clean_c != our_asin and clean_c not in comp_asins:
                 comp_asins.append(clean_c)
 
-        if comp_asins:
-            parsed_rows.append({
-                "row_num": r_idx + 1,
-                "our_asin": our_asin,
-                "competitor_asins": comp_asins
-            })
+        parsed_rows.append({
+            "row_num": r_idx + 1,
+            "our_asin": our_asin,
+            "competitor_asins": comp_asins
+        })
 
     return parsed_rows
 
@@ -110,6 +137,7 @@ def process_upload(
     """
     Processes an uploaded Excel sheet:
     - 1 credit charged per row (not per ASIN) only if fresh API fetch needed.
+    - If competitor ASINs (cols 2-11) are omitted, automatically discovers top competitors!
     - Cache hit < 24h = 0 credits charged.
     """
     norm_tier = (tier or "free").lower()
@@ -120,11 +148,14 @@ def process_upload(
             detail="Price Comparison Tracker is locked for Free tier. Please upgrade to a paid plan."
         )
 
+    logger.info(f"🚀 [PCT_PROCESS] Processing sheet '{sheet_name}' ({len(file_bytes)} bytes) for user {user_id}")
     parsed_rows = parse_excel(file_bytes)
+    logger.info(f"📊 [PCT_PROCESS] Parsed {len(parsed_rows)} ASIN rows from file")
     if not parsed_rows:
+        logger.warning(f"❌ [PCT_PROCESS] Zero valid ASIN rows found in uploaded file")
         raise HTTPException(
             status_code=400,
-            detail="No valid ASIN rows found. Ensure Column 1 has your 10-character ASIN and Columns 2-11 have competitor ASINs."
+            detail="No valid ASIN rows found. Ensure Column 1 contains your 10-character Amazon ASINs."
         )
 
     created_count = 0
@@ -134,14 +165,47 @@ def process_upload(
     for r in parsed_rows:
         try:
             our_asin = r["our_asin"]
-            comp_asins = r["competitor_asins"]
+            comp_asins = list(r.get("competitor_asins") or [])
+            logger.info(f"➡️ [PCT_ROW {r.get('row_num')}] Processing: Our ASIN={our_asin}, Provided Competitors={comp_asins}")
+
+            now = datetime.now(timezone.utc)
+            cutoff = now - timedelta(hours=24)
+
+            # Pre-check: if our_asin is completely uncached, verify user has quota before making any API call
+            cached_snap = db.query(PctPriceSnapshot).filter(
+                PctPriceSnapshot.asin == our_asin,
+                PctPriceSnapshot.country == country,
+                PctPriceSnapshot.fetched_at > cutoff,
+                PctPriceSnapshot.product_title.isnot(None),
+                ~PctPriceSnapshot.product_title.startswith("ASIN ")
+            ).first()
+
+            if not cached_snap:
+                can_proceed, credit_source = pct_quota_service.can_fetch(user_id, norm_tier, db)
+                if not can_proceed:
+                    failed_rows.append({
+                        "row_num": r["row_num"],
+                        "our_asin": our_asin,
+                        "reason": "Credits exhausted. Purchase additional credits to continue."
+                    })
+                    continue
+
+            # AUTO-DISCOVERY: If user provided NO competitor ASINs, discover top competitors automatically!
+            if not comp_asins:
+                # 1. Fetch our_asin snapshot first (cached or fresh API)
+                our_snap_dict, _ = pct_price_service.get_or_fetch(our_asin, country, db)
+                # 2. Discover 3-4 top competitors (checks existing trackers & cached carousel first)
+                comp_asins = pct_price_service.discover_competitors(
+                    our_asin=our_asin,
+                    country=country,
+                    db=db,
+                    our_data=our_snap_dict
+                )
+
             all_row_asins = [our_asin] + comp_asins
 
             # 1. Fetch data for all ASINs in this row (cached vs miss)
-            # First check if any ASIN is uncached
-            now = datetime.now(timezone.utc)
-            cutoff = now - timedelta(hours=24)
-            
+            # Check if any ASIN is uncached
             has_uncached = False
             for a in all_row_asins:
                 snap = db.query(PctPriceSnapshot).filter(
@@ -468,7 +532,7 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
 
 
 def delete_tracker(tracker_id: int, user_id: int, db: Session) -> bool:
-    """Soft deletes the tracked product row for this user."""
+    """Permanently deletes the tracked product row for this user from the database."""
     item = db.query(PctTrackedItem).filter(
         PctTrackedItem.id == tracker_id,
         PctTrackedItem.user_id == user_id
@@ -477,7 +541,7 @@ def delete_tracker(tracker_id: int, user_id: int, db: Session) -> bool:
     if not item:
         raise HTTPException(status_code=404, detail="Tracker item not found")
 
-    item.is_active = False
+    db.delete(item)
     db.commit()
     return True
 

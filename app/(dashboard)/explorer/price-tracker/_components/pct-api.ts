@@ -84,11 +84,11 @@ function sanitizeError(err: any, fallback: string): Error {
   if (typeof detail === "string") {
     const technicalKeywords = [
       "traceback", "sql", "postgres", "psycopg", "fastapi", "openpyxl",
-      "rapidapi", "openwebninja", "404", "500", "502", "503", "internal server",
-      "exception", "syntaxerror", "operationalerror", "object at", "table", "column"
+      "rapidapi", "openwebninja", "500", "502", "503", "internal server error",
+      "exception", "syntaxerror", "operationalerror", "object at"
     ];
     const isTech = technicalKeywords.some((w) => detail.toLowerCase().includes(w));
-    if (!isTech && detail.length < 100) {
+    if (!isTech && detail.length < 300) {
       return new Error(detail);
     }
   }

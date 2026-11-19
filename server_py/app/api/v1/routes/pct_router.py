@@ -48,9 +48,12 @@ async def pct_upload(
     Upload an Excel file containing our ASIN in Column 1 and competitor ASINs in Columns 2-11.
     Deducts 1 credit per row only if fresh API data is fetched. Cache hits are free.
     """
+    logger.info(f"📥 [PCT_UPLOAD] Incoming file: '{file.filename}', sheet_name: '{sheet_name}', user: {getattr(current_user, 'id', 'unknown')}")
+
     # Guard: locked for free tier
     tier = getattr(current_user, "subscription_tier", "free")
     if (tier or "free").lower() == "free":
+        logger.warning(f"⚠️ [PCT_UPLOAD] Blocked upload: Free tier user {current_user.id}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Price Comparison Tracker is locked for Free tier. Please upgrade to Starter, Basic, Premium, or Enterprise."
@@ -58,11 +61,13 @@ async def pct_upload(
 
     file_bytes = await file.read()
     if not file_bytes:
+        logger.warning("⚠️ [PCT_UPLOAD] Uploaded file is empty (0 bytes)")
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
     cleaned_sheet_name = sheet_name.strip() or "Tracked Products"
     cleaned_country = "IN"  # Strictly India marketplace only
 
+    logger.info(f"🚀 [PCT_UPLOAD] Forwarding {len(file_bytes)} bytes to tracker service for processing...")
     return pct_tracker_service.process_upload(
         user_id=current_user.id,
         tier=tier,
@@ -109,7 +114,7 @@ def delete_tracker(
     db: Session = Depends(get_db)
 ):
     """
-    Soft-deletes a tracked product row for the authenticated user.
+    Permanently deletes a tracked product row for the authenticated user.
     """
     pct_tracker_service.delete_tracker(tracker_id, current_user.id, db)
     return {"success": True, "message": "Tracker deleted successfully"}

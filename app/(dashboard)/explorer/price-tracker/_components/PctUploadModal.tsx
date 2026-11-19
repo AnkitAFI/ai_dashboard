@@ -29,9 +29,9 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
   }, []);
 
   const handleDownloadTemplate = () => {
-    // Blank template with headers for Our ASIN and up to 10 competitor ASINs, completely blank for user input
+    // Blank template with headers for Our ASIN and optional competitor ASINs
     const csvContent =
-      "Our ASIN,Competitor 1,Competitor 2,Competitor 3,Competitor 4,Competitor 5,Competitor 6,Competitor 7,Competitor 8,Competitor 9,Competitor 10\n";
+      "Our ASIN,Competitor 1 (Optional),Competitor 2 (Optional),Competitor 3 (Optional),Competitor 4 (Optional),Competitor 5 (Optional),Competitor 6 (Optional),Competitor 7 (Optional),Competitor 8 (Optional),Competitor 9 (Optional),Competitor 10 (Optional)\n";
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -42,7 +42,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
     document.body.removeChild(link);
     toast({
       title: "Template Downloaded",
-      description: "Blank template ready. Paste your ASIN and competitor ASINs, then upload.",
+      description: "Template ready. Fill in your ASINs. Competitor columns are optional (leave blank for auto-discovery).",
     });
   };
 
@@ -121,7 +121,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
         </div>
 
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
-          Upload an Excel spreadsheet with your ASIN and up to 10 competitor ASINs per row.
+          Upload an Excel spreadsheet with your ASINs. You can provide competitor ASINs, or leave them blank to automatically discover top competitors.
         </p>
 
         {/* Instructions banner */}
@@ -132,8 +132,8 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
               <strong>Excel Format Guide:</strong>
               <ul className="list-disc list-inside mt-1 space-y-0.5 text-blue-800 dark:text-blue-300">
                 <li><strong>Column A:</strong> Your product ASIN (e.g. <code>B08869TSQ4</code>)</li>
-                <li><strong>Columns B through K:</strong> Competitor ASINs (up to 10 competitors)</li>
-                <li>1 credit per product row (includes your ASIN and all competitor ASINs).</li>
+                <li><strong>Columns B through K (Optional):</strong> Competitor ASINs. <em>Leave blank for automated top competitor discovery!</em></li>
+                <li>1 credit per product row (includes your ASIN and all competitors).</li>
               </ul>
             </div>
           </div>
