@@ -2,6 +2,7 @@
 
 "use client";
 import { API_BASE_URL } from "@/lib/config";
+import * as XLSX from "xlsx";
 
 import { useEffect, useState, Fragment, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -143,6 +144,7 @@ export default function AdminDashboard() {
   const [filterActive, setFilterActive] = useState("all");
   const [filterMonth, setFilterMonth] = useState("all");
   const [filterMarketplace, setFilterMarketplace] = useState("all");
+  const [filterDate, setFilterDate] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
@@ -344,6 +346,65 @@ export default function AdminDashboard() {
     else { setSortField(field); setSortDir("asc"); }
   };
 
+  const exportToExcel = () => {
+    const rows = filtered;
+    if (rows.length === 0) {
+      toast({ title: "Nothing to export", description: "No users match the current filters.", variant: "destructive" });
+      return;
+    }
+
+    // Build data array for the sheet
+    const sheetData = rows.map((u, i) => ({
+      "#": i + 1,
+      "First Name": u.first_name ?? "",
+      "Last Name": u.last_name ?? "",
+      "Email": u.email ?? "",
+      "Mobile": u.mobile_number ?? "",
+      "Tier": u.subscription_tier ?? "",
+      "Business": u.business_name ?? "",
+      "Location": u.location ?? "",
+      "Marketplace": u.onboarding_marketplace ?? "",
+      "Interests": Array.isArray(u.business_interests) ? u.business_interests.join(", ") : (u.business_interests ?? ""),
+      "Joined Date": u.created_at
+        ? new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+        : "",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(sheetData);
+
+    // Column widths for readability
+    ws["!cols"] = [
+      { wch: 4 },  // #
+      { wch: 14 }, // First Name
+      { wch: 14 }, // Last Name
+      { wch: 28 }, // Email
+      { wch: 14 }, // Mobile
+      { wch: 10 }, // Tier
+      { wch: 20 }, // Business
+      { wch: 18 }, // Location
+      { wch: 16 }, // Marketplace
+      { wch: 24 }, // Interests
+      { wch: 14 }, // Joined Date
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Users");
+
+    // Dynamic filename based on active filters
+    const parts: string[] = ["users"];
+    if (filterTier !== "all") parts.push(filterTier);
+    if (filterVerified !== "all") parts.push(filterVerified);
+    if (filterActive !== "all") parts.push(filterActive);
+    if (filterMonth !== "all") parts.push(filterMonth.replace(/ /g, "_"));
+    if (filterMarketplace !== "all") parts.push(filterMarketplace);
+    if (filterDate !== "all") parts.push(filterDate.replace(/ /g, "_"));
+    if (search) parts.push("search");
+    const filename = `${parts.join("_")}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    XLSX.writeFile(wb, filename);
+    toast({ title: `Exported ${rows.length} user${rows.length !== 1 ? "s" : ""} to Excel`, description: filename });
+  };
+
   const handleRecoverUser = async (e: React.MouseEvent, userId: number) => {
     e.stopPropagation();
     try {
@@ -497,6 +558,18 @@ export default function AdminDashboard() {
     return Array.from(mps).sort();
   }, [users]);
 
+  const uniqueDates = useMemo(() => {
+    const dates = new Set<string>();
+    users.forEach(u => {
+      if (u.created_at) {
+        const d = new Date(u.created_at);
+        // Format: "19 Nov 2026"
+        dates.add(d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }));
+      }
+    });
+    return Array.from(dates).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }, [users]);
+
   const filtered = users
     .filter(u => {
       const q = (search || "").toLowerCase();
@@ -518,7 +591,10 @@ export default function AdminDashboard() {
       const matchesMonth = filterMonth === "all" || (
         u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
       );
-      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth;
+      const matchesDate = filterDate === "all" || (
+        u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) === filterDate
+      );
+      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth && matchesDate;
     })
     .sort((a, b) => {
       const av = a[sortField] ?? "";
@@ -974,17 +1050,37 @@ export default function AdminDashboard() {
           <div className="panel fade-in" style={{ padding: 0, animationDelay: "0.3s", overflow: "hidden" }}>
 
             {/* Toolbar */}
-            <div style={{ padding: "16px 22px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-              <div>
-                <p style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>All Users</p>
-                <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{filtered.length} of {users.length} users · click a row to expand</p>
+            <div style={{ padding: "16px 22px", borderBottom: "1px solid #f1f5f9", display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Row 1: title + export button */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <p style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>All Users</p>
+                  <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{filtered.length} of {users.length} users · click a row to expand</p>
+                </div>
+                <button
+                  onClick={exportToExcel}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "7px 14px", borderRadius: 8, border: "1px solid #bbf7d0",
+                    background: "linear-gradient(135deg,#ecfdf5,#d1fae5)",
+                    color: "#15803d", fontSize: 12, fontWeight: 600,
+                    cursor: "pointer", whiteSpace: "nowrap",
+                    boxShadow: "0 1px 3px rgba(16,185,129,0.15)",
+                    transition: "all 0.15s",
+                  }}
+                  title={`Export ${filtered.length} filtered user${filtered.length !== 1 ? "s" : ""} to Excel/CSV`}
+                >
+                  <Download size={13} />
+                  Export Excel ({filtered.length})
+                </button>
               </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <div style={{ position: "relative" }}>
+              {/* Row 2: all filters, horizontally scrollable so they never wrap/overflow */}
+              <div style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", paddingBottom: 2 }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
                   <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, biz, location…" className="tbl-input" style={{ paddingLeft: 28, width: 220 }} />
                 </div>
-                <select value={filterTier} onChange={e => setFilterTier(e.target.value)} className="tbl-select">
+                <select value={filterTier} onChange={e => setFilterTier(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Tiers</option>
                   <option value="free">Free</option>
                   <option value="starter">Starter</option>
@@ -992,23 +1088,31 @@ export default function AdminDashboard() {
                   <option value="premium">Premium</option>
                   <option value="enterprise">Enterprise</option>
                 </select>
-                <select value={filterVerified} onChange={e => setFilterVerified(e.target.value)} className="tbl-select">
+                <select value={filterVerified} onChange={e => setFilterVerified(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Status</option>
                   <option value="verified">Verified</option>
                   <option value="unverified">Unverified</option>
                 </select>
-                <select value={filterActive} onChange={e => setFilterActive(e.target.value)} className="tbl-select">
+                <select value={filterActive} onChange={e => setFilterActive(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Accounts</option>
                   <option value="active">Active</option>
                   <option value="deleted">Deleted</option>
                 </select>
-                <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="tbl-select">
+                <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Months</option>
                   {uniqueMonths.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
-                <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} className="tbl-select">
+                <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Marketplaces</option>
                   {uniqueMarketplaces.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
+                </select>
+                <select value={filterDate} onChange={e => setFilterDate(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
+                  <option value="all">All Dates</option>
+                  {uniqueDates.map(d => (
+                    <option key={d} value={d}>
+                      {d} ({users.filter(u => u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) === d).length} users)
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
