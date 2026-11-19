@@ -59,6 +59,21 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "40",
+    title:
+      "Amazon vs Flipkart: Which Platform Should New Sellers Choose in 2026?",
+    excerpt:
+      "A practical comparison for first time sellers covering GST rules, fees, payouts, fulfilment and the 2026 policy changes that affect your first margin.",
+    category: "Seller Guide",
+    readTime: "5 min read",
+    image:
+      "/images/blogs/40-amazon-vs-flipkart-new-sellers-2026/40_blog_image_1.webp",
+    featuredImage:
+      "/images/blogs/40-amazon-vs-flipkart-new-sellers-2026/40_blog_cover_image.webp",
+    route: "/resources/expert-blog/amazon-vs-flipkart-new-sellers-2026",
+    popular: true,
+  },
+  {
     id: "39",
     title:
       "How to Start an Online Selling Business in India: A Beginner's Guide",
