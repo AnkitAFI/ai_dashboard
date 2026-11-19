@@ -7,19 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { pctApi } from "./pct-api";
 import { Bell, Mail, Shield, Check, Loader2, AlertCircle } from "lucide-react";
 
-interface CompetitorItem {
-  asin: string;
-  title: string;
-  price: number | null;
-  alert_active: boolean;
-}
-
 interface PctAlertConfigProps {
   trackerId: number;
   initialAlertEnabled: boolean;
   initialThreshold: number;
   initialEmails: string[];
-  competitors: CompetitorItem[];
+  competitors?: any[];
   onSaved: () => void;
 }
 
@@ -28,7 +21,6 @@ export function PctAlertConfig({
   initialAlertEnabled,
   initialThreshold,
   initialEmails,
-  competitors,
   onSaved,
 }: PctAlertConfigProps) {
   const { user } = useAuth();
@@ -39,24 +31,9 @@ export function PctAlertConfig({
     initialEmails.length > 0 ? initialEmails[0] : (user?.email || "")
   );
 
-  // Track which competitor ASINs have alerts enabled
-  const [activeComps, setActiveComps] = useState<Set<string>>(
-    new Set(competitors.filter((c) => c.alert_active).map((c) => c.asin))
-  );
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-  const toggleCompetitorAlert = (asin: string) => {
-    const next = new Set(activeComps);
-    if (next.has(asin)) {
-      next.delete(asin);
-    } else {
-      next.add(asin);
-    }
-    setActiveComps(next);
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,13 +50,12 @@ export function PctAlertConfig({
         alert_enabled: alertEnabled,
         alert_threshold: Number(threshold),
         alert_emails: validEmails,
-        alert_competitor_asins: Array.from(activeComps),
       });
 
       setSuccess(true);
       toast({
         title: "Alert Settings Saved",
-        description: `Alerts updated for ${activeComps.size} competitor(s) at ${threshold}% threshold.`,
+        description: `Alert threshold set to ${threshold}% and recipient email updated.`,
       });
       setTimeout(() => setSuccess(false), 3000);
       onSaved();
@@ -138,50 +114,6 @@ export function PctAlertConfig({
           Example: If your product is ₹1,000, an alert fires if any tracked competitor drops to ₹
           {(1000 * (1 - threshold / 100)).toFixed(0)} or below.
         </p>
-      </div>
-
-      {/* Per-Competitor Toggles */}
-      <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
-          Assigned Competitors for Alerts
-        </h4>
-        <p className="text-[11px] text-slate-500 mb-3">
-          Turn ON or OFF alerts for individual competitors in this tracking row.
-        </p>
-
-        <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
-          {competitors.map((c) => {
-            const isTurnedOn = activeComps.has(c.asin);
-            return (
-              <div
-                key={c.asin}
-                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs"
-              >
-                <div className="truncate mr-3">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">
-                    {c.asin}
-                  </span>{" "}
-                  <span className="text-slate-500">
-                    ({c.price ? `₹${c.price.toLocaleString("en-IN")}` : "No price"})
-                  </span>
-                  <div className="text-[11px] text-slate-400 truncate max-w-xs">{c.title}</div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => toggleCompetitorAlert(c.asin)}
-                  className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                    isTurnedOn
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
-                  }`}
-                >
-                  {isTurnedOn ? "🔔 Alert ON" : "🔕 Alert OFF"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Recipient Emails */}

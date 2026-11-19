@@ -5,6 +5,16 @@ import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TrackerItem, pctApi } from "./pct-api";
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import {
   ExternalLink,
   Trash2,
   TrendingDown,
@@ -46,6 +56,7 @@ export function PctTrackerTable({
   const [search, setSearch] = useState("");
   const [filterTab, setFilterTab] = useState<FilterTab>("all");
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TrackerItem | null>(null);
   const [optimisticAlerts, setOptimisticAlerts] = useState<Record<number, boolean>>({});
 
   // Compute catalog competitiveness counts
@@ -125,7 +136,15 @@ export function PctTrackerTable({
     setOptimisticAlerts((prev) => ({ ...prev, [t.id]: nextStatus }));
 
     try {
-      await pctApi.updateAlert(t.id, { alert_enabled: nextStatus });
+      const payload: any = {
+        alert_enabled: nextStatus,
+        alert_competitor_asins: nextStatus
+          ? ((t.alert_competitor_asins && t.alert_competitor_asins.length > 0)
+              ? t.alert_competitor_asins
+              : (t.competitors || []).map((c) => c.asin))
+          : []
+      };
+      await pctApi.updateAlert(t.id, payload);
       toast({
         title: nextStatus ? "Alerts Activated" : "Alerts Paused",
         description: nextStatus
@@ -143,15 +162,23 @@ export function PctTrackerTable({
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: number) => {
+  const handleOpenDelete = (e: React.MouseEvent, t: TrackerItem) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this tracked product?")) return;
-    setActionLoadingId(id);
+    setDeleteTarget(t);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const targetId = deleteTarget.id;
+    const targetAsin = deleteTarget.our_asin;
+    setDeleteTarget(null);
+    setActionLoadingId(targetId);
+
     try {
-      await pctApi.deleteTracker(id);
+      await pctApi.deleteTracker(targetId);
       toast({
         title: "Product Removed",
-        description: "Tracked item has been deleted.",
+        description: `Tracked product ${targetAsin} has been removed.`,
       });
       onRefreshAll();
     } catch (err: any) {
@@ -670,9 +697,9 @@ export function PctTrackerTable({
                           <ChevronRight className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={(e) => handleDelete(e, t.id)}
+                          onClick={(e) => handleOpenDelete(e, t)}
                           disabled={isActionBusy}
-                          className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
                           title="Delete tracked item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -686,6 +713,39 @@ export function PctTrackerTable({
           </table>
         </div>
       )}
+
+      {/* Professional In-App Confirmation Modal */}
+      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent className="max-w-md p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <AlertDialogHeader>
+            <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200/60 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-2">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <AlertDialogTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+              Delete Tracked Product?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Are you sure you want to stop tracking{" "}
+              <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                {deleteTarget?.our_asin}
+              </strong>
+              {deleteTarget?.our_product?.title ? ` (${deleteTarget.our_product.title.slice(0, 50)}...)` : ""}? 
+              This product row and its competitor comparisons will be removed from your dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-5 flex items-center gap-2 sm:justify-end">
+            <AlertDialogCancel className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-500/20"
+            >
+              Delete Product
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

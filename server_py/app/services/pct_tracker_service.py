@@ -186,9 +186,8 @@ def process_upload(
                 existing_item.country = country
                 existing_item.is_active = True
                 existing_item.updated_at = now
-                # Default alerts ON for all competitors if newly updated
-                if not existing_item.alert_competitor_asins:
-                    existing_item.alert_competitor_asins = comp_asins
+                if existing_item.alert_competitor_asins is None:
+                    existing_item.alert_competitor_asins = []
                 updated_count += 1
             else:
                 new_item = PctTrackedItem(
@@ -196,9 +195,9 @@ def process_upload(
                     sheet_name=sheet_name,
                     our_asin=our_asin,
                     competitor_asins=comp_asins,
-                    alert_competitor_asins=comp_asins,  # Default all competitors enabled
+                    alert_competitor_asins=[],  # Default empty: all alerts OFF/muted on upload
                     country=country,
-                    alert_enabled=False,
+                    alert_enabled=False,        # Master alert OFF by default
                     alert_threshold=5.0,
                     is_active=True
                 )
@@ -255,7 +254,8 @@ def get_trackers_with_prices(user_id: int, db: Session) -> List[Dict[str, Any]]:
         min_comp_price = None
         min_comp_asin = None
 
-        alert_comps_set = set(item.alert_competitor_asins or item.competitor_asins or [])
+        alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
+        alert_comps_set = set(alert_comps)
 
         for c_asin in (item.competitor_asins or []):
             c_snap = db.query(PctPriceSnapshot).filter(
@@ -291,7 +291,7 @@ def get_trackers_with_prices(user_id: int, db: Session) -> List[Dict[str, Any]]:
                 "star_rating": float(c_snap.star_rating) if (c_snap and c_snap.star_rating is not None) else None,
                 "num_ratings": c_snap.num_ratings if c_snap else None,
                 "diff_pct": diff_pct,
-                "alert_active": c_asin in alert_comps_set,
+                "alert_active": bool(item.alert_enabled and (c_asin in alert_comps_set)),
             })
 
         cheapest_diff_pct = None
@@ -340,6 +340,7 @@ def get_trackers_with_prices(user_id: int, db: Session) -> List[Dict[str, Any]]:
             "alert_enabled": item.alert_enabled,
             "alert_threshold": float(item.alert_threshold) if item.alert_threshold is not None else 5.0,
             "alert_emails": dec_emails,
+            "alert_competitor_asins": alert_comps,
             "created_at": item.created_at.isoformat() if item.created_at else None,
             "updated_at": item.updated_at.isoformat() if item.updated_at else None,
         })
@@ -375,7 +376,8 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
         PctPriceHistory.country == item.country
     ).order_by(PctPriceHistory.recorded_at.asc()).all()
 
-    alert_comps_set = set(item.alert_competitor_asins or item.competitor_asins or [])
+    alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
+    alert_comps_set = set(alert_comps)
     competitors = []
 
     for c_asin in (item.competitor_asins or []):
@@ -413,7 +415,7 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
             "star_rating": float(c_snap.star_rating) if (c_snap and c_snap.star_rating is not None) else None,
             "num_ratings": c_snap.num_ratings if c_snap else None,
             "diff_pct": diff_pct,
-            "alert_active": c_asin in alert_comps_set,
+            "alert_active": bool(item.alert_enabled and (c_asin in alert_comps_set)),
             "history": [
                 {"date": h.recorded_at.strftime("%Y-%m-%d"), "price": float(h.price)}
                 for h in c_history if h.price is not None
@@ -459,7 +461,7 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
         "alert_enabled": item.alert_enabled,
         "alert_threshold": float(item.alert_threshold) if item.alert_threshold is not None else 5.0,
         "alert_emails": dec_emails,
-        "alert_competitor_asins": list(alert_comps_set),
+        "alert_competitor_asins": alert_comps,
         "created_at": item.created_at.isoformat() if item.created_at else None,
         "updated_at": item.updated_at.isoformat() if item.updated_at else None,
     }
@@ -557,6 +559,8 @@ def update_alert(
 
     if alert_enabled is not None:
         item.alert_enabled = alert_enabled
+        if not alert_enabled and alert_competitor_asins is None:
+            item.alert_competitor_asins = []
 
     if alert_threshold is not None:
         item.alert_threshold = alert_threshold
@@ -571,6 +575,8 @@ def update_alert(
         valid_set = set(item.competitor_asins or [])
         clean_comps = [c for c in alert_competitor_asins if c in valid_set]
         item.alert_competitor_asins = clean_comps
+        if alert_enabled is None:
+            item.alert_enabled = len(clean_comps) > 0
 
     item.updated_at = datetime.now(timezone.utc)
     db.commit()

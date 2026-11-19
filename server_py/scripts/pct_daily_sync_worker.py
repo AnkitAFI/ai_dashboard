@@ -116,7 +116,9 @@ async def process_daily_sync():
                 continue
 
             # Respect per-competitor alert toggles
-            active_alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else item.competitor_asins
+            active_alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
+            if not active_alert_comps:
+                continue
 
             for comp_asin in active_alert_comps:
                 comp_snap = db.query(PctPriceSnapshot).filter(

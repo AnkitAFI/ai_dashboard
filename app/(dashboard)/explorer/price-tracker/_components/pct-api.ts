@@ -45,6 +45,7 @@ export interface TrackerItem {
   alert_enabled: boolean;
   alert_threshold: number;
   alert_emails: string[];
+  alert_competitor_asins?: string[];
   created_at: string;
   updated_at: string;
 }

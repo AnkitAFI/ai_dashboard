@@ -6,7 +6,8 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 from app.models.pct_models import PctTrackedItem, PctPriceSnapshot, PctAlertLog
-from app.models.schema_v2 import UserProfile
+from app.models.schema_v2 import UserProfile, UserSubscription
+from app.services import pct_quota_service
 from app.core.cryptography import EncryptedString
 
 logger = logging.getLogger(__name__)
@@ -155,13 +156,30 @@ async def check_and_send_alerts(
     """
     comp_asin = comp_snap.asin
     
-    # 1. Per-competitor alert check: Ensure this competitor has alerts toggled ON
-    if item.alert_competitor_asins is not None and len(item.alert_competitor_asins) > 0:
-        if comp_asin not in item.alert_competitor_asins:
-            logger.info(f"Alert skipped: competitor {comp_asin} is not in alert_competitor_asins for Tracker {item.id}")
-            return False
+    # 1. Master and per-competitor alert check:
+    if not item.alert_enabled:
+        logger.info(f"Alert skipped: Tracker {item.id} alert_enabled is False")
+        return False
 
-    # 2. Resolve recipient email addresses (decrypted)
+    active_alert_asins = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
+    if comp_asin not in active_alert_asins:
+        logger.info(f"Alert skipped: competitor {comp_asin} is not in alert_competitor_asins for Tracker {item.id}")
+        return False
+
+    # 2. Unified Credit Balance Check:
+    # Alert delivery draws from the exact same credit pool (plan quota + wallet) as data fetching/refreshing
+    sub = db.query(UserSubscription).filter(UserSubscription.user_id == item.user_id).first()
+    tier = (sub.subscription_tier or "starter").lower() if sub else "starter"
+
+    can_proceed, credit_source = pct_quota_service.can_fetch(item.user_id, tier, db)
+    if not can_proceed:
+        logger.warning(
+            f"Alert delivery skipped for Tracker {item.id} (User {item.user_id}): "
+            f"Insufficient credits. Both monthly plan quota and wallet balance are 0."
+        )
+        return False
+
+    # 3. Resolve recipient email addresses (decrypted)
     recipients = []
     if item.alert_emails:
         for enc in item.alert_emails:
@@ -199,10 +217,20 @@ async def check_and_send_alerts(
 
     subject = f"Price Alert: Competitor {comp_asin} is {diff_pct:.1f}% cheaper than your ASIN {item.our_asin}"
     
-    # Send email
+    # 4. Dispatch Email
     sent = _send_pct_email(recipients, subject, html)
 
-    # 3. Audit Logging (Store encrypted recipient list in pct_alert_logs)
+    # 5. Deduct 1 credit from the exact same pool upon successful delivery
+    if sent and credit_source:
+        pct_quota_service.deduct_credit(
+            user_id=item.user_id,
+            source=credit_source,
+            db=db,
+            description=f"1 credit used for Price Drop Alert ({comp_asin} vs {item.our_asin})"
+        )
+        logger.info(f"Deducted 1 credit from '{credit_source}' for User {item.user_id} upon alert delivery.")
+
+    # 6. Audit Logging (Store encrypted recipient list in pct_alert_logs)
     enc_recipients = [_encrypt_email(r) for r in recipients]
     log_entry = PctAlertLog(
         tracker_id=item.id,

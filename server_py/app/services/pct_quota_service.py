@@ -175,10 +175,12 @@ def can_fetch(user_id: int, tier: Optional[str], db: Session) -> Tuple[bool, Opt
     return False, None
 
 
-def deduct_credit(user_id: int, source: str, db: Session) -> bool:
+def deduct_credit(user_id: int, source: str, db: Session, description: Optional[str] = None) -> bool:
     """
     Deducts 1 credit from either the monthly quota or the PCT wallet.
+    Used for data fetching, refreshing, and delivering price drop alerts.
     """
+    desc = description or "1 credit used for Price Comparison Tracker product row"
     if source == "quota":
         quota = db.query(PctQuotaUsage).filter(PctQuotaUsage.user_id == user_id).first()
         if quota:
@@ -198,7 +200,7 @@ def deduct_credit(user_id: int, source: str, db: Session) -> bool:
                 user_id=user_id,
                 transaction_type="DEBIT",
                 credits=1,
-                description="1 credit used for Price Comparison Tracker product row",
+                description=desc,
                 status="completed"
             )
             db.add(tx)

@@ -20,6 +20,8 @@ import {
   Copy,
   Check,
   Crown,
+  Store,
+  BellOff,
 } from "lucide-react";
 
 interface PctTrackerDetailDrawerProps {
@@ -93,17 +95,42 @@ export function PctTrackerDetailDrawer({
   const handleToggleCompetitorAlert = async (compAsin: string) => {
     if (!detail) return;
     const currentActive: string[] = detail.alert_competitor_asins || [];
-    const nextActive = currentActive.includes(compAsin)
-      ? currentActive.filter((a) => a !== compAsin)
-      : [...currentActive, compAsin];
+
+    // Check if competitor is visually active right now (requires both master enabled and in list)
+    const isCurrentlyActive = Boolean(detail.alert_enabled && currentActive.includes(compAsin));
+    const isActivating = !isCurrentlyActive;
+
+    let nextActive: string[];
+    let nextAlertEnabled: boolean;
+
+    if (!detail.alert_enabled) {
+      // If row alerts were muted, clicking unmute on this competitor activates ONLY this competitor
+      nextActive = [compAsin];
+      nextAlertEnabled = true;
+    } else {
+      // Row alerts are already active: add or remove this specific competitor
+      if (isActivating) {
+        nextActive = currentActive.includes(compAsin) ? currentActive : [...currentActive, compAsin];
+      } else {
+        nextActive = currentActive.filter((a) => a !== compAsin);
+      }
+      nextAlertEnabled = nextActive.length > 0;
+    }
 
     try {
-      await pctApi.updateAlert(trackerId, { alert_competitor_asins: nextActive });
-      setDetail({ ...detail, alert_competitor_asins: nextActive });
+      await pctApi.updateAlert(trackerId, {
+        alert_competitor_asins: nextActive,
+        alert_enabled: nextAlertEnabled,
+      });
+      setDetail({
+        ...detail,
+        alert_competitor_asins: nextActive,
+        alert_enabled: nextAlertEnabled,
+      });
       toast({
-        title: nextActive.includes(compAsin) ? "Alert Enabled" : "Alert Disabled",
+        title: isActivating ? "Alert Activated" : "Alert Muted",
         description: `Price drop alerts ${
-          nextActive.includes(compAsin) ? "enabled" : "disabled"
+          isActivating ? "activated" : "muted"
         } for ASIN ${compAsin}.`,
       });
       onTrackerUpdated();
@@ -231,8 +258,12 @@ export function PctTrackerDetailDrawer({
                     )}
                   </div>
                   {ourProduct?.buy_box_seller && (
-                    <span className="text-[11px] px-2 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 truncate max-w-[150px]">
-                      Seller: <strong>{ourProduct.buy_box_seller}</strong>
+                    <span
+                      className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/50 truncate max-w-[220px]"
+                      title={`Buy Box Winner on Amazon India: ${ourProduct.buy_box_seller}`}
+                    >
+                      <Store className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                      <span>Buy Box: <strong>{ourProduct.buy_box_seller}</strong></span>
                     </span>
                   )}
                   {ourProduct?.star_rating && (
@@ -291,9 +322,15 @@ export function PctTrackerDetailDrawer({
                   <span>
                     Up to 10 competitors monitored for this product row.
                   </span>
-                  <span className="font-semibold text-blue-600">
-                    {detail?.alert_competitor_asins?.length || 0} alerts active
-                  </span>
+                  {detail?.alert_enabled && (detail?.alert_competitor_asins?.length || 0) > 0 ? (
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                      {detail.alert_competitor_asins.length} alert{detail.alert_competitor_asins.length === 1 ? "" : "s"} active
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-slate-400 dark:text-slate-500">
+                      Alerts Muted
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-2.5">
@@ -302,7 +339,7 @@ export function PctTrackerDetailDrawer({
                     const isMoreExpensive = comp.diff_pct !== null && comp.diff_pct < 0;
                     const isLowestInGroup =
                       comp.price != null && Number(comp.price) === minCompPrice;
-                    const isAlertOn = activeAlertComps.has(comp.asin);
+                    const isAlertOn = Boolean(detail?.alert_enabled && activeAlertComps.has(comp.asin));
 
                     return (
                       <div
@@ -367,8 +404,12 @@ export function PctTrackerDetailDrawer({
                                 </span>
                               )}
                               {comp.buy_box_seller && (
-                                <span className="text-[10px] text-slate-500 truncate max-w-[130px]">
-                                  Seller: <strong>{comp.buy_box_seller}</strong>
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700/60 truncate max-w-[180px]"
+                                  title={`Current Buy Box Winner on Amazon India: ${comp.buy_box_seller}`}
+                                >
+                                  <Store className="w-2.5 h-2.5 text-slate-500 shrink-0" />
+                                  <span>Buy Box: <strong>{comp.buy_box_seller}</strong></span>
                                 </span>
                               )}
                               <a
@@ -431,12 +472,22 @@ export function PctTrackerDetailDrawer({
                             onClick={() => handleToggleCompetitorAlert(comp.asin)}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                               isAlertOn
-                                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-2xs"
-                                : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
+                                ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs"
+                                : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700"
                             }`}
+                            title={isAlertOn ? "Alert is active. Click to mute." : "Alert is muted. Click to activate."}
                           >
-                            <Bell className={`w-3.5 h-3.5 ${isAlertOn ? "fill-white/30" : ""}`} />
-                            <span>{isAlertOn ? "Alert ON" : "Alert OFF"}</span>
+                            {isAlertOn ? (
+                              <>
+                                <Bell className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 fill-emerald-600/30" />
+                                <span>Active</span>
+                              </>
+                            ) : (
+                              <>
+                                <BellOff className="w-3.5 h-3.5 text-slate-400" />
+                                <span>Muted</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
