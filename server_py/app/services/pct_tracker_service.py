@@ -41,7 +41,7 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
     """
     Parses an uploaded Excel (.xlsx, .xls) or CSV sheet.
     Column 1: Our ASIN
-    Columns 2..11: Competitor ASINs (up to 10, optional)
+    Columns 2..6: Competitor ASINs (up to 5, optional)
     """
     rows = []
     # If file is a zip/xlsx archive (magic bytes PK\x03\x04)
@@ -52,7 +52,7 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
             logger.error("openpyxl is not installed in the python environment.")
             raise HTTPException(
                 status_code=500,
-                detail="Excel parsing library (openpyxl) is not installed on the server. Please install it."
+                detail="Unable to read Excel workbook. Please upload your spreadsheet as a CSV file or contact support."
             )
         try:
             wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
@@ -60,7 +60,10 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
             rows = list(sheet.iter_rows(values_only=True))
         except Exception as e:
             logger.error(f"Error reading Excel workbook: {e}")
-            raise HTTPException(status_code=400, detail=f"Failed to read Excel workbook: {str(e)}")
+            raise HTTPException(
+                status_code=400,
+                detail="Unable to read the uploaded spreadsheet. Please ensure the file is not password-protected or corrupted, and try again."
+            )
     else:
         # File is CSV / plain text
         text = ""
@@ -112,7 +115,7 @@ def parse_excel(file_bytes: bytes) -> List[Dict[str, Any]]:
             continue
 
         comp_asins = []
-        for c in row_vals[1:11]:  # up to 10 competitors
+        for c in row_vals[1:6]:  # up to 5 competitors
             clean_c = _clean_asin(c)
             if clean_c and clean_c != our_asin and clean_c not in comp_asins:
                 comp_asins.append(clean_c)
@@ -137,7 +140,7 @@ def process_upload(
     """
     Processes an uploaded Excel sheet:
     - 1 credit charged per row (not per ASIN) only if fresh API fetch needed.
-    - If competitor ASINs (cols 2-11) are omitted, automatically discovers top competitors!
+    - If competitor ASINs (cols 2-6) are omitted, automatically discovers top competitors!
     - Cache hit < 24h = 0 credits charged.
     """
     norm_tier = (tier or "free").lower()
@@ -155,7 +158,7 @@ def process_upload(
         logger.warning(f"❌ [PCT_PROCESS] Zero valid ASIN rows found in uploaded file")
         raise HTTPException(
             status_code=400,
-            detail="No valid ASIN rows found. Ensure Column 1 contains your 10-character Amazon ASINs."
+            detail="No valid Amazon product codes found. Please ensure Column A contains your 10-character Amazon product IDs (such as B08869TSQ4)."
         )
 
     created_count = 0
@@ -165,7 +168,7 @@ def process_upload(
     for r in parsed_rows:
         try:
             our_asin = r["our_asin"]
-            comp_asins = list(r.get("competitor_asins") or [])
+            comp_asins = list(r.get("competitor_asins") or [])[:5]
             logger.info(f"➡️ [PCT_ROW {r.get('row_num')}] Processing: Our ASIN={our_asin}, Provided Competitors={comp_asins}")
 
             now = datetime.now(timezone.utc)
@@ -186,7 +189,7 @@ def process_upload(
                     failed_rows.append({
                         "row_num": r["row_num"],
                         "our_asin": our_asin,
-                        "reason": "Credits exhausted. Purchase additional credits to continue."
+                        "reason": "Tracking credits exhausted. Add extra credits to monitor this product."
                     })
                     continue
 
@@ -226,7 +229,7 @@ def process_upload(
                     failed_rows.append({
                         "row_num": r["row_num"],
                         "our_asin": our_asin,
-                        "reason": "Credits exhausted. Purchase additional credits to continue."
+                        "reason": "Tracking credits exhausted. Add extra credits to monitor this product."
                     })
                     continue
 
@@ -275,7 +278,7 @@ def process_upload(
             failed_rows.append({
                 "row_num": r.get("row_num", 0),
                 "our_asin": r.get("our_asin", "Unknown"),
-                "reason": "Unable to sync product information from Amazon."
+                "reason": "Could not locate this product on Amazon India right now. Please verify the product code."
             })
 
     quota = pct_quota_service.get_or_create_quota(user_id, norm_tier, db)
@@ -321,7 +324,7 @@ def get_trackers_with_prices(user_id: int, db: Session) -> List[Dict[str, Any]]:
         alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
         alert_comps_set = set(alert_comps)
 
-        for c_asin in (item.competitor_asins or []):
+        for c_asin in (item.competitor_asins or [])[:5]:
             c_snap = db.query(PctPriceSnapshot).filter(
                 PctPriceSnapshot.asin == c_asin,
                 PctPriceSnapshot.country == item.country
@@ -424,7 +427,7 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Tracker item not found")
+        raise HTTPException(status_code=404, detail="This product could not be found or has already been removed.")
 
     # Get our snapshot
     our_snap = db.query(PctPriceSnapshot).filter(
@@ -444,7 +447,7 @@ def get_tracker_detail(tracker_id: int, user_id: int, db: Session) -> Dict[str, 
     alert_comps_set = set(alert_comps)
     competitors = []
 
-    for c_asin in (item.competitor_asins or []):
+    for c_asin in (item.competitor_asins or [])[:5]:
         c_snap = db.query(PctPriceSnapshot).filter(
             PctPriceSnapshot.asin == c_asin,
             PctPriceSnapshot.country == item.country
@@ -539,7 +542,7 @@ def delete_tracker(tracker_id: int, user_id: int, db: Session) -> bool:
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Tracker item not found")
+        raise HTTPException(status_code=404, detail="This product could not be found or has already been removed.")
 
     db.delete(item)
     db.commit()
@@ -559,10 +562,10 @@ def refresh_tracker(tracker_id: int, user_id: int, tier: Optional[str], db: Sess
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Tracker item not found")
+        raise HTTPException(status_code=404, detail="This product could not be found or has already been removed.")
 
     norm_tier = (tier or "free").lower()
-    all_asins = [item.our_asin] + (item.competitor_asins or [])
+    all_asins = [item.our_asin] + (item.competitor_asins or [])[:5]
 
     # Check if any ASIN is stale (> 24 hours)
     now = datetime.now(timezone.utc)
@@ -583,7 +586,7 @@ def refresh_tracker(tracker_id: int, user_id: int, tier: Optional[str], db: Sess
         if not can_proceed:
             raise HTTPException(
                 status_code=402,
-                detail="Monthly credits and wallet balance exhausted. Please top up your PCT wallet to refresh."
+                detail="All available tracking credits have been used. Please add extra credits to refresh prices."
             )
 
         results, api_called = pct_price_service.fetch_batch_and_cache(all_asins, item.country, db)
@@ -619,7 +622,7 @@ def update_alert(
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Tracker item not found")
+        raise HTTPException(status_code=404, detail="This product could not be found or has already been removed.")
 
     if alert_enabled is not None:
         item.alert_enabled = alert_enabled
@@ -635,8 +638,8 @@ def update_alert(
         item.alert_emails = enc_list
 
     if alert_competitor_asins is not None:
-        # Filter to only valid competitor ASINs for this item
-        valid_set = set(item.competitor_asins or [])
+        # Filter to only valid competitor ASINs for this item (up to 5 competitors)
+        valid_set = set((item.competitor_asins or [])[:5])
         clean_comps = [c for c in alert_competitor_asins if c in valid_set]
         item.alert_competitor_asins = clean_comps
         if alert_enabled is None:
@@ -645,4 +648,4 @@ def update_alert(
     item.updated_at = datetime.now(timezone.utc)
     db.commit()
 
-    return {"success": True, "message": "Alert configuration updated successfully"}
+    return {"success": True, "message": "Alert preferences saved successfully"}

@@ -81,14 +81,23 @@ export interface WalletData {
 
 function sanitizeError(err: any, fallback: string): Error {
   const detail = err?.response?.data?.detail;
-  if (typeof detail === "string") {
+  
+  if (typeof detail === "string" && detail.trim().length > 0) {
     const technicalKeywords = [
       "traceback", "sql", "postgres", "psycopg", "fastapi", "openpyxl",
-      "rapidapi", "openwebninja", "500", "502", "503", "internal server error",
-      "exception", "syntaxerror", "operationalerror", "object at"
+      "rapidapi", "openwebninja", "500", "502", "503", "404", "400", "422", "403", "401",
+      "internal server error", "exception", "syntaxerror", "operationalerror",
+      "object at", "typeerror", "valueerror", "keyerror", "indexerror",
+      "database", "query", "relation", "foreign key", "primary key", "constraint",
+      "column", "table", "schema", "orm", "sqlalchemy", "alembic",
+      "axios", "network error", "econnrefused", "timeout", "cors", "socket",
+      "http", "https", "json", "payload", "endpoint", "route", "backend",
+      "server", "null", "undefined", "nan", "worker", "cron", "daemon",
+      "semaphore", "thread", "redis"
     ];
-    const isTech = technicalKeywords.some((w) => detail.toLowerCase().includes(w));
-    if (!isTech && detail.length < 300) {
+    const lower = detail.toLowerCase();
+    const isTech = technicalKeywords.some((w) => lower.includes(w));
+    if (!isTech && detail.length <= 160) {
       return new Error(detail);
     }
   }
@@ -143,7 +152,7 @@ export const pctApi = {
       });
       return res.data;
     } catch (err: any) {
-      throw sanitizeError(err, "Unable to process upload. Please check your file format and try again.");
+      throw sanitizeError(err, "Unable to process spreadsheet. Please check that your file contains valid Amazon product codes and try again.");
     }
   },
 
@@ -152,7 +161,7 @@ export const pctApi = {
       const res = await axios.post(`${PCT_BASE}/trackers/${trackerId}/refresh`);
       return res.data;
     } catch (err: any) {
-      throw sanitizeError(err, "Prices are currently updating. Please check back shortly.");
+      throw sanitizeError(err, "Prices are currently updating. Please check back in a few moments.");
     }
   },
 
@@ -161,7 +170,7 @@ export const pctApi = {
       const res = await axios.delete(`${PCT_BASE}/trackers/${trackerId}`);
       return res.data;
     } catch (err: any) {
-      throw sanitizeError(err, "Unable to remove tracker right now.");
+      throw sanitizeError(err, "Unable to remove this product right now. Please try again.");
     }
   },
 
@@ -178,7 +187,7 @@ export const pctApi = {
       const res = await axios.patch(`${PCT_BASE}/trackers/${trackerId}/alert`, payload);
       return res.data;
     } catch (err: any) {
-      throw sanitizeError(err, "Unable to update alert preferences right now.");
+      throw sanitizeError(err, "Unable to update alert preferences right now. Please try again.");
     }
   },
 
@@ -211,7 +220,7 @@ export const pctApi = {
       const res = await axios.post(`${PCT_BASE}/wallet/create-order`, payload);
       return res.data;
     } catch (err: any) {
-      throw sanitizeError(err, "Unable to initiate payment. Please try again.");
+      throw sanitizeError(err, "Unable to start checkout. Please try again.");
     }
   },
 

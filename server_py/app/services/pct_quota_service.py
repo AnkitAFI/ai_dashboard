@@ -239,7 +239,7 @@ def create_wallet_order(
             label = f"{credits} Credits (₹49/credit)"
             pkg_id = package_id
         except Exception:
-            raise ValueError(f"Invalid package_id: {package_id}")
+            raise ValueError("Please select a valid credit package.")
     else:
         raise ValueError("Please specify a valid number of credits to purchase.")
 
@@ -248,7 +248,7 @@ def create_wallet_order(
 
     rzp = get_razorpay_client()
     if not rzp:
-        raise RuntimeError("Razorpay client credentials not configured")
+        raise RuntimeError("Payment service is temporarily unavailable. Please try again shortly.")
 
     amount_paise = price_inr * 100
     receipt = f"pct_wal_{user_id}_{int(time.time())}"

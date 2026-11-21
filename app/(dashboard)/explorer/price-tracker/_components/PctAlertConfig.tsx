@@ -55,12 +55,12 @@ export function PctAlertConfig({
       setSuccess(true);
       toast({
         title: "Alert Settings Saved",
-        description: `Alert threshold set to ${threshold}% and recipient email updated.`,
+        description: `We will email you when competitor prices drop ${threshold}% lower than yours.`,
       });
       setTimeout(() => setSuccess(false), 3000);
       onSaved();
     } catch (err: any) {
-      setError(err.message || "Failed to update alert configuration.");
+      setError(err.message || "Unable to save alert preferences right now. Please check your email address and try again.");
     } finally {
       setLoading(false);
     }
@@ -73,10 +73,10 @@ export function PctAlertConfig({
         <div>
           <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Bell className="w-4 h-4 text-blue-600" />
-            <span>Enable Price Drop Email Alerts</span>
+            <span>Send Price Drop Email Alerts</span>
           </h4>
           <p className="text-xs text-slate-500 mt-0.5">
-            Receive automated real-time email alerts when competitor prices drop below threshold
+            Get an email notification as soon as any tracked competitor lowers their price below your threshold
           </p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
@@ -94,10 +94,10 @@ export function PctAlertConfig({
       <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex justify-between items-center mb-2">
           <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-            Price Drop Alert Threshold (% Cheaper)
+            Alert Trigger (% Price Difference)
           </label>
           <span className="text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">
-            {threshold}% cheaper
+            {threshold}% cheaper than your price
           </span>
         </div>
         <input
@@ -111,7 +111,7 @@ export function PctAlertConfig({
           className="w-full accent-blue-600 cursor-pointer disabled:opacity-40"
         />
         <p className="text-[11px] text-slate-500 mt-1">
-          Example: If your product is ₹1,000, an alert fires if any tracked competitor drops to ₹
+          For example: If your product is ₹1,000, we'll email you if any competitor drops to ₹
           {(1000 * (1 - threshold / 100)).toFixed(0)} or below.
         </p>
       </div>
@@ -120,18 +120,18 @@ export function PctAlertConfig({
       <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 mb-2">
           <Mail className="w-3.5 h-3.5 text-slate-500" />
-          <span>Alert Recipient Email</span>
+          <span>Alert Recipient Email Address</span>
         </label>
 
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="alerts@yourcompany.com"
+          placeholder="your-name@company.com"
           className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
         />
         <p className="text-[11px] text-slate-500 mt-2">
-          Your email address is securely stored and will only be used for price drop alerts.
+          Your email address is kept private and will only be used to notify you of competitor price drops.
         </p>
       </div>
 

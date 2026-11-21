@@ -569,8 +569,8 @@ def discover_competitors(
                     has_same_brand = True
                     break
         if not has_same_brand:
-            logger.info(f"Reusing cached competitor list from existing tracker for {clean_asin}: {existing_tracker.competitor_asins[:4]}")
-            return existing_tracker.competitor_asins[:4]
+            logger.info(f"Reusing cached competitor list from existing tracker for {clean_asin}: {existing_tracker.competitor_asins[:5]}")
+            return existing_tracker.competitor_asins[:5]
 
     discovered_asins: List[str] = []
     same_brand_asins: List[str] = []
@@ -597,13 +597,13 @@ def discover_competitors(
         else:
             if c_asin not in discovered_asins:
                 discovered_asins.append(c_asin)
-        if len(discovered_asins) >= 4:
+        if len(discovered_asins) >= 5:
             break
 
-    # If carousel gave us 3 or 4 valid rival competitors, return them!
+    # If carousel gave us 3 to 5 valid rival competitors, return them!
     if len(discovered_asins) >= 3:
         logger.info(f"Auto-discovered {len(discovered_asins)} rival competitors for {clean_asin} from product carousel.")
-        return discovered_asins[:4]
+        return discovered_asins[:5]
 
     # ── Phase 2: Best Sellers Search Fallback ─────────────────────────
     search_query = _build_search_query(our_title, raw_data, clean_asin)
@@ -620,7 +620,7 @@ def discover_competitors(
         for s_asin in search_asins:
             if s_asin not in discovered_asins and s_asin != clean_asin:
                 discovered_asins.append(s_asin)
-            if len(discovered_asins) >= 4:
+            if len(discovered_asins) >= 5:
                 break
 
     # If still fewer than 2 rival competitors, search using subcategory keywords
@@ -636,7 +636,7 @@ def discover_competitors(
         for s_asin in asin_search_asins:
             if s_asin not in discovered_asins and s_asin != clean_asin:
                 discovered_asins.append(s_asin)
-            if len(discovered_asins) >= 4:
+            if len(discovered_asins) >= 5:
                 break
 
     # Safety Fallback: Only if extreme edge case where no rivals could be found, top up with same_brand
@@ -644,8 +644,8 @@ def discover_competitors(
         for sb in same_brand_asins:
             if sb not in discovered_asins:
                 discovered_asins.append(sb)
-            if len(discovered_asins) >= 4:
+            if len(discovered_asins) >= 5:
                 break
 
-    logger.info(f"Total auto-discovered competitors for {clean_asin}: {discovered_asins}")
-    return discovered_asins[:4]
+    logger.info(f"Total auto-discovered competitors for {clean_asin}: {discovered_asins[:5]}")
+    return discovered_asins[:5][:4]

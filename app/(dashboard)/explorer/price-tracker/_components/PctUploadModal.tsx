@@ -31,18 +31,18 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
   const handleDownloadTemplate = () => {
     // Blank template with headers for Our ASIN and optional competitor ASINs
     const csvContent =
-      "Our ASIN,Competitor 1 (Optional),Competitor 2 (Optional),Competitor 3 (Optional),Competitor 4 (Optional),Competitor 5 (Optional),Competitor 6 (Optional),Competitor 7 (Optional),Competitor 8 (Optional),Competitor 9 (Optional),Competitor 10 (Optional)\n";
+      "Our Product Code (ASIN),Competitor 1 (Optional),Competitor 2 (Optional),Competitor 3 (Optional),Competitor 4 (Optional),Competitor 5 (Optional)\n";
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "Price_Comparison_Tracker_Template.csv");
+    link.setAttribute("download", "Price_Comparison_Tracker_Sample.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     toast({
-      title: "Template Downloaded",
-      description: "Template ready. Fill in your ASINs. Competitor columns are optional (leave blank for auto-discovery).",
+      title: "Sample Spreadsheet Downloaded",
+      description: "Sample file ready. Add your Amazon product codes in Column A. Competitor columns can be left empty for automatic competitor discovery.",
     });
   };
 
@@ -54,7 +54,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
       const validExtensions = [".xlsx", ".xls", ".csv"];
       const isValid = validExtensions.some((ext) => selected.name.toLowerCase().endsWith(ext));
       if (!isValid) {
-        setError("Please upload an Excel or CSV file (.xlsx, .xls, or .csv)");
+        setError("Please choose a valid spreadsheet file (.xlsx, .xls, or .csv)");
         return;
       }
       setFile(selected);
@@ -68,7 +68,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError("Please select an Excel file to upload.");
+      setError("Please select a spreadsheet file (.xlsx or .csv) to continue.");
       return;
     }
 
@@ -84,16 +84,19 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
     try {
       const res = await pctApi.uploadSheet(formData);
       setResult(res);
+      const totalCreated = res.created_count || 0;
+      const totalUpdated = res.updated_count || 0;
       toast({
-        title: "Upload Successful",
-        description: `Processed ${res.total_rows_processed} rows (${res.successful_rows} added).`,
+        title: "Products Added Successfully",
+        description: `Now monitoring ${totalCreated + totalUpdated} product(s) on Amazon India.`,
       });
       onSuccess();
     } catch (err: any) {
-      setError(err.message || "Failed to process Excel upload.");
+      const friendlyMsg = err.message || "Unable to read spreadsheet. Please check the file format and try again.";
+      setError(friendlyMsg);
       toast({
-        title: "Upload Failed",
-        description: err.message || "Failed to process Excel upload.",
+        title: "Upload Incomplete",
+        description: friendlyMsg,
         variant: "destructive",
       });
     } finally {
@@ -107,6 +110,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+          aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
@@ -116,12 +120,12 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
             <Upload className="w-4 h-4" />
           </div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Upload Price Tracker Excel Sheet
+            Add Products to Price Tracker
           </h2>
         </div>
 
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
-          Upload an Excel spreadsheet with your ASINs. You can provide competitor ASINs, or leave them blank to automatically discover top competitors.
+          Upload an Excel or CSV file with your Amazon product codes (ASINs). You can specify up to 5 competitor codes per product, or leave them empty to automatically find top rivals.
         </p>
 
         {/* Instructions banner */}
@@ -129,11 +133,11 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
           <div className="flex items-start gap-2.5">
             <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <strong>Excel Format Guide:</strong>
+              <strong>Simple Spreadsheet Guide:</strong>
               <ul className="list-disc list-inside mt-1 space-y-0.5 text-blue-800 dark:text-blue-300">
-                <li><strong>Column A:</strong> Your product ASIN (e.g. <code>B08869TSQ4</code>)</li>
-                <li><strong>Columns B through K (Optional):</strong> Competitor ASINs. <em>Leave blank for automated top competitor discovery!</em></li>
-                <li>1 credit per product row (includes your ASIN and all competitors).</li>
+                <li><strong>Column A:</strong> Your product code (e.g. <code>B08869TSQ4</code>)</li>
+                <li><strong>Columns B through F (Optional):</strong> Competitor codes (up to 5). <em>Leave blank to auto-discover top rivals!</em></li>
+                <li>1 credit per product row (tracks your product and all competitor prices).</li>
               </ul>
             </div>
           </div>
@@ -143,7 +147,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
             className="shrink-0 self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-semibold text-[11px] hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Download Template</span>
+            <span>Sample File</span>
           </button>
         </div>
 
@@ -159,19 +163,19 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
             <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 mb-4 flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <div>
-                <p className="font-bold text-sm mb-1">Upload Completed Successfully!</p>
-                <p>Created: <strong>{result.created_count}</strong> tracked product(s)</p>
-                {result.updated_count > 0 && <p>Updated: <strong>{result.updated_count}</strong> product(s)</p>}
-                <p className="mt-1">Remaining Monthly Credits: <strong>{result.credits_remaining}</strong></p>
+                <p className="font-bold text-sm mb-1">Products Added Successfully!</p>
+                <p>Now Tracking: <strong>{result.created_count}</strong> new product(s)</p>
+                {result.updated_count > 0 && <p>Updated: <strong>{result.updated_count}</strong> existing product(s)</p>}
+                <p className="mt-1">Available Tracking Credits: <strong>{result.credits_remaining}</strong></p>
               </div>
             </div>
 
             {result.failed_count > 0 && (
               <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 mb-4">
-                <p className="font-bold mb-1">Failed Rows ({result.failed_count}):</p>
+                <p className="font-bold mb-1">Items Needing Attention ({result.failed_count}):</p>
                 <ul className="list-disc list-inside space-y-0.5">
                   {result.failed_rows.map((f: any, i: number) => (
-                    <li key={i}>Row {f.row_num} (ASIN: {f.our_asin}): {f.reason}</li>
+                    <li key={i}>Row {f.row_num} (Product {f.our_asin}): {f.reason}</li>
                   ))}
                 </ul>
               </div>
@@ -183,7 +187,7 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
                 onClick={onClose}
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-all shadow-md hover:scale-105"
               >
-                <span>Track</span>
+                <span>View in Dashboard</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -193,13 +197,13 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
             {/* Sheet Title */}
             <div className="mb-4">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Sheet / Group Label
+                Product Group / List Name (Optional)
               </label>
               <input
                 type="text"
                 value={sheetName}
                 onChange={(e) => setSheetName(e.target.value)}
-                placeholder="e.g. Audio Speakers Winter Campaign"
+                placeholder="e.g. Winter Electronics, Top Sellers, Kitchen"
                 className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -207,11 +211,11 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
             {/* Marketplace Info (India Only) */}
             <div className="mb-5">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Amazon Marketplace
+                Amazon Store
               </label>
               <div className="flex items-center gap-2 px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Amazon India (amazon.in · INR ₹)</span>
+                <span>Amazon India (amazon.in · ₹ INR)</span>
               </div>
             </div>
 
@@ -234,15 +238,15 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
                     {file.name}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {(file.size / 1024).toFixed(1)} KB — Click to change
+                    Click to choose a different spreadsheet
                   </p>
                 </div>
               ) : (
                 <div>
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Click to select or drag & drop Excel or CSV sheet
+                    Click to select or drag & drop your Excel or CSV spreadsheet
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">.xlsx, .xls, or .csv file</p>
+                  <p className="text-xs text-slate-500 mt-1">Accepts .xlsx, .xls, or .csv</p>
                 </div>
               )}
             </div>
@@ -263,12 +267,12 @@ export function PctUploadModal({ isOpen, onClose, onSuccess }: PctUploadModalPro
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Uploading...</span>
+                    <span>Syncing with Amazon...</span>
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4" />
-                    <span>Upload</span>
+                    <span>Start Tracking</span>
                   </>
                 )}
               </button>

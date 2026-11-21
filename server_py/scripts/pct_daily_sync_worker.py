@@ -60,7 +60,7 @@ async def process_daily_sync():
         for item in active_items:
             c = item.country or "IN"
             unique_asins_by_country.setdefault(c, set()).add(item.our_asin)
-            for comp in (item.competitor_asins or []):
+            for comp in (item.competitor_asins or [])[:5]:
                 unique_asins_by_country[c].add(comp)
 
         # 3. IDENTIFY STALE ASINs (> 24 hours old)
@@ -115,12 +115,15 @@ async def process_daily_sync():
             if not our_snap or not our_snap.product_price:
                 continue
 
-            # Respect per-competitor alert toggles
+            # Respect per-competitor alert toggles (up to 5 competitors)
+            allowed_comps = set((item.competitor_asins or [])[:5])
             active_alert_comps = item.alert_competitor_asins if item.alert_competitor_asins is not None else []
             if not active_alert_comps:
                 continue
 
             for comp_asin in active_alert_comps:
+                if comp_asin not in allowed_comps:
+                    continue
                 comp_snap = db.query(PctPriceSnapshot).filter(
                     PctPriceSnapshot.asin == comp_asin,
                     PctPriceSnapshot.country == item.country

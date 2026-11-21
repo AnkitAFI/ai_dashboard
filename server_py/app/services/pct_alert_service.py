@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 # Brevo Configuration
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
-BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "alerts@insydz.com")
-BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "Insydz Price Tracker")
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "noreply@insydz.com")
+BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "Insydz")
 
 _crypto = EncryptedString()
 
@@ -73,8 +73,9 @@ def build_alert_html(
     diff_pct: float,
     currency: str = "INR"
 ) -> str:
-    """Generates an HTML email for competitor price drops."""
+    """Generates a clean, seller-friendly HTML email for competitor price drops."""
     curr_sym = "₹" if currency == "INR" else "$"
+    gap_amount = max(0.0, our_price - comp_price)
     
     return f"""
     <!DOCTYPE html>
@@ -82,19 +83,20 @@ def build_alert_html(
     <head>
       <meta charset="utf-8">
       <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; margin: 0; padding: 20px; }}
-        .card {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }}
-        .header {{ background: #2563eb; color: #ffffff; padding: 24px; text-align: center; }}
-        .header h1 {{ margin: 0; font-size: 22px; font-weight: 700; }}
-        .content {{ padding: 24px; color: #1e293b; }}
-        .badge {{ display: inline-block; background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 6px 12px; border-radius: 9999px; font-size: 14px; margin-bottom: 16px; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 20px; }}
+        .card {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }}
+        .header {{ background: #1e40af; color: #ffffff; padding: 24px; text-align: center; }}
+        .header h1 {{ margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }}
+        .content {{ padding: 24px; color: #1e293b; font-size: 14px; line-height: 1.5; }}
+        .badge {{ display: inline-block; background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 6px 14px; border-radius: 9999px; font-size: 13px; margin-bottom: 16px; border: 1px solid #fecaca; }}
         .comparison-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
         .comparison-table th, .comparison-table td {{ padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }}
-        .comparison-table th {{ background: #f1f5f9; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }}
-        .our-row {{ background: #f8fafc; font-weight: 600; }}
-        .comp-row {{ background: #fff1f2; font-weight: 600; color: #991b1b; }}
-        .btn {{ display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 16px; }}
-        .footer {{ background: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #64748b; }}
+        .comparison-table th {{ background: #f8fafc; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }}
+        .our-row {{ background: #ffffff; font-weight: 500; }}
+        .comp-row {{ background: #fff5f5; font-weight: 600; color: #991b1b; }}
+        .tip-box {{ margin-top: 20px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; font-size: 13px; color: #166534; }}
+        .btn {{ display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 18px; }}
+        .footer {{ background: #f8fafc; padding: 16px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }}
       </style>
     </head>
     <body>
@@ -104,38 +106,50 @@ def build_alert_html(
         </div>
         <div class="content">
           <div class="badge">Competitor is {diff_pct:.1f}% Cheaper</div>
-          <p>A competitor has lowered their price below your configured alert threshold.</p>
+          <p style="margin: 0 0 16px 0;">A competitor on Amazon India has dropped their price and is now priced lower than your product.</p>
           
           <table class="comparison-table">
             <thead>
               <tr>
                 <th>Product</th>
-                <th>ASIN</th>
-                <th>Current Price</th>
+                <th>Product Code</th>
+                <th>Price</th>
               </tr>
             </thead>
             <tbody>
               <tr class="our-row">
-                <td><strong>Your Product</strong><br><span style="font-size: 12px; color: #64748b;">{our_title[:50]}</span></td>
-                <td>{our_asin}</td>
-                <td>{curr_sym}{our_price:,.2f}</td>
+                <td>
+                  <strong>Your Product</strong><br>
+                  <span style="font-size: 12px; color: #64748b;">{our_title[:60]}</span>
+                </td>
+                <td style="font-family: monospace; font-size: 12px;">{our_asin}</td>
+                <td style="font-size: 15px; font-weight: 700;">{curr_sym}{our_price:,.2f}</td>
               </tr>
               <tr class="comp-row">
-                <td><strong>Competitor</strong><br><span style="font-size: 12px; color: #64748b;">{comp_title[:50]}</span></td>
-                <td>{comp_asin}</td>
-                <td>{curr_sym}{comp_price:,.2f}</td>
+                <td>
+                  <strong>Competitor Product</strong><br>
+                  <span style="font-size: 12px; color: #991b1b;">{comp_title[:60]}</span>
+                </td>
+                <td style="font-family: monospace; font-size: 12px;">{comp_asin}</td>
+                <td style="font-size: 15px; font-weight: 700; color: #dc2626;">{curr_sym}{comp_price:,.2f}</td>
               </tr>
             </tbody>
           </table>
 
-          <p>Difference: <strong>{curr_sym}{(our_price - comp_price):,.2f} ({diff_pct:.1f}% lower)</strong></p>
+          <div style="background: #f8fafc; padding: 12px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+            <strong>Price Gap:</strong> The competitor is <strong>{curr_sym}{gap_amount:,.2f}</strong> cheaper ({diff_pct:.1f}% lower than your price).
+          </div>
+
+          <div class="tip-box">
+            💡 <strong>Recommended Action:</strong> Check your current listing on Amazon Seller Central. You may want to review your pricing or activate a promotional coupon to stay competitive.
+          </div>
           
-          <div style="text-align: center;">
-            <a href="https://www.amazon.in/dp/{comp_asin}" class="btn" target="_blank">View Competitor on Amazon</a>
+          <div style="text-align: center; margin-top: 12px;">
+            <a href="https://www.amazon.in/dp/{comp_asin}" class="btn" target="_blank">View Competitor Listing on Amazon</a>
           </div>
         </div>
         <div class="footer">
-          This automated alert was sent by Insydz Price Comparison Tracker. Manage your alert preferences in your dashboard.
+          You received this message because price drop alerts are turned on for this product. You can update or pause your alert preferences anytime from your Insydz dashboard.
         </div>
       </div>
     </body>
@@ -215,7 +229,10 @@ async def check_and_send_alerts(
         currency=our_snap.currency or "INR"
     )
 
-    subject = f"Price Alert: Competitor {comp_asin} is {diff_pct:.1f}% cheaper than your ASIN {item.our_asin}"
+    product_name = (our_snap.product_title or f"Product {item.our_asin}").strip()
+    short_name = (product_name[:35] + "...") if len(product_name) > 38 else product_name
+    curr_sym = "₹" if (our_snap.currency or "INR") == "INR" else "$"
+    subject = f"Price Drop Alert: Competitor is {diff_pct:.0f}% cheaper on {short_name} ({curr_sym}{comp_price:,.0f})"
     
     # 4. Dispatch Email
     sent = _send_pct_email(recipients, subject, html)
@@ -226,7 +243,7 @@ async def check_and_send_alerts(
             user_id=item.user_id,
             source=credit_source,
             db=db,
-            description=f"1 credit used for Price Drop Alert ({comp_asin} vs {item.our_asin})"
+            description=f"Price drop alert sent for {item.our_asin}"
         )
         logger.info(f"Deducted 1 credit from '{credit_source}' for User {item.user_id} upon alert delivery.")
 

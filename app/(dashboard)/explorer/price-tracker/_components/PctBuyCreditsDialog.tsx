@@ -114,16 +114,16 @@ export function PctBuyCreditsDialog({ isOpen, onClose, onSuccess }: PctBuyCredit
             });
             toast({
               title: "Credits Added Successfully!",
-              description: `${credits} extra credits have been credited to your wallet balance.`,
+              description: `${credits} extra credits have been added to your balance.`,
             });
             onSuccess();
             onClose();
           } catch (err: any) {
-            setError(err.message || "Payment verification failed.");
+            const fallbackMsg = "Payment confirmation is in progress. If money was debited, your credits will update shortly.";
+            setError(err.message || fallbackMsg);
             toast({
-              title: "Payment Error",
-              description: err.message || "Payment verification failed.",
-              variant: "destructive",
+              title: "Payment Processing",
+              description: err.message || fallbackMsg,
             });
           }
         },
@@ -132,11 +132,11 @@ export function PctBuyCreditsDialog({ isOpen, onClose, onSuccess }: PctBuyCredit
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on("payment.failed", function (response: any) {
-        setError(response.error.description || "Payment failed");
+        setError(response.error.description || "Payment was not completed. Please try again.");
       });
       rzp.open();
     } catch (err: any) {
-      setError(err.message || "Failed to initiate payment.");
+      setError(err.message || "Unable to start checkout right now. Please try again.");
     } finally {
       setLoading(false);
     }

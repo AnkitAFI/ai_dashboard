@@ -20,7 +20,7 @@ export function PctSubscriptionGate() {
       </h1>
 
       <p className="text-slate-600 dark:text-slate-400 max-w-lg mb-4 text-base">
-        Track up to 10 competitor ASINs per product, monitor Amazon buy-box fluctuations 24/7,
+        Track up to 5 competitor ASINs per product, monitor Amazon buy-box fluctuations 24/7,
         and receive instant email drop alerts with automated notifications.
       </p>
 

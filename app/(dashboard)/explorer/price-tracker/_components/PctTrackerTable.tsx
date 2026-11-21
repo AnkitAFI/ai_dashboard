@@ -113,18 +113,18 @@ export function PctTrackerTable({
 
   const handleDownloadTemplate = () => {
     const csvContent =
-      "Our ASIN,Competitor 1,Competitor 2,Competitor 3,Competitor 4,Competitor 5,Competitor 6,Competitor 7,Competitor 8,Competitor 9,Competitor 10\n";
+      "Our Product Code (ASIN),Competitor 1,Competitor 2,Competitor 3,Competitor 4,Competitor 5\n";
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "Price_Comparison_Tracker_Template.csv");
+    link.setAttribute("download", "Price_Comparison_Tracker_Sample.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     toast({
-      title: "Template Downloaded",
-      description: "Blank template ready. Paste your ASIN and competitor ASINs, then upload.",
+      title: "Sample Spreadsheet Downloaded",
+      description: "Sample file ready. Add your Amazon product codes in Column A and competitor codes in Columns B through F.",
     });
   };
 
@@ -146,7 +146,7 @@ export function PctTrackerTable({
       };
       await pctApi.updateAlert(t.id, payload);
       toast({
-        title: nextStatus ? "Alerts Activated" : "Alerts Paused",
+        title: nextStatus ? "Price Drop Alerts Turned On" : "Price Drop Alerts Paused",
         description: nextStatus
           ? `We will alert you when competitors drop prices for ${t.our_asin}.`
           : `Price drop alerts paused for ${t.our_asin}.`,
@@ -155,8 +155,8 @@ export function PctTrackerTable({
     } catch (err: any) {
       setOptimisticAlerts((prev) => ({ ...prev, [t.id]: currentStatus }));
       toast({
-        title: "Update Failed",
-        description: "Could not update alert status. Please try again.",
+        title: "Unable to Update Alert",
+        description: "Could not update alert status right now. Please try again.",
         variant: "destructive",
       });
     }
@@ -178,13 +178,13 @@ export function PctTrackerTable({
       await pctApi.deleteTracker(targetId);
       toast({
         title: "Product Removed",
-        description: `Tracked product ${targetAsin} has been removed.`,
+        description: `Product ${targetAsin} has been removed from tracking.`,
       });
       onRefreshAll();
     } catch (err: any) {
       toast({
-        title: "Delete Failed",
-        description: err.message || "Failed to delete tracked item.",
+        title: "Unable to Remove Product",
+        description: "Could not remove this product right now. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -202,7 +202,7 @@ export function PctTrackerTable({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by ASIN, product title, or sheet label..."
+            placeholder="Search by product name, Amazon code (ASIN), or list name..."
             className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
         </div>
@@ -211,10 +211,10 @@ export function PctTrackerTable({
           <button
             onClick={handleDownloadTemplate}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
-            title="Download Blank Excel Template"
+            title="Download Sample Spreadsheet"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="hidden sm:inline">Template</span>
+            <span className="hidden sm:inline">Sample File</span>
           </button>
 
           <button
@@ -222,7 +222,7 @@ export function PctTrackerTable({
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 transition-all hover:scale-[1.02]"
           >
             <UploadCloud className="w-4 h-4" />
-            <span>Upload Sheet</span>
+            <span>+ Add Products</span>
           </button>
         </div>
       </div>
@@ -255,7 +255,7 @@ export function PctTrackerTable({
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
-              <span>Undercut</span>
+              <span>Competitor Cheaper</span>
               {undercutCount > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold">
                   {undercutCount}
@@ -301,11 +301,11 @@ export function PctTrackerTable({
           {/* Catalog Health Visual Segment Bar */}
           <div className="flex items-center gap-3 shrink-0 self-end md:self-auto">
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden lg:inline">
-              Market Health:
+              Pricing Overview:
             </span>
             <div
               className="w-32 sm:w-44 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex"
-              title={`${winningPct}% Winning • ${undercutPct}% Undercut • ${unavailPct}% Unavailable`}
+              title={`${winningPct}% Lowest Price • ${undercutPct}% Competitor Cheaper • ${unavailPct}% Unavailable`}
             >
               {winningPct > 0 && (
                 <div
@@ -337,7 +337,7 @@ export function PctTrackerTable({
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center text-slate-400">
           <Loader2 className="w-8 h-8 animate-spin mb-3 text-blue-600" />
-          <span className="text-xs font-medium">Loading live comparison trackers...</span>
+          <span className="text-xs font-medium">Checking live Amazon prices...</span>
         </div>
       ) : filtered.length === 0 && trackers.length === 0 ? (
         /* Rich Polished Empty State */
@@ -347,14 +347,14 @@ export function PctTrackerTable({
           </div>
 
           <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40 mb-2">
-            Amazon Real-Time Price Tracking
+            Real-Time Amazon Price Tracking
           </span>
 
           <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mb-2">
-            Track & Outprice Your Competitors
+            Monitor & Compare Amazon Competitor Prices
           </h3>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-lg mb-8 leading-relaxed">
-            Upload your product catalog in Excel format to monitor competitor price movements, identify Buy Box shifts, and receive automated email drop alerts.
+            Upload your product list to monitor competitor price changes, see who has the lowest price, and get automated price drop email alerts.
           </p>
 
           {/* 3 Step Workflow Cards */}
@@ -364,10 +364,10 @@ export function PctTrackerTable({
                 1
               </div>
               <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100 mb-1">
-                Format Your Excel
+                Add Your Products
               </h4>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
-                Put your ASIN in Column A, and up to 10 competitor ASINs across Columns B through K.
+                Put your Amazon product code in Column A, and up to 5 competitor codes across Columns B to F.
               </p>
             </div>
 
@@ -376,10 +376,10 @@ export function PctTrackerTable({
                 2
               </div>
               <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100 mb-1">
-                Daily Price Check
+                Daily Price Checks
               </h4>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
-                Live Buy Box status, Prime eligibility, ratings, and price changes are updated automatically.
+                Live prices, seller details, Prime eligibility, and ratings are automatically checked every day.
               </p>
             </div>
 
@@ -388,10 +388,10 @@ export function PctTrackerTable({
                 3
               </div>
               <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100 mb-1">
-                Smart Drop Alerts
+                Price Drop Alerts
               </h4>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
-                Toggle alerts for individual competitors and receive notifications when they drop prices.
+                Turn on alerts for specific competitors and get instant emails whenever they lower their price.
               </p>
             </div>
           </div>
@@ -403,14 +403,14 @@ export function PctTrackerTable({
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105"
             >
               <UploadCloud className="w-4 h-4" />
-              <span>Upload Excel Sheet</span>
+              <span>+ Add Products</span>
             </button>
             <button
               onClick={handleDownloadTemplate}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-              <span>Download Template</span>
+              <span>Download Sample File</span>
             </button>
           </div>
         </div>
@@ -424,7 +424,7 @@ export function PctTrackerTable({
             No matching products found
           </h4>
           <p className="text-[11px] text-slate-400 mt-1">
-            Try searching with a different ASIN, product title, or switch the filter tab.
+            Try searching with a different product name, Amazon code (ASIN), or clear your filter.
           </p>
           <button
             onClick={() => {
@@ -444,8 +444,8 @@ export function PctTrackerTable({
               <tr>
                 <th className="py-3 px-4">Your Product</th>
                 <th className="py-3 px-4">Your Price</th>
-                <th className="py-3 px-4">Cheapest Competitor</th>
-                <th className="py-3 px-4">Price Gap & Status</th>
+                <th className="py-3 px-4">Lowest Competitor</th>
+                <th className="py-3 px-4">Price Comparison</th>
                 <th className="py-3 px-4">Competitors</th>
                 <th className="py-3 px-4">Price Drop Alerts</th>
                 <th className="py-3 px-4 text-right">Actions</th>
@@ -483,7 +483,7 @@ export function PctTrackerTable({
                         </div>
                         <div className="max-w-xs min-w-0">
                           <div className="font-bold text-slate-900 dark:text-slate-100 truncate text-xs group-hover:text-blue-600 transition-colors">
-                            {prod?.title || "Loading Product..."}
+                            {prod?.title || "Checking Product Details..."}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             <span className="font-mono text-slate-500 text-[11px] font-medium">
@@ -517,7 +517,7 @@ export function PctTrackerTable({
                       ) : (
                         <span
                           className="text-slate-400 font-mono font-normal text-sm"
-                          title="No active Buy Box price on Amazon India"
+                          title="No active seller price on Amazon India"
                         >
                           —
                         </span>
@@ -557,7 +557,7 @@ export function PctTrackerTable({
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       {prod?.price == null ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800/60 px-2 py-0.5 rounded-md">
-                          — No Buy Box
+                          — Unavailable
                         </span>
                       ) : cheapest?.diff_pct != null ? (
                         <div>
@@ -573,12 +573,12 @@ export function PctTrackerTable({
                             {isCheaper ? (
                               <>
                                 <TrendingDown className="w-3 h-3 text-rose-600" />
-                                <span>Undercut {cheapest.diff_pct}%</span>
+                                <span>Competitor is {cheapest.diff_pct}% lower</span>
                               </>
                             ) : cheapest.diff_pct < 0 ? (
                               <>
                                 <TrendingUp className="w-3 h-3 text-emerald-600" />
-                                <span>Lowest Price</span>
+                                <span>You have lowest price</span>
                               </>
                             ) : (
                               <span>Price Matched</span>
@@ -589,12 +589,12 @@ export function PctTrackerTable({
                               {isCheaper
                                 ? `₹${Math.round(prod.price - cheapest.price).toLocaleString(
                                     "en-IN"
-                                  )} higher than market`
+                                  )} higher than lowest competitor`
                                 : cheapest.diff_pct < 0
                                 ? `₹${Math.round(cheapest.price - prod.price).toLocaleString(
                                     "en-IN"
-                                  )} cheaper than market`
-                                : "Matched with lowest offer"}
+                                  )} lower than competitors`
+                                : "Matched with competitor"}
                             </div>
                           )}
                         </div>
@@ -722,7 +722,7 @@ export function PctTrackerTable({
               <Trash2 className="w-5 h-5" />
             </div>
             <AlertDialogTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
-              Delete Tracked Product?
+              Stop Tracking This Product?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               Are you sure you want to stop tracking{" "}
@@ -730,18 +730,18 @@ export function PctTrackerTable({
                 {deleteTarget?.our_asin}
               </strong>
               {deleteTarget?.our_product?.title ? ` (${deleteTarget.our_product.title.slice(0, 50)}...)` : ""}? 
-              This product row and its competitor comparisons will be removed from your dashboard.
+              This product will be removed from your dashboard and price drop notifications will be disabled.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-5 flex items-center gap-2 sm:justify-end">
             <AlertDialogCancel className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
-              Cancel
+              Keep Tracking
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-500/20"
             >
-              Delete Product
+              Remove Product
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

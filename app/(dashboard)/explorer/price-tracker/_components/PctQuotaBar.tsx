@@ -44,7 +44,7 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
             {quota.tier} Plan
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Tracks up to 10 competitors per ASIN
+            Tracks up to 5 competitors per product
           </p>
         </div>
       </div>
@@ -61,7 +61,7 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
         </div>
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-0.5">
-            Monthly Credits
+            Product Tracking Credits
           </span>
           <div className="flex items-baseline gap-1.5 mb-2">
             <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">

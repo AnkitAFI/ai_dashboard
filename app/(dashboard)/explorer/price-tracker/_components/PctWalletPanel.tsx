@@ -38,10 +38,10 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
           </div>
           <div>
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">
-              Additional Credits
+              Extra Credits
             </h3>
             <p className="text-xs text-slate-500">
-              Extra credits for tracking products when monthly credits run out
+              Extra credits for tracking products when monthly plan credits run out
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>Buy More Credits</span>
+            <span>Add Extra Credits</span>
           </button>
         </div>
       </div>
@@ -67,14 +67,14 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
         </div>
 
         <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-          <span className="text-xs text-slate-500 block mb-1 font-medium">Total Purchased</span>
+          <span className="text-xs text-slate-500 block mb-1 font-medium">Total Credits Added</span>
           <div className="text-2xl font-black text-slate-900 dark:text-slate-100">
             {data?.total_purchased ?? 0} <span className="text-xs font-semibold text-slate-500">credits</span>
           </div>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-          <span className="text-xs text-slate-500 block mb-1 font-medium">Total Used</span>
+          <span className="text-xs text-slate-500 block mb-1 font-medium">Total Credits Used</span>
           <div className="text-2xl font-black text-slate-900 dark:text-slate-100">
             {data?.total_used ?? 0} <span className="text-xs font-semibold text-slate-500">credits</span>
           </div>
@@ -83,7 +83,7 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
 
       {/* Transaction History */}
       <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
-        Recent Activity
+        Credit Activity
       </h4>
 
       {loading ? (
@@ -92,7 +92,7 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
         </div>
       ) : !data?.transactions || data.transactions.length === 0 ? (
         <div className="py-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-          No wallet transactions recorded yet.
+          No credit activity recorded yet.
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -100,8 +100,8 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 uppercase text-[10px]">
                 <th className="py-2.5">Date</th>
-                <th className="py-2.5">Type</th>
-                <th className="py-2.5">Description</th>
+                <th className="py-2.5">Activity</th>
+                <th className="py-2.5">Details</th>
                 <th className="py-2.5">Credits</th>
                 <th className="py-2.5">Amount</th>
               </tr>
@@ -127,7 +127,7 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
                         ) : (
                           <ArrowDownRight className="w-3 h-3 text-slate-500" />
                         )}
-                        {tx.type}
+                        {isPurchase ? "Added Credits" : "Used for Tracking"}
                       </span>
                     </td>
                     <td className="py-2.5 text-slate-700 dark:text-slate-300 max-w-xs truncate">

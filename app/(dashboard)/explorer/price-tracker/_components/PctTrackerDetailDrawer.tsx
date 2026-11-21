@@ -68,7 +68,7 @@ export function PctTrackerDetailDrawer({
       const res = await pctApi.getTrackerDetail(trackerId);
       setDetail(res);
     } catch (err: any) {
-      setError(err.message || "Failed to load tracker details");
+      setError(err.message || "Unable to load product details at this time. Please refresh.");
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ export function PctTrackerDetailDrawer({
     navigator.clipboard.writeText(asin);
     setCopiedAsin(asin);
     toast({
-      title: "ASIN Copied",
+      title: "Product Code Copied",
       description: `${asin} copied to clipboard.`,
     });
     setTimeout(() => setCopiedAsin(null), 2000);
@@ -128,16 +128,14 @@ export function PctTrackerDetailDrawer({
         alert_enabled: nextAlertEnabled,
       });
       toast({
-        title: isActivating ? "Alert Activated" : "Alert Muted",
-        description: `Price drop alerts ${
-          isActivating ? "activated" : "muted"
-        } for ASIN ${compAsin}.`,
+        title: isActivating ? "Price Drop Alerts Turned On" : "Price Drop Alerts Paused",
+        description: `Alerts ${isActivating ? "activated" : "paused"} for competitor ${compAsin}.`,
       });
       onTrackerUpdated();
     } catch (err: any) {
       toast({
-        title: "Update Failed",
-        description: err.message || "Failed to update alert toggle.",
+        title: "Unable to Update Alert",
+        description: "Could not update alert preferences right now. Please try again.",
         variant: "destructive",
       });
     }
@@ -167,7 +165,7 @@ export function PctTrackerDetailDrawer({
             </span>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
               <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                <span>ASIN: {detail?.our_asin}</span>
+                <span>Product Code: {detail?.our_asin}</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono">
                   amazon.in
                 </span>
@@ -175,7 +173,7 @@ export function PctTrackerDetailDrawer({
               <button
                 onClick={() => handleCopyAsin(detail?.our_asin)}
                 className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded"
-                title="Copy ASIN"
+                title="Copy Product Code"
               >
                 {copiedAsin === detail?.our_asin ? (
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -189,6 +187,7 @@ export function PctTrackerDetailDrawer({
           <button
             onClick={onClose}
             className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -198,10 +197,10 @@ export function PctTrackerDetailDrawer({
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-2">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            <span className="text-xs font-medium">Loading product intelligence...</span>
+            <span className="text-xs font-medium">Checking live Amazon data...</span>
           </div>
         ) : error ? (
-          <div className="p-6 text-red-500 text-sm">{error}</div>
+          <div className="p-6 text-slate-500 text-sm">{error}</div>
         ) : (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 [scrollbar-width:thin] [scrollbar-color:rgba(156,163,175,0.4)_transparent]">
             {/* 1. Our Product Card */}
@@ -260,10 +259,10 @@ export function PctTrackerDetailDrawer({
                   {ourProduct?.buy_box_seller && (
                     <span
                       className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/50 truncate max-w-[220px]"
-                      title={`Buy Box Winner on Amazon India: ${ourProduct.buy_box_seller}`}
+                      title={`Current Seller on Amazon India: ${ourProduct.buy_box_seller}`}
                     >
                       <Store className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <span>Buy Box: <strong>{ourProduct.buy_box_seller}</strong></span>
+                      <span>Sold by: <strong>{ourProduct.buy_box_seller}</strong></span>
                     </span>
                   )}
                   {ourProduct?.star_rating && (
@@ -311,7 +310,7 @@ export function PctTrackerDetailDrawer({
                 }`}
               >
                 <Bell className="w-4 h-4" />
-                <span>Alert Configuration</span>
+                <span>Alert Settings</span>
               </button>
             </div>
 
@@ -320,7 +319,7 @@ export function PctTrackerDetailDrawer({
               <div className="space-y-3">
                 <div className="text-xs text-slate-500 flex items-center justify-between">
                   <span>
-                    Up to 10 competitors monitored for this product row.
+                    Monitoring up to 5 competitors on Amazon India.
                   </span>
                   {detail?.alert_enabled && (detail?.alert_competitor_asins?.length || 0) > 0 ? (
                     <span className="font-semibold text-blue-600 dark:text-blue-400">
@@ -385,7 +384,7 @@ export function PctTrackerDetailDrawer({
                               <button
                                 onClick={() => handleCopyAsin(comp.asin)}
                                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                                title="Copy ASIN"
+                                title="Copy Product Code"
                               >
                                 {copiedAsin === comp.asin ? (
                                   <Check className="w-3 h-3 text-emerald-600" />
@@ -406,10 +405,10 @@ export function PctTrackerDetailDrawer({
                               {comp.buy_box_seller && (
                                 <span
                                   className="inline-flex items-center gap-1 text-[10px] text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700/60 truncate max-w-[180px]"
-                                  title={`Current Buy Box Winner on Amazon India: ${comp.buy_box_seller}`}
+                                  title={`Current Seller on Amazon India: ${comp.buy_box_seller}`}
                                 >
                                   <Store className="w-2.5 h-2.5 text-slate-500 shrink-0" />
-                                  <span>Buy Box: <strong>{comp.buy_box_seller}</strong></span>
+                                  <span>Sold by: <strong>{comp.buy_box_seller}</strong></span>
                                 </span>
                               )}
                               <a
@@ -453,10 +452,10 @@ export function PctTrackerDetailDrawer({
                                       }`}
                                     >
                                       {isCheaper
-                                        ? `-${comp.diff_pct}%`
+                                        ? `-${comp.diff_pct}% cheaper`
                                         : isMoreExpensive
-                                        ? `+${Math.abs(comp.diff_pct)}%`
-                                        : "Same"}
+                                        ? `+${Math.abs(comp.diff_pct)}% higher`
+                                        : "Same price"}
                                     </span>
                                   </div>
                                 )}
@@ -475,7 +474,7 @@ export function PctTrackerDetailDrawer({
                                 ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs"
                                 : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700"
                             }`}
-                            title={isAlertOn ? "Alert is active. Click to mute." : "Alert is muted. Click to activate."}
+                            title={isAlertOn ? "Alerts are active. Click to pause." : "Alerts are paused. Click to turn on."}
                           >
                             {isAlertOn ? (
                               <>

@@ -69,14 +69,14 @@ export function PctDashboard() {
       if (!silent) {
         toast({
           title: "Trackers Updated",
-          description: "Product prices and alert statuses refreshed.",
+          description: "Product prices and alert preferences refreshed.",
         });
       }
     } catch (err: any) {
       if (!silent) {
         toast({
           title: "Update In Progress",
-          description: "Prices are being synced in the background. Please check back shortly.",
+          description: "Prices are being checked in the background. Please check back shortly.",
         });
       }
     } finally {
@@ -123,7 +123,7 @@ export function PctDashboard() {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-            Compare your Amazon product prices against up to 10 competitors per ASIN. Monitor Buy Box movements, Prime eligibility, and receive real-time price drop email alerts.
+            Compare your Amazon product prices against up to 5 competitors per product. Track price changes, see who is winning the sale, and get automated price drop email alerts.
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export function PctDashboard() {
             onClick={() => setIsUploadOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 transition-all hover:scale-105"
           >
-            <span>+ Upload Sheet</span>
+            <span>+ Add Products</span>
           </button>
         </div>
       </div>

@@ -45,7 +45,7 @@ async def pct_upload(
     db: Session = Depends(get_db)
 ):
     """
-    Upload an Excel file containing our ASIN in Column 1 and competitor ASINs in Columns 2-11.
+    Upload an Excel file containing our ASIN in Column 1 and competitor ASINs in Columns 2-6.
     Deducts 1 credit per row only if fresh API data is fetched. Cache hits are free.
     """
     logger.info(f"📥 [PCT_UPLOAD] Incoming file: '{file.filename}', sheet_name: '{sheet_name}', user: {getattr(current_user, 'id', 'unknown')}")
@@ -56,13 +56,13 @@ async def pct_upload(
         logger.warning(f"⚠️ [PCT_UPLOAD] Blocked upload: Free tier user {current_user.id}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Price Comparison Tracker is locked for Free tier. Please upgrade to Starter, Basic, Premium, or Enterprise."
+            detail="Price Comparison Tracker is available on paid plans. Please upgrade to unlock competitor tracking."
         )
 
     file_bytes = await file.read()
     if not file_bytes:
         logger.warning("⚠️ [PCT_UPLOAD] Uploaded file is empty (0 bytes)")
-        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+        raise HTTPException(status_code=400, detail="The uploaded file appears to be empty. Please select a valid spreadsheet.")
 
     cleaned_sheet_name = sheet_name.strip() or "Tracked Products"
     cleaned_country = "IN"  # Strictly India marketplace only
@@ -89,7 +89,7 @@ def get_trackers(
     """
     tier = getattr(current_user, "subscription_tier", "free")
     if (tier or "free").lower() == "free":
-        raise HTTPException(status_code=403, detail="Feature locked for Free tier.")
+        raise HTTPException(status_code=403, detail="Price Comparison Tracker is available on paid plans. Please upgrade to start tracking prices.")
 
     return pct_tracker_service.get_trackers_with_prices(current_user.id, db)
 
@@ -117,7 +117,7 @@ def delete_tracker(
     Permanently deletes a tracked product row for the authenticated user.
     """
     pct_tracker_service.delete_tracker(tracker_id, current_user.id, db)
-    return {"success": True, "message": "Tracker deleted successfully"}
+    return {"success": True, "message": "Product removed successfully"}
 
 
 @router.post("/trackers/{tracker_id}/refresh")
@@ -243,10 +243,13 @@ def create_wallet_order(
             db=db
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        clean_msg = str(e)
+        if "package_id" in clean_msg.lower():
+            clean_msg = "Please select a valid credit package."
+        raise HTTPException(status_code=400, detail=clean_msg)
     except Exception as ex:
         logger.error(f"Failed to create Razorpay wallet order: {ex}")
-        raise HTTPException(status_code=500, detail="Failed to initialize payment order.")
+        raise HTTPException(status_code=500, detail="Unable to start checkout right now. Please try again.")
 
 
 @router.post("/wallet/verify")
@@ -267,10 +270,14 @@ def verify_wallet_payment(
             db=db
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.warning(f"Payment verification issue: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="We could not verify payment confirmation. If your account was debited, your credits will update shortly."
+        )
     except Exception as ex:
         logger.error(f"Failed to verify wallet payment: {ex}")
-        raise HTTPException(status_code=500, detail="Payment verification failed.")
+        raise HTTPException(status_code=500, detail="Payment verification is taking longer than usual. Your balance will update shortly.")
 
 
 @router.post("/wallet/webhook")
