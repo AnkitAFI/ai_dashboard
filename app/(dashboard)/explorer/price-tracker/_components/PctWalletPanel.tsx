@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { pctApi, WalletData } from "./pct-api";
-import { Wallet, Plus, ArrowUpRight, ArrowDownRight, Loader2 } from "lucide-react";
+import { Wallet, Plus, ArrowUpRight, ArrowDownRight, Loader2, Clock } from "lucide-react";
 
 interface PctWalletPanelProps {
   onOpenBuyModal: () => void;
@@ -108,7 +108,8 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {data.transactions.map((tx) => {
-                const isPurchase = tx.type === "PURCHASE";
+                const isPending = tx.status === "pending" || tx.status === "created";
+                const isPurchase = tx.type === "PURCHASE" && !isPending;
                 return (
                   <tr key={tx.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                     <td className="py-2.5 text-slate-500 font-mono">
@@ -117,27 +118,47 @@ export function PctWalletPanel({ onOpenBuyModal }: PctWalletPanelProps) {
                     <td className="py-2.5">
                       <span
                         className={`inline-flex items-center gap-1 font-semibold px-2 py-0.5 rounded text-[11px] ${
-                          isPurchase
+                          isPending
+                            ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                            : isPurchase
                             ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400"
                             : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                       >
-                        {isPurchase ? (
+                        {isPending ? (
+                          <Clock className="w-3 h-3 text-amber-600" />
+                        ) : isPurchase ? (
                           <ArrowUpRight className="w-3 h-3 text-emerald-600" />
                         ) : (
                           <ArrowDownRight className="w-3 h-3 text-slate-500" />
                         )}
-                        {isPurchase ? "Added Credits" : "Used for Tracking"}
+                        {isPending
+                          ? "Pending Payment"
+                          : isPurchase
+                          ? "Added Credits"
+                          : "Used for Tracking"}
                       </span>
                     </td>
                     <td className="py-2.5 text-slate-700 dark:text-slate-300 max-w-xs truncate">
                       {tx.description}
                     </td>
                     <td className="py-2.5 font-bold">
-                      {isPurchase ? `+${tx.credits}` : `-${tx.credits}`}
+                      {isPending ? (
+                        <span className="text-amber-600 dark:text-amber-400 font-medium">
+                          +{tx.credits} (Pending)
+                        </span>
+                      ) : isPurchase ? (
+                        `+${tx.credits}`
+                      ) : (
+                        `-${tx.credits}`
+                      )}
                     </td>
                     <td className="py-2.5 font-medium text-slate-600 dark:text-slate-400">
-                      {tx.amount_inr ? `₹${tx.amount_inr.toLocaleString("en-IN")}` : "—"}
+                      {tx.amount_inr
+                        ? isPending
+                          ? `₹${tx.amount_inr.toLocaleString("en-IN")} (Unpaid)`
+                          : `₹${tx.amount_inr.toLocaleString("en-IN")}`
+                        : "—"}
                     </td>
                   </tr>
                 );
