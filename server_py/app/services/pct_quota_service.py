@@ -180,7 +180,7 @@ def deduct_credit(user_id: int, source: str, db: Session, description: Optional[
     Deducts 1 credit from either the monthly quota or the PCT wallet.
     Used for data fetching, refreshing, and delivering price drop alerts.
     """
-    desc = description or "1 credit used for Price Comparison Tracker product row"
+    desc = description or "1 credit used for product tracking"
     if source == "quota":
         quota = db.query(PctQuotaUsage).filter(PctQuotaUsage.user_id == user_id).first()
         if quota:
@@ -270,7 +270,7 @@ def create_wallet_order(
         user_id=user_id,
         transaction_type="PURCHASE",
         credits=credits,
-        description=f"PCT Wallet Purchase: {label}",
+        description=f"Extra Credits: {label}",
         razorpay_order_id=rzp_order["id"],
         amount_inr=price_inr,
         status="pending"
