@@ -64,3 +64,6 @@ hijridate==2.4.0
 
 # Spell checking
 symspellpy==6.10.0
+
+# Price Comparison Tracker
+openpyxl>=3.1.2

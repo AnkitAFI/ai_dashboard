@@ -90,3 +90,8 @@ api_router.include_router(demo_booking_router, prefix="/demo-bookings", tags=["D
 
 from app.api.v1.routes.seller_service_order_router import router as seller_service_order_router
 api_router.include_router(seller_service_order_router, prefix="/seller-services", tags=["Seller Setup Services"])
+
+from app.api.v1.routes.pct_router import router as pct_router
+api_router.include_router(pct_router)
+api_router.include_router(pct_router, prefix="/v1")
+

@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   TrendingUp,
+  TrendingDown,
   Receipt,
   DollarSign,
   PieChart,
@@ -94,6 +95,11 @@ const EXPLORER_SECTIONS: NavSection[] = [
         href: "/explorer/white-space-finder",
         label: "Niche Finder",
         icon: ShieldCheck,
+      },
+      {
+        href: "/explorer/price-tracker",
+        label: "Price Comparison Tracker",
+        icon: TrendingDown,
       },
       { href: "/share-of-voice", label: "Top Competitors", icon: BarChart3 },
       {
