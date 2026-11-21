@@ -2,7 +2,6 @@
 
 "use client";
 import { API_BASE_URL } from "@/lib/config";
-import * as XLSX from "xlsx";
 
 import { useEffect, useState, Fragment, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -349,14 +348,24 @@ export default function AdminDashboard() {
     setUserPage(1);
   };
 
-  const exportToExcel = () => {
+// Export data to Excel (.xlsx) with applied filters
+  const exportToExcel = async () => {
     const rows = filtered;
     if (rows.length === 0) {
       toast({ title: "Nothing to export", description: "No users match the current filters.", variant: "destructive" });
       return;
     }
 
-    // Build data array for the sheet
+    // Dynamic filename based on active filters
+    const parts: string[] = ["users"];
+    if (filterTier !== "all") parts.push(filterTier);
+    if (filterVerified !== "all") parts.push(filterVerified);
+    if (filterActive !== "all") parts.push(filterActive);
+    if (filterMonth !== "all") parts.push(filterMonth.replace(/ /g, "_"));
+    if (filterMarketplace !== "all") parts.push(filterMarketplace);
+    if (filterDate !== "all") parts.push(filterDate.replace(/ /g, "_"));
+    if (search) parts.push("search");
+
     const sheetData = rows.map((u, i) => ({
       "#": i + 1,
       "First Name": u.first_name ?? "",
@@ -373,98 +382,70 @@ export default function AdminDashboard() {
         : "",
     }));
 
-    const ws = XLSX.utils.json_to_sheet(sheetData);
+    try {
+      // Dynamically load XLSX library if not already present on window
+      const getXLSX = async (): Promise<any> => {
+        if (typeof window !== "undefined" && (window as any).XLSX) {
+          return (window as any).XLSX;
+        }
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+          script.onload = () => resolve((window as any).XLSX);
+          script.onerror = () => reject(new Error("CDN load failed"));
+          document.head.appendChild(script);
+        });
+      };
 
-    // Column widths for readability
-    ws["!cols"] = [
-      { wch: 4 },  // #
-      { wch: 14 }, // First Name
-      { wch: 14 }, // Last Name
-      { wch: 28 }, // Email
-      { wch: 14 }, // Mobile
-      { wch: 10 }, // Tier
-      { wch: 20 }, // Business
-      { wch: 18 }, // Location
-      { wch: 16 }, // Marketplace
-      { wch: 24 }, // Interests
-      { wch: 14 }, // Joined Date
-    ];
+      const XLSXLib = await getXLSX();
+      const ws = XLSXLib.utils.json_to_sheet(sheetData);
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
+      ws["!cols"] = [
+        { wch: 4 },  // #
+        { wch: 14 }, // First Name
+        { wch: 14 }, // Last Name
+        { wch: 28 }, // Email
+        { wch: 14 }, // Mobile
+        { wch: 10 }, // Tier
+        { wch: 20 }, // Business
+        { wch: 18 }, // Location
+        { wch: 16 }, // Marketplace
+        { wch: 24 }, // Interests
+        { wch: 14 }, // Joined Date
+      ];
 
-    // Dynamic filename based on active filters
-    const parts: string[] = ["users"];
-    if (filterTier !== "all") parts.push(filterTier);
-    if (filterVerified !== "all") parts.push(filterVerified);
-    if (filterActive !== "all") parts.push(filterActive);
-    if (filterMonth !== "all") parts.push(filterMonth.replace(/ /g, "_"));
-    if (filterMarketplace !== "all") parts.push(filterMarketplace);
-    if (filterDate !== "all") parts.push(filterDate.replace(/ /g, "_"));
-    if (search) parts.push("search");
-    const filename = `${parts.join("_")}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const wb = XLSXLib.utils.book_new();
+      XLSXLib.utils.book_append_sheet(wb, ws, "Users");
+      const filename = `${parts.join("_")}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSXLib.writeFile(wb, filename);
+      toast({ title: `Exported ${rows.length} user${rows.length !== 1 ? "s" : ""} to Excel`, description: filename });
+    } catch {
+      // Fallback: Excel XML Spreadsheet format (.xls) if CDN cannot be reached
+      const headers = ["#", "First Name", "Last Name", "Email", "Mobile", "Tier", "Business", "Location", "Marketplace", "Interests", "Joined Date"];
+      const escapeXml = (v: any) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      
+      let xml = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>\n';
+      xml += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+      xml += '<Worksheet ss:Name="Users"><Table>\n';
+      xml += '<Row>' + headers.map(h => `<Cell><Data ss:Type="String"><b>${escapeXml(h)}</b></Data></Cell>`).join("") + '</Row>\n';
+      
+      sheetData.forEach(row => {
+        xml += '<Row>' + Object.values(row).map(val => `<Cell><Data ss:Type="String">${escapeXml(val)}</Data></Cell>`).join("") + '</Row>\n';
+      });
+      xml += '</Table></Worksheet></Workbook>';
 
-    XLSX.writeFile(wb, filename);
-    toast({ title: `Exported ${rows.length} user${rows.length !== 1 ? "s" : ""} to Excel`, description: filename });
-  };
-
-  const exportToExcel = () => {
-    const rows = filtered;
-    if (rows.length === 0) {
-      toast({ title: "Nothing to export", description: "No users match the current filters.", variant: "destructive" });
-      return;
+      const blob = new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const filename = `${parts.join("_")}_${new Date().toISOString().slice(0, 10)}.xls`;
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast({ title: `Exported ${rows.length} user${rows.length !== 1 ? "s" : ""} to Excel`, description: filename });
     }
-
-    // Build data array for the sheet
-    const sheetData = rows.map((u, i) => ({
-      "#": i + 1,
-      "First Name": u.first_name ?? "",
-      "Last Name": u.last_name ?? "",
-      "Email": u.email ?? "",
-      "Mobile": u.mobile_number ?? "",
-      "Tier": u.subscription_tier ?? "",
-      "Business": u.business_name ?? "",
-      "Location": u.location ?? "",
-      "Marketplace": u.onboarding_marketplace ?? "",
-      "Interests": Array.isArray(u.business_interests) ? u.business_interests.join(", ") : (u.business_interests ?? ""),
-      "Joined Date": u.created_at
-        ? new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-        : "",
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(sheetData);
-
-    // Column widths for readability
-    ws["!cols"] = [
-      { wch: 4 },  // #
-      { wch: 14 }, // First Name
-      { wch: 14 }, // Last Name
-      { wch: 28 }, // Email
-      { wch: 14 }, // Mobile
-      { wch: 10 }, // Tier
-      { wch: 20 }, // Business
-      { wch: 18 }, // Location
-      { wch: 16 }, // Marketplace
-      { wch: 24 }, // Interests
-      { wch: 14 }, // Joined Date
-    ];
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
-
-    // Dynamic filename based on active filters
-    const parts: string[] = ["users"];
-    if (filterTier !== "all") parts.push(filterTier);
-    if (filterVerified !== "all") parts.push(filterVerified);
-    if (filterActive !== "all") parts.push(filterActive);
-    if (filterMonth !== "all") parts.push(filterMonth.replace(/ /g, "_"));
-    if (filterMarketplace !== "all") parts.push(filterMarketplace);
-    if (filterDate !== "all") parts.push(filterDate.replace(/ /g, "_"));
-    if (search) parts.push("search");
-    const filename = `${parts.join("_")}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-
-    XLSX.writeFile(wb, filename);
-    toast({ title: `Exported ${rows.length} user${rows.length !== 1 ? "s" : ""} to Excel`, description: filename });
   };
 
   const handleRecoverUser = async (e: React.MouseEvent, userId: number) => {
@@ -654,7 +635,10 @@ export default function AdminDashboard() {
         const matchesMonth = filterMonth === "all" || (
           u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
         );
-        return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth;
+        const matchesDate = filterDate === "all" || (
+          u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) === filterDate
+        );
+        return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth && matchesDate;
       })
       .sort((a, b) => {
         const av = a[sortField] ?? "";
@@ -663,7 +647,7 @@ export default function AdminDashboard() {
           ? String(av).localeCompare(String(bv))
           : String(bv).localeCompare(String(av));
       });
-  }, [users, search, filterTier, filterVerified, filterActive, filterMarketplace, filterMonth, sortField, sortDir]);
+  }, [users, search, filterTier, filterVerified, filterActive, filterMarketplace, filterMonth, filterDate, sortField, sortDir]);
 
   const totalUserPages = Math.max(1, Math.ceil(filtered.length / userPageSize));
   const safeUserPage = Math.min(Math.max(1, userPage), totalUserPages);
@@ -1173,7 +1157,7 @@ export default function AdminDashboard() {
                   <option value="all">All Marketplaces</option>
                   {uniqueMarketplaces.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
                 </select>
-                <select value={filterDate} onChange={e => setFilterDate(e.target.value)} className="tbl-select" style={{ flexShrink: 0 }}>
+                <select value={filterDate} onChange={e => { setFilterDate(e.target.value); setUserPage(1); }} className="tbl-select" style={{ flexShrink: 0 }}>
                   <option value="all">All Dates</option>
                   {uniqueDates.map(d => (
                     <option key={d} value={d}>
