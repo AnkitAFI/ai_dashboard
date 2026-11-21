@@ -150,6 +150,8 @@ export default function AdminDashboard() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selectedMonth, setSelectedMonth] = useState<{ date: string; dateObj: Date } | null>(null);
   const [activeTooltipMonth, setActiveTooltipMonth] = useState<string | null>(null);
+  const [userPage, setUserPage] = useState<number>(1);
+  const [userPageSize, setUserPageSize] = useState<number>(50);
 
   // Tab & User Behavior logs state
   const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo" | "compliance" | "seller_orders">("overview");
@@ -342,6 +344,7 @@ export default function AdminDashboard() {
   const toggleSort = (field: keyof UserRow) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
     else { setSortField(field); setSortDir("asc"); }
+    setUserPage(1);
   };
 
   const handleRecoverUser = async (e: React.MouseEvent, userId: number) => {
@@ -497,36 +500,44 @@ export default function AdminDashboard() {
     return Array.from(mps).sort();
   }, [users]);
 
-  const filtered = users
-    .filter(u => {
-      const q = (search || "").toLowerCase();
-      const nameMatch = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase().includes(q);
-      const emailMatch = (u.email || "").toLowerCase().includes(q);
-      const bizMatch = (u.business_name || "").toLowerCase().includes(q);
-      const locMatch = (u.location || "").toLowerCase().includes(q);
-      const matchesSearch = !q || nameMatch || emailMatch || bizMatch || locMatch;
-      const matchesTier = filterTier === "all" || u.subscription_tier === filterTier;
-      const matchesVerified =
-        filterVerified === "all" ||
-        (filterVerified === "verified" && u.is_verified) ||
-        (filterVerified === "unverified" && !u.is_verified);
-      const matchesActive =
-        filterActive === "all" ||
-        (filterActive === "active" && u.is_active !== false) ||
-        (filterActive === "deleted" && u.is_active === false);
-      const matchesMarketplace = filterMarketplace === "all" || (u.onboarding_marketplace && u.onboarding_marketplace.toLowerCase() === filterMarketplace.toLowerCase());
-      const matchesMonth = filterMonth === "all" || (
-        u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
-      );
-      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth;
-    })
-    .sort((a, b) => {
-      const av = a[sortField] ?? "";
-      const bv = b[sortField] ?? "";
-      return sortDir === "asc"
-        ? String(av).localeCompare(String(bv))
-        : String(bv).localeCompare(String(av));
-    });
+  const filtered = useMemo(() => {
+    return users
+      .filter(u => {
+        const q = (search || "").toLowerCase();
+        const nameMatch = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase().includes(q);
+        const emailMatch = (u.email || "").toLowerCase().includes(q);
+        const bizMatch = (u.business_name || "").toLowerCase().includes(q);
+        const locMatch = (u.location || "").toLowerCase().includes(q);
+        const matchesSearch = !q || nameMatch || emailMatch || bizMatch || locMatch;
+        const matchesTier = filterTier === "all" || u.subscription_tier === filterTier;
+        const matchesVerified =
+          filterVerified === "all" ||
+          (filterVerified === "verified" && u.is_verified) ||
+          (filterVerified === "unverified" && !u.is_verified);
+        const matchesActive =
+          filterActive === "all" ||
+          (filterActive === "active" && u.is_active !== false) ||
+          (filterActive === "deleted" && u.is_active === false);
+        const matchesMarketplace = filterMarketplace === "all" || (u.onboarding_marketplace && u.onboarding_marketplace.toLowerCase() === filterMarketplace.toLowerCase());
+        const matchesMonth = filterMonth === "all" || (
+          u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
+        );
+        return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMarketplace && matchesMonth;
+      })
+      .sort((a, b) => {
+        const av = a[sortField] ?? "";
+        const bv = b[sortField] ?? "";
+        return sortDir === "asc"
+          ? String(av).localeCompare(String(bv))
+          : String(bv).localeCompare(String(av));
+      });
+  }, [users, search, filterTier, filterVerified, filterActive, filterMarketplace, filterMonth, sortField, sortDir]);
+
+  const totalUserPages = Math.max(1, Math.ceil(filtered.length / userPageSize));
+  const safeUserPage = Math.min(Math.max(1, userPage), totalUserPages);
+  const paginatedUsers = useMemo(() => {
+    return filtered.slice((safeUserPage - 1) * userPageSize, safeUserPage * userPageSize);
+  }, [filtered, safeUserPage, userPageSize]);
 
   if (isLoading) return (
     <div style={{
@@ -982,9 +993,9 @@ export default function AdminDashboard() {
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <div style={{ position: "relative" }}>
                   <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, biz, location…" className="tbl-input" style={{ paddingLeft: 28, width: 220 }} />
+                  <input value={search} onChange={e => { setSearch(e.target.value); setUserPage(1); }} placeholder="Search name, email, biz, location…" className="tbl-input" style={{ paddingLeft: 28, width: 220 }} />
                 </div>
-                <select value={filterTier} onChange={e => setFilterTier(e.target.value)} className="tbl-select">
+                <select value={filterTier} onChange={e => { setFilterTier(e.target.value); setUserPage(1); }} className="tbl-select">
                   <option value="all">All Tiers</option>
                   <option value="free">Free</option>
                   <option value="starter">Starter</option>
@@ -992,21 +1003,21 @@ export default function AdminDashboard() {
                   <option value="premium">Premium</option>
                   <option value="enterprise">Enterprise</option>
                 </select>
-                <select value={filterVerified} onChange={e => setFilterVerified(e.target.value)} className="tbl-select">
+                <select value={filterVerified} onChange={e => { setFilterVerified(e.target.value); setUserPage(1); }} className="tbl-select">
                   <option value="all">All Status</option>
                   <option value="verified">Verified</option>
                   <option value="unverified">Unverified</option>
                 </select>
-                <select value={filterActive} onChange={e => setFilterActive(e.target.value)} className="tbl-select">
+                <select value={filterActive} onChange={e => { setFilterActive(e.target.value); setUserPage(1); }} className="tbl-select">
                   <option value="all">All Accounts</option>
                   <option value="active">Active</option>
                   <option value="deleted">Deleted</option>
                 </select>
-                <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="tbl-select">
+                <select value={filterMonth} onChange={e => { setFilterMonth(e.target.value); setUserPage(1); }} className="tbl-select">
                   <option value="all">All Months</option>
                   {uniqueMonths.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
-                <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} className="tbl-select">
+                <select value={filterMarketplace} onChange={e => { setFilterMarketplace(e.target.value); setUserPage(1); }} className="tbl-select">
                   <option value="all">All Marketplaces</option>
                   {uniqueMarketplaces.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
                 </select>
@@ -1042,7 +1053,7 @@ export default function AdminDashboard() {
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr><td colSpan={18} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No users found</td></tr>
-                  ) : filtered.map(u => {
+                  ) : paginatedUsers.map(u => {
                     const hue = (u.id * 47) % 360;
                     const tierMeta = {
                       free: { color: "#64748b", bg: "#f1f5f9", border: "#e2e8f0" },
@@ -1279,8 +1290,63 @@ export default function AdminDashboard() {
             </div>
 
             {/* Footer */}
-            <div style={{ padding: "11px 22px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc" }}>
-              <span style={{ fontSize: 12, color: "#94a3b8" }}>Showing {filtered.length} of {users.length} users</span>
+            <div style={{ padding: "11px 22px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                  Showing {filtered.length === 0 ? 0 : (safeUserPage - 1) * userPageSize + 1}–{Math.min(safeUserPage * userPageSize, filtered.length)} of {filtered.length} users
+                </span>
+                <select
+                  value={userPageSize}
+                  onChange={e => { setUserPageSize(Number(e.target.value)); setUserPage(1); }}
+                  className="tbl-select"
+                  style={{ padding: "3px 8px", fontSize: 11 }}
+                >
+                  <option value={25}>25 / page</option>
+                  <option value={50}>50 / page</option>
+                  <option value={100}>100 / page</option>
+                </select>
+              </div>
+
+              {totalUserPages > 1 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button
+                    onClick={() => setUserPage(1)}
+                    disabled={safeUserPage === 1}
+                    className="hdr-btn"
+                    style={{ opacity: safeUserPage === 1 ? 0.4 : 1, fontSize: 11 }}
+                  >
+                    «
+                  </button>
+                  <button
+                    onClick={() => setUserPage(p => Math.max(1, p - 1))}
+                    disabled={safeUserPage === 1}
+                    className="hdr-btn"
+                    style={{ opacity: safeUserPage === 1 ? 0.4 : 1, fontSize: 11 }}
+                  >
+                    ‹ Prev
+                  </button>
+                  <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600, padding: "0 4px" }}>
+                    Page {safeUserPage} of {totalUserPages}
+                  </span>
+                  <button
+                    onClick={() => setUserPage(p => Math.min(totalUserPages, p + 1))}
+                    disabled={safeUserPage >= totalUserPages}
+                    className="hdr-btn"
+                    style={{ opacity: safeUserPage >= totalUserPages ? 0.4 : 1, fontSize: 11 }}
+                  >
+                    Next ›
+                  </button>
+                  <button
+                    onClick={() => setUserPage(totalUserPages)}
+                    disabled={safeUserPage >= totalUserPages}
+                    className="hdr-btn"
+                    style={{ opacity: safeUserPage >= totalUserPages ? 0.4 : 1, fontSize: 11 }}
+                  >
+                    »
+                  </button>
+                </div>
+              )}
+
               <span style={{ fontSize: 11, color: "#cbd5e1", letterSpacing: "0.1em", textTransform: "uppercase" }}>Insydz · Restricted Access</span>
             </div>
           </div>
