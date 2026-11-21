@@ -95,7 +95,6 @@ def build_alert_html(
         .our-row {{ background: #ffffff; font-weight: 500; }}
         .comp-row {{ background: #fff5f5; font-weight: 600; color: #991b1b; }}
         .tip-box {{ margin-top: 20px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; font-size: 13px; color: #166534; }}
-        .btn {{ display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 18px; }}
         .footer {{ background: #f8fafc; padding: 16px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }}
       </style>
     </head>
@@ -142,10 +141,6 @@ def build_alert_html(
 
           <div class="tip-box">
             💡 <strong>Recommended Action:</strong> Check your current listing on Amazon Seller Central. You may want to review your pricing or activate a promotional coupon to stay competitive.
-          </div>
-          
-          <div style="text-align: center; margin-top: 12px;">
-            <a href="https://www.amazon.in/dp/{comp_asin}" class="btn" target="_blank">View Competitor Listing on Amazon</a>
           </div>
         </div>
         <div class="footer">
