@@ -3,7 +3,7 @@
 
 import React from "react";
 import { QuotaData } from "./pct-api";
-import { Zap, Bell, Wallet, Plus, Crown, Sparkles, CheckCircle2 } from "lucide-react";
+import { Zap, Wallet, Plus, Crown, Sparkles, CheckCircle2 } from "lucide-react";
 
 interface PctQuotaBarProps {
   quota: QuotaData;
@@ -16,15 +16,10 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
       ? Math.min(100, (quota.credits_used / quota.credits_limit) * 100)
       : 0;
 
-  const alertsPct =
-    quota.alerts_limit > 0
-      ? Math.min(100, (quota.alerts_used / quota.alerts_limit) * 100)
-      : 0;
-
   const creditsRemainingPct = Math.max(0, 100 - creditsPct);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       {/* 1. Subscription Tier Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between">
         <div className="flex items-center justify-between mb-3">
@@ -38,7 +33,7 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
         </div>
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-0.5">
-            Current Tier
+            Your Plan
           </span>
           <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 capitalize tracking-tight">
             {quota.tier} Plan
@@ -61,7 +56,7 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
         </div>
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-0.5">
-            Product Tracking Credits
+            Monthly Credits
           </span>
           <div className="flex items-baseline gap-1.5 mb-2">
             <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">
@@ -77,41 +72,7 @@ export function PctQuotaBar({ quota, onOpenBuyModal }: PctQuotaBarProps) {
             />
           </div>
           <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
-            1 credit per tracked product row
-          </p>
-        </div>
-      </div>
-
-      {/* 3. Live Drop Alerts Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/15 to-purple-500/15 dark:from-indigo-500/20 dark:to-purple-500/20 border border-indigo-200/60 dark:border-indigo-800/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-            <Bell className="w-5 h-5" />
-          </div>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/40">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-            Automatic Price Check
-          </span>
-        </div>
-        <div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-0.5">
-            Price Drop Alerts
-          </span>
-          <div className="flex items-baseline gap-1.5 mb-2">
-            <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">
-              {quota.alerts_remaining}
-            </span>
-            <span className="text-xs text-slate-500 font-medium">available slots</span>
-          </div>
-          {/* Progress bar */}
-          <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-indigo-600 to-purple-500 rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, (quota.alerts_used / Math.max(1, quota.alerts_limit)) * 100)}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
-            Instant email alerts on competitor price drops
+            Used for product tracking & price drop alerts
           </p>
         </div>
       </div>

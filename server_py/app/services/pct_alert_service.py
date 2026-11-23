@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
-from app.models.pct_models import PctTrackedItem, PctPriceSnapshot, PctAlertLog
+from app.models.pct_models import PctTrackedItem, PctPriceSnapshot, PctAlertLog, PctPriceHistory
 from app.models.schema_v2 import UserProfile, UserSubscription
 from app.services import pct_quota_service
 from app.core.cryptography import EncryptedString
@@ -175,7 +175,39 @@ async def check_and_send_alerts(
         logger.info(f"Alert skipped: competitor {comp_asin} is not in alert_competitor_asins for Tracker {item.id}")
         return False
 
-    # 2. Unified Credit Balance Check:
+    our_price = float(our_snap.product_price) if our_snap.product_price else 0.0
+    comp_price = float(comp_snap.product_price) if comp_snap.product_price else 0.0
+    if comp_price <= 0 or our_price <= 0:
+        return False
+
+    # 2. Alert Deduplication Check:
+    # Only alert if competitor dropped to a NEW lower price, or if our price changed,
+    # or if price recovered above threshold and dropped again. Never spam repeat emails for identical prices.
+    last_alert = db.query(PctAlertLog).filter(
+        PctAlertLog.tracker_id == item.id,
+        PctAlertLog.trigger_asin == comp_asin
+    ).order_by(PctAlertLog.sent_at.desc()).first()
+
+    if last_alert and last_alert.their_price is not None and last_alert.our_price is not None:
+        last_their = float(last_alert.their_price)
+        last_our = float(last_alert.our_price)
+
+        # Check if the competitor's price rose above last alerted price in between and has now dropped again
+        recovered = db.query(PctPriceHistory).filter(
+            PctPriceHistory.asin == comp_asin,
+            PctPriceHistory.recorded_at > last_alert.sent_at,
+            PctPriceHistory.price > last_their
+        ).first()
+
+        # If price didn't recover, competitor hasn't dropped price further, and our price didn't increase: SKIP
+        if not recovered and comp_price >= last_their and our_price <= last_our:
+            logger.info(
+                f"Alert skipped for Tracker {item.id} (Competitor {comp_asin}): "
+                f"Price unchanged or not lower (current: ₹{comp_price}, last alert: ₹{last_their})."
+            )
+            return False
+
+    # 3. Unified Credit Balance Check:
     # Alert delivery draws from the exact same credit pool (plan quota + wallet) as data fetching/refreshing
     sub = db.query(UserSubscription).filter(UserSubscription.user_id == item.user_id).first()
     tier = (sub.subscription_tier or "starter").lower() if sub else "starter"
@@ -188,7 +220,7 @@ async def check_and_send_alerts(
         )
         return False
 
-    # 3. Resolve recipient email addresses (decrypted)
+    # 4. Resolve recipient email addresses (decrypted)
     recipients = []
     if item.alert_emails:
         for enc in item.alert_emails:
@@ -209,9 +241,6 @@ async def check_and_send_alerts(
     if not recipients:
         logger.warning(f"No valid recipient email found for User {item.user_id}; alert skipped.")
         return False
-
-    our_price = float(our_snap.product_price) if our_snap.product_price else 0.0
-    comp_price = float(comp_snap.product_price) if comp_snap.product_price else 0.0
 
     html = build_alert_html(
         our_title=our_snap.product_title or item.our_asin,
