@@ -140,7 +140,7 @@ async def process_daily_sync():
 
                     if diff_pct >= threshold:
                         logger.info(
-                            f"Alert triggered for Tracker {item.id} (ASIN: {comp_asin} is {diff_pct:.1f}% cheaper)"
+                            f"Evaluating alert threshold for Tracker {item.id} (Competitor ASIN: {comp_asin} is {diff_pct:.1f}% cheaper)..."
                         )
                         await check_and_send_alerts(item, our_snap, comp_snap, diff_pct, db)
 
