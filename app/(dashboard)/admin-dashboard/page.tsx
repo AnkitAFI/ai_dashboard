@@ -601,16 +601,22 @@ export default function AdminDashboard() {
     return Array.from(mps).sort();
   }, [users]);
 
-  const uniqueDates = useMemo(() => {
-    const dates = new Set<string>();
+  const { uniqueDates, dateCounts } = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const dates: string[] = [];
     users.forEach(u => {
       if (u.created_at) {
         const d = new Date(u.created_at);
-        // Format: "19 Nov 2026"
-        dates.add(d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }));
+        const dateStr = d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+        if (!counts[dateStr]) {
+          counts[dateStr] = 0;
+          dates.push(dateStr);
+        }
+        counts[dateStr]++;
       }
     });
-    return Array.from(dates).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    dates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    return { uniqueDates: dates, dateCounts: counts };
   }, [users]);
 
   const filtered = useMemo(() => {
@@ -1161,7 +1167,7 @@ export default function AdminDashboard() {
                   <option value="all">All Dates</option>
                   {uniqueDates.map(d => (
                     <option key={d} value={d}>
-                      {d} ({users.filter(u => u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) === d).length} users)
+                      {d} ({dateCounts[d] || 0} users)
                     </option>
                   ))}
                 </select>
