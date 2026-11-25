@@ -1129,14 +1129,14 @@ export default function AnalyticsDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 min-w-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="flex items-center justify-between mb-4">
-                <TabsList>
-                  <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-                  <TabsTrigger value="keywords">Keywords</TabsTrigger>
-                  <TabsTrigger value="search-terms">Search Terms</TabsTrigger>
-                  <TabsTrigger value="placements">Placements <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-300 border-fuchsia-200">NEW</Badge></TabsTrigger>
+                <TabsList className="grid grid-cols-2 sm:inline-flex w-full sm:w-auto h-auto sm:h-10 gap-1 sm:gap-0">
+                  <TabsTrigger value="campaigns" className="w-full sm:w-auto">Campaigns</TabsTrigger>
+                  <TabsTrigger value="keywords" className="w-full sm:w-auto">Keywords</TabsTrigger>
+                  <TabsTrigger value="search-terms" className="w-full sm:w-auto">Search Terms</TabsTrigger>
+                  <TabsTrigger value="placements" className="w-full sm:w-auto">Placements <Badge variant="secondary" className="ml-1.5 sm:ml-2 text-[10px] px-1.5 py-0 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-300 border-fuchsia-200">NEW</Badge></TabsTrigger>
                 </TabsList>
               </div>
 
