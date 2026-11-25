@@ -280,9 +280,6 @@ export function PctBuyCreditsDialog({ isOpen, onClose, onSuccess }: PctBuyCredit
             <div className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
               ₹{totalPrice.toLocaleString("en-IN")}
             </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              GST Invoice Included
-            </div>
           </div>
         </div>
 
