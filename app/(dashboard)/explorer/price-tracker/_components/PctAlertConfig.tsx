@@ -67,19 +67,19 @@ export function PctAlertConfig({
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <form onSubmit={handleSave} className="space-y-5 w-full min-w-0 max-w-full">
       {/* Master Toggle */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
-        <div>
+      <div className="flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 w-full min-w-0">
+        <div className="min-w-0 flex-1">
           <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-blue-600" />
+            <Bell className="w-4 h-4 text-blue-600 shrink-0" />
             <span>Send Price Drop Email Alerts</span>
           </h4>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5 break-words">
             Get an email notification as soon as any tracked competitor lowers their price below your threshold
           </p>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer">
+        <label className="relative inline-flex items-center cursor-pointer shrink-0">
           <input
             type="checkbox"
             checked={alertEnabled}

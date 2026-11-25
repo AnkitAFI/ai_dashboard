@@ -12,13 +12,11 @@ import { Label } from "@/components/ui/label";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useAuth } from "@/lib/auth-context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2, Target, TrendingUp, DollarSign, Users, MapPin,
   AlertTriangle, Lightbulb, X, ShoppingBag, CheckCircle2,
-  XCircle, History, Crown, Lock, Shield, Clock, Activity,
-  ChevronDown, ChevronUp, Zap, BarChart3,
+  XCircle, History, Crown, Lock, Zap, BarChart3,
   AlertCircle, Star, TrendingDown, Truck, Trophy, Package,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -127,153 +125,6 @@ interface UsageLimits {
   limit: number;
   remaining: number;
   subscription_tier: string;
-}
-
-const SOURCE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  exact_match: { label: "Exact Match", color: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" },
-  keyword_match: { label: "Keyword Match", color: "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" },
-  broad_match: { label: "Broad Match", color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800" },
-  category_fallback: { label: "Category Fallback", color: "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800" },
-  no_data: { label: "No Data", color: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800" },
-};
-
-const TIER_LABELS: Record<string, string> = {
-  tier_1_exact: "Tier 1 — Exact",
-  tier_2_keyword: "Tier 2 — Keyword",
-  tier_3_broad: "Tier 3 — Broad",
-  tier_4_category: "Tier 4 — Category",
-  no_data: "No Data",
-};
-
-/** Confidence score pill + expandable breakdown */
-function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score"]> }) {
-  const [open, setOpen] = useState(false);
-  const pct = Math.round(cs.score * 100);
-  const barColor =
-    cs.label === "High" ? "bg-green-500" :
-      cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
-  const textColor =
-    cs.label === "High" ? "text-green-700 dark:text-green-400" :
-      cs.label === "Medium" ? "text-yellow-700 dark:text-yellow-400" : "text-red-700 dark:text-red-400";
-  const bgColor =
-    cs.label === "High" ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800" :
-      cs.label === "Medium" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800" : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
-
-  return (
-    <div className={`rounded-xl border-2 p-4 ${bgColor}`}>
-      <button
-        className="w-full flex items-center justify-between"
-        onClick={() => setOpen(v => !v)}
-      >
-        <div className="flex items-center gap-3">
-          <Shield className={`h-5 w-5 ${textColor}`} />
-          <div className="text-left">
-            <p className={`font-semibold text-sm ${textColor}`}>
-              Data Confidence: {cs.label}
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {TIER_LABELS[cs.tier_used] ?? cs.tier_used} · {cs.sample_size} products analysed
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-24 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-              <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
-            </div>
-            <span className={`text-sm font-bold ${textColor}`}>{pct}%</span>
-          </div>
-          {open ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
-        </div>
-      </button>
-
-      {open && (
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
-          <div className="text-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sample Size</p>
-            <p className="font-bold text-slate-800 dark:text-slate-100">{cs.sample_size}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sales Data</p>
-            <p className={`font-bold ${cs.has_sales_data ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
-              {cs.has_sales_data ? "✓ Present" : "✗ Missing"}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Review Data</p>
-            <p className={`font-bold ${cs.has_review_data ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
-              {cs.has_review_data ? "✓ Present" : "✗ Missing"}
-            </p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Price Spread</p>
-            <p className="font-bold text-slate-800 dark:text-slate-100">{cs.price_spread_pct.toFixed(1)}%</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Latency / request metadata bar */
-function MetaBar({
-  requestId, latencyMs, sourceType, stepTimings,
-}: {
-  requestId: string;
-  latencyMs: number;
-  sourceType: string;
-  stepTimings: Record<string, number> | null;
-}) {
-  const [open, setOpen] = useState(false);
-  const st = SOURCE_TYPE_LABELS[sourceType] ?? { label: sourceType, color: "bg-slate-100 text-slate-700 border-slate-300" };
-
-  return (
-    <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-4 py-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge className={`text-xs ${st.color}`}>{st.label}</Badge>
-          <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-            <Clock className="h-3.5 w-3.5" />
-            {latencyMs.toFixed(0)} ms total
-          </span>
-          <span className="hidden sm:block text-xs text-slate-400 dark:text-slate-500 font-mono truncate max-w-[200px]">
-            ID: {requestId}
-          </span>
-        </div>
-        {stepTimings && Object.keys(stepTimings).length > 0 && (
-          <button
-            className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
-            onClick={() => setOpen(v => !v)}
-          >
-            <Activity className="h-3.5 w-3.5" />
-            Step timings
-            {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          </button>
-        )}
-      </div>
-
-      {open && stepTimings && (
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 border-t border-slate-200 dark:border-slate-700 pt-3">
-          {Object.entries(stepTimings).map(([k, v]) => (
-            <div key={k} className="text-center">
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">{k.replace(/_/g, " ")}</p>
-              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{typeof v === "number" ? `${v} ms` : String(v)}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Fallback / category-match warning banner */
-function FallbackBanner({ reason }: { reason: string }) {
-  return (
-    <Alert className="border-orange-300 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20">
-      <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-      <AlertDescription className="text-sm text-orange-800 dark:text-orange-300">{reason}</AlertDescription>
-    </Alert>
-  );
 }
 
 const getGapIcon = (iconText: string) => {
@@ -860,76 +711,64 @@ export default function ProductTracker() {
                 </Badge>
               </div>
 
-              {/* [NEW] Meta bar — request ID, latency, source type, step timings */}
-              <MetaBar
-                requestId={apiResponse.request_id}
-                latencyMs={apiResponse.latency_ms}
-                sourceType={apiResponse.source_type}
-                stepTimings={apiResponse.step_timings}
-              />
-
-              {/* [NEW] Confidence score panel */}
-              {apiResponse.confidence_score && (
-                <ConfidencePanel cs={apiResponse.confidence_score} />
-              )}
-
-              {/* [NEW] Fallback reason banner (Tier 3/4 only) */}
-              {result.fallback_reason && (
-                <FallbackBanner reason={result.fallback_reason} />
-              )}
-
               {/* Warnings (now from ApiResponse.warnings, not result.warnings) */}
-              {apiResponse.warnings && apiResponse.warnings.length > 0 && (
-                <div className="space-y-3">
-                  {apiResponse.warnings.map((w, i) => {
-                    const isCritical = w.includes("CRITICAL") || w.includes("DANGER") || w.includes("impossible") || w.includes("Cannot compete");
-                    const isPositive = w.includes("EXCELLENT") || w.includes("VIABLE");
-                    const isSolution = w.toLowerCase().startsWith("solution");
+              {(() => {
+                const visibleWarnings = (apiResponse.warnings ?? []).filter(
+                  (w) => !w.toLowerCase().includes("limited data. test with small inventory first")
+                );
+                if (visibleWarnings.length === 0) return null;
+                return (
+                  <div className="space-y-3">
+                    {visibleWarnings.map((w, i) => {
+                      const isCritical = w.includes("CRITICAL") || w.includes("DANGER") || w.includes("impossible") || w.includes("Cannot compete");
+                      const isPositive = w.includes("EXCELLENT") || w.includes("VIABLE");
+                      const isSolution = w.toLowerCase().startsWith("solution");
 
-                    let typeColor = "border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-950/40 dark:to-yellow-950/20 text-amber-800 dark:text-amber-300";
-                    let Icon = AlertTriangle;
-                    let iconColor = "text-amber-600 dark:text-amber-400";
+                      let typeColor = "border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-950/40 dark:to-yellow-950/20 text-amber-800 dark:text-amber-300";
+                      let Icon = AlertTriangle;
+                      let iconColor = "text-amber-600 dark:text-amber-400";
 
-                    if (isCritical) {
-                      typeColor = "border-red-200 dark:border-red-900/40 bg-gradient-to-br from-red-50 to-rose-50/50 dark:from-red-950/40 dark:to-rose-950/20 text-red-800 dark:text-red-300";
-                      Icon = XCircle;
-                      iconColor = "text-red-600 dark:text-red-400";
-                    } else if (isPositive) {
-                      typeColor = "border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/40 dark:to-green-950/20 text-emerald-800 dark:text-emerald-300";
-                      Icon = CheckCircle2;
-                      iconColor = "text-emerald-600 dark:text-emerald-400";
-                    } else if (isSolution) {
-                      typeColor = "border-blue-200 dark:border-blue-900/40 bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-950/40 dark:to-indigo-950/20 text-blue-800 dark:text-blue-300";
-                      Icon = Lightbulb;
-                      iconColor = "text-blue-600 dark:text-blue-400";
-                    }
-
-                    const renderText = (text: string) => {
-                      const match = text.match(/^(CRITICAL|DANGER|Solution|WARNING|EXCELLENT|VIABLE):\s*(.*)/i);
-                      if (match) {
-                        return (
-                          <>
-                            <span className="font-bold uppercase tracking-wider text-[11px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 mr-2 shadow-sm border border-black/5 dark:border-white/10">{match[1]}</span>
-                            {match[2]}
-                          </>
-                        );
+                      if (isCritical) {
+                        typeColor = "border-red-200 dark:border-red-900/40 bg-gradient-to-br from-red-50 to-rose-50/50 dark:from-red-950/40 dark:to-rose-950/20 text-red-800 dark:text-red-300";
+                        Icon = XCircle;
+                        iconColor = "text-red-600 dark:text-red-400";
+                      } else if (isPositive) {
+                        typeColor = "border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/40 dark:to-green-950/20 text-emerald-800 dark:text-emerald-300";
+                        Icon = CheckCircle2;
+                        iconColor = "text-emerald-600 dark:text-emerald-400";
+                      } else if (isSolution) {
+                        typeColor = "border-blue-200 dark:border-blue-900/40 bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-950/40 dark:to-indigo-950/20 text-blue-800 dark:text-blue-300";
+                        Icon = Lightbulb;
+                        iconColor = "text-blue-600 dark:text-blue-400";
                       }
-                      return text;
-                    };
 
-                    return (
-                      <div key={i} className={`p-4 rounded-xl border flex items-start gap-3 shadow-sm ${typeColor}`}>
-                        <div className="mt-0.5 shrink-0 bg-white/50 dark:bg-black/20 p-1.5 rounded-lg shadow-sm border border-black/5 dark:border-white/5">
-                          <Icon className={`h-4 w-4 ${iconColor}`} />
+                      const renderText = (text: string) => {
+                        const match = text.match(/^(CRITICAL|DANGER|Solution|WARNING|EXCELLENT|VIABLE):\s*(.*)/i);
+                        if (match) {
+                          return (
+                            <>
+                              <span className="font-bold uppercase tracking-wider text-[11px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 mr-2 shadow-sm border border-black/5 dark:border-white/10">{match[1]}</span>
+                              {match[2]}
+                            </>
+                          );
+                        }
+                        return text;
+                      };
+
+                      return (
+                        <div key={i} className={`p-4 rounded-xl border flex items-start gap-3 shadow-sm ${typeColor}`}>
+                          <div className="mt-0.5 shrink-0 bg-white/50 dark:bg-black/20 p-1.5 rounded-lg shadow-sm border border-black/5 dark:border-white/5">
+                            <Icon className={`h-4 w-4 ${iconColor}`} />
+                          </div>
+                          <div className="text-sm font-medium leading-relaxed pt-1.5 flex-1">
+                            {renderText(w)}
+                          </div>
                         </div>
-                        <div className="text-sm font-medium leading-relaxed pt-1.5 flex-1">
-                          {renderText(w)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                );
+              })()}
 
               {/* Pricing */}
               <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
