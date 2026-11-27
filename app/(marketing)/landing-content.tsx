@@ -1588,7 +1588,7 @@ export default function LandingContent() {
               ))}
               <div className="flex flex-col gap-3 border-t border-[#f0ebf8] bg-[#fcfaff] dark:bg-gray-900 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-sm text-[#4b4560] dark:text-gray-300">
-                  Paid plans from <strong className="text-[#1a1033] dark:text-gray-50">₹1,999 per month</strong>
+                  Paid plans from <strong className="text-[#1a1033] dark:text-gray-50">₹499 per month</strong>
                 </span>
                 <PrimaryButton href="/login">
                   Start your free trial <ArrowRight className="h-4 w-4" />
